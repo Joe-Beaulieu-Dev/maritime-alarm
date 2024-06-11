@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">AlarmScratch</string>
+
+    <!-- General -->
+    <string name="error">Error</string>
+
+    <!-- Navigation -->
+    <string name="nav_alarm">Alarm</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- SkylineHeader -->
+    <string name="day_abbreviation">d</string>
+    <string name="hour_abbreviation">h</string>
+    <string name="minute_abbreviation">m</string>
+    <string name="no_active_alarms">No Active Alarms</string>
+
+    <!-- AlarmCard -->
+    <string name="date_today">Today</string>
+    <string name="date_tomorrow">Tomorrow</string>
+    <string name="time_am">AM</string>
+    <string name="time_pm">PM</string>
+
+    <!-- AlarmCardMenu -->
+    <string name="menu_delete">Delete</string>
+
+    <!-- NoAlarmsCard -->
+    <string name="no_alarms">No Alarms</string>
+</resources>
