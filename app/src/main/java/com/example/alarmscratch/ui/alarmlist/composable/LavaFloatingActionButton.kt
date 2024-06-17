@@ -68,6 +68,7 @@ fun LavaFloatingActionButton(
         FloatingActionButton(
             shape = CircleShape,
             onClick = {
+                // TODO: This is temporary for development
                 alarmSampleData.forEach { alarm ->
                     onFabClicked(alarm)
                 }

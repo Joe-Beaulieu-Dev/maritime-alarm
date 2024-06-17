@@ -3,7 +3,7 @@ package com.example.alarmscratch.ui.alarmlist
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.example.alarmscratch.ui.alarmlist.composable.AlarmListScreen
+import com.example.alarmscratch.ui.alarmlist.composable.AlarmApp
 import com.example.alarmscratch.ui.theme.AlarmScratchTheme
 
 class AlarmListActivity : ComponentActivity() {
@@ -11,7 +11,7 @@ class AlarmListActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AlarmScratchTheme {
-                AlarmListScreen()
+                AlarmApp()
             }
         }
     }

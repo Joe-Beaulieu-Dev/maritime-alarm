@@ -34,9 +34,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.alarmscratch.R
 import com.example.alarmscratch.data.model.Alarm
-import com.example.alarmscratch.data.repository.AlarmListState
 import com.example.alarmscratch.extension.get12HrTime
-import com.example.alarmscratch.ui.alarmlist.preview.alarmSampleDataHardCodedIds
+import com.example.alarmscratch.ui.alarmlist.preview.calendarAlarm
+import com.example.alarmscratch.ui.alarmlist.preview.repeatingAlarm
+import com.example.alarmscratch.ui.alarmlist.preview.todayAlarm
+import com.example.alarmscratch.ui.alarmlist.preview.tomorrowAlarm
 import com.example.alarmscratch.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.ui.theme.BoatHull
 import com.example.alarmscratch.ui.theme.BoatSails
@@ -51,13 +53,14 @@ fun AlarmCard(
     onAlarmDeleted: (Alarm) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // State
     var dropdownExpanded by rememberSaveable { mutableStateOf(false) }
 
+    // Colors
     val cardTextAndIconColor = if (alarm.enabled) BoatSails else MaterialTheme.colorScheme.outline
     val timeAmPmColor = if (alarm.enabled) DarkerBoatSails else MaterialTheme.colorScheme.outline
     val cardColor = if (alarm.enabled) MaterialTheme.colorScheme.surfaceVariant else MediumVolcanicRock
 
-    // The whole Alarm Card
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -225,12 +228,61 @@ fun amPm(alarm: Alarm): String =
     backgroundColor = 0xFF0066CC
 )
 @Composable
-private fun AlarmCardPreview() {
+private fun AlarmCardRepeatingPreview() {
     AlarmScratchTheme {
-        AlarmCardList(
-            alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds),
+        AlarmCard(
+            alarm = repeatingAlarm,
             onAlarmToggled = {},
-            onAlarmDeleted = {}
+            onAlarmDeleted = {},
+            modifier = Modifier.padding(5.dp)
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF0066CC
+)
+@Composable
+private fun AlarmCardTodayPreview() {
+    AlarmScratchTheme {
+        AlarmCard(
+            alarm = todayAlarm,
+            onAlarmToggled = {},
+            onAlarmDeleted = {},
+            modifier = Modifier.padding(5.dp)
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF0066CC
+)
+@Composable
+private fun AlarmCardTomorrowPreview() {
+    AlarmScratchTheme {
+        AlarmCard(
+            alarm = tomorrowAlarm,
+            onAlarmToggled = {},
+            onAlarmDeleted = {},
+            modifier = Modifier.padding(5.dp)
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF0066CC
+)
+@Composable
+private fun AlarmCardCalendarPreview() {
+    AlarmScratchTheme {
+        AlarmCard(
+            alarm = calendarAlarm,
+            onAlarmToggled = {},
+            onAlarmDeleted = {},
+            modifier = Modifier.padding(5.dp)
         )
     }
 }
@@ -242,10 +294,6 @@ private fun AlarmCardPreview() {
 @Composable
 private fun NoAlarmsCardPreview() {
     AlarmScratchTheme {
-        AlarmCardList(
-            alarmListState = AlarmListState.Success(alarmList = emptyList()),
-            onAlarmToggled = {},
-            onAlarmDeleted = {}
-        )
+        NoAlarmsCard(modifier = Modifier.padding(5.dp))
     }
 }
