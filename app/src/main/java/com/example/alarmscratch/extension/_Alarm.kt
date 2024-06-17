@@ -12,7 +12,9 @@ fun Alarm.get12HrTime(): String {
         "${time.minute}"
     }
 
-    return if (time.hour <= 12) {
+    return if (time.hour == 0) { // Midnight
+        "12:$minute"
+    } else if (time.hour <= 12) {
         "${time.hour}:$minute"
     } else {
         "${time.hour - 12}:$minute"

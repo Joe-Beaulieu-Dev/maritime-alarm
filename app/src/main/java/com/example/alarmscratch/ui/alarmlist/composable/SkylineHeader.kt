@@ -28,6 +28,7 @@ import com.example.alarmscratch.R
 import com.example.alarmscratch.data.model.Alarm
 import com.example.alarmscratch.data.repository.AlarmListState
 import com.example.alarmscratch.ui.alarmlist.preview.consistentFutureAlarm
+import com.example.alarmscratch.ui.navigation.Destination
 import com.example.alarmscratch.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.ui.theme.BoatHull
 import com.example.alarmscratch.ui.theme.BoatSails
@@ -40,6 +41,7 @@ import kotlin.math.floor
 
 @Composable
 fun SkylineHeader(
+    currentScreen: Destination,
     alarmListState: AlarmListState,
     modifier: Modifier = Modifier
 ) {
@@ -101,7 +103,7 @@ fun SkylineHeader(
                     verticalAlignment = Alignment.Bottom,
                     modifier = Modifier.align(Alignment.Center)
                 ) {
-                    if (alarmListState is AlarmListState.Success) {
+                    if (currentScreen == Destination.AlarmList && alarmListState is AlarmListState.Success) {
                         // Alarm Icon
                         Icon(
                             imageVector = Icons.Default.Alarm,
@@ -194,7 +196,10 @@ private fun getNextAlarm(alarmList: List<Alarm>): Alarm? =
 @Composable
 private fun SkylineHeaderWithAlarmPreview() {
     AlarmScratchTheme {
-        SkylineHeader(alarmListState = AlarmListState.Success(alarmList = listOf(consistentFutureAlarm)))
+        SkylineHeader(
+            currentScreen = Destination.AlarmList,
+            alarmListState = AlarmListState.Success(alarmList = listOf(consistentFutureAlarm))
+        )
     }
 }
 
@@ -202,6 +207,9 @@ private fun SkylineHeaderWithAlarmPreview() {
 @Composable
 private fun SkylineHeaderNoAlarmsPreview() {
     AlarmScratchTheme {
-        SkylineHeader(alarmListState = AlarmListState.Success(alarmList = emptyList()))
+        SkylineHeader(
+            currentScreen = Destination.AlarmList,
+            alarmListState = AlarmListState.Success(alarmList = emptyList())
+        )
     }
 }

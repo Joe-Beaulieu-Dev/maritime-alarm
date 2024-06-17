@@ -6,10 +6,7 @@ import java.time.LocalDateTime
 
 const val tueWedThu: Int = 28
 
-// TODO do exception handling for java code
-// YYYY-MM-DDTHH:MM:SS
-val alarmSampleData: List<Alarm> = listOf(
-    // Repeating
+val repeatingAlarm =
     Alarm(
         name = "Wake up",
         enabled = true,
@@ -17,34 +14,32 @@ val alarmSampleData: List<Alarm> = listOf(
         //  Alarm is going to go off based on the WeeklyRepeater
         dateTime = getTomorrowAtTime24Hr(hour = 8, minute = 30, second = 0),
         weeklyRepeater = WeeklyRepeater(encodedRepeatingDays = tueWedThu)
-    ),
-    // Today
+    )
+
+val todayAlarm =
     Alarm(
         name = "Eat pizza",
         enabled = true,
         dateTime = getTodayAtTime24Hr(hour = 23, minute = 59, second = 0),
         weeklyRepeater = WeeklyRepeater()
-    ),
-    // Tomorrow
+    )
+
+val tomorrowAlarm =
     Alarm(
         name = "Do a flip",
         enabled = false,
-        dateTime = getTomorrowAtTime24Hr(hour = 14, minute = 30, second = 0),
+        dateTime = getTomorrowAtTime24Hr(hour = 14, minute = 0, second = 0),
         weeklyRepeater = WeeklyRepeater()
-    ),
-    // Calendar day
+    )
+
+// TODO do exception handling for java code
+val calendarAlarm =
     Alarm(
         name = "",
         enabled = true,
-        dateTime = LocalDateTime.parse("2024-12-25T13:05:00"),
+        dateTime = LocalDateTime.parse("2024-12-25T00:05:00"),
         weeklyRepeater = WeeklyRepeater()
     )
-)
-
-/**
- * Alarm List with hard coded IDs for use in LazyColumn
- */
-val alarmSampleDataHardCodedIds: List<Alarm> = alarmSampleData.mapIndexed { index, alarm -> alarm.copy(id = index) }
 
 // TODO do exception handling for java code
 val consistentFutureAlarm: Alarm =
@@ -54,6 +49,14 @@ val consistentFutureAlarm: Alarm =
         dateTime = LocalDateTime.now().withNano(0).plusHours(8).plusMinutes(45),
         weeklyRepeater = WeeklyRepeater()
     )
+
+// YYYY-MM-DDTHH:MM:SS
+val alarmSampleData: List<Alarm> = listOf(repeatingAlarm, todayAlarm, tomorrowAlarm, calendarAlarm)
+
+/**
+ * Alarm List with hard coded IDs for use in Previews
+ */
+val alarmSampleDataHardCodedIds: List<Alarm> = alarmSampleData.mapIndexed { index, alarm -> alarm.copy(id = index) }
 
 // TODO do exception handling for java code
 private fun getTodayAtTime24Hr(hour: Int, minute: Int, second: Int): LocalDateTime =

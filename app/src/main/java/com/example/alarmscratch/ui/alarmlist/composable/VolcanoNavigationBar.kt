@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Alarm
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -27,7 +24,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.alarmscratch.R
+import com.example.alarmscratch.ui.navigation.Destination
 import com.example.alarmscratch.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.ui.theme.DarkVolcanicRock
 import com.example.alarmscratch.ui.theme.NavIconActive
@@ -40,8 +37,8 @@ import com.example.alarmscratch.ui.theme.OtherLavaRed
 @Composable
 fun VolcanoNavigationBar(
     modifier: Modifier = Modifier,
-    selectedDestination: Int = 0,
-    onDestinationChange: (Int) -> Unit
+    selectedDestination: String,
+    onDestinationChange: (Destination) -> Unit
 ) {
     val navColors = NavigationBarItemDefaults.colors(
         selectedIconColor = NavIconActive,
@@ -60,31 +57,21 @@ fun VolcanoNavigationBar(
         NavigationBar(
             tonalElevation = 0.dp
         ) {
-            // Alarm
-            NavigationBarItem(
-                selected = selectedDestination == 0,
-                onClick = { onDestinationChange(0) },
-                icon = {
-                    Icon(imageVector = Icons.Default.Alarm, contentDescription = null)
-                },
-                label = {
-                    Text(text = stringResource(id = R.string.nav_alarm))
-                },
-                colors = navColors
-            )
-
-            // Settings
-            NavigationBarItem(
-                selected = selectedDestination == 1,
-                onClick = { onDestinationChange(1) },
-                icon = {
-                    Icon(imageVector = Icons.Default.Settings, contentDescription = null)
-                },
-                label = {
-                    Text(text = stringResource(id = R.string.nav_settings))
-                },
-                colors = navColors
-            )
+            Destination.ALL_DESTINATIONS.forEach { destination ->
+                // Doing ".filter { it.navComponent != null}" would've been nice, but you'd still have to non-null assert
+                // destination.navComponent when using its properties below. I'd prefer a non-null check over a non-null assertion,
+                // so we might as well just operate on the entire List, saving on iterations by not doing the filter, which would have
+                // just used the exact same non-null check anyways.
+                if (destination.navComponent != null) {
+                    NavigationBarItem(
+                        selected = selectedDestination == destination.route,
+                        onClick = { onDestinationChange(destination) },
+                        icon = { Icon(imageVector = destination.navComponent.navIcon, contentDescription = null) },
+                        label = { Text(text = stringResource(id = destination.navComponent.navNameRes)) },
+                        colors = navColors
+                    )
+                }
+            }
         }
     }
 }
@@ -279,6 +266,7 @@ private fun VolcanoNavigationBarPreview() {
     AlarmScratchTheme {
         VolcanoNavigationBar(
             modifier = Modifier.padding(top = 12.dp),
+            selectedDestination = Destination.AlarmList.route,
             onDestinationChange = {}
         )
     }

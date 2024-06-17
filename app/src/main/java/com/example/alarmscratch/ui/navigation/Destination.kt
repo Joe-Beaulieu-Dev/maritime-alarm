@@ -1,42 +1,71 @@
 package com.example.alarmscratch.ui.navigation
 
-import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.runtime.saveable.mapSaver
 import com.example.alarmscratch.R
-
-class AlarmNavComponent(
-    @StringRes
-    val navName: Int,
-    val navIcon: ImageVector
-)
-
-val alarmScreens = listOf(Destination.AlarmList, Destination.AlarmCreation, Destination.AlarmSettings)
 
 sealed class Destination(
     val route: String,
     val navComponent: AlarmNavComponent?
 ) {
-    data object AlarmList : Destination(
+    object AlarmList : Destination(
         route = "alarm_list",
         navComponent = AlarmNavComponent(
-            navName = R.string.nav_alarm,
+            navNameRes = R.string.nav_alarm,
             navIcon = Icons.Default.Alarm
         )
     )
 
-    data object AlarmSettings : Destination(
-        route = "alarm_settings",
+    object AlarmCreation: Destination(
+        route = "alarm_creation",
+        navComponent = null
+    )
+
+    object Settings : Destination(
+        route = "settings",
         navComponent = AlarmNavComponent(
-            navName = R.string.nav_settings,
+            navNameRes = R.string.nav_settings,
             navIcon = Icons.Default.Settings
         )
     )
 
-    data object AlarmCreation: Destination(
-        route = "alarm_creation",
+    object GeneralSettings : Destination(
+        route = "general_settings",
         navComponent = null
     )
+
+    object AlarmDefaultSettings : Destination(
+        route = "alarm_default_settings",
+        navComponent = null
+    )
+
+    companion object {
+
+        val ALL_DESTINATIONS = listOf(
+            AlarmList,
+            Settings,
+            GeneralSettings,
+            AlarmDefaultSettings,
+            AlarmCreation
+        )
+
+        val Saver = run {
+            val routeKey = "route"
+            mapSaver(
+                save = { mapOf(routeKey to it.route) },
+                restore = {
+                    when (val route = it[routeKey]) {
+                        is String ->
+                            fromRoute(route)
+                        else ->
+                            AlarmList
+                    }
+                }
+            )
+        }
+
+        private fun fromRoute(route: String): Destination = ALL_DESTINATIONS.firstOrNull { it.route == route } ?: AlarmList
+    }
 }
