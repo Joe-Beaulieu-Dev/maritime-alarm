@@ -62,9 +62,7 @@ fun AlarmCard(
     val cardColor = if (alarm.enabled) MaterialTheme.colorScheme.surfaceVariant else MediumVolcanicRock
 
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 10.dp),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = cardColor,
             contentColor = cardTextAndIconColor
@@ -188,9 +186,7 @@ fun AlarmCard(
 @Composable
 fun NoAlarmsCard(modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 10.dp),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
             contentColor = BoatSails
@@ -234,7 +230,20 @@ private fun AlarmCardRepeatingPreview() {
             alarm = repeatingAlarm,
             onAlarmToggled = {},
             onAlarmDeleted = {},
-            modifier = Modifier.padding(5.dp)
+            modifier = Modifier.padding(20.dp)
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF0066CC
+)
+@Composable
+private fun NoAlarmsCardPreview() {
+    AlarmScratchTheme {
+        NoAlarmsCard(
+            modifier = Modifier.padding(20.dp)
         )
     }
 }
@@ -250,7 +259,7 @@ private fun AlarmCardTodayPreview() {
             alarm = todayAlarm,
             onAlarmToggled = {},
             onAlarmDeleted = {},
-            modifier = Modifier.padding(5.dp)
+            modifier = Modifier.padding(20.dp)
         )
     }
 }
@@ -266,7 +275,7 @@ private fun AlarmCardTomorrowPreview() {
             alarm = tomorrowAlarm,
             onAlarmToggled = {},
             onAlarmDeleted = {},
-            modifier = Modifier.padding(5.dp)
+            modifier = Modifier.padding(20.dp)
         )
     }
 }
@@ -282,18 +291,7 @@ private fun AlarmCardCalendarPreview() {
             alarm = calendarAlarm,
             onAlarmToggled = {},
             onAlarmDeleted = {},
-            modifier = Modifier.padding(5.dp)
+            modifier = Modifier.padding(20.dp)
         )
-    }
-}
-
-@Preview(
-    showBackground = true,
-    backgroundColor = 0xFF0066CC
-)
-@Composable
-private fun NoAlarmsCardPreview() {
-    AlarmScratchTheme {
-        NoAlarmsCard(modifier = Modifier.padding(5.dp))
     }
 }

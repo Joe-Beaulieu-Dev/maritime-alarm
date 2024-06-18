@@ -6,19 +6,28 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.alarmscratch.ui.alarmlist.composable.AlarmListScreen
+import com.example.alarmscratch.ui.settings.SettingsScreen
 
 @Composable
 fun AlarmNavHost(
-    navController: NavHostController,
+    navHostController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     NavHost(
-        navController = navController,
+        navController = navHostController,
         startDestination = Destination.AlarmList.route,
         modifier = modifier
     ) {
         composable(route = Destination.AlarmList.route) {
             AlarmListScreen()
         }
+        composable(route = Destination.Settings.route) {
+            SettingsScreen()
+        }
     }
 }
+
+fun NavHostController.navigateSingleTop(route: String) =
+    navigate(route) {
+        launchSingleTop = true
+    }
