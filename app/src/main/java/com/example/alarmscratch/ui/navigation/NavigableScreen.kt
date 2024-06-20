@@ -37,6 +37,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun NavigableScreen(
+    rootNavHostController: NavHostController,
     navigableScreenViewModel: NavigableScreenViewModel = viewModel(factory = NavigableScreenViewModel.Factory)
 ) {
     // State
@@ -50,17 +51,18 @@ fun NavigableScreen(
     }
 
     // Navigation
-    val navHostController = rememberNavController()
+    val localNavHostController = rememberNavController()
 
     // Navigable Screen wrapping an Internal Screen
     NavigableScreenContent(
-        navHostController = navHostController,
+        localNavHostController = localNavHostController,
         alarmListState = alarmListState,
         onFabClicked = tempOnFabClicked
     ) {
         // Nested Internal Screen
         AlarmNavHost(
-            navHostController = navHostController,
+            localNavHostController = localNavHostController,
+            rootNavHostController = rootNavHostController,
             modifier = Modifier.padding(20.dp)
         )
     }
@@ -68,13 +70,13 @@ fun NavigableScreen(
 
 @Composable
 fun NavigableScreenContent(
-    navHostController: NavHostController,
+    localNavHostController: NavHostController,
     alarmListState: AlarmListState,
     onFabClicked: (Alarm) -> Unit,
     internalScreen: @Composable () -> Unit
 ) {
     // Navigation
-    val currentBackStackEntry by navHostController.currentBackStackEntryAsState()
+    val currentBackStackEntry by localNavHostController.currentBackStackEntryAsState()
     val selectedDestination = Destination.ALL_DESTINATIONS.find { destination ->
         destination.route == currentBackStackEntry?.destination?.route
     } ?: Destination.AlarmList
@@ -118,7 +120,7 @@ fun NavigableScreenContent(
             // Navigation Bar
             VolcanoNavigationBar(
                 selectedDestination = selectedDestination.route,
-                onDestinationChange = { navHostController.navigateSingleTop(it.route) },
+                onDestinationChange = { localNavHostController.navigateSingleTop(it.route) },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -132,7 +134,7 @@ private fun NavigableScreenAlarmListPreview() {
         val alarmList = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds)
 
         NavigableScreenContent(
-            navHostController = rememberNavController(),
+            localNavHostController = rememberNavController(),
             alarmListState = alarmList,
             onFabClicked = {}
         ) {
@@ -153,7 +155,7 @@ private fun NavigableScreenAlarmListNoAlarmsPreview() {
         val alarmList = AlarmListState.Success(alarmList = emptyList())
 
         NavigableScreenContent(
-            navHostController = rememberNavController(),
+            localNavHostController = rememberNavController(),
             alarmListState = alarmList,
             onFabClicked = {}
         ) {
@@ -171,12 +173,17 @@ private fun NavigableScreenAlarmListNoAlarmsPreview() {
 @Composable
 private fun NavigableScreenSettingsPreview() {
     AlarmScratchTheme {
+        val navHostController = rememberNavController()
+
         NavigableScreenContent(
-            navHostController = rememberNavController(),
+            localNavHostController = navHostController,
             alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds),
             onFabClicked = {}
         ) {
-            SettingsScreen(modifier = Modifier.padding(20.dp))
+            SettingsScreen(
+                navHostController = navHostController,
+                modifier = Modifier.padding(20.dp)
+            )
         }
     }
 }

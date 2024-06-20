@@ -25,12 +25,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
+import com.example.alarmscratch.ui.navigation.Destination
+import com.example.alarmscratch.ui.navigation.navigateSingleTop
 import com.example.alarmscratch.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.ui.theme.MediumVolcanicRock
 
 @Composable
 fun SettingsScreen(
+    navHostController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -41,7 +46,7 @@ fun SettingsScreen(
     ) {
         LazyColumn {
             item {
-                SettingsComponent(icon = Icons.Default.Settings, nameRes = R.string.settings_general)
+                SettingsComponent(icon = Icons.Default.Settings, nameRes = R.string.settings_general, onClick = {})
             }
             item {
                 HorizontalDivider(
@@ -51,7 +56,11 @@ fun SettingsScreen(
                 )
             }
             item {
-                SettingsComponent(icon = Icons.Default.Alarm, nameRes = R.string.settings_alarm_defaults)
+                SettingsComponent(
+                    icon = Icons.Default.Alarm,
+                    nameRes = R.string.settings_alarm_defaults,
+                    onClick = { navHostController.navigateSingleTop(route = Destination.AlarmDefaultSettings.route) }
+                )
             }
         }
     }
@@ -62,6 +71,7 @@ fun SettingsComponent(
     icon: ImageVector,
     @StringRes
     nameRes: Int,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -69,7 +79,7 @@ fun SettingsComponent(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
             .fillMaxWidth()
-            .clickable { }
+            .clickable { onClick() }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -90,6 +100,10 @@ fun SettingsComponent(
     }
 }
 
+/*
+ * Previews
+ */
+
 @Preview(
     showBackground = true,
     backgroundColor = 0xFF0066CC
@@ -97,7 +111,10 @@ fun SettingsComponent(
 @Composable
 private fun SettingsScreenPreview() {
     AlarmScratchTheme {
-        SettingsScreen(modifier = Modifier.padding(10.dp))
+        SettingsScreen(
+            navHostController = rememberNavController(),
+            modifier = Modifier.padding(20.dp)
+        )
     }
 }
 
@@ -108,6 +125,6 @@ private fun SettingsScreenPreview() {
 @Composable
 private fun SettingsComponentPreview() {
     AlarmScratchTheme {
-        SettingsComponent(icon = Icons.Default.Alarm, nameRes = R.string.settings_alarm_defaults)
+        SettingsComponent(icon = Icons.Default.Alarm, nameRes = R.string.settings_alarm_defaults, onClick = {})
     }
 }

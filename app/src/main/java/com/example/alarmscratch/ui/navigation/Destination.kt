@@ -10,6 +10,11 @@ sealed class Destination(
     val route: String,
     val navComponent: AlarmNavComponent?
 ) {
+    object NavigableScreen : Destination(
+        route = "navigable_screen",
+        navComponent = null
+    )
+
     object AlarmList : Destination(
         route = "alarm_list",
         navComponent = AlarmNavComponent(
@@ -51,6 +56,7 @@ sealed class Destination(
             AlarmCreation
         )
 
+        // TODO: Might remove this. Doesn't seem needed anymore, but not removing yet.
         val Saver = run {
             val routeKey = "route"
             mapSaver(

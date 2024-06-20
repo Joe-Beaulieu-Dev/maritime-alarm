@@ -10,11 +10,12 @@ import com.example.alarmscratch.ui.settings.SettingsScreen
 
 @Composable
 fun AlarmNavHost(
-    navHostController: NavHostController,
+    localNavHostController: NavHostController,
+    rootNavHostController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     NavHost(
-        navController = navHostController,
+        navController = localNavHostController,
         startDestination = Destination.AlarmList.route,
         modifier = modifier
     ) {
@@ -22,7 +23,7 @@ fun AlarmNavHost(
             AlarmListScreen()
         }
         composable(route = Destination.Settings.route) {
-            SettingsScreen()
+            SettingsScreen(navHostController = rootNavHostController)
         }
     }
 }
