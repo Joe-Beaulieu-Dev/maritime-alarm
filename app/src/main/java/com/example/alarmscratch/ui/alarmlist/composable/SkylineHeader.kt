@@ -104,6 +104,7 @@ fun SkylineHeader(
                     modifier = Modifier.align(Alignment.Center)
                 ) {
                     if (currentScreen == Destination.AlarmList && alarmListState is AlarmListState.Success) {
+                        // TODO: Change Icon to Icons.Default.AlarmOff if there's no Active Alarms
                         // Alarm Icon
                         Icon(
                             imageVector = Icons.Default.Alarm,

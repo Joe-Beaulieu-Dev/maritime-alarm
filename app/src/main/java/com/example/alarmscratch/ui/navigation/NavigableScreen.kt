@@ -11,10 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -22,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.data.model.Alarm
@@ -32,6 +29,7 @@ import com.example.alarmscratch.ui.alarmlist.composable.LavaFloatingActionButton
 import com.example.alarmscratch.ui.alarmlist.composable.SkylineHeader
 import com.example.alarmscratch.ui.alarmlist.composable.VolcanoNavigationBar
 import com.example.alarmscratch.ui.alarmlist.preview.alarmSampleDataHardCodedIds
+import com.example.alarmscratch.ui.settings.SettingsScreen
 import com.example.alarmscratch.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.ui.theme.BottomOceanBlue
 import com.example.alarmscratch.ui.theme.TopOceanBlue
@@ -39,10 +37,13 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun NavigableScreen(
+    rootNavHostController: NavHostController,
     navigableScreenViewModel: NavigableScreenViewModel = viewModel(factory = NavigableScreenViewModel.Factory)
 ) {
-    // Alarms
+    // State
     val alarmListState by navigableScreenViewModel.alarmList.collectAsState()
+
+    // Actions
     val coroutineScope = rememberCoroutineScope()
     // TODO: Temp inserting alarm here for now just for quick testing before the actual alarm creation screen is implemented
     val tempOnFabClicked: (Alarm) -> Unit = { alarm ->
@@ -50,38 +51,35 @@ fun NavigableScreen(
     }
 
     // Navigation
-    val navController = rememberNavController()
+    val localNavHostController = rememberNavController()
 
     // Navigable Screen wrapping an Internal Screen
     NavigableScreenContent(
-        navController = navController,
+        localNavHostController = localNavHostController,
         alarmListState = alarmListState,
         onFabClicked = tempOnFabClicked
     ) {
         // Nested Internal Screen
         AlarmNavHost(
-            navController = navController,
-            modifier = Modifier.fillMaxSize()
+            localNavHostController = localNavHostController,
+            rootNavHostController = rootNavHostController,
+            modifier = Modifier.padding(20.dp)
         )
     }
 }
 
 @Composable
 fun NavigableScreenContent(
-    navController: NavController,
+    localNavHostController: NavHostController,
     alarmListState: AlarmListState,
     onFabClicked: (Alarm) -> Unit,
     internalScreen: @Composable () -> Unit
 ) {
     // Navigation
-    val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    var selectedDestination by rememberSaveable(stateSaver = Destination.Saver) {
-        mutableStateOf(
-            value = Destination.ALL_DESTINATIONS.find { destination ->
-                destination.route == currentBackStackEntry?.destination?.route
-            } ?: Destination.AlarmList
-        )
-    }
+    val currentBackStackEntry by localNavHostController.currentBackStackEntryAsState()
+    val selectedDestination = Destination.ALL_DESTINATIONS.find { destination ->
+        destination.route == currentBackStackEntry?.destination?.route
+    } ?: Destination.AlarmList
 
     Surface(
         color = Color.Transparent,
@@ -108,11 +106,7 @@ fun NavigableScreenContent(
             )
 
             // Internal Screen
-            Box(
-                modifier = Modifier
-                    .padding(top = 20.dp)
-                    .weight(1f)
-            ) {
+            Box(modifier = Modifier.weight(1f)) {
                 // Extracted this for Previews since they don't work with ViewModels
                 internalScreen()
             }
@@ -126,28 +120,69 @@ fun NavigableScreenContent(
             // Navigation Bar
             VolcanoNavigationBar(
                 selectedDestination = selectedDestination.route,
-                onDestinationChange = { newDestination: Destination -> selectedDestination = newDestination },
+                onDestinationChange = { localNavHostController.navigateSingleTop(it.route) },
                 modifier = Modifier.fillMaxWidth()
             )
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun NavigableScreenAlarmListPreview() {
     AlarmScratchTheme {
         val alarmList = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds)
 
         NavigableScreenContent(
-            navController = rememberNavController(),
+            localNavHostController = rememberNavController(),
             alarmListState = alarmList,
             onFabClicked = {}
         ) {
             AlarmListScreenContent(
                 alarmListState = alarmList,
                 onAlarmToggled = {},
-                onAlarmDeleted = {}
+                onAlarmDeleted = {},
+                modifier = Modifier.padding(20.dp)
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun NavigableScreenAlarmListNoAlarmsPreview() {
+    AlarmScratchTheme {
+        val alarmList = AlarmListState.Success(alarmList = emptyList())
+
+        NavigableScreenContent(
+            localNavHostController = rememberNavController(),
+            alarmListState = alarmList,
+            onFabClicked = {}
+        ) {
+            AlarmListScreenContent(
+                alarmListState = alarmList,
+                onAlarmToggled = {},
+                onAlarmDeleted = {},
+                modifier = Modifier.padding(20.dp)
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun NavigableScreenSettingsPreview() {
+    AlarmScratchTheme {
+        val navHostController = rememberNavController()
+
+        NavigableScreenContent(
+            localNavHostController = navHostController,
+            alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds),
+            onFabClicked = {}
+        ) {
+            SettingsScreen(
+                navHostController = navHostController,
+                modifier = Modifier.padding(20.dp)
             )
         }
     }
