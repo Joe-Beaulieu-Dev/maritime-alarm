@@ -33,6 +33,13 @@
     <string name="no_alarms">No Alarms</string>
 
     <!--
+        *************************
+        ** AlarmCreationScreen **
+        *************************
+    -->
+    <string name="alarm_name_placeholder">Alarm name</string>
+
+    <!--
         ********************
         ** SettingsScreen **
         ********************
