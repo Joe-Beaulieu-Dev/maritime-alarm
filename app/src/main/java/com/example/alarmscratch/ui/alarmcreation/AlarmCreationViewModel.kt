@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 
 class AlarmCreationViewModel(private val alarmRepository: AlarmRepository) : ViewModel() {
 
-    private val _newAlarm = MutableStateFlow(Alarm(dateTime = LocalDateTime.now().plusHours(1)))
+    private val _newAlarm = MutableStateFlow(Alarm(dateTime = LocalDateTime.now().withNano(0).plusHours(1)))
     val newAlarm: StateFlow<Alarm> = _newAlarm
 
     companion object {
@@ -37,6 +37,10 @@ class AlarmCreationViewModel(private val alarmRepository: AlarmRepository) : Vie
 
     fun updateName(name: String) {
         _newAlarm.value = _newAlarm.value.copy(name = name)
+    }
+
+    fun updateTime(hour: Int, minute: Int) {
+        _newAlarm.value = _newAlarm.value.copy(dateTime = _newAlarm.value.dateTime.withHour(hour).withMinute(minute))
     }
 
     fun addDay(day: WeeklyRepeater.Day) {

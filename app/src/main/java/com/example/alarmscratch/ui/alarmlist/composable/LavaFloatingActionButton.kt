@@ -68,9 +68,7 @@ fun LavaFloatingActionButton(
             onClick = { onFabClicked() },
             containerColor = AncientLavaOrange,
             contentColor = MaxBrightLavaOrange,
-            elevation = FloatingActionButtonDefaults.elevation(
-                defaultElevation = 0.dp
-            )
+            elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.AlarmAdd,

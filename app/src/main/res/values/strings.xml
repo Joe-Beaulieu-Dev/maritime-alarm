@@ -37,7 +37,12 @@
         ** AlarmCreationScreen **
         *************************
     -->
+    <!-- AlarmCreationScreenContent -->
     <string name="alarm_name_placeholder">Alarm name</string>
+    <!-- AlarmTimePickerDialog -->
+    <string name="select_time">Select time</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
 
     <!--
         ********************
