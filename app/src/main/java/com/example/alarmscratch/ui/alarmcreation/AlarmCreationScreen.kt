@@ -1,5 +1,6 @@
 package com.example.alarmscratch.ui.alarmcreation
 
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.WatchLater
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,8 +34,10 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDefaults
+import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -44,6 +48,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -256,6 +261,10 @@ fun AlarmTimePickerDialog(
     onConfirm: (hour: Int, minute: Int) -> Unit
 ) {
     val timePickerState = rememberTimePickerState(initialHour = initialHour, initialMinute = initialMinute)
+    var showFullTimePicker by rememberSaveable { mutableStateOf(true) }
+    // TODO: Ran into a weird layout issue with TimePicker in Landscape.
+    //  Decided to move on and just lock to TimeInput in Landscape for now.
+    val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
 
     Dialog(onDismissRequest = onCancel) {
         Card(
@@ -268,16 +277,11 @@ fun AlarmTimePickerDialog(
                 Spacer(modifier = Modifier.height(15.dp))
 
                 // Time selection
-                TimePicker(
-                    state = timePickerState,
-                    colors = TimePickerDefaults.colors(
-                        selectorColor = LightVolcanicRock,
-                        periodSelectorSelectedContainerColor = LightVolcanicRock,
-                        periodSelectorSelectedContentColor = BoatSails,
-                        periodSelectorUnselectedContentColor = LightVolcanicRock,
-                        timeSelectorSelectedContainerColor = LightVolcanicRock
-                    )
-                )
+                if (showFullTimePicker && isPortrait) {
+                    AlarmTimePicker(timePickerState = timePickerState)
+                } else {
+                    AlarmTimeInput(timePickerState = timePickerState)
+                }
             }
 
             // Bottom Button Row
@@ -288,11 +292,14 @@ fun AlarmTimePickerDialog(
                     .padding(start = 4.dp, end = 4.dp, bottom = 4.dp)
             ) {
                 // Entry method toggle Button
-                IconButton(onClick = {}) {
+                IconButton(
+                    onClick = { showFullTimePicker = !showFullTimePicker },
+                    enabled = isPortrait
+                ) {
                     Icon(
-                        imageVector = Icons.Default.Keyboard,
+                        imageVector = if (showFullTimePicker && isPortrait) Icons.Default.Keyboard else Icons.Default.WatchLater,
                         contentDescription = null,
-                        tint = DarkerBoatSails
+                        tint = if (isPortrait) DarkerBoatSails else LightVolcanicRock
                     )
                 }
 
@@ -300,7 +307,7 @@ fun AlarmTimePickerDialog(
                 Row {
                     TextButton(
                         onClick = onCancel,
-                        colors = ButtonDefaults.textButtonColors(contentColor = LightVolcanicRock)
+                        colors = ButtonDefaults.textButtonColors(contentColor = BoatSails)
                     ) {
                         Text(text = stringResource(id = R.string.cancel))
                     }
@@ -315,6 +322,36 @@ fun AlarmTimePickerDialog(
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AlarmTimePicker(timePickerState: TimePickerState) {
+    TimePicker(
+        state = timePickerState,
+        colors = TimePickerDefaults.colors(
+            selectorColor = LightVolcanicRock,
+            periodSelectorSelectedContainerColor = LightVolcanicRock,
+            periodSelectorSelectedContentColor = BoatSails,
+            periodSelectorUnselectedContentColor = LightVolcanicRock,
+            timeSelectorSelectedContainerColor = LightVolcanicRock
+        )
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AlarmTimeInput(timePickerState: TimePickerState) {
+    TimeInput(
+        state = timePickerState,
+        colors = TimePickerDefaults.colors(
+            selectorColor = LightVolcanicRock,
+            periodSelectorSelectedContainerColor = LightVolcanicRock,
+            periodSelectorSelectedContentColor = BoatSails,
+            periodSelectorUnselectedContentColor = LightVolcanicRock,
+            timeSelectorSelectedContainerColor = LightVolcanicRock
+        )
+    )
 }
 
 @Composable
@@ -429,5 +466,23 @@ private fun AlarmTimePickerDialogPreview() {
             onCancel = {},
             onConfirm = { _, _ -> }
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun AlarmTimePickerPreview() {
+    AlarmScratchTheme {
+        AlarmTimePicker(timePickerState = rememberTimePickerState())
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun AlarmTimeInputPreview() {
+    AlarmScratchTheme {
+        AlarmTimeInput(timePickerState = rememberTimePickerState())
     }
 }
