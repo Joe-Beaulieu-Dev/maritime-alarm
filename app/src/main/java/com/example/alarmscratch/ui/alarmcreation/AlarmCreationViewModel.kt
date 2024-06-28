@@ -40,14 +40,23 @@ class AlarmCreationViewModel(private val alarmRepository: AlarmRepository) : Vie
     }
 
     fun updateTime(hour: Int, minute: Int) {
-        _newAlarm.value = _newAlarm.value.copy(dateTime = _newAlarm.value.dateTime.withHour(hour).withMinute(minute))
+        _newAlarm.value = _newAlarm.value.copy(
+            dateTime = futurizeDateTime(_newAlarm.value.dateTime.withHour(hour).withMinute(minute))
+        )
     }
 
     fun addDay(day: WeeklyRepeater.Day) {
-        _newAlarm.value.weeklyRepeater.addDay(day)
+        _newAlarm.value = _newAlarm.value.copy(weeklyRepeater = _newAlarm.value.weeklyRepeater.addDay(day))
     }
 
     fun removeDay(day: WeeklyRepeater.Day) {
-        _newAlarm.value.weeklyRepeater.removeDay(day)
+        _newAlarm.value = _newAlarm.value.copy(weeklyRepeater = _newAlarm.value.weeklyRepeater.removeDay(day))
     }
+
+    private fun futurizeDateTime(dateTime: LocalDateTime): LocalDateTime =
+        if (dateTime.isBefore(LocalDateTime.now())) {
+            dateTime.plusDays(1)
+        } else {
+            dateTime
+        }
 }

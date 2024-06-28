@@ -194,10 +194,7 @@ fun DateTimeSettings(
             }
 
             // Alarm execution config
-            Text(
-                text = "Today",
-                modifier = Modifier.padding(start = 4.dp)
-            )
+            AlarmDays(alarm = alarm, modifier = Modifier.padding(start = 4.dp))
         }
 
         // Day of Week
@@ -364,7 +361,7 @@ fun DayOfWeekPicker(
     Row(modifier = modifier) {
         WeeklyRepeater.Day.entries.forEach { day ->
             DayOfWeekButton(
-                dayText = day.shorthand,
+                dayText = day.oneLetterShorthand,
                 selected = weeklyRepeater.isRepeatingOn(day),
                 addDay = { addDay(day) },
                 removeDay = { removeDay(day) }

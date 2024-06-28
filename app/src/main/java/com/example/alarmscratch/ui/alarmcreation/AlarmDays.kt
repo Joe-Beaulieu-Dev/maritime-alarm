@@ -1,14 +1,14 @@
-package com.example.alarmscratch.ui.alarmlist.composable
+package com.example.alarmscratch.ui.alarmcreation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.example.alarmscratch.R
 import com.example.alarmscratch.data.model.Alarm
 import com.example.alarmscratch.data.model.WeeklyRepeater
 import com.example.alarmscratch.extension.isRepeating
@@ -21,51 +21,34 @@ import com.example.alarmscratch.ui.theme.AlarmScratchTheme
 import java.time.LocalDateTime
 
 @Composable
-fun AlarmDate(
+fun AlarmDays(
     alarm: Alarm,
     modifier: Modifier = Modifier
 ) {
     if (alarm.isRepeating()) {
-        RepeatingDateBox(
-            repeatingDays = alarm.weeklyRepeater,
-            enabled = alarm.enabled,
-            modifier = modifier
-        )
+        RepeatingAlarmDays(repeatingDays = alarm.weeklyRepeater, modifier = modifier)
     } else {
-        NonRepeatingDateBox(
-            dateTime = alarm.dateTime,
-            enabled = alarm.enabled,
-            modifier = modifier
-        )
+        NonRepeatingAlarmDays(dateTime = alarm.dateTime, modifier = modifier)
     }
 }
 
 @Composable
-private fun RepeatingDateBox(
+private fun RepeatingAlarmDays(
     repeatingDays: WeeklyRepeater,
-    enabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     Text(
-        text = repeatingDays.toAlarmCardDateAnnotatedString(enabled = enabled),
-        fontSize = 12.sp,
-        fontWeight = if (enabled) FontWeight.Medium else null,
+        text = "${stringResource(id = R.string.repeating_alarm_date_label)} ${repeatingDays.toAlarmCreationDateString()}",
         modifier = modifier
     )
 }
 
 @Composable
-private fun NonRepeatingDateBox(
+private fun NonRepeatingAlarmDays(
     dateTime: LocalDateTime,
-    enabled: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Text(
-        text = dateTime.toAlarmDateString(context = LocalContext.current),
-        fontSize = 12.sp,
-        fontWeight = if (enabled) FontWeight.Medium else null,
-        modifier = modifier
-    )
+    Text(text = dateTime.toAlarmDateString(context = LocalContext.current), modifier = modifier)
 }
 
 /*
@@ -77,9 +60,9 @@ private fun NonRepeatingDateBox(
     backgroundColor = 0xFF373736
 )
 @Composable
-private fun AlarmDateRepeatingPreview() {
+private fun AlarmDaysRepeatingPreview() {
     AlarmScratchTheme {
-        AlarmDate(
+        AlarmDays(
             alarm = repeatingAlarm,
             modifier = Modifier.padding(20.dp)
         )
@@ -91,23 +74,9 @@ private fun AlarmDateRepeatingPreview() {
     backgroundColor = 0xFF373736
 )
 @Composable
-private fun AlarmDateRepeatingDisabledPreview() {
+private fun AlarmDaysTodayPreview() {
     AlarmScratchTheme {
-        AlarmDate(
-            alarm = repeatingAlarm.copy(enabled = false),
-            modifier = Modifier.padding(20.dp)
-        )
-    }
-}
-
-@Preview(
-    showBackground = true,
-    backgroundColor = 0xFF373736
-)
-@Composable
-private fun AlarmDateTodayPreview() {
-    AlarmScratchTheme {
-        AlarmDate(
+        AlarmDays(
             alarm = todayAlarm,
             modifier = Modifier.padding(20.dp)
         )
@@ -119,9 +88,9 @@ private fun AlarmDateTodayPreview() {
     backgroundColor = 0xFF373736
 )
 @Composable
-private fun AlarmDateTomorrowDisabledPreview() {
+private fun AlarmDaysTomorrowPreview() {
     AlarmScratchTheme {
-        AlarmDate(
+        AlarmDays(
             alarm = tomorrowAlarm,
             modifier = Modifier.padding(20.dp)
         )
@@ -133,9 +102,9 @@ private fun AlarmDateTomorrowDisabledPreview() {
     backgroundColor = 0xFF373736
 )
 @Composable
-private fun AlarmDateBeyondTomorrowPreview() {
+private fun AlarmDaysBeyondTomorrowPreview() {
     AlarmScratchTheme {
-        AlarmDate(
+        AlarmDays(
             alarm = calendarAlarm,
             modifier = Modifier.padding(20.dp)
         )
