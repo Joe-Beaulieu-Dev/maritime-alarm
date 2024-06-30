@@ -9,6 +9,7 @@ import com.example.alarmscratch.data.repository.AlarmDatabase
 import com.example.alarmscratch.data.repository.AlarmRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class AlarmCreationViewModel(private val alarmRepository: AlarmRepository) : ViewModel() {
@@ -37,6 +38,12 @@ class AlarmCreationViewModel(private val alarmRepository: AlarmRepository) : Vie
 
     fun updateName(name: String) {
         _newAlarm.value = _newAlarm.value.copy(name = name)
+    }
+
+    fun updateDate(date: LocalDate) {
+        _newAlarm.value = _newAlarm.value.copy(
+            dateTime = _newAlarm.value.dateTime.withDayOfYear(date.dayOfYear)
+        )
     }
 
     fun updateTime(hour: Int, minute: Int) {

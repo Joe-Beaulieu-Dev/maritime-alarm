@@ -78,6 +78,10 @@ fun LavaFloatingActionButton(
     }
 }
 
+/*
+ * Previews
+ */
+
 @Preview(
     showBackground = true,
     backgroundColor = 0xFF0066CC

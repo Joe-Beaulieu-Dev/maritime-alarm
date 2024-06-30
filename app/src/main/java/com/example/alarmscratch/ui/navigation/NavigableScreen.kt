@@ -122,6 +122,10 @@ fun NavigableScreenContent(
     }
 }
 
+/*
+ * Previews
+ */
+
 @Preview
 @Composable
 private fun NavigableScreenAlarmListPreview() {

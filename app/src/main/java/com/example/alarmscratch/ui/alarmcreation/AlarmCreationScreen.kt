@@ -1,44 +1,27 @@
 package com.example.alarmscratch.ui.alarmcreation
 
-import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.material.icons.filled.WatchLater
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimeInput
-import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TimePickerDefaults
-import androidx.compose.material3.TimePickerState
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -48,13 +31,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -72,6 +53,7 @@ import com.example.alarmscratch.ui.theme.DarkerBoatSails
 import com.example.alarmscratch.ui.theme.LightVolcanicRock
 import com.example.alarmscratch.ui.theme.MediumVolcanicRock
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Composable
@@ -87,6 +69,7 @@ fun AlarmCreationScreen(
     val coroutineScope = rememberCoroutineScope()
     val saveAlarm: () -> Unit = { coroutineScope.launch { alarmCreationViewModel.saveAlarm() } }
     val updateName: (String) -> Unit = alarmCreationViewModel::updateName
+    val updateDate: (LocalDate) -> Unit = alarmCreationViewModel::updateDate
     val updateTime: (Int, Int) -> Unit = alarmCreationViewModel::updateTime
     val addDay: (WeeklyRepeater.Day) -> Unit = alarmCreationViewModel::addDay
     val removeDay: (WeeklyRepeater.Day) -> Unit = alarmCreationViewModel::removeDay
@@ -96,6 +79,7 @@ fun AlarmCreationScreen(
         alarm = alarmState,
         saveAlarm = saveAlarm,
         updateName = updateName,
+        updateDate = updateDate,
         updateTime = updateTime,
         addDay = addDay,
         removeDay = removeDay,
@@ -109,6 +93,7 @@ fun AlarmCreationScreenContent(
     alarm: Alarm,
     saveAlarm: () -> Unit,
     updateName: (String) -> Unit,
+    updateDate: (LocalDate) -> Unit,
     updateTime: (Int, Int) -> Unit,
     addDay: (WeeklyRepeater.Day) -> Unit,
     removeDay: (WeeklyRepeater.Day) -> Unit,
@@ -116,16 +101,20 @@ fun AlarmCreationScreenContent(
 ) {
     Surface(modifier = modifier) {
         Column(modifier = Modifier.fillMaxWidth()) {
+            // AppBar
             AlarmCreationTopAppBar(
                 navHostController = navHostController,
                 saveAlarm = saveAlarm
             )
+
+            // Alarm Name, and Date/Time Settings
             Column(
                 modifier = Modifier
                     .padding(20.dp)
                     .fillMaxWidth()
             ) {
                 // TODO: Add validation
+                // Alarm Name
                 OutlinedTextField(
                     value = alarm.name,
                     onValueChange = { updateName(it) },
@@ -134,8 +123,11 @@ fun AlarmCreationScreenContent(
                     colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = DarkerBoatSails),
                     modifier = Modifier.padding(0.dp)
                 )
+
+                // Date/Time Settings
                 DateTimeSettings(
                     alarm = alarm,
+                    updateDate = updateDate,
                     updateTime = updateTime,
                     addDay = addDay,
                     removeDay = removeDay
@@ -157,9 +149,12 @@ fun AlarmCreationTopAppBar(
             .background(color = MediumVolcanicRock)
             .fillMaxWidth()
     ) {
+        // Up navigation
         IconButton(onClick = { navHostController.navigateUp() }) {
             Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
         }
+
+        // Save Button
         IconButton(
             onClick = {
                 saveAlarm()
@@ -174,10 +169,14 @@ fun AlarmCreationTopAppBar(
 @Composable
 fun DateTimeSettings(
     alarm: Alarm,
+    updateDate: (LocalDate) -> Unit,
     updateTime: (Int, Int) -> Unit,
     addDay: (WeeklyRepeater.Day) -> Unit,
     removeDay: (WeeklyRepeater.Day) -> Unit
 ) {
+    var showDateSelectionDialog by rememberSaveable { mutableStateOf(false) }
+    val toggleDateSelectionDialog: () -> Unit = { showDateSelectionDialog = !showDateSelectionDialog }
+
     Column {
         // Time
         AlarmTime(
@@ -189,7 +188,7 @@ fun DateTimeSettings(
         // Calendar Button and Alarm execution config
         Row(verticalAlignment = Alignment.CenterVertically) {
             // Calendar Button
-            IconButton(onClick = {}) {
+            IconButton(onClick = toggleDateSelectionDialog) {
                 Icon(imageVector = Icons.Default.CalendarMonth, contentDescription = null)
             }
 
@@ -204,6 +203,18 @@ fun DateTimeSettings(
             removeDay = removeDay
         )
     }
+
+    // Date Selection Dialog
+    if (showDateSelectionDialog) {
+        DateSelectionDialog(
+            initialDate = alarm.dateTime.toLocalDate(),
+            onCancel = toggleDateSelectionDialog,
+            onConfirm = { date ->
+                updateDate(date)
+                toggleDateSelectionDialog()
+            }
+        )
+    }
 }
 
 @Composable
@@ -212,14 +223,17 @@ fun AlarmTime(
     updateTime: (Int, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // State
     var showTimePickerDialog by rememberSaveable { mutableStateOf(false) }
     val toggleTimePickerDialog: () -> Unit = { showTimePickerDialog = !showTimePickerDialog }
 
+    // Time and AM/PM
     Row(
         modifier = modifier
             .background(color = DarkVolcanicRock)
             .clickable(onClick = toggleTimePickerDialog)
     ) {
+        // Time
         Text(
             text = alarm.get12HrTime(),
             color = DarkerBoatSails,
@@ -227,6 +241,8 @@ fun AlarmTime(
             fontWeight = FontWeight.Bold,
             modifier = Modifier.alignByBaseline()
         )
+
+        // AM/PM
         Text(
             text = amPm(alarm = alarm),
             color = DarkerBoatSails,
@@ -236,6 +252,7 @@ fun AlarmTime(
         )
     }
 
+    // TimePicker/TimeInput Dialog
     if (showTimePickerDialog) {
         AlarmTimePickerDialog(
             initialHour = alarm.dateTime.hour,
@@ -247,108 +264,6 @@ fun AlarmTime(
             }
         )
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AlarmTimePickerDialog(
-    initialHour: Int,
-    initialMinute: Int,
-    onCancel: () -> Unit,
-    onConfirm: (hour: Int, minute: Int) -> Unit
-) {
-    val timePickerState = rememberTimePickerState(initialHour = initialHour, initialMinute = initialMinute)
-    var showFullTimePicker by rememberSaveable { mutableStateOf(true) }
-    // TODO: Ran into a weird layout issue with TimePicker in Landscape.
-    //  Decided to move on and just lock to TimeInput in Landscape for now.
-    val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
-
-    Dialog(onDismissRequest = onCancel) {
-        Card(
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            modifier = Modifier.width(IntrinsicSize.Min)
-        ) {
-            Column(modifier = Modifier.padding(start = 15.dp, top = 15.dp, end = 15.dp)) {
-                // Title
-                Text(text = stringResource(id = R.string.select_time), fontSize = 16.sp)
-                Spacer(modifier = Modifier.height(15.dp))
-
-                // Time selection
-                if (showFullTimePicker && isPortrait) {
-                    AlarmTimePicker(timePickerState = timePickerState)
-                } else {
-                    AlarmTimeInput(timePickerState = timePickerState)
-                }
-            }
-
-            // Bottom Button Row
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 4.dp, end = 4.dp, bottom = 4.dp)
-            ) {
-                // Entry method toggle Button
-                IconButton(
-                    onClick = { showFullTimePicker = !showFullTimePicker },
-                    enabled = isPortrait
-                ) {
-                    Icon(
-                        imageVector = if (showFullTimePicker && isPortrait) Icons.Default.Keyboard else Icons.Default.WatchLater,
-                        contentDescription = null,
-                        tint = if (isPortrait) DarkerBoatSails else LightVolcanicRock
-                    )
-                }
-
-                // Cancel/Confirm Button Row
-                Row {
-                    TextButton(
-                        onClick = onCancel,
-                        colors = ButtonDefaults.textButtonColors(contentColor = BoatSails)
-                    ) {
-                        Text(text = stringResource(id = R.string.cancel))
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    TextButton(
-                        onClick = { onConfirm(timePickerState.hour, timePickerState.minute) },
-                        colors = ButtonDefaults.textButtonColors(contentColor = BoatSails)
-                    ) {
-                        Text(text = stringResource(id = R.string.ok))
-                    }
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AlarmTimePicker(timePickerState: TimePickerState) {
-    TimePicker(
-        state = timePickerState,
-        colors = TimePickerDefaults.colors(
-            selectorColor = LightVolcanicRock,
-            periodSelectorSelectedContainerColor = LightVolcanicRock,
-            periodSelectorSelectedContentColor = BoatSails,
-            periodSelectorUnselectedContentColor = LightVolcanicRock,
-            timeSelectorSelectedContainerColor = LightVolcanicRock
-        )
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AlarmTimeInput(timePickerState: TimePickerState) {
-    TimeInput(
-        state = timePickerState,
-        colors = TimePickerDefaults.colors(
-            selectorColor = LightVolcanicRock,
-            periodSelectorSelectedContainerColor = LightVolcanicRock,
-            periodSelectorSelectedContentColor = BoatSails,
-            periodSelectorUnselectedContentColor = LightVolcanicRock,
-            timeSelectorSelectedContainerColor = LightVolcanicRock
-        )
-    )
 }
 
 @Composable
@@ -402,6 +317,10 @@ fun DayOfWeekButton(
     }
 }
 
+/*
+ * Previews
+ */
+
 @Preview
 @Composable
 private fun AlarmCreationScreenPreview() {
@@ -414,6 +333,7 @@ private fun AlarmCreationScreenPreview() {
             ),
             saveAlarm = {},
             updateName = {},
+            updateDate = {},
             updateTime = { _, _ -> },
             addDay = {},
             removeDay = {}
@@ -438,6 +358,7 @@ private fun DateTimeSettingsPreview() {
     AlarmScratchTheme {
         DateTimeSettings(
             alarm = consistentFutureAlarm,
+            updateDate = {},
             updateTime = { _, _ -> },
             addDay = {},
             removeDay = {}
@@ -450,36 +371,5 @@ private fun DateTimeSettingsPreview() {
 private fun AlarmTimePreview() {
     AlarmScratchTheme {
         AlarmTime(alarm = consistentFutureAlarm, updateTime = { _, _ -> })
-    }
-}
-
-@Preview
-@Composable
-private fun AlarmTimePickerDialogPreview() {
-    AlarmScratchTheme {
-        AlarmTimePickerDialog(
-            initialHour = 15,
-            initialMinute = 45,
-            onCancel = {},
-            onConfirm = { _, _ -> }
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
-@Composable
-private fun AlarmTimePickerPreview() {
-    AlarmScratchTheme {
-        AlarmTimePicker(timePickerState = rememberTimePickerState())
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
-@Composable
-private fun AlarmTimeInputPreview() {
-    AlarmScratchTheme {
-        AlarmTimeInput(timePickerState = rememberTimePickerState())
     }
 }
