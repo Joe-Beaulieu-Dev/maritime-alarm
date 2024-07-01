@@ -174,6 +174,7 @@ fun DateTimeSettings(
     addDay: (WeeklyRepeater.Day) -> Unit,
     removeDay: (WeeklyRepeater.Day) -> Unit
 ) {
+    // State
     var showDateSelectionDialog by rememberSaveable { mutableStateOf(false) }
     val toggleDateSelectionDialog: () -> Unit = { showDateSelectionDialog = !showDateSelectionDialog }
 
@@ -207,7 +208,7 @@ fun DateTimeSettings(
     // Date Selection Dialog
     if (showDateSelectionDialog) {
         DateSelectionDialog(
-            initialDate = alarm.dateTime.toLocalDate(),
+            alarmTime = alarm.dateTime.toLocalTime(),
             onCancel = toggleDateSelectionDialog,
             onConfirm = { date ->
                 updateDate(date)
@@ -252,9 +253,9 @@ fun AlarmTime(
         )
     }
 
-    // TimePicker/TimeInput Dialog
+    // Time Selection Dialog
     if (showTimePickerDialog) {
-        AlarmTimePickerDialog(
+        TimeSelectionDialog(
             initialHour = alarm.dateTime.hour,
             initialMinute = alarm.dateTime.minute,
             onCancel = toggleTimePickerDialog,

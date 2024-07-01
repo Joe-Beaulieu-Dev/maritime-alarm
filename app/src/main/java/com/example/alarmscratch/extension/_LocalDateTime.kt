@@ -7,11 +7,9 @@ import java.time.LocalDateTime
 import java.time.format.TextStyle
 import java.util.Locale
 
-// TODO do exception handling for java code.
-//  Already looked, might give this a pass. It's just for currentDateTime val.
 fun LocalDateTime.toAlarmDateString(context: Context) : String {
-    val currentDateTime = LocalDateTime.now().withNano(0)
-    return if (this.isAfter(currentDateTime)) {
+    val currentDateTime = LocalDateTimeUtil.nowTruncated()
+    return if (!this.isBefore(currentDateTime)) {
         val alarmDate = this.toLocalDate()
         val currentDate = currentDateTime.toLocalDate()
 
@@ -34,3 +32,7 @@ private fun formatDate(date: LocalDate): String =
             "${date.month.getDisplayName(TextStyle.SHORT, Locale.US)} " +
             "${date.dayOfMonth.toOrdinal()} " +
             "${date.year}"
+
+object LocalDateTimeUtil {
+    fun nowTruncated(): LocalDateTime = LocalDateTime.now().withSecond(0).withNano(0)
+}

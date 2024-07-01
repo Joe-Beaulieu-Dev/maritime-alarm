@@ -47,7 +47,7 @@ import com.example.alarmscratch.ui.theme.LightVolcanicRock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlarmTimePickerDialog(
+fun TimeSelectionDialog(
     initialHour: Int,
     initialMinute: Int,
     onCancel: () -> Unit,
@@ -72,9 +72,9 @@ fun AlarmTimePickerDialog(
 
                 // Time selection
                 if (showFullTimePicker && isPortrait) {
-                    AlarmTimePicker(timePickerState = timePickerState)
+                    TimeSelectionPicker(timePickerState = timePickerState)
                 } else {
-                    AlarmTimeInput(timePickerState = timePickerState)
+                    TimeSelectionInput(timePickerState = timePickerState)
                 }
             }
 
@@ -123,7 +123,7 @@ fun AlarmTimePickerDialog(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AlarmTimePicker(timePickerState: TimePickerState) {
+private fun TimeSelectionPicker(timePickerState: TimePickerState) {
     TimePicker(
         state = timePickerState,
         colors = TimePickerDefaults.colors(
@@ -138,7 +138,7 @@ private fun AlarmTimePicker(timePickerState: TimePickerState) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AlarmTimeInput(timePickerState: TimePickerState) {
+private fun TimeSelectionInput(timePickerState: TimePickerState) {
     TimeInput(
         state = timePickerState,
         colors = TimePickerDefaults.colors(
@@ -157,9 +157,9 @@ private fun AlarmTimeInput(timePickerState: TimePickerState) {
 
 @Preview
 @Composable
-private fun AlarmTimePickerDialogPreview() {
+private fun TimeSelectionDialogPreview() {
     AlarmScratchTheme {
-        AlarmTimePickerDialog(
+        TimeSelectionDialog(
             initialHour = 15,
             initialMinute = 45,
             onCancel = {},
@@ -171,17 +171,17 @@ private fun AlarmTimePickerDialogPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-private fun AlarmTimePickerPreview() {
+private fun TimeSelectionPickerPreview() {
     AlarmScratchTheme {
-        AlarmTimePicker(timePickerState = rememberTimePickerState())
+        TimeSelectionPicker(timePickerState = rememberTimePickerState())
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-private fun AlarmTimeInputPreview() {
+private fun TimeSelectionInputPreview() {
     AlarmScratchTheme {
-        AlarmTimeInput(timePickerState = rememberTimePickerState())
+        TimeSelectionInput(timePickerState = rememberTimePickerState())
     }
 }

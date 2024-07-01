@@ -7,6 +7,7 @@ import com.example.alarmscratch.data.model.Alarm
 import com.example.alarmscratch.data.model.WeeklyRepeater
 import com.example.alarmscratch.data.repository.AlarmDatabase
 import com.example.alarmscratch.data.repository.AlarmRepository
+import com.example.alarmscratch.extension.LocalDateTimeUtil
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDate
@@ -14,7 +15,7 @@ import java.time.LocalDateTime
 
 class AlarmCreationViewModel(private val alarmRepository: AlarmRepository) : ViewModel() {
 
-    private val _newAlarm = MutableStateFlow(Alarm(dateTime = LocalDateTime.now().withNano(0).plusHours(1)))
+    private val _newAlarm = MutableStateFlow(Alarm(dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1)))
     val newAlarm: StateFlow<Alarm> = _newAlarm
 
     companion object {

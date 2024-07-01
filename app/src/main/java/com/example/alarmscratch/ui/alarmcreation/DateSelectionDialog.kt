@@ -17,34 +17,37 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.alarmscratch.R
+import com.example.alarmscratch.extension.LocalDateTimeUtil
 import com.example.alarmscratch.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.ui.theme.BoatSails
 import com.example.alarmscratch.ui.theme.LightVolcanicRock
 import com.example.alarmscratch.ui.theme.VolcanicRock
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateSelectionDialog(
-    initialDate: LocalDate?,
+    alarmTime: LocalTime,
     onCancel: () -> Unit,
     onConfirm: (LocalDate) -> Unit
 ) {
     // State
-    val currentDate = LocalDate.now()
+    val currentDateTime = LocalDateTimeUtil.nowTruncated()
     val datePickerState = rememberDatePickerState(
-        yearRange = IntRange(currentDate.year, 2100),
+        yearRange = IntRange(currentDateTime.year, 2100),
         selectableDates = object : SelectableDates {
             override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                val proposedDate = Instant.ofEpochMilli(utcTimeMillis)
+                val calDate = Instant.ofEpochMilli(utcTimeMillis)
                     .atZone(ZoneId.of("UTC"))
                     .toLocalDate()
 
-                val compDate = initialDate ?: currentDate
+                val potentialNewAlarm = LocalDateTime.of(calDate, alarmTime)
 
-                return proposedDate.isAfter(compDate) || proposedDate.isEqual(compDate)
+                return potentialNewAlarm.isAfter(currentDateTime)
             }
         }
     )
@@ -118,7 +121,7 @@ private fun DateSelector(datePickerState: DatePickerState) {
 private fun DateSelectionDialogPreview() {
     AlarmScratchTheme {
         DateSelectionDialog(
-            initialDate = LocalDate.now(),
+            alarmTime = LocalDateTimeUtil.nowTruncated().toLocalTime(),
             onCancel = {},
             onConfirm = {}
         )
