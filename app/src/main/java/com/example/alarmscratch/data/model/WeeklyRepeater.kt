@@ -21,7 +21,9 @@ class WeeklyRepeater(private var encodedRepeatingDays: Int = 0) {
         WEDNESDAY(mask = 8, oneLetterShorthand = "W", threeLetterShorthand = "Wed"),
         THURSDAY(mask = 16, oneLetterShorthand = "T", threeLetterShorthand = "Thu"),
         FRIDAY(mask = 32, oneLetterShorthand = "F", threeLetterShorthand = "Fri"),
-        SATURDAY(mask = 64, oneLetterShorthand = "S", threeLetterShorthand = "Sat")
+        SATURDAY(mask = 64, oneLetterShorthand = "S", threeLetterShorthand = "Sat");
+
+        fun dayNumber(): Int = this.ordinal + 1
     }
 
     private val repeatingDayMap: MutableMap<Day, Boolean> =
@@ -53,6 +55,8 @@ class WeeklyRepeater(private var encodedRepeatingDays: Int = 0) {
         }
 
     fun getEncodedRepeatingDays(): Int = encodedRepeatingDays
+
+    fun getRepeatingDays(): List<Day> = repeatingDayMap.filter { it.value }.keys.toList()
 
     fun toAlarmCardDateAnnotatedString(enabled: Boolean): AnnotatedString =
         buildAnnotatedString {
