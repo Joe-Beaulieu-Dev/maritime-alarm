@@ -42,7 +42,7 @@ fun Alarm.nextRepeatingDate(): LocalDateTime {
         val currentDateTime = LocalDateTimeUtil.nowTruncated()
         val currentDate = currentDateTime.toLocalDate()
         val currentDay = currentDate.dayOfWeek
-        var sortedRepeatingDays = sortRepeatingDaysByPreference(currentDay, weeklyRepeater.getRepeatingDays())
+        val sortedRepeatingDays = sortRepeatingDaysByPreference(currentDay, weeklyRepeater.getRepeatingDays())
 
         // If setting the Alarm to Today with the current Alarm Time would result in an Alarm
         // that's not set in the future, then:
@@ -56,8 +56,7 @@ fun Alarm.nextRepeatingDate(): LocalDateTime {
                 if (sortedRepeatingDays.size == 1) {
                     return LocalDateTime.of(currentDate.plusDays(7), dateTime.toLocalTime())
                 } else {
-                    sortedRepeatingDays = sortedRepeatingDays.drop(1)
-                    daysBetween = sortedRepeatingDays[0].dayNumber() - currentDay.dayNumber()
+                    daysBetween = sortedRepeatingDays[1].dayNumber() - currentDay.dayNumber()
                 }
             }
         }
