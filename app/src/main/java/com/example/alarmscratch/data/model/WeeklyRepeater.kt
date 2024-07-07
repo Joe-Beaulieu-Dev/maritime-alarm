@@ -10,14 +10,20 @@ import com.example.alarmscratch.ui.theme.WayDarkerBoatSails
 
 class WeeklyRepeater(private var encodedRepeatingDays: Int = 0) {
 
-    enum class Day(val mask: Int, val shorthand: String) {
-        SUNDAY(mask = 1, shorthand = "S"),
-        MONDAY(mask = 2, shorthand = "M"),
-        TUESDAY(mask = 4, shorthand = "T"),
-        WEDNESDAY(mask = 8, shorthand = "W"),
-        THURSDAY(mask = 16, shorthand = "T"),
-        FRIDAY(mask = 32, shorthand = "F"),
-        SATURDAY(mask = 64, shorthand = "S")
+    enum class Day(
+        val mask: Int,
+        val oneLetterShorthand: String,
+        val threeLetterShorthand: String
+    ) {
+        SUNDAY(mask = 1, oneLetterShorthand = "S", threeLetterShorthand = "Sun"),
+        MONDAY(mask = 2, oneLetterShorthand = "M", threeLetterShorthand = "Mon"),
+        TUESDAY(mask = 4, oneLetterShorthand = "T", threeLetterShorthand = "Tue"),
+        WEDNESDAY(mask = 8, oneLetterShorthand = "W", threeLetterShorthand = "Wed"),
+        THURSDAY(mask = 16, oneLetterShorthand = "T", threeLetterShorthand = "Thu"),
+        FRIDAY(mask = 32, oneLetterShorthand = "F", threeLetterShorthand = "Fri"),
+        SATURDAY(mask = 64, oneLetterShorthand = "S", threeLetterShorthand = "Sat");
+
+        fun dayNumber(): Int = this.ordinal + 1
     }
 
     private val repeatingDayMap: MutableMap<Day, Boolean> =
@@ -34,25 +40,25 @@ class WeeklyRepeater(private var encodedRepeatingDays: Int = 0) {
 
     fun isRepeatingOn(day: Day): Boolean = repeatingDayMap[day] ?: false
 
-    fun addDay(day: Day) {
-        // encodedDays does not contain given day, so add it and update map
+    fun addDay(day: Day): WeeklyRepeater =
         if (encodedRepeatingDays.and(day.mask) != day.mask) {
-            encodedRepeatingDays += day.mask
-            repeatingDayMap[day] = true
+            WeeklyRepeater(encodedRepeatingDays + day.mask)
+        } else {
+            WeeklyRepeater(encodedRepeatingDays)
         }
-    }
 
-    fun removeDay(day: Day) {
-        // encodedDays contains given day, so remove it and update map
+    fun removeDay(day: Day): WeeklyRepeater =
         if (encodedRepeatingDays.and(day.mask) == day.mask) {
-            encodedRepeatingDays -= day.mask
-            repeatingDayMap[day] = false
+            WeeklyRepeater(encodedRepeatingDays - day.mask)
+        } else {
+            WeeklyRepeater(encodedRepeatingDays)
         }
-    }
 
     fun getEncodedRepeatingDays(): Int = encodedRepeatingDays
 
-    fun toAnnotatedDateString(enabled: Boolean): AnnotatedString =
+    fun getRepeatingDays(): List<Day> = repeatingDayMap.filter { it.value }.keys.toList()
+
+    fun toAlarmCardDateAnnotatedString(enabled: Boolean): AnnotatedString =
         buildAnnotatedString {
             // Add all Days to the AnnotatedString with different
             // styles based on whether or not they're set to repeat
@@ -60,12 +66,12 @@ class WeeklyRepeater(private var encodedRepeatingDays: Int = 0) {
                 if (isRepeating) {
                     // Day set to repeat, make it stand out
                     withStyle(style = SpanStyle(color = if (enabled) BoatSails else WayDarkerBoatSails)) {
-                        append(day.shorthand)
+                        append(day.oneLetterShorthand)
                     }
                 } else {
                     // Day not set to repeat, make it appear less prominent
                     withStyle(style = SpanStyle(color = LightVolcanicRock)) {
-                        append(day.shorthand)
+                        append(day.oneLetterShorthand)
                     }
                 }
                 // Conditionally add spacing for style
@@ -74,4 +80,10 @@ class WeeklyRepeater(private var encodedRepeatingDays: Int = 0) {
                 }
             }
         }
+
+    fun toAlarmCreationDateString(): String =
+        repeatingDayMap
+            .filter { it.value }
+            .map { it.key.threeLetterShorthand }
+            .joinToString(separator = ", ")
 }

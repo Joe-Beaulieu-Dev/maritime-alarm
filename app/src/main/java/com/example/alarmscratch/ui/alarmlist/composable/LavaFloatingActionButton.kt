@@ -18,15 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.alarmscratch.data.model.Alarm
-import com.example.alarmscratch.ui.alarmlist.preview.alarmSampleData
 import com.example.alarmscratch.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.ui.theme.AncientLavaOrange
 import com.example.alarmscratch.ui.theme.MaxBrightLavaOrange
 
 @Composable
 fun LavaFloatingActionButton(
-    onFabClicked: (Alarm) -> Unit,
+    onFabClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -67,17 +65,10 @@ fun LavaFloatingActionButton(
         // Floating Action Button
         FloatingActionButton(
             shape = CircleShape,
-            onClick = {
-                // TODO: This is temporary for development
-                alarmSampleData.forEach { alarm ->
-                    onFabClicked(alarm)
-                }
-            },
+            onClick = { onFabClicked() },
             containerColor = AncientLavaOrange,
             contentColor = MaxBrightLavaOrange,
-            elevation = FloatingActionButtonDefaults.elevation(
-                defaultElevation = 0.dp
-            )
+            elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.AlarmAdd,
@@ -86,6 +77,10 @@ fun LavaFloatingActionButton(
         }
     }
 }
+
+/*
+ * Previews
+ */
 
 @Preview(
     showBackground = true,

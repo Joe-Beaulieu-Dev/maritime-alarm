@@ -11,7 +11,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -22,7 +21,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.alarmscratch.data.model.Alarm
 import com.example.alarmscratch.data.repository.AlarmListState
 import com.example.alarmscratch.ui.alarmlist.composable.AlarmListScreenContent
 import com.example.alarmscratch.ui.alarmlist.composable.LavaFloatingActionButton
@@ -33,7 +31,6 @@ import com.example.alarmscratch.ui.settings.SettingsScreen
 import com.example.alarmscratch.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.ui.theme.BottomOceanBlue
 import com.example.alarmscratch.ui.theme.TopOceanBlue
-import kotlinx.coroutines.launch
 
 @Composable
 fun NavigableScreen(
@@ -44,10 +41,8 @@ fun NavigableScreen(
     val alarmListState by navigableScreenViewModel.alarmList.collectAsState()
 
     // Actions
-    val coroutineScope = rememberCoroutineScope()
-    // TODO: Temp inserting alarm here for now just for quick testing before the actual alarm creation screen is implemented
-    val tempOnFabClicked: (Alarm) -> Unit = { alarm ->
-        coroutineScope.launch { navigableScreenViewModel.insertAlarm(alarm) }
+    val onFabClicked: () -> Unit = {
+        rootNavHostController.navigateSingleTop(Destination.AlarmCreation.route)
     }
 
     // Navigation
@@ -57,7 +52,7 @@ fun NavigableScreen(
     NavigableScreenContent(
         localNavHostController = localNavHostController,
         alarmListState = alarmListState,
-        onFabClicked = tempOnFabClicked
+        onFabClicked = onFabClicked
     ) {
         // Nested Internal Screen
         AlarmNavHost(
@@ -72,7 +67,7 @@ fun NavigableScreen(
 fun NavigableScreenContent(
     localNavHostController: NavHostController,
     alarmListState: AlarmListState,
-    onFabClicked: (Alarm) -> Unit,
+    onFabClicked: () -> Unit,
     internalScreen: @Composable () -> Unit
 ) {
     // Navigation
@@ -126,6 +121,10 @@ fun NavigableScreenContent(
         }
     }
 }
+
+/*
+ * Previews
+ */
 
 @Preview
 @Composable

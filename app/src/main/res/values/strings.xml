@@ -33,6 +33,19 @@
     <string name="no_alarms">No Alarms</string>
 
     <!--
+        *************************
+        ** AlarmCreationScreen **
+        *************************
+    -->
+    <!-- AlarmCreationScreenContent -->
+    <string name="alarm_name_placeholder">Alarm name</string>
+    <string name="repeating_alarm_date_label">Every:</string>
+    <!-- AlarmTimePickerDialog -->
+    <string name="select_time">Select time</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+
+    <!--
         ********************
         ** SettingsScreen **
         ********************

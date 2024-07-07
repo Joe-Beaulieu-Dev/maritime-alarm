@@ -9,8 +9,9 @@ data class Alarm(
     // TODO: Do @ColumnInfo for custom column names
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val name: String,
-    val enabled: Boolean,
-    val dateTime: LocalDateTime,
-    val weeklyRepeater: WeeklyRepeater
+    val name: String = "",
+    val enabled: Boolean = true,
+    // TODO: Java error
+    val dateTime: LocalDateTime = LocalDateTime.now(),
+    val weeklyRepeater: WeeklyRepeater = WeeklyRepeater()
 )

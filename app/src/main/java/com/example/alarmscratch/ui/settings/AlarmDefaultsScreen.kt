@@ -1,7 +1,6 @@
 package com.example.alarmscratch.ui.settings
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Anchor
@@ -21,7 +20,7 @@ import com.example.alarmscratch.ui.theme.MediumVolcanicRock
 @Composable
 fun AlarmDefaultsScreen(modifier: Modifier = Modifier) {
     // TODO: Temporary code
-    Surface(modifier = modifier.fillMaxSize()) {
+    Surface(modifier = modifier) {
         Column {
             Text(text = "Alarm Defaults", fontSize = 38.sp, modifier = Modifier.padding(start = 15.dp, top = 15.dp))
             SettingsComponent(icon = Icons.Default.SportsMartialArts, nameRes = R.string.settings_general, onClick = {})
