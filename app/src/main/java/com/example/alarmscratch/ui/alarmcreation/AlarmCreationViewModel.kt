@@ -8,6 +8,8 @@ import com.example.alarmscratch.data.model.WeeklyRepeater
 import com.example.alarmscratch.data.repository.AlarmDatabase
 import com.example.alarmscratch.data.repository.AlarmRepository
 import com.example.alarmscratch.extension.LocalDateTimeUtil
+import com.example.alarmscratch.extension.isRepeating
+import com.example.alarmscratch.extension.nextRepeatingDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDate
@@ -34,7 +36,11 @@ class AlarmCreationViewModel(private val alarmRepository: AlarmRepository) : Vie
     }
 
     suspend fun saveAlarm() {
-        alarmRepository.insertAlarm(_newAlarm.value)
+        if (_newAlarm.value.isRepeating()) {
+            alarmRepository.insertAlarm(_newAlarm.value.copy(dateTime = _newAlarm.value.nextRepeatingDate()))
+        } else {
+            alarmRepository.insertAlarm(_newAlarm.value)
+        }
     }
 
     fun updateName(name: String) {

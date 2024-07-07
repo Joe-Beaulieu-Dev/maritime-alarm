@@ -1,6 +1,8 @@
 package com.example.alarmscratch.extension
 
 import com.example.alarmscratch.data.model.Alarm
+import com.example.alarmscratch.data.model.WeeklyRepeater
+import java.time.DayOfWeek
 import java.time.LocalDateTime
 
 fun Alarm.isRepeating(): Boolean = weeklyRepeater.hasRepeatingDays()
@@ -35,51 +37,60 @@ fun Alarm.get12HrTime(): String {
  * Ex 2: It's currently Wednesday, 7/17/2024 at 5:30pm. The Alarm is set to go off at 8:30am and it is only set to repeat on Tuesday.
  *       This function would return Tuesday, 7/23/2024 at 8:30am.
  */
-fun Alarm.nextRepeatingDate(): LocalDateTime? {
-    if (weeklyRepeater.hasRepeatingDays()) {
-        val repeatingDays = weeklyRepeater.getRepeatingDays()
+fun Alarm.nextRepeatingDate(): LocalDateTime {
+    if (isRepeating()) {
         val currentDateTime = LocalDateTimeUtil.nowTruncated()
         val currentDate = currentDateTime.toLocalDate()
-        val currentDay = currentDate.dayOfWeek.toWeeklyRepeaterDay()
-        var offsetDays = 0
+        val currentDay = currentDate.dayOfWeek
+        var sortedRepeatingDays = sortRepeatingDaysByPreference(currentDay, weeklyRepeater.getRepeatingDays())
 
-        currentDay?.let { today ->
-            val daysGreaterThanOrEqualToToday = repeatingDays.filter { it.dayNumber() >= today.dayNumber() }
-            val daysLessThanToday = repeatingDays.filter { it.dayNumber() < today.dayNumber() }
-            var daysSortedByPreference = daysGreaterThanOrEqualToToday.plus(daysLessThanToday)
-
-            var daysBetween = daysSortedByPreference[0].dayNumber() - currentDay.dayNumber()
-
-            // Handle potential special case where the first potential repeating day is Today
-            if (daysBetween == 0) {
-                val potentialAlarm = LocalDateTime.of(currentDate, this.dateTime.toLocalTime())
-                // If setting the Alarm to Today with the current Alarm Time would result in an Alarm
-                // that's either set in the past, or the current time:
-                //
-                // If there are NOT other days in the array -> return a LocalDateTime that is set one week from Today
-                // If there are other days in the array     -> remove Today from the list
-                if (!potentialAlarm.isAfter(currentDateTime)) {
-                    if (daysSortedByPreference.size == 1) {
-                        return LocalDateTime.of(currentDate.plusDays(7), this.dateTime.toLocalTime())
-                    } else {
-                        daysSortedByPreference = daysSortedByPreference.drop(1)
-                    }
+        // If setting the Alarm to Today with the current Alarm Time would result in an Alarm
+        // that's not set in the future, then:
+        //
+        // If there are NOT other days in the array -> return a LocalDateTime that is set one week from Today
+        // If there are other days in the array     -> remove Today from the list
+        var daysBetween = sortedRepeatingDays[0].dayNumber() - currentDay.dayNumber()
+        if (daysBetween == 0) {
+            val potentialAlarm = LocalDateTime.of(currentDate, dateTime.toLocalTime())
+            if (!potentialAlarm.isAfter(currentDateTime)) {
+                if (sortedRepeatingDays.size == 1) {
+                    return LocalDateTime.of(currentDate.plusDays(7), dateTime.toLocalTime())
+                } else {
+                    sortedRepeatingDays = sortedRepeatingDays.drop(1)
+                    daysBetween = sortedRepeatingDays[0].dayNumber() - currentDay.dayNumber()
                 }
             }
-
-            // Re-calculate in case the first day was removed from the List while handling the special case above
-            daysBetween = daysSortedByPreference[0].dayNumber() - currentDay.dayNumber()
-
-            offsetDays = if (daysBetween < 0) {
-                daysBetween + 7
-            } else {
-                daysBetween
-            }
-
-            return LocalDateTime.of(currentDate.plusDays(offsetDays.toLong()), this.dateTime.toLocalTime())
         }
-        return null
+
+        val offsetDays = if (daysBetween < 0) {
+            daysBetween + 7
+        } else {
+            daysBetween
+        }
+
+        return LocalDateTime.of(currentDate.plusDays(offsetDays.toLong()), dateTime.toLocalTime())
     } else {
-        return null
+        return dateTime
     }
 }
+
+/**
+ * Sorts a list of [WeeklyRepeater.Day], in relation to [today], given the below precedence.
+ * Note: Each subset listed below will be sorted in ascending order
+ *
+ * First: today
+ * Second: days after today
+ * Third: days before today
+ *
+ * @param today DayOfWeek corresponding to today
+ * @param repeatingDays a List of WeeklyRepeater.Day, pre-sorted in standard week order, where the week starts with Sunday
+ *
+ * @return a List of WeeklyRepeater.Day sorted according to the above precedent
+ */
+private fun sortRepeatingDaysByPreference(
+    today: DayOfWeek,
+    repeatingDays: List<WeeklyRepeater.Day>
+): List<WeeklyRepeater.Day> =
+    repeatingDays
+        .filter { it.dayNumber() >= today.dayNumber() }
+        .plus(repeatingDays.filter { it.dayNumber() < today.dayNumber() })
