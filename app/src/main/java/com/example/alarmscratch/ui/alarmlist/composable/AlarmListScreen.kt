@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AlarmListScreen(
+    navigateToAlarmEditScreen: (Int) -> Unit,
     modifier: Modifier = Modifier,
     alarmListViewModel: AlarmListViewModel = viewModel(factory = AlarmListViewModel.Factory)
 ) {
@@ -41,6 +42,7 @@ fun AlarmListScreen(
         alarmListState = alarmListState,
         onAlarmToggled = onAlarmToggled,
         onAlarmDeleted = onAlarmDeleted,
+        navigateToAlarmEditScreen = navigateToAlarmEditScreen,
         modifier = modifier
     )
 }
@@ -50,6 +52,7 @@ fun AlarmListScreenContent(
     alarmListState: AlarmListState,
     onAlarmToggled: (Alarm) -> Unit,
     onAlarmDeleted: (Alarm) -> Unit,
+    navigateToAlarmEditScreen: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Alarm List
@@ -69,7 +72,8 @@ fun AlarmListScreenContent(
                         AlarmCard(
                             alarm = alarm,
                             onAlarmToggled = onAlarmToggled,
-                            onAlarmDeleted = onAlarmDeleted
+                            onAlarmDeleted = onAlarmDeleted,
+                            navigateToAlarmEditScreen = navigateToAlarmEditScreen
                         )
                     }
                 } else {
@@ -100,6 +104,7 @@ private fun AlarmListScreenPreview() {
             alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds),
             onAlarmToggled = {},
             onAlarmDeleted = {},
+            navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)
         )
     }
@@ -116,6 +121,7 @@ private fun AlarmListScreenNoAlarmsPreview() {
             alarmListState = AlarmListState.Success(emptyList()),
             onAlarmToggled = {},
             onAlarmDeleted = {},
+            navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)
         )
     }

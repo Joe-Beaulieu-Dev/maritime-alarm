@@ -7,6 +7,17 @@ import java.time.LocalDateTime
 import java.time.format.TextStyle
 import java.util.Locale
 
+object LocalDateTimeUtil {
+    fun nowTruncated(): LocalDateTime = LocalDateTime.now().withSecond(0).withNano(0)
+}
+
+fun LocalDateTime.futurizeDateTime(): LocalDateTime =
+    if (!isAfter(LocalDateTime.now())) {
+        plusDays(1)
+    } else {
+        this
+    }
+
 fun LocalDateTime.toAlarmDateString(context: Context) : String {
     val currentDateTime = LocalDateTimeUtil.nowTruncated()
     return if (!this.isBefore(currentDateTime)) {
@@ -32,7 +43,3 @@ private fun formatDate(date: LocalDate): String =
             "${date.month.getDisplayName(TextStyle.SHORT, Locale.US)} " +
             "${date.dayOfMonth.toOrdinal()} " +
             "${date.year}"
-
-object LocalDateTimeUtil {
-    fun nowTruncated(): LocalDateTime = LocalDateTime.now().withSecond(0).withNano(0)
-}

@@ -24,6 +24,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.alarmscratch.ui.navigation.ALL_DESTINATIONS
+import com.example.alarmscratch.ui.navigation.AlarmList
 import com.example.alarmscratch.ui.navigation.Destination
 import com.example.alarmscratch.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.ui.theme.DarkVolcanicRock
@@ -57,17 +59,17 @@ fun VolcanoNavigationBar(
         NavigationBar(
             tonalElevation = 0.dp
         ) {
-            Destination.ALL_DESTINATIONS.forEach { destination ->
+            ALL_DESTINATIONS.forEach { destination ->
                 // Doing ".filter { it.navComponent != null}" would've been nice, but you'd still have to non-null assert
                 // destination.navComponent when using its properties below. I'd prefer a non-null check over a non-null assertion,
                 // so we might as well just operate on the entire List, saving on iterations by not doing the filter, which would have
                 // just used the exact same non-null check anyways.
-                if (destination.navComponent != null) {
+                destination.navComponent?.let {
                     NavigationBarItem(
                         selected = selectedDestination == destination.route,
                         onClick = { onDestinationChange(destination) },
-                        icon = { Icon(imageVector = destination.navComponent.navIcon, contentDescription = null) },
-                        label = { Text(text = stringResource(id = destination.navComponent.navNameRes)) },
+                        icon = { Icon(imageVector = it.navIcon, contentDescription = null) },
+                        label = { Text(text = stringResource(id = it.navNameRes)) },
                         colors = navColors
                     )
                 }
@@ -266,7 +268,7 @@ private fun VolcanoNavigationBarPreview() {
     AlarmScratchTheme {
         VolcanoNavigationBar(
             modifier = Modifier.padding(top = 12.dp),
-            selectedDestination = Destination.AlarmList.route,
+            selectedDestination = AlarmList.route,
             onDestinationChange = {}
         )
     }

@@ -1,6 +1,7 @@
 package com.example.alarmscratch.ui.alarmlist.composable
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -51,6 +52,7 @@ fun AlarmCard(
     alarm: Alarm,
     onAlarmToggled: (Alarm) -> Unit,
     onAlarmDeleted: (Alarm) -> Unit,
+    navigateToAlarmEditScreen: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     // State
@@ -72,6 +74,7 @@ fun AlarmCard(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .clickable { navigateToAlarmEditScreen(alarm.id) }
                 .padding(start = 12.dp)
         ) {
             // Dropdown Menu
@@ -230,6 +233,7 @@ private fun AlarmCardRepeatingPreview() {
             alarm = repeatingAlarm,
             onAlarmToggled = {},
             onAlarmDeleted = {},
+            navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)
         )
     }
@@ -259,6 +263,7 @@ private fun AlarmCardTodayPreview() {
             alarm = todayAlarm,
             onAlarmToggled = {},
             onAlarmDeleted = {},
+            navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)
         )
     }
@@ -275,6 +280,7 @@ private fun AlarmCardTomorrowPreview() {
             alarm = tomorrowAlarm,
             onAlarmToggled = {},
             onAlarmDeleted = {},
+            navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)
         )
     }
@@ -291,6 +297,7 @@ private fun AlarmCardCalendarPreview() {
             alarm = calendarAlarm,
             onAlarmToggled = {},
             onAlarmDeleted = {},
+            navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)
         )
     }

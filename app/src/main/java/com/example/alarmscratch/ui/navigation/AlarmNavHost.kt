@@ -16,13 +16,15 @@ fun AlarmNavHost(
 ) {
     NavHost(
         navController = localNavHostController,
-        startDestination = Destination.AlarmList.route,
+        startDestination = AlarmList.route,
         modifier = modifier
     ) {
-        composable(route = Destination.AlarmList.route) {
-            AlarmListScreen()
+        composable(route = AlarmList.route) {
+            AlarmListScreen(navigateToAlarmEditScreen = { alarmId ->
+                rootNavHostController.navigateSingleTop("${AlarmEdit.route}/$alarmId")
+            })
         }
-        composable(route = Destination.Settings.route) {
+        composable(route = Settings.route) {
             SettingsScreen(navHostController = rootNavHostController)
         }
     }

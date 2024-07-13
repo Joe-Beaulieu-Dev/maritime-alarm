@@ -28,6 +28,7 @@ import com.example.alarmscratch.R
 import com.example.alarmscratch.data.model.Alarm
 import com.example.alarmscratch.data.repository.AlarmListState
 import com.example.alarmscratch.ui.alarmlist.preview.consistentFutureAlarm
+import com.example.alarmscratch.ui.navigation.AlarmList
 import com.example.alarmscratch.ui.navigation.Destination
 import com.example.alarmscratch.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.ui.theme.BoatHull
@@ -103,7 +104,7 @@ fun SkylineHeader(
                     verticalAlignment = Alignment.Bottom,
                     modifier = Modifier.align(Alignment.Center)
                 ) {
-                    if (currentScreen == Destination.AlarmList && alarmListState is AlarmListState.Success) {
+                    if (currentScreen == AlarmList && alarmListState is AlarmListState.Success) {
                         // TODO: Change Icon to Icons.Default.AlarmOff if there's no Active Alarms
                         // Alarm Icon
                         Icon(
@@ -198,7 +199,7 @@ private fun getNextAlarm(alarmList: List<Alarm>): Alarm? =
 private fun SkylineHeaderWithAlarmPreview() {
     AlarmScratchTheme {
         SkylineHeader(
-            currentScreen = Destination.AlarmList,
+            currentScreen = AlarmList,
             alarmListState = AlarmListState.Success(alarmList = listOf(consistentFutureAlarm))
         )
     }
@@ -209,7 +210,7 @@ private fun SkylineHeaderWithAlarmPreview() {
 private fun SkylineHeaderNoAlarmsPreview() {
     AlarmScratchTheme {
         SkylineHeader(
-            currentScreen = Destination.AlarmList,
+            currentScreen = AlarmList,
             alarmListState = AlarmListState.Success(alarmList = emptyList())
         )
     }
