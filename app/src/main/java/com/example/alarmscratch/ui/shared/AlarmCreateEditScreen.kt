@@ -1,5 +1,6 @@
 package com.example.alarmscratch.ui.shared
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,6 +40,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
 import com.example.alarmscratch.data.model.Alarm
 import com.example.alarmscratch.data.model.WeeklyRepeater
+import com.example.alarmscratch.extension.LocalDateTimeUtil
 import com.example.alarmscratch.extension.get12HrTime
 import com.example.alarmscratch.ui.alarmcreation.AlarmDays
 import com.example.alarmscratch.ui.alarmcreation.DateSelectionDialog
@@ -53,11 +55,11 @@ import com.example.alarmscratch.ui.theme.DarkerBoatSails
 import com.example.alarmscratch.ui.theme.LightVolcanicRock
 import com.example.alarmscratch.ui.theme.MediumVolcanicRock
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 @Composable
 fun AlarmCreateEditScreen(
     navHostController: NavHostController,
+    @StringRes titleRes: Int,
     alarm: Alarm,
     saveAlarm: () -> Unit,
     updateName: (String) -> Unit,
@@ -72,6 +74,7 @@ fun AlarmCreateEditScreen(
             // AppBar
             AlarmCreationTopAppBar(
                 navHostController = navHostController,
+                titleRes = titleRes,
                 saveAlarm = saveAlarm
             )
 
@@ -109,6 +112,7 @@ fun AlarmCreateEditScreen(
 @Composable
 fun AlarmCreationTopAppBar(
     navHostController: NavHostController,
+    @StringRes titleRes: Int,
     saveAlarm: () -> Unit
 ) {
     Row(
@@ -117,9 +121,19 @@ fun AlarmCreationTopAppBar(
             .background(color = MediumVolcanicRock)
             .fillMaxWidth()
     ) {
-        // Up navigation
-        IconButton(onClick = { navHostController.navigateUp() }) {
-            Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
+        // Up Navigation Arrow and Title
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            // Up Navigation Arrow
+            IconButton(onClick = { navHostController.navigateUp() }) {
+                Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
+            }
+
+            // Title
+            Text(
+                text = stringResource(id = titleRes),
+                fontSize = 18.sp,
+                modifier = Modifier.padding(start = 12.dp)
+            )
         }
 
         // Save Button
@@ -292,12 +306,13 @@ fun DayOfWeekButton(
 
 @Preview
 @Composable
-private fun AlarmCreationScreenPreview() {
+private fun AlarmCreateEditScreenPreview() {
     AlarmScratchTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
+            titleRes = R.string.alarm_creation_screen_title,
             alarm = Alarm(
-                dateTime = LocalDateTime.now().plusHours(1),
+                dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
                 weeklyRepeater = WeeklyRepeater(tueWedThu)
             ),
             saveAlarm = {},
@@ -316,6 +331,7 @@ private fun AlarmCreationTopAppBarPreview() {
     AlarmScratchTheme {
         AlarmCreationTopAppBar(
             navHostController = rememberNavController(),
+            titleRes = R.string.alarm_creation_screen_title,
             saveAlarm = {}
         )
     }
