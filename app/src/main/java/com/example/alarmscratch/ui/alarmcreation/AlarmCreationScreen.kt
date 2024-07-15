@@ -17,7 +17,6 @@ import com.example.alarmscratch.ui.alarmlist.preview.tueWedThu
 import com.example.alarmscratch.ui.shared.AlarmCreateEditScreen
 import com.example.alarmscratch.ui.theme.AlarmScratchTheme
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 @Composable
 fun AlarmCreationScreen(
@@ -27,26 +26,18 @@ fun AlarmCreationScreen(
 ) {
     // State
     val alarmState by alarmCreationViewModel.newAlarm.collectAsState()
-
-    // Actions
     val coroutineScope = rememberCoroutineScope()
-    val saveAlarm: () -> Unit = { coroutineScope.launch { alarmCreationViewModel.saveAlarm() } }
-    val updateName: (String) -> Unit = alarmCreationViewModel::updateName
-    val updateDate: (LocalDate) -> Unit = alarmCreationViewModel::updateDate
-    val updateTime: (Int, Int) -> Unit = alarmCreationViewModel::updateTime
-    val addDay: (WeeklyRepeater.Day) -> Unit = alarmCreationViewModel::addDay
-    val removeDay: (WeeklyRepeater.Day) -> Unit = alarmCreationViewModel::removeDay
 
     AlarmCreateEditScreen(
         navHostController = navHostController,
         titleRes = R.string.alarm_creation_screen_title,
         alarm = alarmState,
-        saveAlarm = saveAlarm,
-        updateName = updateName,
-        updateDate = updateDate,
-        updateTime = updateTime,
-        addDay = addDay,
-        removeDay = removeDay,
+        saveAlarm = { coroutineScope.launch { alarmCreationViewModel.saveAlarm() } },
+        updateName = alarmCreationViewModel::updateName,
+        updateDate = alarmCreationViewModel::updateDate,
+        updateTime = alarmCreationViewModel::updateTime,
+        addDay = alarmCreationViewModel::addDay,
+        removeDay = alarmCreationViewModel::removeDay,
         modifier = modifier
     )
 }
