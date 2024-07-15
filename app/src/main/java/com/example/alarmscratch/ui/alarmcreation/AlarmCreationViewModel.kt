@@ -8,17 +8,18 @@ import com.example.alarmscratch.data.model.WeeklyRepeater
 import com.example.alarmscratch.data.repository.AlarmDatabase
 import com.example.alarmscratch.data.repository.AlarmRepository
 import com.example.alarmscratch.extension.LocalDateTimeUtil
+import com.example.alarmscratch.extension.futurizeDateTime
 import com.example.alarmscratch.extension.isRepeating
 import com.example.alarmscratch.extension.nextRepeatingDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 class AlarmCreationViewModel(private val alarmRepository: AlarmRepository) : ViewModel() {
 
     private val _newAlarm = MutableStateFlow(Alarm(dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1)))
-    val newAlarm: StateFlow<Alarm> = _newAlarm
+    val newAlarm: StateFlow<Alarm> = _newAlarm.asStateFlow()
 
     companion object {
 
@@ -48,14 +49,12 @@ class AlarmCreationViewModel(private val alarmRepository: AlarmRepository) : Vie
     }
 
     fun updateDate(date: LocalDate) {
-        _newAlarm.value = _newAlarm.value.copy(
-            dateTime = _newAlarm.value.dateTime.withDayOfYear(date.dayOfYear)
-        )
+        _newAlarm.value = _newAlarm.value.copy(dateTime = _newAlarm.value.dateTime.withDayOfYear(date.dayOfYear))
     }
 
     fun updateTime(hour: Int, minute: Int) {
         _newAlarm.value = _newAlarm.value.copy(
-            dateTime = futurizeDateTime(_newAlarm.value.dateTime.withHour(hour).withMinute(minute))
+            dateTime = _newAlarm.value.dateTime.withHour(hour).withMinute(minute).futurizeDateTime()
         )
     }
 
@@ -66,11 +65,4 @@ class AlarmCreationViewModel(private val alarmRepository: AlarmRepository) : Vie
     fun removeDay(day: WeeklyRepeater.Day) {
         _newAlarm.value = _newAlarm.value.copy(weeklyRepeater = _newAlarm.value.weeklyRepeater.removeDay(day))
     }
-
-    private fun futurizeDateTime(dateTime: LocalDateTime): LocalDateTime =
-        if (dateTime.isBefore(LocalDateTime.now())) {
-            dateTime.plusDays(1)
-        } else {
-            dateTime
-        }
 }

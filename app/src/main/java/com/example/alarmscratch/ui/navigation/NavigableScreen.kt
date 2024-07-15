@@ -41,9 +41,7 @@ fun NavigableScreen(
     val alarmListState by navigableScreenViewModel.alarmList.collectAsState()
 
     // Actions
-    val onFabClicked: () -> Unit = {
-        rootNavHostController.navigateSingleTop(Destination.AlarmCreation.route)
-    }
+    val onFabClicked: () -> Unit = { rootNavHostController.navigateSingleTop(AlarmCreation.route) }
 
     // Navigation
     val localNavHostController = rememberNavController()
@@ -72,9 +70,9 @@ fun NavigableScreenContent(
 ) {
     // Navigation
     val currentBackStackEntry by localNavHostController.currentBackStackEntryAsState()
-    val selectedDestination = Destination.ALL_DESTINATIONS.find { destination ->
+    val selectedDestination = ALL_DESTINATIONS.find { destination ->
         destination.route == currentBackStackEntry?.destination?.route
-    } ?: Destination.AlarmList
+    } ?: AlarmList
 
     Surface(
         color = Color.Transparent,
@@ -141,6 +139,7 @@ private fun NavigableScreenAlarmListPreview() {
                 alarmListState = alarmList,
                 onAlarmToggled = {},
                 onAlarmDeleted = {},
+                navigateToAlarmEditScreen = {},
                 modifier = Modifier.padding(20.dp)
             )
         }
@@ -162,6 +161,7 @@ private fun NavigableScreenAlarmListNoAlarmsPreview() {
                 alarmListState = alarmList,
                 onAlarmToggled = {},
                 onAlarmDeleted = {},
+                navigateToAlarmEditScreen = {},
                 modifier = Modifier.padding(20.dp)
             )
         }
