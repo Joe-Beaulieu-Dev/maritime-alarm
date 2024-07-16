@@ -4,9 +4,9 @@
     <string name="error">Error</string>
 
     <!--
-        *********************
-        ** NavigableScreen **
-        *********************
+        ****************
+        ** CoreScreen **
+        ****************
     -->
     <!-- SkylineHeader -->
     <string name="day_abbreviation">d</string>
