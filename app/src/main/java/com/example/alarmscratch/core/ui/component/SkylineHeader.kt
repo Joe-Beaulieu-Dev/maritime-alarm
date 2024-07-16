@@ -31,9 +31,9 @@ import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
-import com.example.alarmscratch.core.navigation.AlarmList
+import com.example.alarmscratch.core.navigation.AlarmListScreen
 import com.example.alarmscratch.core.navigation.Destination
-import com.example.alarmscratch.core.navigation.Settings
+import com.example.alarmscratch.core.navigation.SettingsScreen
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatHull
 import com.example.alarmscratch.core.ui.theme.BoatSails
@@ -124,7 +124,7 @@ fun SkylineHeaderContent(
                     verticalAlignment = Alignment.Bottom,
                     modifier = Modifier.align(Alignment.Center)
                 ) {
-                    if (currentScreen == AlarmList && alarmListState is AlarmListState.Success) {
+                    if (currentScreen == AlarmListScreen && alarmListState is AlarmListState.Success) {
                         // TODO: Change Icon to Icons.Default.AlarmOff if there's no Active Alarms
                         // Alarm Icon
                         Icon(
@@ -219,7 +219,7 @@ private fun getNextAlarm(alarmList: List<Alarm>): Alarm? =
 private fun SkylineHeaderAlarmListScreenPreview() {
     AlarmScratchTheme {
         SkylineHeaderContent(
-            currentScreen = AlarmList,
+            currentScreen = AlarmListScreen,
             alarmListState = AlarmListState.Success(alarmList = listOf(consistentFutureAlarm))
         )
     }
@@ -230,7 +230,7 @@ private fun SkylineHeaderAlarmListScreenPreview() {
 private fun SkylineHeaderAlarmListScreenNoAlarmsPreview() {
     AlarmScratchTheme {
         SkylineHeaderContent(
-            currentScreen = AlarmList,
+            currentScreen = AlarmListScreen,
             alarmListState = AlarmListState.Success(alarmList = emptyList())
         )
     }
@@ -241,7 +241,7 @@ private fun SkylineHeaderAlarmListScreenNoAlarmsPreview() {
 private fun SkylineHeaderSettingsScreenPreview() {
     AlarmScratchTheme {
         SkylineHeaderContent(
-            currentScreen = Settings,
+            currentScreen = SettingsScreen,
             alarmListState = AlarmListState.Success(alarmList = listOf(consistentFutureAlarm))
         )
     }

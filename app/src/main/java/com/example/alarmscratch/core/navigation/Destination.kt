@@ -8,13 +8,13 @@ import androidx.navigation.navArgument
 import com.example.alarmscratch.R
 
 val ALL_DESTINATIONS = listOf(
-    NavigableScreen,
-    AlarmList,
-    AlarmCreation,
-    AlarmEdit,
-    Settings,
-    GeneralSettings,
-    AlarmDefaultSettings
+    CoreScreen,
+    AlarmListScreen,
+    AlarmCreationScreen,
+    AlarmEditScreen,
+    SettingsScreen,
+    GeneralSettingsScreen,
+    AlarmDefaultsScreen
 )
 
 interface Destination {
@@ -22,46 +22,46 @@ interface Destination {
     val navComponent: CoreNavComponent?
 }
 
-object NavigableScreen : Destination {
-    override val route = "navigable_screen"
+object CoreScreen : Destination {
+    override val route = "core_screen"
     override val navComponent = null
 }
 
-object AlarmList : Destination {
-    override val route = "alarm_list"
+object AlarmListScreen : Destination {
+    override val route = "alarm_list_screen"
     override val navComponent = CoreNavComponent(
         navNameRes = R.string.nav_alarm,
         navIcon = Icons.Default.Alarm
     )
 }
 
-object AlarmCreation : Destination {
-    override val route = "alarm_creation"
+object AlarmCreationScreen : Destination {
+    override val route = "alarm_creation_screen"
     override val navComponent = null
 }
 
-object AlarmEdit : Destination {
-    override val route = "alarm_edit"
+object AlarmEditScreen : Destination {
+    override val route = "alarm_edit_screen"
     override val navComponent = null
     const val alarmIdArg = "alarmIdArg"
     val routeWithArgs = "$route/{$alarmIdArg}"
     val args = listOf(navArgument(alarmIdArg) { type = NavType.IntType })
 }
 
-object Settings : Destination {
-    override val route = "settings"
+object SettingsScreen : Destination {
+    override val route = "settings_screen"
     override val navComponent = CoreNavComponent(
         navNameRes = R.string.nav_settings,
         navIcon = Icons.Default.Settings
     )
 }
 
-object GeneralSettings : Destination {
-    override val route = "general_settings"
+object GeneralSettingsScreen : Destination {
+    override val route = "general_settings_screen"
     override val navComponent = null
 }
 
-object AlarmDefaultSettings : Destination {
-    override val route = "alarm_default_settings"
+object AlarmDefaultsScreen : Destination {
+    override val route = "alarm_defaults_screen"
     override val navComponent = null
 }

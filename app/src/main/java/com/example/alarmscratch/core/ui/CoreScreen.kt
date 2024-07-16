@@ -23,8 +23,8 @@ import com.example.alarmscratch.alarm.data.preview.alarmSampleDataHardCodedIds
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.alarm.ui.alarmlist.AlarmListScreenContent
 import com.example.alarmscratch.core.navigation.ALL_DESTINATIONS
-import com.example.alarmscratch.core.navigation.AlarmCreation
-import com.example.alarmscratch.core.navigation.AlarmList
+import com.example.alarmscratch.core.navigation.AlarmCreationScreen
+import com.example.alarmscratch.core.navigation.AlarmListScreen
 import com.example.alarmscratch.core.navigation.AlarmNavHost
 import com.example.alarmscratch.core.navigation.navigateSingleTop
 import com.example.alarmscratch.core.ui.component.LavaFloatingActionButton
@@ -38,7 +38,7 @@ import com.example.alarmscratch.settings.SettingsScreen
 @Composable
 fun CoreScreen(rootNavHostController: NavHostController) {
     // Actions
-    val onFabClicked: () -> Unit = { rootNavHostController.navigateSingleTop(AlarmCreation.route) }
+    val onFabClicked: () -> Unit = { rootNavHostController.navigateSingleTop(AlarmCreationScreen.route) }
 
     // Navigation
     val localNavHostController = rememberNavController()
@@ -67,7 +67,7 @@ fun CoreScreenContent(
     val currentBackStackEntry by localNavHostController.currentBackStackEntryAsState()
     val selectedDestination = ALL_DESTINATIONS.find { destination ->
         destination.route == currentBackStackEntry?.destination?.route
-    } ?: AlarmList
+    } ?: AlarmListScreen
 
     Surface(
         color = Color.Transparent,

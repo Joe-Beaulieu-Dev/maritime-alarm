@@ -8,10 +8,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.alarm.ui.alarmcreate.AlarmCreationScreen
 import com.example.alarmscratch.alarm.ui.alarmedit.AlarmEditScreen
-import com.example.alarmscratch.core.navigation.AlarmCreation
-import com.example.alarmscratch.core.navigation.AlarmDefaultSettings
-import com.example.alarmscratch.core.navigation.AlarmEdit
-import com.example.alarmscratch.core.navigation.NavigableScreen
+import com.example.alarmscratch.core.navigation.AlarmCreationScreen
+import com.example.alarmscratch.core.navigation.AlarmDefaultsScreen
+import com.example.alarmscratch.core.navigation.AlarmEditScreen
+import com.example.alarmscratch.core.navigation.CoreScreen
 import com.example.alarmscratch.settings.AlarmDefaultsScreen
 
 @Composable
@@ -19,27 +19,27 @@ fun AlarmApp() {
     val navHostController = rememberNavController()
     NavHost(
         navController = navHostController,
-        startDestination = NavigableScreen.route
+        startDestination = CoreScreen.route
     ) {
-        composable(route = NavigableScreen.route) {
+        composable(route = CoreScreen.route) {
             CoreScreen(rootNavHostController = navHostController)
         }
-        composable(route = AlarmCreation.route) {
+        composable(route = AlarmCreationScreen.route) {
             AlarmCreationScreen(
                 navHostController = navHostController,
                 modifier = Modifier.fillMaxSize()
             )
         }
         composable(
-            route = AlarmEdit.routeWithArgs,
-            arguments = AlarmEdit.args
+            route = AlarmEditScreen.routeWithArgs,
+            arguments = AlarmEditScreen.args
         ) {
             AlarmEditScreen(
                 navHostController = navHostController,
                 modifier = Modifier.fillMaxSize()
             )
         }
-        composable(route = AlarmDefaultSettings.route) {
+        composable(route = AlarmDefaultsScreen.route) {
             AlarmDefaultsScreen(modifier = Modifier.fillMaxSize())
         }
     }

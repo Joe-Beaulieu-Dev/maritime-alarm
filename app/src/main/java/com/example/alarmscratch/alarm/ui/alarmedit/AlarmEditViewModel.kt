@@ -14,7 +14,7 @@ import com.example.alarmscratch.alarm.data.repository.AlarmState
 import com.example.alarmscratch.core.extension.futurizeDateTime
 import com.example.alarmscratch.core.extension.isRepeating
 import com.example.alarmscratch.core.extension.nextRepeatingDate
-import com.example.alarmscratch.core.navigation.AlarmEdit
+import com.example.alarmscratch.core.navigation.AlarmEditScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,7 +28,7 @@ class AlarmEditViewModel(
     private val alarmRepository: AlarmRepository
 ) : ViewModel() {
 
-    private val alarmId: Int = savedStateHandle[AlarmEdit.alarmIdArg] ?: -1
+    private val alarmId: Int = savedStateHandle[AlarmEditScreen.alarmIdArg] ?: -1
     private val _modifiedAlarm: MutableStateFlow<AlarmState> = MutableStateFlow(AlarmState.Loading)
     val modifiedAlarm: StateFlow<AlarmState> = _modifiedAlarm.asStateFlow()
 
