@@ -16,6 +16,8 @@ import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,12 +26,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.core.navigation.AlarmList
 import com.example.alarmscratch.core.navigation.Destination
+import com.example.alarmscratch.core.navigation.Settings
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatHull
 import com.example.alarmscratch.core.ui.theme.BoatSails
@@ -42,6 +46,22 @@ import kotlin.math.floor
 
 @Composable
 fun SkylineHeader(
+    currentScreen: Destination,
+    modifier: Modifier = Modifier,
+    skylineHeaderViewModel: SkylineHeaderViewModel = viewModel(factory = SkylineHeaderViewModel.Factory)
+) {
+    // State
+    val alarmListState by skylineHeaderViewModel.alarmList.collectAsState()
+
+    SkylineHeaderContent(
+        currentScreen = currentScreen,
+        alarmListState = alarmListState,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun SkylineHeaderContent(
     currentScreen: Destination,
     alarmListState: AlarmListState,
     modifier: Modifier = Modifier
@@ -196,9 +216,9 @@ private fun getNextAlarm(alarmList: List<Alarm>): Alarm? =
 
 @Preview
 @Composable
-private fun SkylineHeaderWithAlarmPreview() {
+private fun SkylineHeaderAlarmListScreenPreview() {
     AlarmScratchTheme {
-        SkylineHeader(
+        SkylineHeaderContent(
             currentScreen = AlarmList,
             alarmListState = AlarmListState.Success(alarmList = listOf(consistentFutureAlarm))
         )
@@ -207,11 +227,22 @@ private fun SkylineHeaderWithAlarmPreview() {
 
 @Preview
 @Composable
-private fun SkylineHeaderNoAlarmsPreview() {
+private fun SkylineHeaderAlarmListScreenNoAlarmsPreview() {
     AlarmScratchTheme {
-        SkylineHeader(
+        SkylineHeaderContent(
             currentScreen = AlarmList,
             alarmListState = AlarmListState.Success(alarmList = emptyList())
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SkylineHeaderSettingsScreenPreview() {
+    AlarmScratchTheme {
+        SkylineHeaderContent(
+            currentScreen = Settings,
+            alarmListState = AlarmListState.Success(alarmList = listOf(consistentFutureAlarm))
         )
     }
 }

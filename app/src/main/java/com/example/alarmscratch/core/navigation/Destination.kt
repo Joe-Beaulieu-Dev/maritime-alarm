@@ -19,7 +19,7 @@ val ALL_DESTINATIONS = listOf(
 
 interface Destination {
     val route: String
-    val navComponent: AlarmNavComponent?
+    val navComponent: CoreNavComponent?
 }
 
 object NavigableScreen : Destination {
@@ -29,7 +29,7 @@ object NavigableScreen : Destination {
 
 object AlarmList : Destination {
     override val route = "alarm_list"
-    override val navComponent = AlarmNavComponent(
+    override val navComponent = CoreNavComponent(
         navNameRes = R.string.nav_alarm,
         navIcon = Icons.Default.Alarm
     )
@@ -50,7 +50,7 @@ object AlarmEdit : Destination {
 
 object Settings : Destination {
     override val route = "settings"
-    override val navComponent = AlarmNavComponent(
+    override val navComponent = CoreNavComponent(
         navNameRes = R.string.nav_settings,
         navIcon = Icons.Default.Settings
     )

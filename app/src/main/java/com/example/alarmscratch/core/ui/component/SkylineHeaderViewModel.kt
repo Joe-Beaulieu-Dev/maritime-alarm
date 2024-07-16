@@ -1,4 +1,4 @@
-package com.example.alarmscratch.core.ui
+package com.example.alarmscratch.core.ui.component
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class NavigableScreenViewModel(private val alarmRepository: AlarmRepository) : ViewModel() {
+class SkylineHeaderViewModel(private val alarmRepository: AlarmRepository) : ViewModel() {
 
     val alarmList: StateFlow<AlarmListState> =
         alarmRepository
@@ -35,15 +35,10 @@ class NavigableScreenViewModel(private val alarmRepository: AlarmRepository) : V
                 // TODO: Do something about this
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
 
-                return NavigableScreenViewModel(
+                return SkylineHeaderViewModel(
                     alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(application).alarmDao())
                 ) as T
             }
         }
-    }
-
-    // TODO: This is temporary for development
-    suspend fun insertAlarm(alarm: Alarm) {
-        alarmRepository.insertAlarm(alarm)
     }
 }

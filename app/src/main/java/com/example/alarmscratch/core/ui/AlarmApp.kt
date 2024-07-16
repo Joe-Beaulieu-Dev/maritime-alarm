@@ -22,7 +22,7 @@ fun AlarmApp() {
         startDestination = NavigableScreen.route
     ) {
         composable(route = NavigableScreen.route) {
-            NavigableScreen(rootNavHostController = navHostController)
+            CoreScreen(rootNavHostController = navHostController)
         }
         composable(route = AlarmCreation.route) {
             AlarmCreationScreen(
