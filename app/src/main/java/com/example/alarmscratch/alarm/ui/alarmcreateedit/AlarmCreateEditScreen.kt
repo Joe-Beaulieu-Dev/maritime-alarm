@@ -1,5 +1,6 @@
 package com.example.alarmscratch.alarm.ui.alarmcreateedit
 
+import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -30,6 +31,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,6 +64,7 @@ fun AlarmCreateEditScreen(
     @StringRes titleRes: Int,
     alarm: Alarm,
     saveAlarm: () -> Unit,
+    scheduleAlarm: (Context) -> Unit,
     updateName: (String) -> Unit,
     updateDate: (LocalDate) -> Unit,
     updateTime: (Int, Int) -> Unit,
@@ -75,7 +78,8 @@ fun AlarmCreateEditScreen(
             AlarmCreationTopAppBar(
                 navHostController = navHostController,
                 titleRes = titleRes,
-                saveAlarm = saveAlarm
+                saveAlarm = saveAlarm,
+                scheduleAlarm = scheduleAlarm
             )
 
             // Alarm Name, and Date/Time Settings
@@ -113,7 +117,8 @@ fun AlarmCreateEditScreen(
 fun AlarmCreationTopAppBar(
     navHostController: NavHostController,
     @StringRes titleRes: Int,
-    saveAlarm: () -> Unit
+    saveAlarm: () -> Unit,
+    scheduleAlarm: (Context) -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -136,10 +141,12 @@ fun AlarmCreationTopAppBar(
             )
         }
 
+        val context = LocalContext.current
         // Save Button
         IconButton(
             onClick = {
                 saveAlarm()
+                scheduleAlarm(context)
                 navHostController.popBackStack()
             }
         ) {
@@ -316,6 +323,7 @@ private fun AlarmCreateEditScreenPreview() {
                 weeklyRepeater = WeeklyRepeater(tueWedThu)
             ),
             saveAlarm = {},
+            scheduleAlarm = {},
             updateName = {},
             updateDate = {},
             updateTime = { _, _ -> },
@@ -332,7 +340,8 @@ private fun AlarmCreationTopAppBarPreview() {
         AlarmCreationTopAppBar(
             navHostController = rememberNavController(),
             titleRes = R.string.alarm_creation_screen_title,
-            saveAlarm = {}
+            saveAlarm = {},
+            scheduleAlarm = {}
         )
     }
 }

@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Required for setting exact alarms -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <!-- Required for setting alarms on device boot -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -23,6 +28,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- Receive alarm execution events -->
+        <receiver android:name=".alarm.alarmexecution.AlarmReceiver" />
+        <!-- Reschedule alarms on device boot -->
+        <receiver
+            android:name=".alarm.alarmexecution.BootCompletedReceiver"
+            android:directBootAware="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

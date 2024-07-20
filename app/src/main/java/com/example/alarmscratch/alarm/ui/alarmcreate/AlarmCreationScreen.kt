@@ -33,6 +33,7 @@ fun AlarmCreationScreen(
         titleRes = R.string.alarm_creation_screen_title,
         alarm = alarmState,
         saveAlarm = { coroutineScope.launch { alarmCreationViewModel.saveAlarm() } },
+        scheduleAlarm = alarmCreationViewModel::scheduleAlarm,
         updateName = alarmCreationViewModel::updateName,
         updateDate = alarmCreationViewModel::updateDate,
         updateTime = alarmCreationViewModel::updateTime,
@@ -58,6 +59,7 @@ private fun AlarmCreationScreenPreview() {
                 weeklyRepeater = WeeklyRepeater(tueWedThu)
             ),
             saveAlarm = {},
+            scheduleAlarm = {},
             updateName = {},
             updateDate = {},
             updateTime = { _, _ -> },

@@ -1,8 +1,10 @@
 package com.example.alarmscratch.alarm.ui.alarmcreate
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.example.alarmscratch.alarm.alarmexecution.AlarmSchedulerImpl
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
@@ -42,6 +44,11 @@ class AlarmCreationViewModel(private val alarmRepository: AlarmRepository) : Vie
         } else {
             alarmRepository.insertAlarm(_newAlarm.value)
         }
+    }
+
+    fun scheduleAlarm(context: Context) {
+        val alarmScheduler = AlarmSchedulerImpl(context)
+        alarmScheduler.scheduleAlarm(_newAlarm.value)
     }
 
     fun updateName(name: String) {
