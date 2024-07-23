@@ -30,7 +30,7 @@ fun LocalDateTime.toAlarmDateString(context: Context) : String {
         } else if (alarmDate.dayOfYear - currentDate.dayOfYear == 1) { // Alarm is for tomorrow
             context.getString(R.string.date_tomorrow)
         } else { // Alarm is for a day beyond tomorrow
-            formatDate(alarmDate)
+            formatCalendarDate(alarmDate)
         }
     } else {
         context.getString(R.string.error)
@@ -38,8 +38,35 @@ fun LocalDateTime.toAlarmDateString(context: Context) : String {
 }
 
 // TODO do something different with Locale
-private fun formatDate(date: LocalDate): String =
+private fun formatCalendarDate(date: LocalDate): String =
     "${date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.US)}, " +
             "${date.month.getDisplayName(TextStyle.SHORT, Locale.US)} " +
             "${date.dayOfMonth.toOrdinal()} " +
             "${date.year}"
+
+fun LocalDateTime.toNotificationDateTimeString(context: Context): String =
+    "${dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.US)}, ${get12HrTime()} ${getAmPm(context)}"
+
+fun LocalDateTime.get12HrTime(): String {
+    val time = this.toLocalTime()
+    val minute = if (time.minute < 10) {
+        "0${time.minute}"
+    } else {
+        "${time.minute}"
+    }
+
+    return if (time.hour == 0) { // Midnight
+        "12:$minute"
+    } else if (time.hour <= 12) {
+        "${time.hour}:$minute"
+    } else {
+        "${time.hour - 12}:$minute"
+    }
+}
+
+fun LocalDateTime.getAmPm(context: Context): String =
+    if (this.toLocalTime().hour < 12) {
+        context.getString(R.string.time_am)
+    } else {
+        context.getString(R.string.time_pm)
+    }

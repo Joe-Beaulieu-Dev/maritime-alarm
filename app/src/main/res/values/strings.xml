@@ -56,4 +56,19 @@
     -->
     <string name="settings_general">General Settings</string>
     <string name="settings_alarm_defaults">Alarm Defaults</string>
+
+    <!--
+        ************************
+        ** Alarm Notification **
+        ************************
+    -->
+    <string name="default_alarm_name">Alarm</string>
+
+    <!--
+        *****************
+        ** Permissions **
+        *****************
+    -->
+    <string name="permission_channel_alarm_name">Alarm</string>
+    <string name="permission_channel_alarm_desc">Used for Alarm notifications</string>
 </resources>
