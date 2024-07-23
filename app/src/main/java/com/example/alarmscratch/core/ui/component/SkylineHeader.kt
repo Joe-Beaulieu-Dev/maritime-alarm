@@ -31,6 +31,7 @@ import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
+import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.navigation.AlarmListScreen
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.navigation.SettingsScreen
@@ -207,7 +208,7 @@ private fun getNextAlarmText(context: Context, alarmList: List<Alarm>): String =
 
 private fun getNextAlarm(alarmList: List<Alarm>): Alarm? =
     alarmList
-        .filter { it.enabled }
+        .filter { it.enabled && it.dateTime.isAfter(LocalDateTimeUtil.nowTruncated()) }
         .minByOrNull { it.dateTime }
 
 /*
