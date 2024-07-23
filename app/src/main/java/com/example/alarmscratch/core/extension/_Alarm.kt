@@ -7,23 +7,6 @@ import java.time.LocalDateTime
 
 fun Alarm.isRepeating(): Boolean = weeklyRepeater.hasRepeatingDays()
 
-fun Alarm.get12HrTime(): String {
-    val time = dateTime.toLocalTime()
-    val minute = if (time.minute < 10) {
-        "0${time.minute}"
-    } else {
-        "${time.minute}"
-    }
-
-    return if (time.hour == 0) { // Midnight
-        "12:$minute"
-    } else if (time.hour <= 12) {
-        "${time.hour}:$minute"
-    } else {
-        "${time.hour - 12}:$minute"
-    }
-}
-
 /**
  * Returns a LocalDateTime with the next day the Alarm is set to go off, if and only if the Alarm is set to repeat.
  * The returned LocalDateTime is guaranteed to be set in the future.
