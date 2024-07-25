@@ -63,6 +63,7 @@
         ************************
     -->
     <string name="default_alarm_name">Alarm</string>
+    <string name="default_alarm_time">Now</string>
 
     <!--
         *****************

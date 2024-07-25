@@ -7,6 +7,9 @@
     <!-- Required for setting alarms on device boot -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Used to show an Alarm when it goes off while the User's screen is off -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".core.AlarmApplication"
@@ -19,6 +22,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AlarmScratch"
         tools:targetApi="31">
+        <!-- Main Activity. Lands on the Alarm List Screen. -->
         <activity
             android:name=".core.ui.MainActivity"
             android:exported="true"
@@ -30,6 +34,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- Used to show an Alarm when it goes off while the User's screen is off -->
+        <activity
+            android:name=".alarm.ui.fullscreenalert.FullScreenAlarmActivity"
+            android:directBootAware="true"
+            android:showOnLockScreen="true"
+            android:showWhenLocked="true" />
         <!-- Receive alarm execution events -->
         <receiver android:name=".alarm.alarmexecution.AlarmReceiver" />
         <!-- Reschedule alarms on device boot -->

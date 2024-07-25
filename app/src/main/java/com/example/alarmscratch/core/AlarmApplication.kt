@@ -19,7 +19,7 @@ class AlarmApplication : Application() {
         val channel = NotificationChannel(
             AlarmNotificationService.ALARM_NOTIFICATION_CHANNEL_ID,
             getString(R.string.permission_channel_alarm_name),
-            NotificationManager.IMPORTANCE_DEFAULT
+            NotificationManager.IMPORTANCE_HIGH
         )
         channel.description = getString(R.string.permission_channel_alarm_desc)
 
