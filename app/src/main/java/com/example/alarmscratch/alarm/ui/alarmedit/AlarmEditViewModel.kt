@@ -1,11 +1,13 @@
 package com.example.alarmscratch.alarm.ui.alarmedit
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.example.alarmscratch.alarm.alarmexecution.AlarmSchedulerImpl
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
@@ -66,6 +68,13 @@ class AlarmEditViewModel(
             } else {
                 alarmRepository.updateAlarm(alarm)
             }
+        }
+    }
+
+    fun scheduleAlarm(context: Context) {
+        if (_modifiedAlarm.value is AlarmState.Success) {
+            val alarmScheduler = AlarmSchedulerImpl(context)
+            alarmScheduler.scheduleAlarm((_modifiedAlarm.value as AlarmState.Success).alarm)
         }
     }
 

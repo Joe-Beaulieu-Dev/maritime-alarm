@@ -28,6 +28,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +41,7 @@ import com.example.alarmscratch.alarm.data.preview.repeatingAlarm
 import com.example.alarmscratch.alarm.data.preview.todayAlarm
 import com.example.alarmscratch.alarm.data.preview.tomorrowAlarm
 import com.example.alarmscratch.core.extension.get12HrTime
+import com.example.alarmscratch.core.extension.getAmPm
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatHull
 import com.example.alarmscratch.core.ui.theme.BoatSails
@@ -143,7 +145,7 @@ fun AlarmCard(
                     // Time
                     Row {
                         Text(
-                            text = alarm.get12HrTime(),
+                            text = alarm.dateTime.get12HrTime(),
                             fontSize = 32.sp,
                             fontWeight = if (alarm.enabled) {
                                 FontWeight.Bold
@@ -154,7 +156,7 @@ fun AlarmCard(
                             modifier = Modifier.alignByBaseline()
                         )
                         Text(
-                            text = amPm(alarm = alarm),
+                            text = alarm.dateTime.getAmPm(LocalContext.current),
                             fontWeight = if (alarm.enabled) {
                                 FontWeight.SemiBold
                             } else {
@@ -209,14 +211,6 @@ fun NoAlarmsCard(modifier: Modifier = Modifier) {
         }
     }
 }
-
-@Composable
-fun amPm(alarm: Alarm): String =
-    if (alarm.dateTime.toLocalTime().hour < 12) {
-        stringResource(id = R.string.time_am)
-    } else {
-        stringResource(id = R.string.time_pm)
-    }
 
 /*
  * Previews

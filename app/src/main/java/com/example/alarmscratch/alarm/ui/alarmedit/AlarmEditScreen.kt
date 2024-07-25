@@ -35,6 +35,7 @@ fun AlarmEditScreen(
             titleRes = R.string.alarm_edit_screen_title,
             alarm = (alarmState as AlarmState.Success).alarm,
             saveAlarm = { coroutineScope.launch { alarmEditViewModel.saveAlarm() } },
+            scheduleAlarm = alarmEditViewModel::scheduleAlarm,
             updateName = alarmEditViewModel::updateName,
             updateDate = alarmEditViewModel::updateDate,
             updateTime = alarmEditViewModel::updateTime,
@@ -62,6 +63,7 @@ private fun AlarmEditScreenPreview() {
                 weeklyRepeater = WeeklyRepeater(tueWedThu)
             ),
             saveAlarm = {},
+            scheduleAlarm = {},
             updateName = {},
             updateDate = {},
             updateTime = { _, _ -> },

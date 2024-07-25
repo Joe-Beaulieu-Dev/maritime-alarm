@@ -1,5 +1,6 @@
 package com.example.alarmscratch.alarm.ui.alarmcreateedit
 
+import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -30,6 +31,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,9 +47,9 @@ import com.example.alarmscratch.alarm.data.preview.tueWedThu
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.AlarmDays
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.DateSelectionDialog
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.TimeSelectionDialog
-import com.example.alarmscratch.alarm.ui.alarmlist.component.amPm
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.get12HrTime
+import com.example.alarmscratch.core.extension.getAmPm
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
@@ -55,6 +57,7 @@ import com.example.alarmscratch.core.ui.theme.DarkerBoatSails
 import com.example.alarmscratch.core.ui.theme.LightVolcanicRock
 import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Composable
 fun AlarmCreateEditScreen(
@@ -62,6 +65,7 @@ fun AlarmCreateEditScreen(
     @StringRes titleRes: Int,
     alarm: Alarm,
     saveAlarm: () -> Unit,
+    scheduleAlarm: (Context) -> Unit,
     updateName: (String) -> Unit,
     updateDate: (LocalDate) -> Unit,
     updateTime: (Int, Int) -> Unit,
@@ -75,7 +79,8 @@ fun AlarmCreateEditScreen(
             AlarmCreationTopAppBar(
                 navHostController = navHostController,
                 titleRes = titleRes,
-                saveAlarm = saveAlarm
+                saveAlarm = saveAlarm,
+                scheduleAlarm = scheduleAlarm
             )
 
             // Alarm Name, and Date/Time Settings
@@ -113,7 +118,8 @@ fun AlarmCreateEditScreen(
 fun AlarmCreationTopAppBar(
     navHostController: NavHostController,
     @StringRes titleRes: Int,
-    saveAlarm: () -> Unit
+    saveAlarm: () -> Unit,
+    scheduleAlarm: (Context) -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -136,10 +142,12 @@ fun AlarmCreationTopAppBar(
             )
         }
 
+        val context = LocalContext.current
         // Save Button
         IconButton(
             onClick = {
                 saveAlarm()
+                scheduleAlarm(context)
                 navHostController.popBackStack()
             }
         ) {
@@ -163,7 +171,7 @@ fun DateTimeSettings(
     Column {
         // Time
         AlarmTime(
-            alarm = alarm,
+            dateTime = alarm.dateTime,
             updateTime = updateTime,
             modifier = Modifier.padding(0.dp)
         )
@@ -202,7 +210,7 @@ fun DateTimeSettings(
 
 @Composable
 fun AlarmTime(
-    alarm: Alarm,
+    dateTime: LocalDateTime,
     updateTime: (Int, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -218,7 +226,7 @@ fun AlarmTime(
     ) {
         // Time
         Text(
-            text = alarm.get12HrTime(),
+            text = dateTime.get12HrTime(),
             color = DarkerBoatSails,
             fontSize = 64.sp,
             fontWeight = FontWeight.Bold,
@@ -227,7 +235,7 @@ fun AlarmTime(
 
         // AM/PM
         Text(
-            text = amPm(alarm = alarm),
+            text = dateTime.getAmPm(LocalContext.current),
             color = DarkerBoatSails,
             fontSize = 38.sp,
             fontWeight = FontWeight.SemiBold,
@@ -238,8 +246,8 @@ fun AlarmTime(
     // Time Selection Dialog
     if (showTimePickerDialog) {
         TimeSelectionDialog(
-            initialHour = alarm.dateTime.hour,
-            initialMinute = alarm.dateTime.minute,
+            initialHour = dateTime.hour,
+            initialMinute = dateTime.minute,
             onCancel = toggleTimePickerDialog,
             onConfirm = { hour, minute ->
                 updateTime(hour, minute)
@@ -316,6 +324,7 @@ private fun AlarmCreateEditScreenPreview() {
                 weeklyRepeater = WeeklyRepeater(tueWedThu)
             ),
             saveAlarm = {},
+            scheduleAlarm = {},
             updateName = {},
             updateDate = {},
             updateTime = { _, _ -> },
@@ -332,7 +341,8 @@ private fun AlarmCreationTopAppBarPreview() {
         AlarmCreationTopAppBar(
             navHostController = rememberNavController(),
             titleRes = R.string.alarm_creation_screen_title,
-            saveAlarm = {}
+            saveAlarm = {},
+            scheduleAlarm = {}
         )
     }
 }
@@ -355,6 +365,6 @@ private fun DateTimeSettingsPreview() {
 @Composable
 private fun AlarmTimePreview() {
     AlarmScratchTheme {
-        AlarmTime(alarm = consistentFutureAlarm, updateTime = { _, _ -> })
+        AlarmTime(dateTime = consistentFutureAlarm.dateTime, updateTime = { _, _ -> })
     }
 }

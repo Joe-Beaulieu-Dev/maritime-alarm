@@ -25,7 +25,11 @@ abstract class AlarmDatabase : RoomDatabase() {
 
         fun getDatabase(context: Context): AlarmDatabase =
             Instance ?: synchronized(this) {
-                Room.databaseBuilder(context, AlarmDatabase::class.java, "alarm_database")
+                Room.databaseBuilder(
+                    context.createDeviceProtectedStorageContext(),
+                    AlarmDatabase::class.java,
+                    "alarm_database"
+                )
                     // TODO: Remove destructive fallback. Just doing this for now.
                     .fallbackToDestructiveMigration()
                     .build()
