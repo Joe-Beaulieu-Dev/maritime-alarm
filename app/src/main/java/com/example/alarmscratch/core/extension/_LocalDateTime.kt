@@ -12,7 +12,7 @@ object LocalDateTimeUtil {
 }
 
 fun LocalDateTime.futurizeDateTime(): LocalDateTime =
-    if (!isAfter(LocalDateTime.now())) {
+    if (isBefore(LocalDateTimeUtil.nowTruncated())) {
         plusDays(1)
     } else {
         this
