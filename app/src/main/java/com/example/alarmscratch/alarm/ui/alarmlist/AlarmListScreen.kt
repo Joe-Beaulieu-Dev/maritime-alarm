@@ -1,5 +1,6 @@
 package com.example.alarmscratch.alarm.ui.alarmlist
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,8 +32,8 @@ fun AlarmListScreen(
 
     // Actions
     val coroutineScope = rememberCoroutineScope()
-    val onAlarmToggled: (Alarm) -> Unit = { alarm ->
-        coroutineScope.launch { alarmListViewModel.updateAlarm(alarm) }
+    val onAlarmToggled: (Context, Alarm) -> Unit = { context, alarm ->
+        coroutineScope.launch { alarmListViewModel.toggleAlarm(context, alarm) }
     }
     val onAlarmDeleted: (Alarm) -> Unit = { alarm ->
         coroutineScope.launch { alarmListViewModel.deleteAlarm(alarm) }
@@ -51,7 +52,7 @@ fun AlarmListScreen(
 @Composable
 fun AlarmListScreenContent(
     alarmListState: AlarmListState,
-    onAlarmToggled: (Alarm) -> Unit,
+    onAlarmToggled: (Context, Alarm) -> Unit,
     onAlarmDeleted: (Alarm) -> Unit,
     navigateToAlarmEditScreen: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -103,7 +104,7 @@ private fun AlarmListScreenPreview() {
     AlarmScratchTheme {
         AlarmListScreenContent(
             alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds),
-            onAlarmToggled = {},
+            onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)
@@ -120,7 +121,7 @@ private fun AlarmListScreenNoAlarmsPreview() {
     AlarmScratchTheme {
         AlarmListScreenContent(
             alarmListState = AlarmListState.Success(emptyList()),
-            onAlarmToggled = {},
+            onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)

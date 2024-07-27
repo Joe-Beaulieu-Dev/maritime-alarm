@@ -144,7 +144,7 @@ private fun CoreScreenAlarmListPreview() {
         ) {
             AlarmListScreenContent(
                 alarmListState = alarmListState,
-                onAlarmToggled = {},
+                onAlarmToggled = { _, _ -> },
                 onAlarmDeleted = {},
                 navigateToAlarmEditScreen = {},
                 modifier = Modifier.padding(20.dp)
@@ -178,7 +178,7 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
         ) {
             AlarmListScreenContent(
                 alarmListState = alarmListState,
-                onAlarmToggled = {},
+                onAlarmToggled = { _, _ -> },
                 onAlarmDeleted = {},
                 navigateToAlarmEditScreen = {},
                 modifier = Modifier.padding(20.dp)
