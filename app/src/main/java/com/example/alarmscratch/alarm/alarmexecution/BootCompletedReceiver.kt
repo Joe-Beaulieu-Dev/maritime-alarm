@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
+import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,9 +23,11 @@ class BootCompletedReceiver : BroadcastReceiver() {
 
             CoroutineScope(Dispatchers.IO).launch {
                 alarmRepo.getAllAlarmsFlow().collect { alarmList ->
-                    alarmList.forEach { alarm ->
-                        alarmScheduler.scheduleAlarm(alarm)
-                    }
+                    alarmList
+                        .filter { it.enabled && !it.dateTime.isBefore(LocalDateTimeUtil.nowTruncated()) }
+                        .forEach { alarm ->
+                            alarmScheduler.scheduleAlarm(alarm)
+                        }
                 }
             }
         }
