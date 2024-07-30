@@ -32,6 +32,7 @@ fun AlarmCreationScreen(
         navHostController = navHostController,
         titleRes = R.string.alarm_creation_screen_title,
         alarm = alarmState,
+        validateAlarm = alarmCreationViewModel::validateAlarm,
         saveAlarm = { coroutineScope.launch { alarmCreationViewModel.saveAlarm() } },
         scheduleAlarm = alarmCreationViewModel::scheduleAlarm,
         updateName = alarmCreationViewModel::updateName,
@@ -58,6 +59,7 @@ private fun AlarmCreationScreenPreview() {
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
                 weeklyRepeater = WeeklyRepeater(tueWedThu)
             ),
+            validateAlarm = { true },
             saveAlarm = {},
             scheduleAlarm = {},
             updateName = {},
