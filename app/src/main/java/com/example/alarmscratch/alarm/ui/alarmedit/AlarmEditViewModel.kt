@@ -13,6 +13,7 @@ import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.alarm.data.repository.AlarmState
+import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.futurizeDateTime
 import com.example.alarmscratch.core.extension.isRepeating
 import com.example.alarmscratch.core.extension.nextRepeatingDate
@@ -114,4 +115,12 @@ class AlarmEditViewModel(
             _modifiedAlarm.value = AlarmState.Success(alarm.copy(weeklyRepeater = alarm.weeklyRepeater.removeDay(day)))
         }
     }
+
+    fun validateAlarm(): Boolean =
+        if (_modifiedAlarm.value is AlarmState.Success) {
+            val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
+            alarm.dateTime.isAfter(LocalDateTimeUtil.nowTruncated())
+        } else {
+            false
+        }
 }

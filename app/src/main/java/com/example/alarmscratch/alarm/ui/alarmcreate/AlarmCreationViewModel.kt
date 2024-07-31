@@ -72,4 +72,6 @@ class AlarmCreationViewModel(private val alarmRepository: AlarmRepository) : Vie
     fun removeDay(day: WeeklyRepeater.Day) {
         _newAlarm.value = _newAlarm.value.copy(weeklyRepeater = _newAlarm.value.weeklyRepeater.removeDay(day))
     }
+
+    fun validateAlarm(): Boolean = _newAlarm.value.dateTime.isAfter(LocalDateTimeUtil.nowTruncated())
 }

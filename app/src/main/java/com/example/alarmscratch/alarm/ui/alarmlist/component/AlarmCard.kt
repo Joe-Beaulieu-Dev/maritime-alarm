@@ -1,5 +1,6 @@
 package com.example.alarmscratch.alarm.ui.alarmlist.component
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -52,7 +53,7 @@ import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
 @Composable
 fun AlarmCard(
     alarm: Alarm,
-    onAlarmToggled: (Alarm) -> Unit,
+    onAlarmToggled: (Context, Alarm) -> Unit,
     onAlarmDeleted: (Alarm) -> Unit,
     navigateToAlarmEditScreen: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -175,10 +176,12 @@ fun AlarmCard(
                 }
             }
 
+            val context = LocalContext.current
+
             // Alarm Switch
             Switch(
                 checked = alarm.enabled,
-                onCheckedChange = { onAlarmToggled(alarm) },
+                onCheckedChange = { onAlarmToggled(context, alarm) },
                 colors = SwitchDefaults.colors(uncheckedTrackColor = MediumVolcanicRock),
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -225,7 +228,7 @@ private fun AlarmCardRepeatingPreview() {
     AlarmScratchTheme {
         AlarmCard(
             alarm = repeatingAlarm,
-            onAlarmToggled = {},
+            onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)
@@ -255,7 +258,7 @@ private fun AlarmCardTodayPreview() {
     AlarmScratchTheme {
         AlarmCard(
             alarm = todayAlarm,
-            onAlarmToggled = {},
+            onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)
@@ -272,7 +275,7 @@ private fun AlarmCardTomorrowPreview() {
     AlarmScratchTheme {
         AlarmCard(
             alarm = tomorrowAlarm,
-            onAlarmToggled = {},
+            onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)
@@ -289,7 +292,7 @@ private fun AlarmCardCalendarPreview() {
     AlarmScratchTheme {
         AlarmCard(
             alarm = calendarAlarm,
-            onAlarmToggled = {},
+            onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)

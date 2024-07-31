@@ -1,13 +1,16 @@
 package com.example.alarmscratch.alarm.ui.alarmlist
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.example.alarmscratch.alarm.alarmexecution.AlarmSchedulerImpl
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
+import com.example.alarmscratch.core.extension.futurizeDateTime
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -42,12 +45,26 @@ class AlarmListViewModel(private val alarmRepository: AlarmRepository) : ViewMod
         }
     }
 
-    suspend fun insertAlarm(alarm: Alarm) {
-        alarmRepository.insertAlarm(alarm)
+    suspend fun toggleAlarm(context: Context, alarm: Alarm) {
+        val modifiedAlarm = alarm.copy(enabled = !alarm.enabled, dateTime = alarm.dateTime.futurizeDateTime())
+
+        alarmRepository.updateAlarm(modifiedAlarm)
+
+        if (modifiedAlarm.enabled) {
+            scheduleAlarm(context, modifiedAlarm)
+        } else {
+            cancelAlarm(context, modifiedAlarm)
+        }
     }
 
-    suspend fun updateAlarm(alarm: Alarm) {
-        alarmRepository.updateAlarm(alarm.copy(enabled = !alarm.enabled))
+    private fun scheduleAlarm(context: Context, alarm: Alarm) {
+        val alarmScheduler = AlarmSchedulerImpl(context)
+        alarmScheduler.scheduleAlarm(alarm)
+    }
+
+    private fun cancelAlarm(context: Context, alarm: Alarm) {
+        val alarmScheduler = AlarmSchedulerImpl(context)
+        alarmScheduler.cancelAlarm(alarm)
     }
 
     suspend fun deleteAlarm(alarm: Alarm) {

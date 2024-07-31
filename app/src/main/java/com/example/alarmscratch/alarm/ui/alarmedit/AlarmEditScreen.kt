@@ -34,6 +34,7 @@ fun AlarmEditScreen(
             navHostController = navHostController,
             titleRes = R.string.alarm_edit_screen_title,
             alarm = (alarmState as AlarmState.Success).alarm,
+            validateAlarm = alarmEditViewModel::validateAlarm,
             saveAlarm = { coroutineScope.launch { alarmEditViewModel.saveAlarm() } },
             scheduleAlarm = alarmEditViewModel::scheduleAlarm,
             updateName = alarmEditViewModel::updateName,
@@ -62,6 +63,7 @@ private fun AlarmEditScreenPreview() {
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
                 weeklyRepeater = WeeklyRepeater(tueWedThu)
             ),
+            validateAlarm = { true },
             saveAlarm = {},
             scheduleAlarm = {},
             updateName = {},

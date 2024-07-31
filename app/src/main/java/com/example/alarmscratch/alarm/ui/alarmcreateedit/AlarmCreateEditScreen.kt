@@ -19,14 +19,20 @@ import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -56,6 +62,8 @@ import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
 import com.example.alarmscratch.core.ui.theme.DarkerBoatSails
 import com.example.alarmscratch.core.ui.theme.LightVolcanicRock
 import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
+import com.example.alarmscratch.core.ui.theme.VolcanicRock
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -64,6 +72,7 @@ fun AlarmCreateEditScreen(
     navHostController: NavHostController,
     @StringRes titleRes: Int,
     alarm: Alarm,
+    validateAlarm: () -> Boolean,
     saveAlarm: () -> Unit,
     scheduleAlarm: (Context) -> Unit,
     updateName: (String) -> Unit,
@@ -73,16 +82,43 @@ fun AlarmCreateEditScreen(
     removeDay: (WeeklyRepeater.Day) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Surface(modifier = modifier) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            // AppBar
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val showSnackbar: (String) -> Unit = { snackbarMessage ->
+        coroutineScope.launch {
+            snackbarHostState.showSnackbar(message = snackbarMessage)
+        }
+    }
+
+    Scaffold(
+        topBar = {
             AlarmCreationTopAppBar(
                 navHostController = navHostController,
                 titleRes = titleRes,
+                showSnackbar = showSnackbar,
+                validateAlarm = validateAlarm,
                 saveAlarm = saveAlarm,
                 scheduleAlarm = scheduleAlarm
             )
-
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { snackbarData ->
+                Snackbar(
+                    snackbarData = snackbarData,
+                    containerColor = VolcanicRock,
+                    contentColor = BoatSails
+                )
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = BoatSails,
+        modifier = modifier
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(innerPadding)
+        ) {
             // Alarm Name, and Date/Time Settings
             Column(
                 modifier = Modifier
@@ -118,6 +154,8 @@ fun AlarmCreateEditScreen(
 fun AlarmCreationTopAppBar(
     navHostController: NavHostController,
     @StringRes titleRes: Int,
+    showSnackbar: (String) -> Unit,
+    validateAlarm: () -> Boolean,
     saveAlarm: () -> Unit,
     scheduleAlarm: (Context) -> Unit
 ) {
@@ -143,12 +181,17 @@ fun AlarmCreationTopAppBar(
         }
 
         val context = LocalContext.current
+        val snackbarString = stringResource(id = R.string.validation_alarm_in_past)
         // Save Button
         IconButton(
             onClick = {
-                saveAlarm()
-                scheduleAlarm(context)
-                navHostController.popBackStack()
+                if (validateAlarm()) {
+                    saveAlarm()
+                    scheduleAlarm(context)
+                    navHostController.popBackStack()
+                } else {
+                    showSnackbar(snackbarString)
+                }
             }
         ) {
             Icon(imageVector = Icons.Default.Save, contentDescription = null)
@@ -323,6 +366,7 @@ private fun AlarmCreateEditScreenPreview() {
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
                 weeklyRepeater = WeeklyRepeater(tueWedThu)
             ),
+            validateAlarm = { true },
             saveAlarm = {},
             scheduleAlarm = {},
             updateName = {},
@@ -341,6 +385,8 @@ private fun AlarmCreationTopAppBarPreview() {
         AlarmCreationTopAppBar(
             navHostController = rememberNavController(),
             titleRes = R.string.alarm_creation_screen_title,
+            showSnackbar = {},
+            validateAlarm = { true },
             saveAlarm = {},
             scheduleAlarm = {}
         )

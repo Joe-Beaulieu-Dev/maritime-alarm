@@ -11,12 +11,21 @@ object LocalDateTimeUtil {
     fun nowTruncated(): LocalDateTime = LocalDateTime.now().withSecond(0).withNano(0)
 }
 
-fun LocalDateTime.futurizeDateTime(): LocalDateTime =
-    if (!isAfter(LocalDateTime.now())) {
-        plusDays(1)
+fun LocalDateTime.futurizeDateTime(): LocalDateTime {
+    val currentDateTime = LocalDateTimeUtil.nowTruncated()
+    return if (!this.isAfter(currentDateTime)) {
+        val potentialAlarm = LocalDateTime.of(currentDateTime.toLocalDate(), this.toLocalTime())
+
+        // Add the minimum amount of days required to futurize the Alarm
+        if (!potentialAlarm.isAfter(currentDateTime)) {
+            potentialAlarm.plusDays(1)
+        } else {
+            potentialAlarm
+        }
     } else {
         this
     }
+}
 
 fun LocalDateTime.toAlarmDateString(context: Context) : String {
     val currentDateTime = LocalDateTimeUtil.nowTruncated()
