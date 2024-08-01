@@ -5,7 +5,9 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Icon
 import com.example.alarmscratch.R
+import com.example.alarmscratch.alarm.alarmexecution.AlarmNotificationActionReceiver
 import com.example.alarmscratch.alarm.alarmexecution.AlarmReceiver
 import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmActivity
 
@@ -14,19 +16,38 @@ class AlarmNotificationService(private val context: Context) {
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     companion object {
-        const val ALARM_NOTIFICATION_CHANNEL_ID = "alarm_notification_channel"
+        const val CHANNEL_ID_ALARM_NOTIFICATION = "channel_id_alarm_notification"
     }
 
     // TODO: Check permission
-    fun showNotification(alarmName: String, alarmTime: String) {
-        val notification = Notification.Builder(context, ALARM_NOTIFICATION_CHANNEL_ID)
+    fun showNotification(alarmId: Int, alarmName: String, alarmTime: String) {
+        val dismissAlarmIntent = Intent(context, AlarmNotificationActionReceiver::class.java).apply {
+            action = AlarmNotificationActionReceiver.ACTION_DISMISS_ALARM
+            putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId)
+        }
+
+        // TODO: Modify request code
+        val dismissAlarmPendingIntent = PendingIntent.getBroadcast(
+            context,
+            0,
+            dismissAlarmIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val dismissAlarmAction = Notification.Action.Builder(
+            Icon.createWithResource(context, R.drawable.ic_launcher_foreground),
+            context.getString(R.string.dismiss),
+            dismissAlarmPendingIntent
+        ).build()
+
+        val notification = Notification.Builder(context, CHANNEL_ID_ALARM_NOTIFICATION)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(alarmName)
             .setContentText(alarmTime)
+            .addAction(dismissAlarmAction)
             .build()
 
-        // TODO: Modify ID
-        notificationManager.notify(1, notification)
+        notificationManager.notify(alarmId, notification)
     }
 
     // TODO: Check permission
@@ -44,7 +65,7 @@ class AlarmNotificationService(private val context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notification = Notification.Builder(context, ALARM_NOTIFICATION_CHANNEL_ID)
+        val notification = Notification.Builder(context, CHANNEL_ID_ALARM_NOTIFICATION)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(alarmName)
             .setContentText(alarmTime)
