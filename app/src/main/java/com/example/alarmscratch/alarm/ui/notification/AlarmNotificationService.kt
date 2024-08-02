@@ -19,31 +19,30 @@ class AlarmNotificationService(private val context: Context) {
         const val CHANNEL_ID_ALARM_NOTIFICATION = "channel_id_alarm_notification"
     }
 
-    // TODO: Check permission
     fun showNotification(alarmId: Int, alarmName: String, alarmTime: String) {
         val dismissAlarmIntent = Intent(context, AlarmNotificationActionReceiver::class.java).apply {
             action = AlarmNotificationActionReceiver.ACTION_DISMISS_ALARM
             putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId)
         }
 
-        // TODO: Modify request code
         val dismissAlarmPendingIntent = PendingIntent.getBroadcast(
             context,
-            0,
+            alarmId,
             dismissAlarmIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         val dismissAlarmAction = Notification.Action.Builder(
-            Icon.createWithResource(context, R.drawable.ic_launcher_foreground),
+            Icon.createWithResource(context, R.drawable.ic_alarm_dismiss_24dp),
             context.getString(R.string.dismiss),
             dismissAlarmPendingIntent
         ).build()
 
         val notification = Notification.Builder(context, CHANNEL_ID_ALARM_NOTIFICATION)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_alarm_24dp)
             .setContentTitle(alarmName)
             .setContentText(alarmTime)
+            .setCategory(Notification.CATEGORY_ALARM)
             .addAction(dismissAlarmAction)
             .build()
 
