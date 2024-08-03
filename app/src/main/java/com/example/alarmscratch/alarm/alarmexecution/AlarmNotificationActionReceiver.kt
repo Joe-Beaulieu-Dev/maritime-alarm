@@ -4,6 +4,13 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
+import com.example.alarmscratch.alarm.data.repository.AlarmRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class AlarmNotificationActionReceiver : BroadcastReceiver() {
 
@@ -27,5 +34,21 @@ class AlarmNotificationActionReceiver : BroadcastReceiver() {
     private fun dismissAlarm(context: Context, alarmId: Int) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(alarmId)
+
+        val alarmRepo = AlarmRepository(
+            AlarmDatabase
+                .getDatabase(context.createDeviceProtectedStorageContext())
+                .alarmDao()
+        )
+
+        // Disable Alarm
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val alarm = async { alarmRepo.getAlarmFlow(alarmId) }.await().first()
+                alarmRepo.updateAlarm(alarm.copy(enabled = false))
+            } catch (e: Exception) {
+                // Flow was empty. Not doing anything with this. Just don't crash.
+            }
+        }
     }
 }
