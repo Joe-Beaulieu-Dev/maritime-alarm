@@ -38,6 +38,7 @@ class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
 
     private fun buildAlarmIntent(alarm: Alarm): Intent =
         Intent(context, AlarmReceiver::class.java).apply {
+            putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarm.id)
             putExtra(AlarmReceiver.EXTRA_ALARM_NAME, alarm.name)
             putExtra(AlarmReceiver.EXTRA_ALARM_TIME, alarm.dateTime.toNotificationDateTimeString(context))
         }

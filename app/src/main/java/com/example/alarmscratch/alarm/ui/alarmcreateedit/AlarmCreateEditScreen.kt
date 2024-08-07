@@ -187,6 +187,7 @@ fun AlarmCreationTopAppBar(
             onClick = {
                 if (validateAlarm()) {
                     saveAlarm()
+                    // TODO: Only schedule alarm if enabled
                     scheduleAlarm(context)
                     navHostController.popBackStack()
                 } else {

@@ -17,11 +17,13 @@ class AlarmApplication : Application() {
     private fun createNotificationChannel() {
         // TODO: Come up with real strings for this
         val channel = NotificationChannel(
-            AlarmNotificationService.ALARM_NOTIFICATION_CHANNEL_ID,
+            AlarmNotificationService.CHANNEL_ID_ALARM_NOTIFICATION,
             getString(R.string.permission_channel_alarm_name),
             NotificationManager.IMPORTANCE_HIGH
         )
         channel.description = getString(R.string.permission_channel_alarm_desc)
+        // Silence channel so we can put in User selected sounds
+        channel.setSound(null, null)
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)

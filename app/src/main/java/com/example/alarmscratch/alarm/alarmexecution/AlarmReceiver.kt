@@ -11,19 +11,25 @@ import com.example.alarmscratch.alarm.ui.notification.AlarmNotificationService
 class AlarmReceiver : BroadcastReceiver() {
 
     companion object {
-        const val EXTRA_ALARM_NAME = "EXTRA_ALARM_NAME"
-        const val EXTRA_ALARM_TIME = "EXTRA_ALARM_TIME"
+        const val EXTRA_ALARM_ID = "extra_alarm_id"
+        const val EXTRA_ALARM_NAME = "extra_alarm_name"
+        const val EXTRA_ALARM_TIME = "extra_alarm_time"
+        const val ALARM_NO_ID = -1
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context != null && intent != null) {
             val service = AlarmNotificationService(context)
+            val alarmId = intent.getIntExtra(EXTRA_ALARM_ID, ALARM_NO_ID)
             val alarmName = intent.getStringExtra(EXTRA_ALARM_NAME) ?: context.getString(R.string.default_alarm_name)
             val alarmTime = intent.getStringExtra(EXTRA_ALARM_TIME) ?: context.getString(R.string.default_alarm_time)
 
+            // If there's no Alarm ID then something's wrong. Do not handle event.
+            if (alarmId == ALARM_NO_ID) return
+
             // TODO: Check for lock status here. If screen is on, but it's locked, we want to show the full screen notification.
             if (isDisplayOn(context)) {
-                service.showNotification(alarmName, alarmTime)
+                service.showNotification(alarmId, alarmName, alarmTime)
             } else {
                 service.showFullScreenNotification(alarmName, alarmTime)
             }
