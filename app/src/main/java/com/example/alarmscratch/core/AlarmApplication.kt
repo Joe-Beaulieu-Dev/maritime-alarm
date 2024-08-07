@@ -22,6 +22,8 @@ class AlarmApplication : Application() {
             NotificationManager.IMPORTANCE_HIGH
         )
         channel.description = getString(R.string.permission_channel_alarm_desc)
+        // Silence channel so we can put in User selected sounds
+        channel.setSound(null, null)
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)

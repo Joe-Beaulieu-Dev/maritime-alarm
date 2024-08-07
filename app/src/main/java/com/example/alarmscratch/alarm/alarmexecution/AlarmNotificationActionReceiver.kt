@@ -50,5 +50,8 @@ class AlarmNotificationActionReceiver : BroadcastReceiver() {
                 // Flow was empty. Not doing anything with this. Just don't crash.
             }
         }
+
+        // Stop Ringtone playback
+        RingtonePlayerManager.stopAlarmSound()
     }
 }

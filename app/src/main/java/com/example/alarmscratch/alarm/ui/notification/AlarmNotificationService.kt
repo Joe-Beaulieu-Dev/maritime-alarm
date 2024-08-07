@@ -9,6 +9,7 @@ import android.graphics.drawable.Icon
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.alarmexecution.AlarmNotificationActionReceiver
 import com.example.alarmscratch.alarm.alarmexecution.AlarmReceiver
+import com.example.alarmscratch.alarm.alarmexecution.RingtonePlayerManager
 import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmActivity
 
 class AlarmNotificationService(private val context: Context) {
@@ -47,6 +48,10 @@ class AlarmNotificationService(private val context: Context) {
             .build()
 
         notificationManager.notify(alarmId, notification)
+
+        // TODO: Check notification permission before sounding Alarm. If you don't,
+        //  then the ringtone will sound without the notification.
+        RingtonePlayerManager.startAlarmSound(context)
     }
 
     // TODO: Check permission
