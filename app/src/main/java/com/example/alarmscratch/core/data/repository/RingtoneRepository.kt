@@ -9,7 +9,7 @@ import com.example.alarmscratch.core.data.model.RingtoneData
 class RingtoneRepository {
 
     fun getAllRingtones(context: Context): List<RingtoneData> {
-        val ringtoneManager = RingtoneManager(context.applicationContext)
+        val ringtoneManager = RingtoneManager(context.applicationContext).apply { setType(RingtoneManager.TYPE_ALARM) }
         val ringtoneCursor = ringtoneManager.cursor
         val ringtoneList: MutableList<RingtoneData> = mutableListOf()
 
