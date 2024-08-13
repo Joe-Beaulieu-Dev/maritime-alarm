@@ -30,7 +30,6 @@ class RingtonePlayer {
         val defaultRingtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
         ringtone = RingtoneManager.getRingtone(context, defaultRingtoneUri)
 
-
         // Getting around smart cast mutability warnings
         audioManager?.let { manager ->
             audioFocusRequest?.let { request ->
