@@ -12,6 +12,7 @@ val ALL_DESTINATIONS = listOf(
     AlarmListScreen,
     AlarmCreationScreen,
     AlarmEditScreen,
+    RingtonePickerScreen,
     SettingsScreen,
     GeneralSettingsScreen,
     AlarmDefaultsScreen
@@ -46,6 +47,11 @@ object AlarmEditScreen : Destination {
     const val alarmIdArg = "alarmIdArg"
     val routeWithArgs = "$route/{$alarmIdArg}"
     val args = listOf(navArgument(alarmIdArg) { type = NavType.IntType })
+}
+
+object RingtonePickerScreen : Destination {
+    override val route = "ringtone_picker_screen"
+    override val navComponent = null
 }
 
 object SettingsScreen : Destination {

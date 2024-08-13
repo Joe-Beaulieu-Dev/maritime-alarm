@@ -12,6 +12,7 @@ import com.example.alarmscratch.core.navigation.AlarmCreationScreen
 import com.example.alarmscratch.core.navigation.AlarmDefaultsScreen
 import com.example.alarmscratch.core.navigation.AlarmEditScreen
 import com.example.alarmscratch.core.navigation.CoreScreen
+import com.example.alarmscratch.core.navigation.RingtonePickerScreen
 import com.example.alarmscratch.settings.AlarmDefaultsScreen
 
 @Composable
@@ -38,6 +39,9 @@ fun AlarmApp() {
                 navHostController = navHostController,
                 modifier = Modifier.fillMaxSize()
             )
+        }
+        composable(route = RingtonePickerScreen.route) {
+            RingtonePickerScreen(modifier = Modifier.fillMaxSize())
         }
         composable(route = AlarmDefaultsScreen.route) {
             AlarmDefaultsScreen(modifier = Modifier.fillMaxSize())
