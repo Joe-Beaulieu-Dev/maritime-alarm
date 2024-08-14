@@ -40,6 +40,8 @@
     <!-- AlarmCreateEditScreen -->
     <string name="alarm_name_placeholder">Alarm name</string>
     <string name="repeating_alarm_date_label">Every:</string>
+    <string name="section_alert">Alert</string>
+    <string name="alarm_sound_label">Sound</string>
     <string name="validation_alarm_in_past">Alarms cannot be set in the past</string>
     <!-- AlarmTimePickerDialog -->
     <string name="select_time">Select time</string>

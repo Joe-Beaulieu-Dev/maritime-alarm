@@ -22,12 +22,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.alarm.data.preview.alarmSampleDataHardCodedIds
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.alarm.ui.alarmlist.AlarmListScreenContent
+import com.example.alarmscratch.core.extension.navigateSingleTop
 import com.example.alarmscratch.core.navigation.ALL_DESTINATIONS
 import com.example.alarmscratch.core.navigation.AlarmCreationScreen
 import com.example.alarmscratch.core.navigation.AlarmListScreen
 import com.example.alarmscratch.core.navigation.AlarmNavHost
 import com.example.alarmscratch.core.navigation.SettingsScreen
-import com.example.alarmscratch.core.navigation.navigateSingleTop
 import com.example.alarmscratch.core.ui.component.LavaFloatingActionButton
 import com.example.alarmscratch.core.ui.component.SkylineHeader
 import com.example.alarmscratch.core.ui.component.SkylineHeaderContent

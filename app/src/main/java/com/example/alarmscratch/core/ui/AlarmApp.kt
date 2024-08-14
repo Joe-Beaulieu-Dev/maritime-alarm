@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.alarm.ui.alarmcreate.AlarmCreationScreen
 import com.example.alarmscratch.alarm.ui.alarmedit.AlarmEditScreen
+import com.example.alarmscratch.core.extension.navigateSingleTop
 import com.example.alarmscratch.core.navigation.AlarmCreationScreen
 import com.example.alarmscratch.core.navigation.AlarmDefaultsScreen
 import com.example.alarmscratch.core.navigation.AlarmEditScreen
@@ -28,6 +29,7 @@ fun AlarmApp() {
         composable(route = AlarmCreationScreen.route) {
             AlarmCreationScreen(
                 navHostController = navHostController,
+                navigateToRingtonePickerScreen = { navHostController.navigateSingleTop(RingtonePickerScreen.route) },
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -37,6 +39,7 @@ fun AlarmApp() {
         ) {
             AlarmEditScreen(
                 navHostController = navHostController,
+                navigateToRingtonePickerScreen = { navHostController.navigateSingleTop(RingtonePickerScreen.route) },
                 modifier = Modifier.fillMaxSize()
             )
         }

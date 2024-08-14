@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AlarmCreationScreen(
     navHostController: NavHostController,
+    navigateToRingtonePickerScreen: () -> Unit,
     modifier: Modifier = Modifier,
     alarmCreationViewModel: AlarmCreationViewModel = viewModel(factory = AlarmCreationViewModel.Factory)
 ) {
@@ -30,6 +31,7 @@ fun AlarmCreationScreen(
 
     AlarmCreateEditScreen(
         navHostController = navHostController,
+        navigateToRingtonePickerScreen = navigateToRingtonePickerScreen,
         titleRes = R.string.alarm_creation_screen_title,
         alarm = alarmState,
         validateAlarm = alarmCreationViewModel::validateAlarm,
@@ -54,6 +56,7 @@ private fun AlarmCreationScreenPreview() {
     AlarmScratchTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
+            navigateToRingtonePickerScreen = {},
             titleRes = R.string.alarm_creation_screen_title,
             alarm = Alarm(
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),

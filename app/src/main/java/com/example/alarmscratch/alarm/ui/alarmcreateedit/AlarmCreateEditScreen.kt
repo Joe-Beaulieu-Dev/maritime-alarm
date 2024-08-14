@@ -9,14 +9,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -70,6 +74,7 @@ import java.time.LocalDateTime
 @Composable
 fun AlarmCreateEditScreen(
     navHostController: NavHostController,
+    navigateToRingtonePickerScreen: () -> Unit,
     @StringRes titleRes: Int,
     alarm: Alarm,
     validateAlarm: () -> Boolean,
@@ -143,6 +148,16 @@ fun AlarmCreateEditScreen(
                     updateTime = updateTime,
                     addDay = addDay,
                     removeDay = removeDay
+                )
+                HorizontalDivider(
+                    color = VolcanicRock,
+                    modifier = Modifier.padding(top = 12.dp, bottom = 12.dp)
+                )
+
+                // Alarm Alert Settings
+                AlarmAlertSettings(
+                    navigateToRingtonePickerScreen = navigateToRingtonePickerScreen,
+                    selectedRingtone = "placeholder_ringtone"
                 )
             }
         }
@@ -352,6 +367,45 @@ fun DayOfWeekButton(
     }
 }
 
+@Composable
+fun AlarmAlertSettings(
+    navigateToRingtonePickerScreen: () -> Unit,
+    selectedRingtone: String,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        // Alert Icon and Text
+        Row {
+            Icon(
+                imageVector = Icons.Default.NotificationsActive,
+                contentDescription = null,
+                tint = DarkerBoatSails
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = stringResource(id = R.string.section_alert),
+                color = DarkerBoatSails,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        // Sound/Ringtone selection
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { navigateToRingtonePickerScreen() }
+                .padding(top = 12.dp, bottom = 12.dp)
+        ) {
+            // Sound label
+            Text(text = stringResource(id = R.string.alarm_sound_label))
+            // Ringtone name
+            Text(text = selectedRingtone)
+        }
+    }
+}
+
 /*
  * Previews
  */
@@ -362,6 +416,7 @@ private fun AlarmCreateEditScreenPreview() {
     AlarmScratchTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
+            navigateToRingtonePickerScreen = {},
             titleRes = R.string.alarm_creation_screen_title,
             alarm = Alarm(
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),

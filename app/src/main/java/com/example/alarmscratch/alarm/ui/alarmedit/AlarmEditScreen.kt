@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AlarmEditScreen(
     navHostController: NavHostController,
+    navigateToRingtonePickerScreen: () -> Unit,
     modifier: Modifier = Modifier,
     alarmEditViewModel: AlarmEditViewModel = viewModel(factory = AlarmEditViewModel.Factory)
 ) {
@@ -32,6 +33,7 @@ fun AlarmEditScreen(
     if (alarmState is AlarmState.Success) {
         AlarmCreateEditScreen(
             navHostController = navHostController,
+            navigateToRingtonePickerScreen = navigateToRingtonePickerScreen,
             titleRes = R.string.alarm_edit_screen_title,
             alarm = (alarmState as AlarmState.Success).alarm,
             validateAlarm = alarmEditViewModel::validateAlarm,
@@ -57,6 +59,7 @@ private fun AlarmEditScreenPreview() {
     AlarmScratchTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
+            navigateToRingtonePickerScreen = {},
             titleRes = R.string.alarm_edit_screen_title,
             alarm = Alarm(
                 name = "Meeting",
