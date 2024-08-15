@@ -396,10 +396,10 @@ fun AlarmAlertSettings(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { navigateToRingtonePickerScreen() }
-                .padding(top = 12.dp, bottom = 12.dp)
+                .padding(start = 12.dp, top = 12.dp, bottom = 12.dp)
         ) {
             // Sound label
-            Text(text = stringResource(id = R.string.alarm_sound_label))
+            Text(text = stringResource(id = R.string.alarm_create_edit_alarm_sound_label))
             // Ringtone name
             Text(text = selectedRingtone)
         }

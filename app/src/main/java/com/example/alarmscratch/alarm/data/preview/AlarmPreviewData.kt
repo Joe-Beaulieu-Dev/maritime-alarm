@@ -2,6 +2,7 @@ package com.example.alarmscratch.alarm.data.preview
 
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
+import com.example.alarmscratch.core.data.model.RingtoneData
 import java.time.LocalDateTime
 
 const val tueWedThu: Int = 28
@@ -57,6 +58,14 @@ val alarmSampleData: List<Alarm> = listOf(repeatingAlarm, todayAlarm, tomorrowAl
  * Alarm List with hard coded IDs for use in Previews
  */
 val alarmSampleDataHardCodedIds: List<Alarm> = alarmSampleData.mapIndexed { index, alarm -> alarm.copy(id = index) }
+
+val ringtoneDataSampleList: List<RingtoneData> = listOf(
+    RingtoneData(id = 0, name = "Ringtone 1", baseUri = "ringtone1BaseUri"),
+    RingtoneData(id = 1, name = "Ringtone 2", baseUri = "ringtone2BaseUri"),
+    RingtoneData(id = 2, name = "Ringtone 3", baseUri = "ringtone3BaseUri"),
+    RingtoneData(id = 3, name = "Ringtone 4", baseUri = "ringtone4BaseUri"),
+    RingtoneData(id = 4, name = "Ringtone 5", baseUri = "ringtone5BaseUri")
+)
 
 // TODO do exception handling for java code
 private fun getTodayAtTime24Hr(hour: Int, minute: Int, second: Int): LocalDateTime =

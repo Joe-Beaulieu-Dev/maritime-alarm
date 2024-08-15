@@ -41,7 +41,7 @@
     <string name="alarm_name_placeholder">Alarm name</string>
     <string name="repeating_alarm_date_label">Every:</string>
     <string name="section_alert">Alert</string>
-    <string name="alarm_sound_label">Sound</string>
+    <string name="alarm_create_edit_alarm_sound_label">Sound</string>
     <string name="validation_alarm_in_past">Alarms cannot be set in the past</string>
     <!-- AlarmTimePickerDialog -->
     <string name="select_time">Select time</string>
@@ -51,6 +51,14 @@
     <string name="alarm_creation_screen_title">Create Alarm</string>
     <!-- AlarmEditScreen -->
     <string name="alarm_edit_screen_title">Edit Alarm</string>
+
+    <!--
+        **************************
+        ** RingtonePickerScreen **
+        **************************
+    -->
+    <string name="ringtone_picker_screen_title">Select Alarm Sound</string>
+    <string name="ringtone_picker_alarm_sounds_label">Sounds</string>
 
     <!--
         ********************

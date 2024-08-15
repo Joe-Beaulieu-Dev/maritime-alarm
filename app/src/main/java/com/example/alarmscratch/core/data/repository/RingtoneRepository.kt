@@ -6,9 +6,9 @@ import androidx.core.database.getIntOrNull
 import androidx.core.database.getStringOrNull
 import com.example.alarmscratch.core.data.model.RingtoneData
 
-class RingtoneRepository {
+class RingtoneRepository(private val context: Context) {
 
-    fun getAllRingtones(context: Context): List<RingtoneData> {
+    fun getAllRingtones(): List<RingtoneData> {
         val ringtoneManager = RingtoneManager(context.applicationContext).apply { setType(RingtoneManager.TYPE_ALARM) }
         val ringtoneCursor = ringtoneManager.cursor
         val ringtoneList: MutableList<RingtoneData> = mutableListOf()
