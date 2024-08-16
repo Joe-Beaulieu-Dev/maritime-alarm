@@ -2,6 +2,7 @@ package com.example.alarmscratch.alarm.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import java.time.LocalDateTime
 
 @Entity(tableName = "alarms")
@@ -11,7 +12,7 @@ data class Alarm(
     val id: Int = 0,
     val name: String = "",
     val enabled: Boolean = true,
-    // TODO: Java error
-    val dateTime: LocalDateTime = LocalDateTime.now(),
-    val weeklyRepeater: WeeklyRepeater = WeeklyRepeater()
+    val dateTime: LocalDateTime = LocalDateTimeUtil.nowTruncated(),
+    val weeklyRepeater: WeeklyRepeater = WeeklyRepeater(),
+    val ringtoneUriString: String
 )

@@ -1,6 +1,7 @@
 package com.example.alarmscratch.alarm.ui.alarmcreate
 
 import android.content.Context
+import android.media.RingtoneManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
@@ -20,7 +21,12 @@ import java.time.LocalDate
 
 class AlarmCreationViewModel(private val alarmRepository: AlarmRepository) : ViewModel() {
 
-    private val _newAlarm = MutableStateFlow(Alarm(dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1)))
+    private val _newAlarm = MutableStateFlow(
+        Alarm(
+            dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
+            ringtoneUriString = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)?.toString() ?: ""
+        )
+    )
     val newAlarm: StateFlow<Alarm> = _newAlarm.asStateFlow()
 
     companion object {

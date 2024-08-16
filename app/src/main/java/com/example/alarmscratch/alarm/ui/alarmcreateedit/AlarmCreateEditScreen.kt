@@ -53,6 +53,7 @@ import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
+import com.example.alarmscratch.alarm.data.preview.sampleRingtoneUriString
 import com.example.alarmscratch.alarm.data.preview.tueWedThu
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.AlarmDays
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.DateSelectionDialog
@@ -421,7 +422,8 @@ private fun AlarmCreateEditScreenPreview() {
             titleRes = R.string.alarm_creation_screen_title,
             alarm = Alarm(
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
-                weeklyRepeater = WeeklyRepeater(tueWedThu)
+                weeklyRepeater = WeeklyRepeater(tueWedThu),
+                ringtoneUriString = sampleRingtoneUriString
             ),
             validateAlarm = { true },
             saveAlarm = {},

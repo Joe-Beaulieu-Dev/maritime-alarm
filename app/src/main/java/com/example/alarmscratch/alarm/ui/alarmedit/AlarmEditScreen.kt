@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
+import com.example.alarmscratch.alarm.data.preview.sampleRingtoneUriString
 import com.example.alarmscratch.alarm.data.preview.tueWedThu
 import com.example.alarmscratch.alarm.data.repository.AlarmState
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.AlarmCreateEditScreen
@@ -64,7 +65,8 @@ private fun AlarmEditScreenPreview() {
             alarm = Alarm(
                 name = "Meeting",
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
-                weeklyRepeater = WeeklyRepeater(tueWedThu)
+                weeklyRepeater = WeeklyRepeater(tueWedThu),
+                ringtoneUriString = sampleRingtoneUriString
             ),
             validateAlarm = { true },
             saveAlarm = {},

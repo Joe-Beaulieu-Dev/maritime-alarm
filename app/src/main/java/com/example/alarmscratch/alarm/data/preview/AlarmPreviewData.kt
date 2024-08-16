@@ -6,6 +6,7 @@ import com.example.alarmscratch.core.data.model.RingtoneData
 import java.time.LocalDateTime
 
 const val tueWedThu: Int = 28
+const val sampleRingtoneUriString = "content://settings/system/alarm_alert"
 
 val repeatingAlarm =
     Alarm(
@@ -14,7 +15,8 @@ val repeatingAlarm =
         // TODO: Make this set the Date according to the next time the
         //  Alarm is going to go off based on the WeeklyRepeater
         dateTime = getTomorrowAtTime24Hr(hour = 8, minute = 30, second = 0),
-        weeklyRepeater = WeeklyRepeater(encodedRepeatingDays = tueWedThu)
+        weeklyRepeater = WeeklyRepeater(encodedRepeatingDays = tueWedThu),
+        ringtoneUriString = sampleRingtoneUriString
     )
 
 val todayAlarm =
@@ -22,7 +24,8 @@ val todayAlarm =
         name = "Eat pizza",
         enabled = true,
         dateTime = getTodayAtTime24Hr(hour = 23, minute = 59, second = 0),
-        weeklyRepeater = WeeklyRepeater()
+        weeklyRepeater = WeeklyRepeater(),
+        ringtoneUriString = sampleRingtoneUriString
     )
 
 val tomorrowAlarm =
@@ -30,7 +33,8 @@ val tomorrowAlarm =
         name = "Do a flip",
         enabled = false,
         dateTime = getTomorrowAtTime24Hr(hour = 14, minute = 0, second = 0),
-        weeklyRepeater = WeeklyRepeater()
+        weeklyRepeater = WeeklyRepeater(),
+        ringtoneUriString = sampleRingtoneUriString
     )
 
 // TODO do exception handling for java code
@@ -39,7 +43,8 @@ val calendarAlarm =
         name = "",
         enabled = true,
         dateTime = LocalDateTime.parse("2024-12-25T00:05:00"),
-        weeklyRepeater = WeeklyRepeater()
+        weeklyRepeater = WeeklyRepeater(),
+        ringtoneUriString = sampleRingtoneUriString
     )
 
 // TODO do exception handling for java code
@@ -48,7 +53,8 @@ val consistentFutureAlarm: Alarm =
         name = "",
         enabled = true,
         dateTime = LocalDateTime.now().withNano(0).plusHours(8).plusMinutes(45),
-        weeklyRepeater = WeeklyRepeater()
+        weeklyRepeater = WeeklyRepeater(),
+        ringtoneUriString = sampleRingtoneUriString
     )
 
 // YYYY-MM-DDTHH:MM:SS
