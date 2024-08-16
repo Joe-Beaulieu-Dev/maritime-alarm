@@ -87,8 +87,9 @@ fun AlarmCreateEditScreen(
     removeDay: (WeeklyRepeater.Day) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val coroutineScope = rememberCoroutineScope()
+    // State
     val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
     val showSnackbar: (String) -> Unit = { snackbarMessage ->
         coroutineScope.launch {
             snackbarHostState.showSnackbar(message = snackbarMessage)
