@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class RingtonePickerViewModel(ringtoneRepository: RingtoneRepository) : ViewModel() {
 
-    val ringtoneList = ringtoneRepository.getAllRingtones()
+    val ringtoneDataList = ringtoneRepository.getAllRingtoneData()
     private val _selectedRingtoneId: MutableStateFlow<Int> = MutableStateFlow(DEFAULT_RINGTONE_ID)
     val selectedRingtoneId: StateFlow<Int> = _selectedRingtoneId.asStateFlow()
 

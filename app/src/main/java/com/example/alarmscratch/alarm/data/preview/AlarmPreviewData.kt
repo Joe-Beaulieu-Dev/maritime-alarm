@@ -6,7 +6,7 @@ import com.example.alarmscratch.core.data.model.RingtoneData
 import java.time.LocalDateTime
 
 const val tueWedThu: Int = 28
-const val sampleRingtoneUriString = "content://settings/system/alarm_alert"
+private const val sampleRingtoneUriString = "content://settings/system/alarm_alert"
 
 val repeatingAlarm =
     Alarm(
@@ -64,6 +64,8 @@ val alarmSampleData: List<Alarm> = listOf(repeatingAlarm, todayAlarm, tomorrowAl
  * Alarm List with hard coded IDs for use in Previews
  */
 val alarmSampleDataHardCodedIds: List<Alarm> = alarmSampleData.mapIndexed { index, alarm -> alarm.copy(id = index) }
+
+val sampleRingtoneData = RingtoneData(id = 0, name = "Ringtone Name", baseUri = sampleRingtoneUriString)
 
 val ringtoneDataSampleList: List<RingtoneData> = listOf(
     RingtoneData(id = 0, name = "Ringtone 1", baseUri = "ringtone1BaseUri"),

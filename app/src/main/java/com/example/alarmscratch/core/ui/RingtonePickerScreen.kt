@@ -48,7 +48,7 @@ fun RingtonePickerScreen(
     ringtonePickerViewModel: RingtonePickerViewModel = viewModel(factory = RingtonePickerViewModel.Factory)
 ) {
     // State
-    val ringtoneDataList = ringtonePickerViewModel.ringtoneList
+    val ringtoneDataList = ringtonePickerViewModel.ringtoneDataList
     val selectedRingtoneId by ringtonePickerViewModel.selectedRingtoneId.collectAsState()
     
     RingtonePickerScreenContent(

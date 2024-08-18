@@ -53,7 +53,7 @@ import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
-import com.example.alarmscratch.alarm.data.preview.sampleRingtoneUriString
+import com.example.alarmscratch.alarm.data.preview.sampleRingtoneData
 import com.example.alarmscratch.alarm.data.preview.tueWedThu
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.AlarmDays
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.DateSelectionDialog
@@ -78,6 +78,7 @@ fun AlarmCreateEditScreen(
     navigateToRingtonePickerScreen: () -> Unit,
     @StringRes titleRes: Int,
     alarm: Alarm,
+    alarmRingtoneName: String,
     validateAlarm: () -> Boolean,
     saveAlarm: () -> Unit,
     scheduleAlarm: (Context) -> Unit,
@@ -159,7 +160,7 @@ fun AlarmCreateEditScreen(
                 // Alarm Alert Settings
                 AlarmAlertSettings(
                     navigateToRingtonePickerScreen = navigateToRingtonePickerScreen,
-                    selectedRingtone = "placeholder_ringtone"
+                    selectedRingtone = alarmRingtoneName
                 )
             }
         }
@@ -423,8 +424,9 @@ private fun AlarmCreateEditScreenPreview() {
             alarm = Alarm(
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
                 weeklyRepeater = WeeklyRepeater(tueWedThu),
-                ringtoneUriString = sampleRingtoneUriString
+                ringtoneUriString = sampleRingtoneData.baseUri
             ),
+            alarmRingtoneName = sampleRingtoneData.name,
             validateAlarm = { true },
             saveAlarm = {},
             scheduleAlarm = {},

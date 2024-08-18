@@ -1,14 +1,31 @@
 package com.example.alarmscratch.core.data.repository
 
 import android.content.Context
+import android.media.Ringtone
 import android.media.RingtoneManager
+import android.net.Uri
 import androidx.core.database.getIntOrNull
 import androidx.core.database.getStringOrNull
 import com.example.alarmscratch.core.data.model.RingtoneData
 
 class RingtoneRepository(private val context: Context) {
 
-    fun getAllRingtones(): List<RingtoneData> {
+    fun getRingtone(uriString: String): Ringtone {
+        val ringtoneUri = Uri.parse(uriString)
+        var ringtone = RingtoneManager.getRingtone(context.applicationContext, ringtoneUri)
+
+        if (ringtone == null) {
+            val defaultRingtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+            ringtone = RingtoneManager.getRingtone(context.applicationContext, defaultRingtoneUri)
+        }
+
+        // TODO: This can technically still be null since getRingtone() can return null.
+        //  It really shouldn't since we're already grabbing the system default as a fallback,
+        //  but theoretically it can be. Include a tone with the app to give just in case.
+        return ringtone
+    }
+
+    fun getAllRingtoneData(): List<RingtoneData> {
         val ringtoneManager = RingtoneManager(context.applicationContext).apply { setType(RingtoneManager.TYPE_ALARM) }
         val ringtoneCursor = ringtoneManager.cursor
         val ringtoneList: MutableList<RingtoneData> = mutableListOf()
