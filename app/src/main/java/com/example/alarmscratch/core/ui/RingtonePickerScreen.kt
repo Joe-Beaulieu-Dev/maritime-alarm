@@ -96,7 +96,6 @@ fun RingtonePickerScreenContent(
             // Top App Bar
             RingtonePickerTopAppBar(
                 navHostController = navHostController,
-                navigateBack = {},
                 saveRingtone = saveRingtone
             )
 
@@ -150,7 +149,6 @@ fun RingtonePickerScreenContent(
 @Composable
 fun RingtonePickerTopAppBar(
     navHostController: NavHostController,
-    navigateBack: () -> Unit,
     saveRingtone: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -163,7 +161,7 @@ fun RingtonePickerTopAppBar(
         // Up Navigation Arrow and Title
         Row(verticalAlignment = Alignment.CenterVertically) {
             // Up Navigation Arrow
-            IconButton(onClick = navigateBack) {
+            IconButton(onClick = { navHostController.navigateUp() }) {
                 Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
             }
 

@@ -20,7 +20,7 @@ class AlarmNotificationService(private val context: Context) {
         const val CHANNEL_ID_ALARM_NOTIFICATION = "channel_id_alarm_notification"
     }
 
-    fun showNotification(alarmId: Int, alarmName: String, alarmTime: String) {
+    fun showNotification(alarmId: Int, alarmName: String, alarmTime: String, ringtoneUriString: String) {
         val dismissAlarmIntent = Intent(context, AlarmNotificationActionReceiver::class.java).apply {
             action = AlarmNotificationActionReceiver.ACTION_DISMISS_ALARM
             putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId)
@@ -51,7 +51,7 @@ class AlarmNotificationService(private val context: Context) {
 
         // TODO: Check notification permission before sounding Alarm. If you don't,
         //  then the ringtone will sound without the notification.
-        RingtonePlayerManager.startAlarmSound(context)
+        RingtonePlayerManager.startAlarmSound(context, ringtoneUriString)
     }
 
     // TODO: Check permission

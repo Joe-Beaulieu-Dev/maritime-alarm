@@ -41,5 +41,6 @@ class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
             putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarm.id)
             putExtra(AlarmReceiver.EXTRA_ALARM_NAME, alarm.name)
             putExtra(AlarmReceiver.EXTRA_ALARM_TIME, alarm.dateTime.toNotificationDateTimeString(context))
+            putExtra(AlarmReceiver.EXTRA_RINGTONE_URI_STRING, alarm.ringtoneUriString)
         }
 }
