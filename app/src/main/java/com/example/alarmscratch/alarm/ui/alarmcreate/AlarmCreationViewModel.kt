@@ -10,6 +10,7 @@ import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
+import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.futurizeDateTime
 import com.example.alarmscratch.core.extension.isRepeating
@@ -77,6 +78,12 @@ class AlarmCreationViewModel(private val alarmRepository: AlarmRepository) : Vie
 
     fun removeDay(day: WeeklyRepeater.Day) {
         _newAlarm.value = _newAlarm.value.copy(weeklyRepeater = _newAlarm.value.weeklyRepeater.removeDay(day))
+    }
+
+    fun updateRingtone(ringtoneUriString: String?) {
+        if (ringtoneUriString != null && ringtoneUriString != RingtoneData.NO_RINGTONE_URI) {
+            _newAlarm.value = _newAlarm.value.copy(ringtoneUriString = ringtoneUriString)
+        }
     }
 
     fun validateAlarm(): Boolean = _newAlarm.value.dateTime.isAfter(LocalDateTimeUtil.nowTruncated())

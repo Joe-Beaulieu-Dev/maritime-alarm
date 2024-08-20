@@ -16,6 +16,7 @@ import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.preview.sampleRingtoneData
 import com.example.alarmscratch.alarm.data.preview.tueWedThu
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.AlarmCreateEditScreen
+import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.getRingtone
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
@@ -28,10 +29,20 @@ fun AlarmCreationScreen(
     modifier: Modifier = Modifier,
     alarmCreationViewModel: AlarmCreationViewModel = viewModel(factory = AlarmCreationViewModel.Factory)
 ) {
+    // Fetch updated Ringtone URI from this back stack entry's SavedStateHandle.
+    // If the User navigated to the RingtonePickerScreen and selected a new Ringtone,
+    // then the new Ringtone's URI will be saved here.
+    val ringtoneUriString: String? =
+        navHostController
+            .currentBackStackEntry
+            ?.savedStateHandle
+            ?.get(RingtoneData.FULL_RINGTONE_URI)
+    alarmCreationViewModel.updateRingtone(ringtoneUriString)
+
     // State
     val alarmState by alarmCreationViewModel.newAlarm.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     // This was extracted for previews, since previews can't actually "get a Ringtone"
     // from anywhere, therefore they can't get a name to display in the preview.
     val alarmRingtoneName = alarmState.getRingtone(context).getTitle(context)
@@ -69,7 +80,7 @@ private fun AlarmCreationScreenPreview() {
             alarm = Alarm(
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
                 weeklyRepeater = WeeklyRepeater(tueWedThu),
-                ringtoneUriString = sampleRingtoneData.baseUri
+                ringtoneUriString = sampleRingtoneData.getFullUriString()
             ),
             alarmRingtoneName = sampleRingtoneData.name,
             validateAlarm = { true },

@@ -44,7 +44,10 @@ fun AlarmApp() {
             )
         }
         composable(route = RingtonePickerScreen.route) {
-            RingtonePickerScreen(modifier = Modifier.fillMaxSize())
+            RingtonePickerScreen(
+                navHostController = navHostController,
+                modifier = Modifier.fillMaxSize()
+            )
         }
         composable(route = AlarmDefaultsScreen.route) {
             AlarmDefaultsScreen(modifier = Modifier.fillMaxSize())

@@ -31,9 +31,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.ringtoneDataSampleList
+import com.example.alarmscratch.alarm.data.preview.sampleRingtoneData
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
@@ -44,30 +48,41 @@ import com.example.alarmscratch.core.ui.theme.VolcanicRock
 
 @Composable
 fun RingtonePickerScreen(
+    navHostController: NavHostController,
     modifier: Modifier,
     ringtonePickerViewModel: RingtonePickerViewModel = viewModel(factory = RingtonePickerViewModel.Factory)
 ) {
     // State
     val ringtoneDataList = ringtonePickerViewModel.ringtoneDataList
-    val selectedRingtoneId by ringtonePickerViewModel.selectedRingtoneId.collectAsState()
+    val selectedRingtone by ringtonePickerViewModel.selectedRingtone.collectAsState()
+
+    // Actions
+    val saveRingtone: () -> Unit = {
+        val alarmEditScreenSavedStateHandle: SavedStateHandle? = navHostController.previousBackStackEntry?.savedStateHandle
+        ringtonePickerViewModel.saveRingtone(alarmEditScreenSavedStateHandle)
+    }
     
     RingtonePickerScreenContent(
+        navHostController = navHostController,
         ringtoneDataList = ringtoneDataList,
-        selectedRingtoneId = selectedRingtoneId,
+        selectedRingtone = selectedRingtone,
         selectRingtone = ringtonePickerViewModel::selectRingtone,
+        saveRingtone = saveRingtone,
         modifier = modifier
     )
 }
 
 @Composable
 fun RingtonePickerScreenContent(
+    navHostController: NavHostController,
     ringtoneDataList: List<RingtoneData>,
-    selectedRingtoneId: Int,
-    selectRingtone: (Int) -> Unit,
+    selectedRingtone: RingtoneData,
+    selectRingtone: (RingtoneData) -> Unit,
+    saveRingtone: () -> Unit,
     modifier: Modifier
 ) {
     // State
-    val isRowSelected: (Int) -> Boolean = { rowId -> rowId == selectedRingtoneId }
+    val isRowSelected: (Int) -> Boolean = { rowId -> rowId == selectedRingtone.id }
     val rowColor: (Int) -> Color = { rowId ->
         if (isRowSelected(rowId)) {
             VolcanicRock
@@ -79,7 +94,11 @@ fun RingtonePickerScreenContent(
     Surface(modifier = modifier) {
         Column {
             // Top App Bar
-            RingtonePickerTopAppBar(navigateBack = {}, saveRingtone = {})
+            RingtonePickerTopAppBar(
+                navHostController = navHostController,
+                navigateBack = {},
+                saveRingtone = saveRingtone
+            )
 
             // Alarm Sounds Label
             Row(
@@ -106,7 +125,7 @@ fun RingtonePickerScreenContent(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { selectRingtone(ringtoneData.id) }
+                            .clickable { selectRingtone(ringtoneData) }
                             .background(color = rowColor(ringtoneData.id))
                             .padding(start = 32.dp, top = 12.dp, end = 32.dp, bottom = 12.dp)
                     ) {
@@ -130,6 +149,7 @@ fun RingtonePickerScreenContent(
 
 @Composable
 fun RingtonePickerTopAppBar(
+    navHostController: NavHostController,
     navigateBack: () -> Unit,
     saveRingtone: () -> Unit,
     modifier: Modifier = Modifier
@@ -156,7 +176,12 @@ fun RingtonePickerTopAppBar(
         }
 
         // Save Button
-        IconButton(onClick = saveRingtone) {
+        IconButton(
+            onClick = {
+                saveRingtone()
+                navHostController.popBackStack()
+            }
+        ) {
             Icon(imageVector = Icons.Default.Save, contentDescription = null)
         }
     }
@@ -171,9 +196,11 @@ fun RingtonePickerTopAppBar(
 private fun RingtonePickerScreenPreview() {
     AlarmScratchTheme {
         RingtonePickerScreenContent(
+            navHostController = rememberNavController(),
             ringtoneDataList = ringtoneDataSampleList,
-            selectedRingtoneId = 1,
+            selectedRingtone = sampleRingtoneData,
             selectRingtone = {},
+            saveRingtone = {},
             modifier = Modifier.fillMaxSize()
         )
     }

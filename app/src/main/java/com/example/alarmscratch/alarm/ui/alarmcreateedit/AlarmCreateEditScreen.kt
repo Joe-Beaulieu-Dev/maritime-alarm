@@ -424,7 +424,7 @@ private fun AlarmCreateEditScreenPreview() {
             alarm = Alarm(
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
                 weeklyRepeater = WeeklyRepeater(tueWedThu),
-                ringtoneUriString = sampleRingtoneData.baseUri
+                ringtoneUriString = sampleRingtoneData.getFullUriString()
             ),
             alarmRingtoneName = sampleRingtoneData.name,
             validateAlarm = { true },
