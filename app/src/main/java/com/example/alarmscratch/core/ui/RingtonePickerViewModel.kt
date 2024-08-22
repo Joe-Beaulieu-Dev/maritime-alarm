@@ -19,8 +19,8 @@ class RingtonePickerViewModel(
 ) : ViewModel() {
 
     val ringtoneDataList = ringtoneRepository.getAllRingtoneData()
-    private val argRingtoneUriString: String = savedStateHandle.toRoute<RingtonePickerScreen>().ringtoneUriString
-    private val _selectedRingtoneUri: MutableStateFlow<String> = MutableStateFlow(argRingtoneUriString)
+    private val initialRingtoneUri: String = savedStateHandle.toRoute<RingtonePickerScreen>().ringtoneUriString
+    private val _selectedRingtoneUri: MutableStateFlow<String> = MutableStateFlow(initialRingtoneUri)
     val selectedRingtoneUri: StateFlow<String> = _selectedRingtoneUri.asStateFlow()
 
     companion object {

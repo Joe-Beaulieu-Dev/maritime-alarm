@@ -1,10 +1,10 @@
 package com.example.alarmscratch.core.data.model
 
 // TODO: Make actual Uri
-data class RingtoneData(
-    private val id: Int,
+class RingtoneData(
+    id: Int,
     val name: String,
-    private val baseUri: String
+    baseUri: String
 ) {
 
     val fullUriString = "$baseUri/$id"
