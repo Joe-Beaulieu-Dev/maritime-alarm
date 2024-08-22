@@ -8,7 +8,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.alarm.ui.alarmcreate.AlarmCreationScreen
 import com.example.alarmscratch.alarm.ui.alarmedit.AlarmEditScreen
-import com.example.alarmscratch.core.extension.navigateSingleTop
 import com.example.alarmscratch.core.navigation.AlarmCreationScreen
 import com.example.alarmscratch.core.navigation.AlarmDefaultsScreen
 import com.example.alarmscratch.core.navigation.AlarmEditScreen
@@ -26,24 +25,25 @@ fun AlarmApp() {
         composable(route = CoreScreen.route) {
             CoreScreen(rootNavHostController = navHostController)
         }
-        composable(route = AlarmCreationScreen.route) {
+        composable<AlarmCreationScreen> {
             AlarmCreationScreen(
                 navHostController = navHostController,
-                navigateToRingtonePickerScreen = { navHostController.navigateSingleTop(RingtonePickerScreen.route) },
+                navigateToRingtonePickerScreen = { ringtoneUriString ->
+                    navHostController.navigate(RingtonePickerScreen(ringtoneUriString = ringtoneUriString)) { launchSingleTop = true }
+                },
                 modifier = Modifier.fillMaxSize()
             )
         }
-        composable(
-            route = AlarmEditScreen.routeWithArgs,
-            arguments = AlarmEditScreen.args
-        ) {
+        composable<AlarmEditScreen> {
             AlarmEditScreen(
                 navHostController = navHostController,
-                navigateToRingtonePickerScreen = { navHostController.navigateSingleTop(RingtonePickerScreen.route) },
+                navigateToRingtonePickerScreen = { ringtoneUriString ->
+                    navHostController.navigate(RingtonePickerScreen(ringtoneUriString = ringtoneUriString)) { launchSingleTop = true }
+                },
                 modifier = Modifier.fillMaxSize()
             )
         }
-        composable(route = RingtonePickerScreen.route) {
+        composable<RingtonePickerScreen> {
             RingtonePickerScreen(
                 navHostController = navHostController,
                 modifier = Modifier.fillMaxSize()

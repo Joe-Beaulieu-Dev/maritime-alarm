@@ -3,16 +3,12 @@ package com.example.alarmscratch.core.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Settings
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
 import com.example.alarmscratch.R
+import kotlinx.serialization.Serializable
 
 val ALL_DESTINATIONS = listOf(
     CoreScreen,
     AlarmListScreen,
-    AlarmCreationScreen,
-    AlarmEditScreen,
-    RingtonePickerScreen,
     SettingsScreen,
     GeneralSettingsScreen,
     AlarmDefaultsScreen
@@ -36,23 +32,17 @@ object AlarmListScreen : Destination {
     )
 }
 
-object AlarmCreationScreen : Destination {
-    override val route = "alarm_creation_screen"
-    override val navComponent = null
-}
+// TODO: Put in ALL_DESTINATIONS
+@Serializable
+object AlarmCreationScreen
 
-object AlarmEditScreen : Destination {
-    override val route = "alarm_edit_screen"
-    override val navComponent = null
-    const val alarmIdArg = "alarmIdArg"
-    val routeWithArgs = "$route/{$alarmIdArg}"
-    val args = listOf(navArgument(alarmIdArg) { type = NavType.IntType })
-}
+// TODO: Put in ALL_DESTINATIONS
+@Serializable
+data class AlarmEditScreen(val alarmId: Int)
 
-object RingtonePickerScreen : Destination {
-    override val route = "ringtone_picker_screen"
-    override val navComponent = null
-}
+// TODO: Put in ALL_DESTINATIONS
+@Serializable
+data class RingtonePickerScreen(val ringtoneUriString: String)
 
 object SettingsScreen : Destination {
     override val route = "settings_screen"

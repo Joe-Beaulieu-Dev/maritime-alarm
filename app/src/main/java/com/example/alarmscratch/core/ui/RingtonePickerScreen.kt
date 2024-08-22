@@ -54,7 +54,7 @@ fun RingtonePickerScreen(
 ) {
     // State
     val ringtoneDataList = ringtonePickerViewModel.ringtoneDataList
-    val selectedRingtone by ringtonePickerViewModel.selectedRingtone.collectAsState()
+    val selectedRingtoneUri by ringtonePickerViewModel.selectedRingtoneUri.collectAsState()
 
     // Actions
     val saveRingtone: () -> Unit = {
@@ -65,7 +65,7 @@ fun RingtonePickerScreen(
     RingtonePickerScreenContent(
         navHostController = navHostController,
         ringtoneDataList = ringtoneDataList,
-        selectedRingtone = selectedRingtone,
+        selectedRingtoneUri = selectedRingtoneUri,
         selectRingtone = ringtonePickerViewModel::selectRingtone,
         saveRingtone = saveRingtone,
         modifier = modifier
@@ -76,20 +76,14 @@ fun RingtonePickerScreen(
 fun RingtonePickerScreenContent(
     navHostController: NavHostController,
     ringtoneDataList: List<RingtoneData>,
-    selectedRingtone: RingtoneData,
-    selectRingtone: (RingtoneData) -> Unit,
+    selectedRingtoneUri: String,
+    selectRingtone: (String) -> Unit,
     saveRingtone: () -> Unit,
     modifier: Modifier
 ) {
     // State
-    val isRowSelected: (Int) -> Boolean = { rowId -> rowId == selectedRingtone.id }
-    val rowColor: (Int) -> Color = { rowId ->
-        if (isRowSelected(rowId)) {
-            VolcanicRock
-        } else {
-            DarkVolcanicRock
-        }
-    }
+    val isRowSelected: (String) -> Boolean = { it == selectedRingtoneUri }
+    val rowColor: (String) -> Color = { if (isRowSelected(it)) VolcanicRock else DarkVolcanicRock }
 
     Surface(modifier = modifier) {
         Column {
@@ -124,15 +118,15 @@ fun RingtonePickerScreenContent(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { selectRingtone(ringtoneData) }
-                            .background(color = rowColor(ringtoneData.id))
+                            .clickable { selectRingtone(ringtoneData.fullUriString) }
+                            .background(color = rowColor(ringtoneData.fullUriString))
                             .padding(start = 32.dp, top = 12.dp, end = 32.dp, bottom = 12.dp)
                     ) {
                         // Ringtone Name
                         Text(text = ringtoneData.name)
 
                         // Selected Ringtone Icon
-                        if (isRowSelected(ringtoneData.id)) {
+                        if (isRowSelected(ringtoneData.fullUriString)) {
                             Icon(
                                 imageVector = Icons.Default.CheckCircle,
                                 contentDescription = null,
@@ -196,7 +190,7 @@ private fun RingtonePickerScreenPreview() {
         RingtonePickerScreenContent(
             navHostController = rememberNavController(),
             ringtoneDataList = ringtoneDataSampleList,
-            selectedRingtone = sampleRingtoneData,
+            selectedRingtoneUri = sampleRingtoneData.fullUriString,
             selectRingtone = {},
             saveRingtone = {},
             modifier = Modifier.fillMaxSize()

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.navigation.toRoute
 import com.example.alarmscratch.alarm.alarmexecution.AlarmSchedulerImpl
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
@@ -32,7 +33,7 @@ class AlarmEditViewModel(
     private val alarmRepository: AlarmRepository
 ) : ViewModel() {
 
-    private val alarmId: Int = savedStateHandle[AlarmEditScreen.alarmIdArg] ?: -1
+    private val alarmId: Int = savedStateHandle.toRoute<AlarmEditScreen>().alarmId
     private val _modifiedAlarm: MutableStateFlow<AlarmState> = MutableStateFlow(AlarmState.Loading)
     val modifiedAlarm: StateFlow<AlarmState> = _modifiedAlarm.asStateFlow()
 

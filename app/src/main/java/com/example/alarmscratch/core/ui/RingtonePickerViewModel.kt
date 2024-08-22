@@ -3,18 +3,25 @@ package com.example.alarmscratch.core.ui
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.navigation.toRoute
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.data.repository.RingtoneRepository
+import com.example.alarmscratch.core.navigation.RingtonePickerScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class RingtonePickerViewModel(ringtoneRepository: RingtoneRepository) : ViewModel() {
+class RingtonePickerViewModel(
+    savedStateHandle: SavedStateHandle,
+    ringtoneRepository: RingtoneRepository
+) : ViewModel() {
 
     val ringtoneDataList = ringtoneRepository.getAllRingtoneData()
-    private val _selectedRingtone: MutableStateFlow<RingtoneData> = MutableStateFlow(RingtoneData(-1, "", ""))
-    val selectedRingtone: StateFlow<RingtoneData> = _selectedRingtone.asStateFlow()
+    private val argRingtoneUriString: String = savedStateHandle.toRoute<RingtonePickerScreen>().ringtoneUriString
+    private val _selectedRingtoneUri: MutableStateFlow<String> = MutableStateFlow(argRingtoneUriString)
+    val selectedRingtoneUri: StateFlow<String> = _selectedRingtoneUri.asStateFlow()
 
     companion object {
 
@@ -24,13 +31,16 @@ class RingtonePickerViewModel(ringtoneRepository: RingtoneRepository) : ViewMode
                 // TODO: Do something about this
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
 
-                return RingtonePickerViewModel(ringtoneRepository = RingtoneRepository(application)) as T
+                return RingtonePickerViewModel(
+                    savedStateHandle = extras.createSavedStateHandle(),
+                    ringtoneRepository = RingtoneRepository(application)
+                ) as T
             }
         }
     }
 
-    fun selectRingtone(ringtoneData: RingtoneData) {
-        _selectedRingtone.value = ringtoneData
+    fun selectRingtone(ringtoneUriString: String) {
+        _selectedRingtoneUri.value = ringtoneUriString
     }
 
     /**
@@ -40,7 +50,6 @@ class RingtonePickerViewModel(ringtoneRepository: RingtoneRepository) : ViewMode
      * @param savedStateHandle the previous screen's SavedStateHandle
      */
     fun saveRingtone(savedStateHandle: SavedStateHandle?) {
-        val ringtoneUriString = _selectedRingtone.value.getFullUriString()
-        savedStateHandle?.set(RingtoneData.FULL_RINGTONE_URI, ringtoneUriString)
+        savedStateHandle?.set(RingtoneData.KEY_FULL_RINGTONE_URI_STRING, _selectedRingtoneUri.value)
     }
 }

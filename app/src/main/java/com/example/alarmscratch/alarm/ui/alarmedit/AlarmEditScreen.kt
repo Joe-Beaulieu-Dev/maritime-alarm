@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AlarmEditScreen(
     navHostController: NavHostController,
-    navigateToRingtonePickerScreen: () -> Unit,
+    navigateToRingtonePickerScreen: (String) -> Unit,
     modifier: Modifier = Modifier,
     alarmEditViewModel: AlarmEditViewModel = viewModel(factory = AlarmEditViewModel.Factory)
 ) {
@@ -41,7 +41,7 @@ fun AlarmEditScreen(
             navHostController
                 .currentBackStackEntry
                 ?.savedStateHandle
-                ?.get(RingtoneData.FULL_RINGTONE_URI)
+                ?.get(RingtoneData.KEY_FULL_RINGTONE_URI_STRING)
         alarmEditViewModel.updateRingtone(ringtoneUriString)
 
         val context = LocalContext.current
@@ -86,7 +86,7 @@ private fun AlarmEditScreenPreview() {
                 name = "Meeting",
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
                 weeklyRepeater = WeeklyRepeater(tueWedThu),
-                ringtoneUriString = sampleRingtoneData.getFullUriString()
+                ringtoneUriString = sampleRingtoneData.fullUriString
             ),
             alarmRingtoneName = sampleRingtoneData.name,
             validateAlarm = { true },

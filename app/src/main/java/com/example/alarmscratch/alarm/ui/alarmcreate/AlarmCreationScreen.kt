@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AlarmCreationScreen(
     navHostController: NavHostController,
-    navigateToRingtonePickerScreen: () -> Unit,
+    navigateToRingtonePickerScreen: (String) -> Unit,
     modifier: Modifier = Modifier,
     alarmCreationViewModel: AlarmCreationViewModel = viewModel(factory = AlarmCreationViewModel.Factory)
 ) {
@@ -36,7 +36,7 @@ fun AlarmCreationScreen(
         navHostController
             .currentBackStackEntry
             ?.savedStateHandle
-            ?.get(RingtoneData.FULL_RINGTONE_URI)
+            ?.get(RingtoneData.KEY_FULL_RINGTONE_URI_STRING)
     alarmCreationViewModel.updateRingtone(ringtoneUriString)
 
     // State
@@ -80,7 +80,7 @@ private fun AlarmCreationScreenPreview() {
             alarm = Alarm(
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
                 weeklyRepeater = WeeklyRepeater(tueWedThu),
-                ringtoneUriString = sampleRingtoneData.getFullUriString()
+                ringtoneUriString = sampleRingtoneData.fullUriString
             ),
             alarmRingtoneName = sampleRingtoneData.name,
             validateAlarm = { true },

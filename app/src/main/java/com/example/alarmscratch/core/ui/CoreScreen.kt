@@ -40,7 +40,7 @@ import com.example.alarmscratch.settings.SettingsScreen
 @Composable
 fun CoreScreen(rootNavHostController: NavHostController) {
     // Actions
-    val onFabClicked: () -> Unit = { rootNavHostController.navigateSingleTop(AlarmCreationScreen.route) }
+    val onFabClicked: () -> Unit = { rootNavHostController.navigate(AlarmCreationScreen) { launchSingleTop = true } }
 
     // Navigation
     val localNavHostController = rememberNavController()

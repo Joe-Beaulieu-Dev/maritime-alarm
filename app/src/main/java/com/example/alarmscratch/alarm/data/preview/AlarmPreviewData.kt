@@ -68,11 +68,11 @@ val alarmSampleDataHardCodedIds: List<Alarm> = alarmSampleData.mapIndexed { inde
 val sampleRingtoneData = RingtoneData(id = 0, name = "Ringtone Name", baseUri = sampleRingtoneUriString)
 
 val ringtoneDataSampleList: List<RingtoneData> = listOf(
+    sampleRingtoneData,
     RingtoneData(id = 0, name = "Ringtone 1", baseUri = "ringtone1BaseUri"),
     RingtoneData(id = 1, name = "Ringtone 2", baseUri = "ringtone2BaseUri"),
     RingtoneData(id = 2, name = "Ringtone 3", baseUri = "ringtone3BaseUri"),
-    RingtoneData(id = 3, name = "Ringtone 4", baseUri = "ringtone4BaseUri"),
-    RingtoneData(id = 4, name = "Ringtone 5", baseUri = "ringtone5BaseUri")
+    RingtoneData(id = 3, name = "Ringtone 4", baseUri = "ringtone4BaseUri")
 )
 
 // TODO do exception handling for java code

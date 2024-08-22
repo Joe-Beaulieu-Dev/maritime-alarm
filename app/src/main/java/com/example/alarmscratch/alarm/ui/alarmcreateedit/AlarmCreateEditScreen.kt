@@ -75,7 +75,7 @@ import java.time.LocalDateTime
 @Composable
 fun AlarmCreateEditScreen(
     navHostController: NavHostController,
-    navigateToRingtonePickerScreen: () -> Unit,
+    navigateToRingtonePickerScreen: (String) -> Unit,
     @StringRes titleRes: Int,
     alarm: Alarm,
     alarmRingtoneName: String,
@@ -159,7 +159,7 @@ fun AlarmCreateEditScreen(
 
                 // Alarm Alert Settings
                 AlarmAlertSettings(
-                    navigateToRingtonePickerScreen = navigateToRingtonePickerScreen,
+                    navigateToRingtonePickerScreen = { navigateToRingtonePickerScreen(alarm.ringtoneUriString) },
                     selectedRingtone = alarmRingtoneName
                 )
             }
@@ -424,7 +424,7 @@ private fun AlarmCreateEditScreenPreview() {
             alarm = Alarm(
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
                 weeklyRepeater = WeeklyRepeater(tueWedThu),
-                ringtoneUriString = sampleRingtoneData.getFullUriString()
+                ringtoneUriString = sampleRingtoneData.fullUriString
             ),
             alarmRingtoneName = sampleRingtoneData.name,
             validateAlarm = { true },
