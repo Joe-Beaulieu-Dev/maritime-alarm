@@ -7,12 +7,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.navigation.toRoute
 import com.example.alarmscratch.alarm.alarmexecution.AlarmSchedulerImpl
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.alarm.data.repository.AlarmState
+import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.futurizeDateTime
 import com.example.alarmscratch.core.extension.isRepeating
@@ -31,7 +33,7 @@ class AlarmEditViewModel(
     private val alarmRepository: AlarmRepository
 ) : ViewModel() {
 
-    private val alarmId: Int = savedStateHandle[AlarmEditScreen.alarmIdArg] ?: -1
+    private val alarmId: Int = savedStateHandle.toRoute<AlarmEditScreen>().alarmId
     private val _modifiedAlarm: MutableStateFlow<AlarmState> = MutableStateFlow(AlarmState.Loading)
     val modifiedAlarm: StateFlow<AlarmState> = _modifiedAlarm.asStateFlow()
 
@@ -113,6 +115,17 @@ class AlarmEditViewModel(
         if (_modifiedAlarm.value is AlarmState.Success) {
             val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
             _modifiedAlarm.value = AlarmState.Success(alarm.copy(weeklyRepeater = alarm.weeklyRepeater.removeDay(day)))
+        }
+    }
+
+    fun updateRingtone(ringtoneUriString: String?) {
+        if (
+            _modifiedAlarm.value is AlarmState.Success &&
+            ringtoneUriString != null &&
+            ringtoneUriString != RingtoneData.NO_RINGTONE_URI
+        ) {
+            val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
+            _modifiedAlarm.value = AlarmState.Success(alarm.copy(ringtoneUriString = ringtoneUriString))
         }
     }
 

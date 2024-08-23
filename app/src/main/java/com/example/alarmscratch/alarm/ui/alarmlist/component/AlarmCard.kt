@@ -111,9 +111,7 @@ fun AlarmCard(
                                 tint = BoatHull
                             )
                         },
-                        colors = MenuDefaults.itemColors(
-                            textColor = BoatSails
-                        ),
+                        colors = MenuDefaults.itemColors(textColor = BoatSails),
                         onClick = {
                             onAlarmDeleted(alarm)
                             dropdownExpanded = false

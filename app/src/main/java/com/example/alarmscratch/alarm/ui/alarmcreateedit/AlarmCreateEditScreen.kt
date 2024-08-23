@@ -9,14 +9,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -49,6 +53,7 @@ import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
+import com.example.alarmscratch.alarm.data.preview.sampleRingtoneData
 import com.example.alarmscratch.alarm.data.preview.tueWedThu
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.AlarmDays
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.DateSelectionDialog
@@ -70,8 +75,10 @@ import java.time.LocalDateTime
 @Composable
 fun AlarmCreateEditScreen(
     navHostController: NavHostController,
+    navigateToRingtonePickerScreen: (String) -> Unit,
     @StringRes titleRes: Int,
     alarm: Alarm,
+    alarmRingtoneName: String,
     validateAlarm: () -> Boolean,
     saveAlarm: () -> Unit,
     scheduleAlarm: (Context) -> Unit,
@@ -82,8 +89,9 @@ fun AlarmCreateEditScreen(
     removeDay: (WeeklyRepeater.Day) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val coroutineScope = rememberCoroutineScope()
+    // State
     val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
     val showSnackbar: (String) -> Unit = { snackbarMessage ->
         coroutineScope.launch {
             snackbarHostState.showSnackbar(message = snackbarMessage)
@@ -143,6 +151,16 @@ fun AlarmCreateEditScreen(
                     updateTime = updateTime,
                     addDay = addDay,
                     removeDay = removeDay
+                )
+                HorizontalDivider(
+                    color = VolcanicRock,
+                    modifier = Modifier.padding(top = 12.dp, bottom = 12.dp)
+                )
+
+                // Alarm Alert Settings
+                AlarmAlertSettings(
+                    navigateToRingtonePickerScreen = { navigateToRingtonePickerScreen(alarm.ringtoneUriString) },
+                    selectedRingtone = alarmRingtoneName
                 )
             }
         }
@@ -352,6 +370,45 @@ fun DayOfWeekButton(
     }
 }
 
+@Composable
+fun AlarmAlertSettings(
+    navigateToRingtonePickerScreen: () -> Unit,
+    selectedRingtone: String,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        // Alert Icon and Text
+        Row {
+            Icon(
+                imageVector = Icons.Default.NotificationsActive,
+                contentDescription = null,
+                tint = DarkerBoatSails
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = stringResource(id = R.string.section_alert),
+                color = DarkerBoatSails,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        // Sound/Ringtone selection
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { navigateToRingtonePickerScreen() }
+                .padding(start = 12.dp, top = 12.dp, bottom = 12.dp)
+        ) {
+            // Sound label
+            Text(text = stringResource(id = R.string.alarm_create_edit_alarm_sound_label))
+            // Ringtone name
+            Text(text = selectedRingtone)
+        }
+    }
+}
+
 /*
  * Previews
  */
@@ -362,11 +419,14 @@ private fun AlarmCreateEditScreenPreview() {
     AlarmScratchTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
+            navigateToRingtonePickerScreen = {},
             titleRes = R.string.alarm_creation_screen_title,
             alarm = Alarm(
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
-                weeklyRepeater = WeeklyRepeater(tueWedThu)
+                weeklyRepeater = WeeklyRepeater(tueWedThu),
+                ringtoneUriString = sampleRingtoneData.fullUriString
             ),
+            alarmRingtoneName = sampleRingtoneData.name,
             validateAlarm = { true },
             saveAlarm = {},
             scheduleAlarm = {},

@@ -12,6 +12,7 @@ import com.example.alarmscratch.core.navigation.AlarmCreationScreen
 import com.example.alarmscratch.core.navigation.AlarmDefaultsScreen
 import com.example.alarmscratch.core.navigation.AlarmEditScreen
 import com.example.alarmscratch.core.navigation.CoreScreen
+import com.example.alarmscratch.core.navigation.RingtonePickerScreen
 import com.example.alarmscratch.settings.AlarmDefaultsScreen
 
 @Composable
@@ -24,17 +25,26 @@ fun AlarmApp() {
         composable(route = CoreScreen.route) {
             CoreScreen(rootNavHostController = navHostController)
         }
-        composable(route = AlarmCreationScreen.route) {
+        composable<AlarmCreationScreen> {
             AlarmCreationScreen(
                 navHostController = navHostController,
+                navigateToRingtonePickerScreen = { ringtoneUriString ->
+                    navHostController.navigate(RingtonePickerScreen(ringtoneUriString = ringtoneUriString)) { launchSingleTop = true }
+                },
                 modifier = Modifier.fillMaxSize()
             )
         }
-        composable(
-            route = AlarmEditScreen.routeWithArgs,
-            arguments = AlarmEditScreen.args
-        ) {
+        composable<AlarmEditScreen> {
             AlarmEditScreen(
+                navHostController = navHostController,
+                navigateToRingtonePickerScreen = { ringtoneUriString ->
+                    navHostController.navigate(RingtonePickerScreen(ringtoneUriString = ringtoneUriString)) { launchSingleTop = true }
+                },
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+        composable<RingtonePickerScreen> {
+            RingtonePickerScreen(
                 navHostController = navHostController,
                 modifier = Modifier.fillMaxSize()
             )

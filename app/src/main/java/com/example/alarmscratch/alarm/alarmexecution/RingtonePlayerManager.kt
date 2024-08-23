@@ -4,21 +4,13 @@ import android.content.Context
 
 object RingtonePlayerManager {
 
-    private var ringtonePlayer: RingtonePlayer? = null
+    private var ringtonePlayer = RingtonePlayer()
 
-    fun startAlarmSound(context: Context) {
-        getRingtonePlayer()?.playRingtone(context.applicationContext)
+    fun startAlarmSound(context: Context, ringtoneUriString: String) {
+        ringtonePlayer.playRingtone(context.applicationContext, ringtoneUriString)
     }
 
     fun stopAlarmSound() {
-        getRingtonePlayer()?.stopRingtone()
-    }
-
-    private fun getRingtonePlayer(): RingtonePlayer? {
-        if (ringtonePlayer == null) {
-            ringtonePlayer = RingtonePlayer()
-        }
-
-        return ringtonePlayer
+        ringtonePlayer.stopRingtone()
     }
 }

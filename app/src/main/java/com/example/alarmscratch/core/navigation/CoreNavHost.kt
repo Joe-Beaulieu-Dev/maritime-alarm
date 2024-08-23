@@ -21,7 +21,7 @@ fun AlarmNavHost(
     ) {
         composable(route = AlarmListScreen.route) {
             AlarmListScreen(navigateToAlarmEditScreen = { alarmId ->
-                rootNavHostController.navigateSingleTop("${AlarmEditScreen.route}/$alarmId")
+                rootNavHostController.navigate(AlarmEditScreen(alarmId = alarmId)) { launchSingleTop = true }
             })
         }
         composable(route = SettingsScreen.route) {
@@ -29,8 +29,3 @@ fun AlarmNavHost(
         }
     }
 }
-
-fun NavHostController.navigateSingleTop(route: String) =
-    navigate(route) {
-        launchSingleTop = true
-    }

@@ -1,7 +1,10 @@
 package com.example.alarmscratch.core.extension
 
+import android.content.Context
+import android.media.Ringtone
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
+import com.example.alarmscratch.core.data.repository.RingtoneRepository
 import java.time.DayOfWeek
 import java.time.LocalDateTime
 
@@ -76,3 +79,8 @@ private fun sortRepeatingDaysByPreference(
     repeatingDays
         .filter { it.dayNumber() >= today.dayNumber() }
         .plus(repeatingDays.filter { it.dayNumber() < today.dayNumber() })
+
+fun Alarm.getRingtone(context: Context): Ringtone {
+    val ringtoneRepository = RingtoneRepository(context)
+    return ringtoneRepository.getRingtone(ringtoneUriString)
+}

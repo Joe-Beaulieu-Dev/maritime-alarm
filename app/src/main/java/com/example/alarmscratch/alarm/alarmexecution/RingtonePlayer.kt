@@ -5,7 +5,7 @@ import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.Ringtone
-import android.media.RingtoneManager
+import com.example.alarmscratch.core.data.repository.RingtoneRepository
 
 class RingtonePlayer {
 
@@ -13,7 +13,7 @@ class RingtonePlayer {
     private var audioFocusRequest: AudioFocusRequest? = null
     private var ringtone: Ringtone? = null
 
-    fun playRingtone(context: Context) {
+    fun playRingtone(context: Context, ringtoneUriString: String) {
         if (audioManager == null) {
             audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         }
@@ -27,9 +27,7 @@ class RingtonePlayer {
             .setAudioAttributes(audioAttributes)
             .build()
 
-        val defaultRingtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-        ringtone = RingtoneManager.getRingtone(context, defaultRingtoneUri)
-
+        ringtone = getRingtone(context, ringtoneUriString)
 
         // Getting around smart cast mutability warnings
         audioManager?.let { manager ->
@@ -48,5 +46,10 @@ class RingtonePlayer {
         audioFocusRequest?.let { request ->
             audioManager?.abandonAudioFocusRequest(request)
         }
+    }
+
+    private fun getRingtone(context: Context, alarmRingtoneUri: String): Ringtone {
+        val ringtoneRepository = RingtoneRepository(context)
+        return ringtoneRepository.getRingtone(alarmRingtoneUri)
     }
 }

@@ -29,6 +29,9 @@ val BrightLavaOrange = Color(0xFFe87931)
 val OtherLavaRed = Color(0xFFcf1020)
 val DarkLavaRed = Color(0xFF660f00) // 60% Darker #ff2500
 
+// General
+val SelectedGreen = Color(0xFF00b300)
+
 // Navigation
 val NavIconActive = OtherLavaRed
 val NavTextActive = OtherLavaRed
