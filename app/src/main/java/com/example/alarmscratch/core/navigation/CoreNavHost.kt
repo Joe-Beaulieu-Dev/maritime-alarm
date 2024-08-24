@@ -19,11 +19,14 @@ fun AlarmNavHost(
         startDestination = AlarmListScreen.route,
         modifier = modifier
     ) {
+        // Alarm List Screen
         composable(route = AlarmListScreen.route) {
             AlarmListScreen(navigateToAlarmEditScreen = { alarmId ->
                 rootNavHostController.navigate(AlarmEditScreen(alarmId = alarmId)) { launchSingleTop = true }
             })
         }
+
+        // Settings Screen
         composable(route = SettingsScreen.route) {
             SettingsScreen(navHostController = rootNavHostController)
         }

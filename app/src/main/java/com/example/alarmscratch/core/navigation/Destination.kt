@@ -14,6 +14,10 @@ val ALL_DESTINATIONS = listOf(
     AlarmDefaultsScreen
 )
 
+interface Destination2 {
+    val navComponent: CoreNavComponent2?
+}
+
 interface Destination {
     val route: String
     val navComponent: CoreNavComponent?
@@ -34,15 +38,21 @@ object AlarmListScreen : Destination {
 
 // TODO: Put in ALL_DESTINATIONS
 @Serializable
-object AlarmCreationScreen
+data object AlarmCreationScreen : Destination2 {
+    override val navComponent: CoreNavComponent2? = null
+}
 
 // TODO: Put in ALL_DESTINATIONS
 @Serializable
-data class AlarmEditScreen(val alarmId: Int)
+data class AlarmEditScreen(val alarmId: Int) : Destination2 {
+    override val navComponent: CoreNavComponent2? = null
+}
 
 // TODO: Put in ALL_DESTINATIONS
 @Serializable
-data class RingtonePickerScreen(val ringtoneUriString: String)
+data class RingtonePickerScreen(val ringtoneUriString: String) : Destination2 {
+    override val navComponent: CoreNavComponent2? = null
+}
 
 object SettingsScreen : Destination {
     override val route = "settings_screen"

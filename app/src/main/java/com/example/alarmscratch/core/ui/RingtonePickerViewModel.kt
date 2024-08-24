@@ -8,10 +8,13 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.navigation.toRoute
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.data.repository.RingtoneRepository
+import com.example.alarmscratch.core.navigation.CoreNavComponent2
+import com.example.alarmscratch.core.navigation.DestinationNavType
 import com.example.alarmscratch.core.navigation.RingtonePickerScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlin.reflect.typeOf
 
 class RingtonePickerViewModel(
     savedStateHandle: SavedStateHandle,
@@ -19,7 +22,9 @@ class RingtonePickerViewModel(
 ) : ViewModel() {
 
     val ringtoneDataList = ringtoneRepository.getAllRingtoneData()
-    private val initialRingtoneUri: String = savedStateHandle.toRoute<RingtonePickerScreen>().ringtoneUriString
+    private val initialRingtoneUri: String = savedStateHandle.toRoute<RingtonePickerScreen>(
+        typeMap = mapOf(typeOf<CoreNavComponent2?>() to DestinationNavType.CoreNavComponent2Type)
+    ).ringtoneUriString
     private val _selectedRingtoneUri: MutableStateFlow<String> = MutableStateFlow(initialRingtoneUri)
     val selectedRingtoneUri: StateFlow<String> = _selectedRingtoneUri.asStateFlow()
 

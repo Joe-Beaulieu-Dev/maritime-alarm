@@ -11,9 +11,12 @@ import com.example.alarmscratch.alarm.ui.alarmedit.AlarmEditScreen
 import com.example.alarmscratch.core.navigation.AlarmCreationScreen
 import com.example.alarmscratch.core.navigation.AlarmDefaultsScreen
 import com.example.alarmscratch.core.navigation.AlarmEditScreen
+import com.example.alarmscratch.core.navigation.CoreNavComponent2
 import com.example.alarmscratch.core.navigation.CoreScreen
+import com.example.alarmscratch.core.navigation.DestinationNavType
 import com.example.alarmscratch.core.navigation.RingtonePickerScreen
 import com.example.alarmscratch.settings.AlarmDefaultsScreen
+import kotlin.reflect.typeOf
 
 @Composable
 fun AlarmApp() {
@@ -22,10 +25,15 @@ fun AlarmApp() {
         navController = navHostController,
         startDestination = CoreScreen.route
     ) {
+        // Core Screen
         composable(route = CoreScreen.route) {
             CoreScreen(rootNavHostController = navHostController)
         }
-        composable<AlarmCreationScreen> {
+
+        // Alarm Creation Screen
+        composable<AlarmCreationScreen>(
+            typeMap = mapOf(typeOf<CoreNavComponent2?>() to DestinationNavType.CoreNavComponent2Type)
+        ) {
             AlarmCreationScreen(
                 navHostController = navHostController,
                 navigateToRingtonePickerScreen = { ringtoneUriString ->
@@ -34,7 +42,11 @@ fun AlarmApp() {
                 modifier = Modifier.fillMaxSize()
             )
         }
-        composable<AlarmEditScreen> {
+
+        // Alarm Edit Screen
+        composable<AlarmEditScreen>(
+            typeMap = mapOf(typeOf<CoreNavComponent2?>() to DestinationNavType.CoreNavComponent2Type)
+        ) {
             AlarmEditScreen(
                 navHostController = navHostController,
                 navigateToRingtonePickerScreen = { ringtoneUriString ->
@@ -43,12 +55,18 @@ fun AlarmApp() {
                 modifier = Modifier.fillMaxSize()
             )
         }
-        composable<RingtonePickerScreen> {
+
+        // Ringtone Picker Screen
+        composable<RingtonePickerScreen>(
+            typeMap = mapOf(typeOf<CoreNavComponent2?>() to DestinationNavType.CoreNavComponent2Type)
+        ) {
             RingtonePickerScreen(
                 navHostController = navHostController,
                 modifier = Modifier.fillMaxSize()
             )
         }
+
+        // Alarm Defaults Screen
         composable(route = AlarmDefaultsScreen.route) {
             AlarmDefaultsScreen(modifier = Modifier.fillMaxSize())
         }
