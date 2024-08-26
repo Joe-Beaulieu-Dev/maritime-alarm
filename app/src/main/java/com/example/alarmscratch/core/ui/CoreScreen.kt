@@ -23,7 +23,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.alarm.data.preview.alarmSampleDataHardCodedIds
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.alarm.ui.alarmlist.AlarmListScreenContent
-import com.example.alarmscratch.core.navigation.AlarmCreationScreen
 import com.example.alarmscratch.core.navigation.AlarmListScreen
 import com.example.alarmscratch.core.navigation.AlarmNavHost
 import com.example.alarmscratch.core.navigation.NavComponent
@@ -38,10 +37,10 @@ import com.example.alarmscratch.core.ui.theme.TopOceanBlue
 import com.example.alarmscratch.settings.SettingsScreen
 
 @Composable
-fun CoreScreen(rootNavHostController: NavHostController) {
-    // Actions
-    val onFabClicked: () -> Unit = { rootNavHostController.navigate(AlarmCreationScreen) { launchSingleTop = true } }
-
+fun CoreScreen(
+    rootNavHostController: NavHostController,
+    navigateToAlarmCreationScreen: () -> Unit
+) {
     // Navigation
     val localNavHostController = rememberNavController()
     val currentBackStackEntry by localNavHostController.currentBackStackEntryAsState()
@@ -52,7 +51,7 @@ fun CoreScreen(rootNavHostController: NavHostController) {
     // Core Screen wrapping an Internal Screen
     CoreScreenContent(
         header = { SkylineHeader(selectedNavComponentDest = selectedNavComponentDest) },
-        onFabClicked = onFabClicked,
+        onFabClicked = navigateToAlarmCreationScreen,
         navigationBar = {
             VolcanoNavigationBar(
                 selectedNavComponentDest = selectedNavComponentDest,

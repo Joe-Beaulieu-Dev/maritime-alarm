@@ -24,7 +24,10 @@ fun AlarmApp() {
     ) {
         // Core Screen
         composable<CoreScreen> {
-            CoreScreen(rootNavHostController = navHostController)
+            CoreScreen(
+                rootNavHostController = navHostController,
+                navigateToAlarmCreationScreen = { navHostController.navigate(AlarmCreationScreen) { launchSingleTop = true } }
+            )
         }
 
         // Alarm Creation Screen
