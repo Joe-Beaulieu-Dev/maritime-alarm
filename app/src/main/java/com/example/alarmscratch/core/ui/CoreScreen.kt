@@ -16,17 +16,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.alarm.data.preview.alarmSampleDataHardCodedIds
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.alarm.ui.alarmlist.AlarmListScreenContent
-import com.example.alarmscratch.core.extension.navigateSingleTop
-import com.example.alarmscratch.core.navigation.ALL_DESTINATIONS
 import com.example.alarmscratch.core.navigation.AlarmCreationScreen
 import com.example.alarmscratch.core.navigation.AlarmListScreen
 import com.example.alarmscratch.core.navigation.AlarmNavHost
+import com.example.alarmscratch.core.navigation.NavComponent
 import com.example.alarmscratch.core.navigation.SettingsScreen
 import com.example.alarmscratch.core.ui.component.LavaFloatingActionButton
 import com.example.alarmscratch.core.ui.component.SkylineHeader
@@ -45,18 +45,18 @@ fun CoreScreen(rootNavHostController: NavHostController) {
     // Navigation
     val localNavHostController = rememberNavController()
     val currentBackStackEntry by localNavHostController.currentBackStackEntryAsState()
-    val selectedDestination = ALL_DESTINATIONS.find { destination ->
-        destination.route == currentBackStackEntry?.destination?.route
-    } ?: AlarmListScreen
+    val selectedNavComponent = NavComponent.entries.find { navComp ->
+        currentBackStackEntry?.destination?.hasRoute(navComp.destination::class) ?: false
+    }?.destination ?: NavComponent.ALARM_LIST_NAV_COMPONENT.destination
 
     // Core Screen wrapping an Internal Screen
     CoreScreenContent(
-        header = { SkylineHeader(currentScreen = selectedDestination) },
+        header = { SkylineHeader(currentScreen = selectedNavComponent) },
         onFabClicked = onFabClicked,
         navigationBar = {
             VolcanoNavigationBar(
-                selectedDestination = selectedDestination.route,
-                onDestinationChange = { localNavHostController.navigateSingleTop(it.route) },
+                selectedDestination = selectedNavComponent,
+                onDestinationChange = { localNavHostController.navigate(it) { launchSingleTop = true } },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -135,7 +135,7 @@ private fun CoreScreenAlarmListPreview() {
             },
             navigationBar = {
                 VolcanoNavigationBar(
-                    selectedDestination = currentScreen.route,
+                    selectedDestination = currentScreen,
                     onDestinationChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -169,7 +169,7 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
             },
             navigationBar = {
                 VolcanoNavigationBar(
-                    selectedDestination = currentScreen.route,
+                    selectedDestination = currentScreen,
                     onDestinationChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -202,7 +202,7 @@ private fun CoreScreenSettingsPreview() {
             },
             navigationBar = {
                 VolcanoNavigationBar(
-                    selectedDestination = currentScreen.route,
+                    selectedDestination = currentScreen,
                     onDestinationChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )

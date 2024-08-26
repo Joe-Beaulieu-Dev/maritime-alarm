@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
-import com.example.alarmscratch.core.extension.navigateSingleTop
 import com.example.alarmscratch.core.navigation.AlarmDefaultsScreen
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
@@ -57,7 +56,7 @@ fun SettingsScreen(
                 SettingsComponent(
                     icon = Icons.Default.Alarm,
                     nameRes = R.string.settings_alarm_defaults,
-                    onClick = { navHostController.navigateSingleTop(route = AlarmDefaultsScreen.route) }
+                    onClick = { navHostController.navigate(AlarmDefaultsScreen) { launchSingleTop = true } }
                 )
             }
         }
