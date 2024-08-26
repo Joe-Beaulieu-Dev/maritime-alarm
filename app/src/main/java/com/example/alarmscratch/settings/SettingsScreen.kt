@@ -25,17 +25,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
-import com.example.alarmscratch.core.extension.navigateSingleTop
-import com.example.alarmscratch.core.navigation.AlarmDefaultsScreen
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
 
 @Composable
 fun SettingsScreen(
-    navHostController: NavHostController,
+    navigateToAlarmDefaultsScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -57,7 +53,7 @@ fun SettingsScreen(
                 SettingsComponent(
                     icon = Icons.Default.Alarm,
                     nameRes = R.string.settings_alarm_defaults,
-                    onClick = { navHostController.navigateSingleTop(AlarmDefaultsScreen) }
+                    onClick = navigateToAlarmDefaultsScreen
                 )
             }
         }
@@ -109,7 +105,7 @@ fun SettingsComponent(
 private fun SettingsScreenPreview() {
     AlarmScratchTheme {
         SettingsScreen(
-            navHostController = rememberNavController(),
+            navigateToAlarmDefaultsScreen = {},
             modifier = Modifier.padding(20.dp)
         )
     }

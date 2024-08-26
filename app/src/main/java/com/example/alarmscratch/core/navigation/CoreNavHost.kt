@@ -22,14 +22,18 @@ fun AlarmNavHost(
     ) {
         // Alarm List Screen
         composable<AlarmListScreen> {
-            AlarmListScreen(navigateToAlarmEditScreen = { alarmId ->
-                rootNavHostController.navigateSingleTop(AlarmEditScreen(alarmId = alarmId))
-            })
+            AlarmListScreen(
+                navigateToAlarmEditScreen = { alarmId ->
+                    rootNavHostController.navigateSingleTop(AlarmEditScreen(alarmId = alarmId))
+                }
+            )
         }
 
         // Settings Screen
         composable<SettingsScreen> {
-            SettingsScreen(navHostController = rootNavHostController)
+            SettingsScreen(
+                navigateToAlarmDefaultsScreen = { rootNavHostController.navigateSingleTop(AlarmDefaultsScreen) }
+            )
         }
     }
 }

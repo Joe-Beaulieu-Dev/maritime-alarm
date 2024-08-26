@@ -210,7 +210,7 @@ private fun CoreScreenSettingsPreview() {
             onFabClicked = {}
         ) {
             SettingsScreen(
-                navHostController = rememberNavController(),
+                navigateToAlarmDefaultsScreen = {},
                 modifier = Modifier.padding(20.dp)
             )
         }
