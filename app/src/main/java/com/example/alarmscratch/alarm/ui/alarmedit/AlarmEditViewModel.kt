@@ -19,7 +19,7 @@ import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.futurizeDateTime
 import com.example.alarmscratch.core.extension.isRepeating
 import com.example.alarmscratch.core.extension.nextRepeatingDate
-import com.example.alarmscratch.core.navigation.AlarmEditScreen
+import com.example.alarmscratch.core.navigation.Destination
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,7 +33,7 @@ class AlarmEditViewModel(
     private val alarmRepository: AlarmRepository
 ) : ViewModel() {
 
-    private val alarmId: Int = savedStateHandle.toRoute<AlarmEditScreen>().alarmId
+    private val alarmId: Int = savedStateHandle.toRoute<Destination.AlarmEditScreen>().alarmId
     private val _modifiedAlarm: MutableStateFlow<AlarmState> = MutableStateFlow(AlarmState.Loading)
     val modifiedAlarm: StateFlow<AlarmState> = _modifiedAlarm.asStateFlow()
 

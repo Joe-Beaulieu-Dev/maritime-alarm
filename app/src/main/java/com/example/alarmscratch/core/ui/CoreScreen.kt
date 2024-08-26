@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -23,11 +24,9 @@ import com.example.alarmscratch.alarm.data.preview.alarmSampleDataHardCodedIds
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.alarm.ui.alarmlist.AlarmListScreenContent
 import com.example.alarmscratch.core.extension.navigateSingleTop
-import com.example.alarmscratch.core.navigation.ALL_DESTINATIONS
-import com.example.alarmscratch.core.navigation.AlarmCreationScreen
-import com.example.alarmscratch.core.navigation.AlarmListScreen
 import com.example.alarmscratch.core.navigation.AlarmNavHost
-import com.example.alarmscratch.core.navigation.SettingsScreen
+import com.example.alarmscratch.core.navigation.Destination
+import com.example.alarmscratch.core.navigation.NavComponent
 import com.example.alarmscratch.core.ui.component.LavaFloatingActionButton
 import com.example.alarmscratch.core.ui.component.SkylineHeader
 import com.example.alarmscratch.core.ui.component.SkylineHeaderContent
@@ -38,25 +37,25 @@ import com.example.alarmscratch.core.ui.theme.TopOceanBlue
 import com.example.alarmscratch.settings.SettingsScreen
 
 @Composable
-fun CoreScreen(rootNavHostController: NavHostController) {
-    // Actions
-    val onFabClicked: () -> Unit = { rootNavHostController.navigate(AlarmCreationScreen) { launchSingleTop = true } }
-
+fun CoreScreen(
+    rootNavHostController: NavHostController,
+    navigateToAlarmCreationScreen: () -> Unit
+) {
     // Navigation
     val localNavHostController = rememberNavController()
     val currentBackStackEntry by localNavHostController.currentBackStackEntryAsState()
-    val selectedDestination = ALL_DESTINATIONS.find { destination ->
-        destination.route == currentBackStackEntry?.destination?.route
-    } ?: AlarmListScreen
+    val selectedNavComponentDest = NavComponent.entries.find { navComponent ->
+        currentBackStackEntry?.destination?.hasRoute(navComponent.destination::class) ?: false
+    }?.destination ?: NavComponent.ALARM_LIST.destination
 
     // Core Screen wrapping an Internal Screen
     CoreScreenContent(
-        header = { SkylineHeader(currentScreen = selectedDestination) },
-        onFabClicked = onFabClicked,
+        header = { SkylineHeader(selectedNavComponentDest = selectedNavComponentDest) },
+        onFabClicked = navigateToAlarmCreationScreen,
         navigationBar = {
             VolcanoNavigationBar(
-                selectedDestination = selectedDestination.route,
-                onDestinationChange = { localNavHostController.navigateSingleTop(it.route) },
+                selectedNavComponentDest = selectedNavComponentDest,
+                onDestinationChange = { destination -> localNavHostController.navigateSingleTop(destination) },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -123,19 +122,19 @@ fun CoreScreenContent(
 @Composable
 private fun CoreScreenAlarmListPreview() {
     AlarmScratchTheme {
-        val currentScreen = AlarmListScreen
+        val selectedNavComponentDest = Destination.AlarmListScreen
         val alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds)
 
         CoreScreenContent(
             header = {
                 SkylineHeaderContent(
-                    currentScreen = currentScreen,
+                    selectedNavComponentDest = selectedNavComponentDest,
                     alarmListState = alarmListState
                 )
             },
             navigationBar = {
                 VolcanoNavigationBar(
-                    selectedDestination = currentScreen.route,
+                    selectedNavComponentDest = selectedNavComponentDest,
                     onDestinationChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -157,19 +156,19 @@ private fun CoreScreenAlarmListPreview() {
 @Composable
 private fun CoreScreenAlarmListNoAlarmsPreview() {
     AlarmScratchTheme {
-        val currentScreen = AlarmListScreen
+        val selectedNavComponentDest = Destination.AlarmListScreen
         val alarmListState = AlarmListState.Success(alarmList = emptyList())
 
         CoreScreenContent(
             header = {
                 SkylineHeaderContent(
-                    currentScreen = currentScreen,
+                    selectedNavComponentDest = selectedNavComponentDest,
                     alarmListState = alarmListState
                 )
             },
             navigationBar = {
                 VolcanoNavigationBar(
-                    selectedDestination = currentScreen.route,
+                    selectedNavComponentDest = selectedNavComponentDest,
                     onDestinationChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -191,18 +190,18 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
 @Composable
 private fun CoreScreenSettingsPreview() {
     AlarmScratchTheme {
-        val currentScreen = SettingsScreen
+        val selectedNavComponentDest = Destination.SettingsScreen
 
         CoreScreenContent(
             header = {
                 SkylineHeaderContent(
-                    currentScreen = currentScreen,
+                    selectedNavComponentDest = selectedNavComponentDest,
                     alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds)
                 )
             },
             navigationBar = {
                 VolcanoNavigationBar(
-                    selectedDestination = currentScreen.route,
+                    selectedNavComponentDest = selectedNavComponentDest,
                     onDestinationChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -210,7 +209,7 @@ private fun CoreScreenSettingsPreview() {
             onFabClicked = {}
         ) {
             SettingsScreen(
-                navHostController = rememberNavController(),
+                navigateToAlarmDefaultsScreen = {},
                 modifier = Modifier.padding(20.dp)
             )
         }
