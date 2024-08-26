@@ -23,6 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.alarm.data.preview.alarmSampleDataHardCodedIds
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.alarm.ui.alarmlist.AlarmListScreenContent
+import com.example.alarmscratch.core.extension.navigateSingleTop
 import com.example.alarmscratch.core.navigation.AlarmListScreen
 import com.example.alarmscratch.core.navigation.AlarmNavHost
 import com.example.alarmscratch.core.navigation.NavComponent
@@ -55,7 +56,7 @@ fun CoreScreen(
         navigationBar = {
             VolcanoNavigationBar(
                 selectedNavComponentDest = selectedNavComponentDest,
-                onDestinationChange = { localNavHostController.navigate(it) { launchSingleTop = true } },
+                onDestinationChange = { destination -> localNavHostController.navigateSingleTop(destination) },
                 modifier = Modifier.fillMaxWidth()
             )
         }
