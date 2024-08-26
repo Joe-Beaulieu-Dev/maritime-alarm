@@ -47,7 +47,7 @@ fun CoreScreen(
     val currentBackStackEntry by localNavHostController.currentBackStackEntryAsState()
     val selectedNavComponentDest = NavComponent.entries.find { navComponent ->
         currentBackStackEntry?.destination?.hasRoute(navComponent.destination::class) ?: false
-    }?.destination ?: NavComponent.ALARM_LIST_NAV_COMPONENT.destination
+    }?.destination ?: NavComponent.ALARM_LIST.destination
 
     // Core Screen wrapping an Internal Screen
     CoreScreenContent(

@@ -21,7 +21,6 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -62,7 +61,7 @@ fun VolcanoNavigationBar(
                 NavigationBarItem(
                     selected = selectedNavComponentDest == navComponent.destination,
                     onClick = { onDestinationChange(navComponent.destination) },
-                    icon = { Icon(painter = painterResource(id = navComponent.navIconRes), contentDescription = null) },
+                    icon = { Icon(imageVector = navComponent.navIcon, contentDescription = null) },
                     label = { Text(text = stringResource(id = navComponent.navNameRes)) },
                     colors = navColors
                 )

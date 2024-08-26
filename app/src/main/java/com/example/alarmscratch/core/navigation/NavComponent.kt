@@ -1,22 +1,25 @@
 package com.example.alarmscratch.core.navigation
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Alarm
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.alarmscratch.R
 
 enum class NavComponent(
     @StringRes val navNameRes: Int,
-    @DrawableRes val navIconRes: Int,
+    val navIcon: ImageVector,
     val destination: Destination
 ) {
-    ALARM_LIST_NAV_COMPONENT(
+    ALARM_LIST(
         navNameRes = R.string.nav_alarm,
-        navIconRes = R.drawable.ic_alarm_24dp,
+        navIcon = Icons.Default.Alarm,
         destination = AlarmListScreen
     ),
-    SETTINGS_NAV_COMPONENT(
+    SETTINGS(
         navNameRes = R.string.nav_settings,
-        navIconRes = R.drawable.ic_settings_24dp,
+        navIcon = Icons.Default.Settings,
         destination = SettingsScreen
     )
 }
