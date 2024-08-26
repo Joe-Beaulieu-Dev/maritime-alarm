@@ -24,7 +24,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.alarmscratch.core.navigation.AlarmListScreen
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.navigation.NavComponent
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
@@ -259,7 +258,7 @@ fun Volcano(modifier: Modifier = Modifier) {
 private fun VolcanoNavigationBarPreview() {
     AlarmScratchTheme {
         VolcanoNavigationBar(
-            selectedNavComponentDest = AlarmListScreen,
+            selectedNavComponentDest = Destination.AlarmListScreen,
             onDestinationChange = {},
             modifier = Modifier.padding(top = 12.dp)
         )

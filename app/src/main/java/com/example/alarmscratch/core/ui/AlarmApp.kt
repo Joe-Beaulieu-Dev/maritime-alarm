@@ -9,11 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.alarm.ui.alarmcreate.AlarmCreationScreen
 import com.example.alarmscratch.alarm.ui.alarmedit.AlarmEditScreen
 import com.example.alarmscratch.core.extension.navigateSingleTop
-import com.example.alarmscratch.core.navigation.AlarmCreationScreen
-import com.example.alarmscratch.core.navigation.AlarmDefaultsScreen
-import com.example.alarmscratch.core.navigation.AlarmEditScreen
-import com.example.alarmscratch.core.navigation.CoreScreen
-import com.example.alarmscratch.core.navigation.RingtonePickerScreen
+import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.settings.AlarmDefaultsScreen
 
 @Composable
@@ -21,40 +17,40 @@ fun AlarmApp() {
     val navHostController = rememberNavController()
     NavHost(
         navController = navHostController,
-        startDestination = CoreScreen
+        startDestination = Destination.CoreScreen
     ) {
         // Core Screen
-        composable<CoreScreen> {
+        composable<Destination.CoreScreen> {
             CoreScreen(
                 rootNavHostController = navHostController,
-                navigateToAlarmCreationScreen = { navHostController.navigateSingleTop(AlarmCreationScreen) }
+                navigateToAlarmCreationScreen = { navHostController.navigateSingleTop(Destination.AlarmCreationScreen) }
             )
         }
 
         // Alarm Creation Screen
-        composable<AlarmCreationScreen> {
+        composable<Destination.AlarmCreationScreen> {
             AlarmCreationScreen(
                 navHostController = navHostController,
                 navigateToRingtonePickerScreen = { ringtoneUriString ->
-                    navHostController.navigateSingleTop(RingtonePickerScreen(ringtoneUriString = ringtoneUriString))
+                    navHostController.navigateSingleTop(Destination.RingtonePickerScreen(ringtoneUriString = ringtoneUriString))
                 },
                 modifier = Modifier.fillMaxSize()
             )
         }
 
         // Alarm Edit Screen
-        composable<AlarmEditScreen> {
+        composable<Destination.AlarmEditScreen> {
             AlarmEditScreen(
                 navHostController = navHostController,
                 navigateToRingtonePickerScreen = { ringtoneUriString ->
-                    navHostController.navigateSingleTop(RingtonePickerScreen(ringtoneUriString = ringtoneUriString))
+                    navHostController.navigateSingleTop(Destination.RingtonePickerScreen(ringtoneUriString = ringtoneUriString))
                 },
                 modifier = Modifier.fillMaxSize()
             )
         }
 
         // Ringtone Picker Screen
-        composable<RingtonePickerScreen> {
+        composable<Destination.RingtonePickerScreen> {
             RingtonePickerScreen(
                 navHostController = navHostController,
                 modifier = Modifier.fillMaxSize()
@@ -62,7 +58,7 @@ fun AlarmApp() {
         }
 
         // Alarm Defaults Screen
-        composable<AlarmDefaultsScreen> {
+        composable<Destination.AlarmDefaultsScreen> {
             AlarmDefaultsScreen(modifier = Modifier.fillMaxSize())
         }
     }

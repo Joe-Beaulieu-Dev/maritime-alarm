@@ -32,9 +32,7 @@ import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
-import com.example.alarmscratch.core.navigation.AlarmListScreen
 import com.example.alarmscratch.core.navigation.Destination
-import com.example.alarmscratch.core.navigation.SettingsScreen
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatHull
 import com.example.alarmscratch.core.ui.theme.BoatSails
@@ -125,7 +123,7 @@ fun SkylineHeaderContent(
                     verticalAlignment = Alignment.Bottom,
                     modifier = Modifier.align(Alignment.Center)
                 ) {
-                    if (selectedNavComponentDest == AlarmListScreen && alarmListState is AlarmListState.Success) {
+                    if (selectedNavComponentDest == Destination.AlarmListScreen && alarmListState is AlarmListState.Success) {
                         // TODO: Change Icon to Icons.Default.AlarmOff if there's no Active Alarms
                         // Alarm Icon
                         Icon(
@@ -220,7 +218,7 @@ private fun getNextAlarm(alarmList: List<Alarm>): Alarm? =
 private fun SkylineHeaderAlarmListScreenPreview() {
     AlarmScratchTheme {
         SkylineHeaderContent(
-            selectedNavComponentDest = AlarmListScreen,
+            selectedNavComponentDest = Destination.AlarmListScreen,
             alarmListState = AlarmListState.Success(alarmList = listOf(consistentFutureAlarm))
         )
     }
@@ -231,7 +229,7 @@ private fun SkylineHeaderAlarmListScreenPreview() {
 private fun SkylineHeaderAlarmListScreenNoAlarmsPreview() {
     AlarmScratchTheme {
         SkylineHeaderContent(
-            selectedNavComponentDest = AlarmListScreen,
+            selectedNavComponentDest = Destination.AlarmListScreen,
             alarmListState = AlarmListState.Success(alarmList = emptyList())
         )
     }
@@ -242,7 +240,7 @@ private fun SkylineHeaderAlarmListScreenNoAlarmsPreview() {
 private fun SkylineHeaderSettingsScreenPreview() {
     AlarmScratchTheme {
         SkylineHeaderContent(
-            selectedNavComponentDest = SettingsScreen,
+            selectedNavComponentDest = Destination.SettingsScreen,
             alarmListState = AlarmListState.Success(alarmList = listOf(consistentFutureAlarm))
         )
     }

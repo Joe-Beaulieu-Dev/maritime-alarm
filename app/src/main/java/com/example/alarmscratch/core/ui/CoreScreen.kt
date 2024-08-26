@@ -24,10 +24,9 @@ import com.example.alarmscratch.alarm.data.preview.alarmSampleDataHardCodedIds
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.alarm.ui.alarmlist.AlarmListScreenContent
 import com.example.alarmscratch.core.extension.navigateSingleTop
-import com.example.alarmscratch.core.navigation.AlarmListScreen
 import com.example.alarmscratch.core.navigation.AlarmNavHost
+import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.navigation.NavComponent
-import com.example.alarmscratch.core.navigation.SettingsScreen
 import com.example.alarmscratch.core.ui.component.LavaFloatingActionButton
 import com.example.alarmscratch.core.ui.component.SkylineHeader
 import com.example.alarmscratch.core.ui.component.SkylineHeaderContent
@@ -123,7 +122,7 @@ fun CoreScreenContent(
 @Composable
 private fun CoreScreenAlarmListPreview() {
     AlarmScratchTheme {
-        val selectedNavComponentDest = AlarmListScreen
+        val selectedNavComponentDest = Destination.AlarmListScreen
         val alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds)
 
         CoreScreenContent(
@@ -157,7 +156,7 @@ private fun CoreScreenAlarmListPreview() {
 @Composable
 private fun CoreScreenAlarmListNoAlarmsPreview() {
     AlarmScratchTheme {
-        val selectedNavComponentDest = AlarmListScreen
+        val selectedNavComponentDest = Destination.AlarmListScreen
         val alarmListState = AlarmListState.Success(alarmList = emptyList())
 
         CoreScreenContent(
@@ -191,7 +190,7 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
 @Composable
 private fun CoreScreenSettingsPreview() {
     AlarmScratchTheme {
-        val selectedNavComponentDest = SettingsScreen
+        val selectedNavComponentDest = Destination.SettingsScreen
 
         CoreScreenContent(
             header = {

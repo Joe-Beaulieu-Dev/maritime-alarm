@@ -17,22 +17,22 @@ fun AlarmNavHost(
 ) {
     NavHost(
         navController = localNavHostController,
-        startDestination = AlarmListScreen,
+        startDestination = Destination.AlarmListScreen,
         modifier = modifier
     ) {
         // Alarm List Screen
-        composable<AlarmListScreen> {
+        composable<Destination.AlarmListScreen> {
             AlarmListScreen(
                 navigateToAlarmEditScreen = { alarmId ->
-                    rootNavHostController.navigateSingleTop(AlarmEditScreen(alarmId = alarmId))
+                    rootNavHostController.navigateSingleTop(Destination.AlarmEditScreen(alarmId = alarmId))
                 }
             )
         }
 
         // Settings Screen
-        composable<SettingsScreen> {
+        composable<Destination.SettingsScreen> {
             SettingsScreen(
-                navigateToAlarmDefaultsScreen = { rootNavHostController.navigateSingleTop(AlarmDefaultsScreen) }
+                navigateToAlarmDefaultsScreen = { rootNavHostController.navigateSingleTop(Destination.AlarmDefaultsScreen) }
             )
         }
     }

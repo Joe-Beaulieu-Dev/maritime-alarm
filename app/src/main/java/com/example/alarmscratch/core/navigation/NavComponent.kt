@@ -15,11 +15,11 @@ enum class NavComponent(
     ALARM_LIST(
         navNameRes = R.string.nav_alarm,
         navIcon = Icons.Default.Alarm,
-        destination = AlarmListScreen
+        destination = Destination.AlarmListScreen
     ),
     SETTINGS(
         navNameRes = R.string.nav_settings,
         navIcon = Icons.Default.Settings,
-        destination = SettingsScreen
+        destination = Destination.SettingsScreen
     )
 }
