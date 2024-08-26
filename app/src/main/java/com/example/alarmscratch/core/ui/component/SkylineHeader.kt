@@ -47,7 +47,7 @@ import kotlin.math.floor
 
 @Composable
 fun SkylineHeader(
-    currentScreen: Destination,
+    selectedNavComponentDest: Destination,
     modifier: Modifier = Modifier,
     skylineHeaderViewModel: SkylineHeaderViewModel = viewModel(factory = SkylineHeaderViewModel.Factory)
 ) {
@@ -55,7 +55,7 @@ fun SkylineHeader(
     val alarmListState by skylineHeaderViewModel.alarmList.collectAsState()
 
     SkylineHeaderContent(
-        currentScreen = currentScreen,
+        selectedNavComponentDest = selectedNavComponentDest,
         alarmListState = alarmListState,
         modifier = modifier
     )
@@ -63,7 +63,7 @@ fun SkylineHeader(
 
 @Composable
 fun SkylineHeaderContent(
-    currentScreen: Destination,
+    selectedNavComponentDest: Destination,
     alarmListState: AlarmListState,
     modifier: Modifier = Modifier
 ) {
@@ -125,7 +125,7 @@ fun SkylineHeaderContent(
                     verticalAlignment = Alignment.Bottom,
                     modifier = Modifier.align(Alignment.Center)
                 ) {
-                    if (currentScreen == AlarmListScreen && alarmListState is AlarmListState.Success) {
+                    if (selectedNavComponentDest == AlarmListScreen && alarmListState is AlarmListState.Success) {
                         // TODO: Change Icon to Icons.Default.AlarmOff if there's no Active Alarms
                         // Alarm Icon
                         Icon(
@@ -220,7 +220,7 @@ private fun getNextAlarm(alarmList: List<Alarm>): Alarm? =
 private fun SkylineHeaderAlarmListScreenPreview() {
     AlarmScratchTheme {
         SkylineHeaderContent(
-            currentScreen = AlarmListScreen,
+            selectedNavComponentDest = AlarmListScreen,
             alarmListState = AlarmListState.Success(alarmList = listOf(consistentFutureAlarm))
         )
     }
@@ -231,7 +231,7 @@ private fun SkylineHeaderAlarmListScreenPreview() {
 private fun SkylineHeaderAlarmListScreenNoAlarmsPreview() {
     AlarmScratchTheme {
         SkylineHeaderContent(
-            currentScreen = AlarmListScreen,
+            selectedNavComponentDest = AlarmListScreen,
             alarmListState = AlarmListState.Success(alarmList = emptyList())
         )
     }
@@ -242,7 +242,7 @@ private fun SkylineHeaderAlarmListScreenNoAlarmsPreview() {
 private fun SkylineHeaderSettingsScreenPreview() {
     AlarmScratchTheme {
         SkylineHeaderContent(
-            currentScreen = SettingsScreen,
+            selectedNavComponentDest = SettingsScreen,
             alarmListState = AlarmListState.Success(alarmList = listOf(consistentFutureAlarm))
         )
     }

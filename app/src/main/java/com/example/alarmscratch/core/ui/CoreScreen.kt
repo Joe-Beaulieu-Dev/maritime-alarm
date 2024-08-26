@@ -45,17 +45,17 @@ fun CoreScreen(rootNavHostController: NavHostController) {
     // Navigation
     val localNavHostController = rememberNavController()
     val currentBackStackEntry by localNavHostController.currentBackStackEntryAsState()
-    val selectedNavComponent = NavComponent.entries.find { navComp ->
-        currentBackStackEntry?.destination?.hasRoute(navComp.destination::class) ?: false
+    val selectedNavComponentDest = NavComponent.entries.find { navComponent ->
+        currentBackStackEntry?.destination?.hasRoute(navComponent.destination::class) ?: false
     }?.destination ?: NavComponent.ALARM_LIST_NAV_COMPONENT.destination
 
     // Core Screen wrapping an Internal Screen
     CoreScreenContent(
-        header = { SkylineHeader(currentScreen = selectedNavComponent) },
+        header = { SkylineHeader(selectedNavComponentDest = selectedNavComponentDest) },
         onFabClicked = onFabClicked,
         navigationBar = {
             VolcanoNavigationBar(
-                selectedDestination = selectedNavComponent,
+                selectedNavComponentDest = selectedNavComponentDest,
                 onDestinationChange = { localNavHostController.navigate(it) { launchSingleTop = true } },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -123,19 +123,19 @@ fun CoreScreenContent(
 @Composable
 private fun CoreScreenAlarmListPreview() {
     AlarmScratchTheme {
-        val currentScreen = AlarmListScreen
+        val selectedNavComponentDest = AlarmListScreen
         val alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds)
 
         CoreScreenContent(
             header = {
                 SkylineHeaderContent(
-                    currentScreen = currentScreen,
+                    selectedNavComponentDest = selectedNavComponentDest,
                     alarmListState = alarmListState
                 )
             },
             navigationBar = {
                 VolcanoNavigationBar(
-                    selectedDestination = currentScreen,
+                    selectedNavComponentDest = selectedNavComponentDest,
                     onDestinationChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -157,19 +157,19 @@ private fun CoreScreenAlarmListPreview() {
 @Composable
 private fun CoreScreenAlarmListNoAlarmsPreview() {
     AlarmScratchTheme {
-        val currentScreen = AlarmListScreen
+        val selectedNavComponentDest = AlarmListScreen
         val alarmListState = AlarmListState.Success(alarmList = emptyList())
 
         CoreScreenContent(
             header = {
                 SkylineHeaderContent(
-                    currentScreen = currentScreen,
+                    selectedNavComponentDest = selectedNavComponentDest,
                     alarmListState = alarmListState
                 )
             },
             navigationBar = {
                 VolcanoNavigationBar(
-                    selectedDestination = currentScreen,
+                    selectedNavComponentDest = selectedNavComponentDest,
                     onDestinationChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -191,18 +191,18 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
 @Composable
 private fun CoreScreenSettingsPreview() {
     AlarmScratchTheme {
-        val currentScreen = SettingsScreen
+        val selectedNavComponentDest = SettingsScreen
 
         CoreScreenContent(
             header = {
                 SkylineHeaderContent(
-                    currentScreen = currentScreen,
+                    selectedNavComponentDest = selectedNavComponentDest,
                     alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds)
                 )
             },
             navigationBar = {
                 VolcanoNavigationBar(
-                    selectedDestination = currentScreen,
+                    selectedNavComponentDest = selectedNavComponentDest,
                     onDestinationChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )

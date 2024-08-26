@@ -39,9 +39,9 @@ import com.example.alarmscratch.core.ui.theme.OtherLavaRed
 
 @Composable
 fun VolcanoNavigationBar(
-    modifier: Modifier = Modifier,
-    selectedDestination: Destination,
-    onDestinationChange: (Destination) -> Unit
+    selectedNavComponentDest: Destination,
+    onDestinationChange: (Destination) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val navColors = NavigationBarItemDefaults.colors(
         selectedIconColor = NavIconActive,
@@ -60,7 +60,7 @@ fun VolcanoNavigationBar(
         NavigationBar(tonalElevation = 0.dp) {
             NavComponent.entries.forEach { navComponent ->
                 NavigationBarItem(
-                    selected = selectedDestination == navComponent.destination,
+                    selected = selectedNavComponentDest == navComponent.destination,
                     onClick = { onDestinationChange(navComponent.destination) },
                     icon = { Icon(painter = painterResource(id = navComponent.navIconRes), contentDescription = null) },
                     label = { Text(text = stringResource(id = navComponent.navNameRes)) },
@@ -260,9 +260,9 @@ fun Volcano(modifier: Modifier = Modifier) {
 private fun VolcanoNavigationBarPreview() {
     AlarmScratchTheme {
         VolcanoNavigationBar(
-            modifier = Modifier.padding(top = 12.dp),
-            selectedDestination = AlarmListScreen,
-            onDestinationChange = {}
+            selectedNavComponentDest = AlarmListScreen,
+            onDestinationChange = {},
+            modifier = Modifier.padding(top = 12.dp)
         )
     }
 }
