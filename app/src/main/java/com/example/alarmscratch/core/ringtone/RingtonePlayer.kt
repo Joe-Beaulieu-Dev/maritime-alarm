@@ -1,4 +1,4 @@
-package com.example.alarmscratch.alarm.alarmexecution
+package com.example.alarmscratch.core.ringtone
 
 import android.content.Context
 import android.media.AudioAttributes
