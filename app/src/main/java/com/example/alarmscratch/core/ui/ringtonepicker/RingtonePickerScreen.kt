@@ -1,4 +1,4 @@
-package com.example.alarmscratch.core.ui
+package com.example.alarmscratch.core.ui.ringtonepicker
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

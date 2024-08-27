@@ -1,4 +1,4 @@
-package com.example.alarmscratch.core.ui
+package com.example.alarmscratch.core.navigation
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -9,7 +9,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.alarm.ui.alarmcreate.AlarmCreationScreen
 import com.example.alarmscratch.alarm.ui.alarmedit.AlarmEditScreen
 import com.example.alarmscratch.core.extension.navigateSingleTop
-import com.example.alarmscratch.core.navigation.Destination
+import com.example.alarmscratch.core.ui.core.CoreScreen
+import com.example.alarmscratch.core.ui.ringtonepicker.RingtonePickerScreen
 import com.example.alarmscratch.settings.AlarmDefaultsScreen
 
 @Composable
