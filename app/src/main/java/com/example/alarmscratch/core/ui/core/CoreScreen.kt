@@ -1,4 +1,4 @@
-package com.example.alarmscratch.core.ui
+package com.example.alarmscratch.core.ui.core
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,10 +27,10 @@ import com.example.alarmscratch.core.extension.navigateSingleTop
 import com.example.alarmscratch.core.navigation.AlarmNavHost
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.navigation.NavComponent
-import com.example.alarmscratch.core.ui.component.LavaFloatingActionButton
-import com.example.alarmscratch.core.ui.component.SkylineHeader
-import com.example.alarmscratch.core.ui.component.SkylineHeaderContent
-import com.example.alarmscratch.core.ui.component.VolcanoNavigationBar
+import com.example.alarmscratch.core.ui.core.component.LavaFloatingActionButton
+import com.example.alarmscratch.core.ui.core.component.SkylineHeader
+import com.example.alarmscratch.core.ui.core.component.SkylineHeaderContent
+import com.example.alarmscratch.core.ui.core.component.VolcanoNavigationBar
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BottomOceanBlue
 import com.example.alarmscratch.core.ui.theme.TopOceanBlue

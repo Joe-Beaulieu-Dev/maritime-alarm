@@ -1,4 +1,4 @@
-package com.example.alarmscratch.core.ui
+package com.example.alarmscratch.core.ui.ringtonepicker
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

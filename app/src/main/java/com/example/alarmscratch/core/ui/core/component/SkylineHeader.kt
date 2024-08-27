@@ -1,4 +1,4 @@
-package com.example.alarmscratch.core.ui.component
+package com.example.alarmscratch.core.ui.core.component
 
 import android.content.Context
 import androidx.compose.foundation.background

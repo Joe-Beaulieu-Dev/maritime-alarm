@@ -1,4 +1,4 @@
-package com.example.alarmscratch.core.ui.component
+package com.example.alarmscratch.core.ui.core.component
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
