@@ -14,6 +14,9 @@ class RingtonePlayer {
     private var ringtone: Ringtone? = null
 
     fun playRingtone(context: Context, ringtoneUriString: String) {
+        // Stop currently playing Ringtone if there is one
+        stopRingtone()
+
         if (audioManager == null) {
             audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         }
