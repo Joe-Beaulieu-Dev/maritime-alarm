@@ -9,8 +9,8 @@ import android.graphics.drawable.Icon
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.alarmexecution.AlarmNotificationActionReceiver
 import com.example.alarmscratch.alarm.alarmexecution.AlarmReceiver
-import com.example.alarmscratch.alarm.alarmexecution.RingtonePlayerManager
 import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmActivity
+import com.example.alarmscratch.core.ringtone.RingtonePlayerManager
 
 class AlarmNotificationService(private val context: Context) {
 

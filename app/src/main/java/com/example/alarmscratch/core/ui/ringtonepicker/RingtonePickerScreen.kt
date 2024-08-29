@@ -1,5 +1,6 @@
 package com.example.alarmscratch.core.ui.ringtonepicker
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Save
@@ -27,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,6 +58,7 @@ fun RingtonePickerScreen(
     // State
     val ringtoneDataList = ringtonePickerViewModel.ringtoneDataList
     val selectedRingtoneUri by ringtonePickerViewModel.selectedRingtoneUri.collectAsState()
+    val isRingtonePlaying by ringtonePickerViewModel.isRingtonePlaying.collectAsState()
 
     // Actions
     val saveRingtone: () -> Unit = {
@@ -66,6 +70,7 @@ fun RingtonePickerScreen(
         navHostController = navHostController,
         ringtoneDataList = ringtoneDataList,
         selectedRingtoneUri = selectedRingtoneUri,
+        isRingtonePlaying = isRingtonePlaying,
         selectRingtone = ringtonePickerViewModel::selectRingtone,
         saveRingtone = saveRingtone,
         modifier = modifier
@@ -77,12 +82,15 @@ fun RingtonePickerScreenContent(
     navHostController: NavHostController,
     ringtoneDataList: List<RingtoneData>,
     selectedRingtoneUri: String,
-    selectRingtone: (String) -> Unit,
+    isRingtonePlaying: Boolean,
+    selectRingtone: (Context, String) -> Unit,
     saveRingtone: () -> Unit,
     modifier: Modifier
 ) {
     // State
+    val context = LocalContext.current
     val isRowSelected: (String) -> Boolean = { it == selectedRingtoneUri }
+    val isRowPlaying: (String) -> Boolean = { isRingtonePlaying && isRowSelected(it) }
     val rowColor: (String) -> Color = { if (isRowSelected(it)) VolcanicRock else DarkVolcanicRock }
 
     Surface(modifier = modifier) {
@@ -118,20 +126,33 @@ fun RingtonePickerScreenContent(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { selectRingtone(ringtoneData.fullUriString) }
+                            .clickable { selectRingtone(context, ringtoneData.fullUriString) }
                             .background(color = rowColor(ringtoneData.fullUriString))
                             .padding(start = 32.dp, top = 12.dp, end = 32.dp, bottom = 12.dp)
                     ) {
                         // Ringtone Name
                         Text(text = ringtoneData.name)
 
-                        // Selected Ringtone Icon
+                        // Ringtone playback and selection indicator Icons
                         if (isRowSelected(ringtoneData.fullUriString)) {
-                            Icon(
-                                imageVector = Icons.Default.CheckCircle,
-                                contentDescription = null,
-                                tint = SelectedGreen
-                            )
+                            Row {
+                                // Ringtone playback indicator Icon
+                                if (isRowPlaying(ringtoneData.fullUriString)) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Default.VolumeUp,
+                                        contentDescription = null,
+                                        tint = DarkerBoatSails
+                                    )
+                                    Spacer(modifier = Modifier.width(16.dp))
+                                }
+
+                                // Selected Ringtone Icon
+                                Icon(
+                                    imageVector = Icons.Default.CheckCircle,
+                                    contentDescription = null,
+                                    tint = SelectedGreen
+                                )
+                            }
                         }
                     }
                 }
@@ -185,13 +206,30 @@ fun RingtonePickerTopAppBar(
 
 @Preview
 @Composable
-private fun RingtonePickerScreenPreview() {
+private fun RingtonePickerScreenPlayingPreview() {
     AlarmScratchTheme {
         RingtonePickerScreenContent(
             navHostController = rememberNavController(),
             ringtoneDataList = ringtoneDataSampleList,
             selectedRingtoneUri = sampleRingtoneData.fullUriString,
-            selectRingtone = {},
+            isRingtonePlaying = true,
+            selectRingtone = { _, _ -> },
+            saveRingtone = {},
+            modifier = Modifier.fillMaxSize()
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun RingtonePickerScreenNotPlayingPreview() {
+    AlarmScratchTheme {
+        RingtonePickerScreenContent(
+            navHostController = rememberNavController(),
+            ringtoneDataList = ringtoneDataSampleList,
+            selectedRingtoneUri = sampleRingtoneData.fullUriString,
+            isRingtonePlaying = false,
+            selectRingtone = { _, _ -> },
             saveRingtone = {},
             modifier = Modifier.fillMaxSize()
         )
