@@ -35,7 +35,7 @@ class RingtonePickerViewModel(
         // This is to enable the ability to stop any currently playing Ringtone when the app is
         // placed into the background, by implementing DefaultLifecycleObserver.onStop().
         //
-        // According to the ProcessLifecycleObserver documentation, the Application's Lifecycle's ON_STOP Event
+        // According to the ProcessLifecycleOwner documentation, the Application's Lifecycle's ON_STOP Event
         // will not be dispatched if there are Activities being recreated due to a configuration change.
         // Therefore, onStop() will not be called unless the app is getting put into the background.
         //
