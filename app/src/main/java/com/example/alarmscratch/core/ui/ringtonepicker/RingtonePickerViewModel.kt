@@ -27,7 +27,8 @@ class RingtonePickerViewModel(
     private val initialRingtoneUri: String = savedStateHandle.toRoute<Destination.RingtonePickerScreen>().ringtoneUriString
     private val _selectedRingtoneUri: MutableStateFlow<String> = MutableStateFlow(initialRingtoneUri)
     val selectedRingtoneUri: StateFlow<String> = _selectedRingtoneUri.asStateFlow()
-    private var isRingtonePlaying = false
+    private val _isRingtonePlaying: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isRingtonePlaying: StateFlow<Boolean> = _isRingtonePlaying.asStateFlow()
 
     init {
         // Register this ViewModel to the Application's Lifecycle.
@@ -63,7 +64,7 @@ class RingtonePickerViewModel(
 
     fun selectRingtone(context: Context, ringtoneUriString: String) {
         // Play or Stop Ringtone
-        if (isRingtonePlaying) {
+        if (_isRingtonePlaying.value) {
             if (ringtoneUriString == _selectedRingtoneUri.value) {
                 stopRingtone()
             } else {
@@ -79,12 +80,12 @@ class RingtonePickerViewModel(
 
     private fun playRingtone(context: Context, ringtoneUri: String) {
         RingtonePlayerManager.startAlarmSound(context, ringtoneUri)
-        isRingtonePlaying = true
+        _isRingtonePlaying.value = true
     }
 
     private fun stopRingtone() {
         RingtonePlayerManager.stopAlarmSound()
-        isRingtonePlaying = false
+        _isRingtonePlaying.value = false
     }
 
     /**
