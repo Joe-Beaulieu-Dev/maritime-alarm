@@ -40,4 +40,5 @@ val NavTextInactive = LightVolcanicRock
 val NavIndicator = VolcanicRock
 
 // OS Default Clones
-val AndroidDarkScrim = Color(red = 0x1b, green = 0x1b, blue = 0x1b, alpha = 0x80)
+// Alpha value modified from 0x80
+val AndroidDarkScrim = Color(red = 0x1b, green = 0x1b, blue = 0x1b, alpha = 0xFF)
