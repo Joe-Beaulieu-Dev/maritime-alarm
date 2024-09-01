@@ -10,10 +10,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -68,6 +71,7 @@ import com.example.alarmscratch.core.ui.theme.DarkerBoatSails
 import com.example.alarmscratch.core.ui.theme.LightVolcanicRock
 import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
 import com.example.alarmscratch.core.ui.theme.VolcanicRock
+import com.example.alarmscratch.core.util.StatusBarUtil
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -89,6 +93,9 @@ fun AlarmCreateEditScreen(
     removeDay: (WeeklyRepeater.Day) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Configure Status Bar
+    StatusBarUtil.setDarkStatusBar()
+
     // State
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -121,6 +128,8 @@ fun AlarmCreateEditScreen(
         containerColor = MaterialTheme.colorScheme.surface,
         contentColor = BoatSails,
         modifier = modifier
+            .background(color = MediumVolcanicRock)
+            .windowInsetsPadding(WindowInsets.systemBars)
     ) { innerPadding ->
         Column(
             modifier = Modifier
