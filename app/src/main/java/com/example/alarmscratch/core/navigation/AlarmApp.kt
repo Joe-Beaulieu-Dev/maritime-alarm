@@ -24,7 +24,8 @@ fun AlarmApp() {
         composable<Destination.CoreScreen> {
             CoreScreen(
                 rootNavHostController = navHostController,
-                navigateToAlarmCreationScreen = { navHostController.navigateSingleTop(Destination.AlarmCreationScreen) }
+                navigateToAlarmCreationScreen = { navHostController.navigateSingleTop(Destination.AlarmCreationScreen) },
+                modifier = Modifier.fillMaxSize()
             )
         }
 
