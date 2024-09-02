@@ -4,9 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,14 +36,20 @@ import com.example.alarmscratch.core.ui.core.component.SkylineHeaderContent
 import com.example.alarmscratch.core.ui.core.component.VolcanoNavigationBar
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BottomOceanBlue
+import com.example.alarmscratch.core.ui.theme.SkyBlue
 import com.example.alarmscratch.core.ui.theme.TopOceanBlue
+import com.example.alarmscratch.core.util.StatusBarUtil
 import com.example.alarmscratch.settings.SettingsScreen
 
 @Composable
 fun CoreScreen(
     rootNavHostController: NavHostController,
-    navigateToAlarmCreationScreen: () -> Unit
+    navigateToAlarmCreationScreen: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
+    // Configure Status Bar
+    StatusBarUtil.setLightStatusBar()
+
     // Navigation
     val localNavHostController = rememberNavController()
     val currentBackStackEntry by localNavHostController.currentBackStackEntryAsState()
@@ -50,6 +59,7 @@ fun CoreScreen(
 
     // Core Screen wrapping an Internal Screen
     CoreScreenContent(
+        modifier = modifier,
         header = { SkylineHeader(selectedNavComponentDest = selectedNavComponentDest) },
         onFabClicked = navigateToAlarmCreationScreen,
         navigationBar = {
@@ -71,6 +81,7 @@ fun CoreScreen(
 
 @Composable
 fun CoreScreenContent(
+    modifier: Modifier = Modifier,
     header: @Composable () -> Unit,
     onFabClicked: () -> Unit,
     navigationBar: @Composable () -> Unit,
@@ -78,7 +89,9 @@ fun CoreScreenContent(
 ) {
     Surface(
         color = Color.Transparent,
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier
+            .background(color = SkyBlue)
+            .windowInsetsPadding(WindowInsets.systemBars)
     ) {
         Column(
             verticalArrangement = Arrangement.Center,

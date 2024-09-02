@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -48,6 +51,7 @@ import com.example.alarmscratch.core.ui.theme.DarkerBoatSails
 import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
 import com.example.alarmscratch.core.ui.theme.SelectedGreen
 import com.example.alarmscratch.core.ui.theme.VolcanicRock
+import com.example.alarmscratch.core.util.StatusBarUtil
 
 @Composable
 fun RingtonePickerScreen(
@@ -55,6 +59,9 @@ fun RingtonePickerScreen(
     modifier: Modifier,
     ringtonePickerViewModel: RingtonePickerViewModel = viewModel(factory = RingtonePickerViewModel.Factory)
 ) {
+    // Configure Status Bar
+    StatusBarUtil.setDarkStatusBar()
+
     // State
     val ringtoneDataList = ringtonePickerViewModel.ringtoneDataList
     val selectedRingtoneUri by ringtonePickerViewModel.selectedRingtoneUri.collectAsState()
@@ -93,7 +100,11 @@ fun RingtonePickerScreenContent(
     val isRowPlaying: (String) -> Boolean = { isRingtonePlaying && isRowSelected(it) }
     val rowColor: (String) -> Color = { if (isRowSelected(it)) VolcanicRock else DarkVolcanicRock }
 
-    Surface(modifier = modifier) {
+    Surface(
+        modifier = modifier
+            .background(color = MediumVolcanicRock)
+            .windowInsetsPadding(WindowInsets.systemBars)
+    ) {
         Column {
             // Top App Bar
             RingtonePickerTopAppBar(

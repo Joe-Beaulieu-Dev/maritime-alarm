@@ -1,13 +1,8 @@
 package com.example.alarmscratch.core.ui.theme
 
-import android.app.Activity
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
 
 // Comments below are for what these colors would change by default.
 // Some of these Composables' attributes have been modified in the code,
@@ -70,17 +65,6 @@ private val NauticalColorScheme = darkColorScheme(
 
 @Composable
 fun AlarmScratchTheme(content: @Composable () -> Unit) {
-    // Change status bar colors
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = SkyBlue.toArgb()
-            // color scheme is always the same, so make the StatusBar text and icons always white
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
-        }
-    }
-
     // Set theme
     MaterialTheme(
         colorScheme = NauticalColorScheme,
