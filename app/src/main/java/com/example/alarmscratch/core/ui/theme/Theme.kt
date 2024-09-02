@@ -3,7 +3,6 @@ package com.example.alarmscratch.core.ui.theme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
-import com.example.alarmscratch.core.util.StatusBarUtil
 
 // Comments below are for what these colors would change by default.
 // Some of these Composables' attributes have been modified in the code,
@@ -66,9 +65,6 @@ private val NauticalColorScheme = darkColorScheme(
 
 @Composable
 fun AlarmScratchTheme(content: @Composable () -> Unit) {
-    // Configure Status Bar
-    StatusBarUtil.setLightStatusBar()
-
     // Set theme
     MaterialTheme(
         colorScheme = NauticalColorScheme,
