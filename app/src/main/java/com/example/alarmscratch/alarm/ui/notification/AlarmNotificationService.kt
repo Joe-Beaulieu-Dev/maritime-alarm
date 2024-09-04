@@ -83,7 +83,7 @@ class AlarmNotificationService(private val context: Context) {
         )
 
         val notification = Notification.Builder(context, CHANNEL_ID_ALARM_NOTIFICATION)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_alarm_24dp)
             .setContentTitle(alarmName)
             .setContentText(notificationDateTimeString)
             .setFullScreenIntent(pendingIntent, true)
