@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.alarmexecution.AlarmReceiver
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
+import java.time.LocalDateTime
 
 class FullScreenAlarmActivity : ComponentActivity() {
 
@@ -14,11 +15,19 @@ class FullScreenAlarmActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val alarmName = intent.getStringExtra(AlarmReceiver.EXTRA_ALARM_NAME) ?: applicationContext.getString(R.string.default_alarm_name)
-        val alarmTime = intent.getStringExtra(AlarmReceiver.EXTRA_ALARM_TIME) ?: applicationContext.getString(R.string.default_alarm_time)
+        val alarmDateTime = try {
+            val dateTimeString = intent.getStringExtra(AlarmReceiver.EXTRA_ALARM_DATE_TIME)
+            LocalDateTime.parse(dateTimeString)
+        } catch (e: Exception) {
+            null
+        }
 
         setContent {
             AlarmScratchTheme {
-                FullScreenAlarmScreen(alarmName = alarmName, alarmTime = alarmTime)
+                FullScreenAlarmScreen(
+                    alarmName = alarmName,
+                    alarmDateTime = alarmDateTime
+                )
             }
         }
 
