@@ -53,10 +53,12 @@ private fun formatCalendarDate(date: LocalDate): String =
             "${date.dayOfMonth.toOrdinal()} " +
             "${date.year}"
 
-fun LocalDateTime.dayShorthand(): String = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.US)
+fun LocalDateTime.getDay(): String = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.US)
+
+fun LocalDateTime.getDayShorthand(): String = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.US)
 
 fun LocalDateTime.toNotificationDateTimeString(context: Context): String =
-    "${dayShorthand()}, ${get12HrTime()} ${getAmPm(context)}"
+    "${getDayShorthand()}, ${get12HrTime()} ${getAmPm(context)}"
 
 fun LocalDateTime.get12HrTime(): String {
     val time = this.toLocalTime()

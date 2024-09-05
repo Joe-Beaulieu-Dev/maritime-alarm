@@ -21,9 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
-import com.example.alarmscratch.core.extension.dayShorthand
 import com.example.alarmscratch.core.extension.get12HrTime
 import com.example.alarmscratch.core.extension.getAmPm
+import com.example.alarmscratch.core.extension.getDay
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import java.time.LocalDateTime
 
@@ -33,7 +33,7 @@ fun FullScreenAlarmScreen(
     alarmDateTime: LocalDateTime?
 ) {
     val context = LocalContext.current
-    val alarmDate = alarmDateTime?.dayShorthand() ?: context.getString(R.string.default_alarm_date)
+    val alarmDate = alarmDateTime?.getDay() ?: context.getString(R.string.default_alarm_date)
     val alarm12HourTime = alarmDateTime?.get12HrTime() ?: context.getString(R.string.default_alarm_time)
     val alarm12HourTimePeriod = alarmDateTime?.getAmPm(context) ?: ""
 
