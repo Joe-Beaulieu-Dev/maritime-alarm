@@ -16,6 +16,11 @@ val WayDarkerBoatSails = Color(0xFF625814) // 75% Darker BoatSails
 val TopOceanBlue = Color(0xFF0066CC)
 val BottomOceanBlue = Color(0xFF00264a)
 
+// BeachBackdrop
+val BeachOcean = Color(0xFF66b2ff)
+val WetSand = Color(0xFFffe3a0)
+val DrySand = Color(0xFFfff5be)
+
 // Volcanic Rock
 val LightVolcanicRock = Color(0xFF6a6a68) // 25% Lighter VolcanicRock
 val VolcanicRock = Color(0xFF373736)
