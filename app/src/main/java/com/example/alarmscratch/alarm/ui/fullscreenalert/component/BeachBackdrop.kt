@@ -1,4 +1,4 @@
-package com.example.alarmscratch.alarm.ui.fullscreenalert
+package com.example.alarmscratch.alarm.ui.fullscreenalert.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

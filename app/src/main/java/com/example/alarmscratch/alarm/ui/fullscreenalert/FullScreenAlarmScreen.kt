@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
+import com.example.alarmscratch.alarm.ui.fullscreenalert.component.BeachBackdrop
 import com.example.alarmscratch.core.extension.get12HrTime
 import com.example.alarmscratch.core.extension.getAmPm
 import com.example.alarmscratch.core.extension.getDay

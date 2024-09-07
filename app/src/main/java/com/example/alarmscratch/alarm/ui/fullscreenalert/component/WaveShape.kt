@@ -1,4 +1,4 @@
-package com.example.alarmscratch.alarm.ui.fullscreenalert
+package com.example.alarmscratch.alarm.ui.fullscreenalert.component
 
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Outline
