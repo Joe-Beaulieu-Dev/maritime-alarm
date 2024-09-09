@@ -8,14 +8,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -31,6 +34,7 @@ import com.example.alarmscratch.core.extension.getDay
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.InCloudBlack
 import com.example.alarmscratch.core.ui.theme.SkyBlue
+import com.example.alarmscratch.core.ui.theme.TransparentBlack
 import com.example.alarmscratch.core.util.StatusBarUtil
 import java.time.LocalDateTime
 
@@ -57,46 +61,55 @@ fun FullScreenAlarmScreen(
         // Screen background
         BeachBackdrop()
 
-        // Screen content
+        // Alarm Data and Buttons
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            // Alarm Name, Date, and Time
+            // Alarm Data
             Column(
-                verticalArrangement = Arrangement.Bottom,
+                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.weight(0.25f)
             ) {
-                // Name
-                Text(
-                    text = alarmName,
-                    color = InCloudBlack,
-                    fontSize = 36.sp
-                )
-
-                // Date
-                Text(
-                    text = alarmDate,
-                    color = InCloudBlack,
-                    fontSize = 32.sp
-                )
-
-                // Time
-                Row {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(18.dp))
+                        .background(color = TransparentBlack)
+                        .padding(12.dp)
+                ) {
+                    // Name
                     Text(
-                        text = alarm12HourTime,
-                        color = InCloudBlack,
-                        fontSize = 64.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.alignByBaseline()
-                    )
-                    Text(
-                        text = alarm12HourTimePeriod,
+                        text = alarmName,
                         color = InCloudBlack,
                         fontSize = 42.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.alignByBaseline()
+                        fontWeight = FontWeight.Bold
                     )
+
+                    // Date
+                    Text(
+                        text = alarmDate,
+                        color = InCloudBlack,
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+
+                    // Time
+                    Row {
+                        Text(
+                            text = alarm12HourTime,
+                            color = InCloudBlack,
+                            fontSize = 64.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.alignByBaseline()
+                        )
+                        Text(
+                            text = alarm12HourTimePeriod,
+                            color = InCloudBlack,
+                            fontSize = 42.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.alignByBaseline()
+                        )
+                    }
                 }
-                Spacer(modifier = Modifier.height(24.dp))
             }
 
             // Snooze and Dismiss Buttons

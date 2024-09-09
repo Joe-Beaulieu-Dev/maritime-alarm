@@ -20,6 +20,7 @@ val BottomOceanBlue = Color(0xFF00264a)
 val BeachOcean = Color(0xFF66b2ff)
 val WetSand = Color(0xFFffe3a0)
 val DrySand = Color(0xFFfff5be)
+val TransparentBlack = Color(0x10000000)
 
 // Volcanic Rock
 val LightVolcanicRock = Color(0xFF6a6a68) // 25% Lighter VolcanicRock
