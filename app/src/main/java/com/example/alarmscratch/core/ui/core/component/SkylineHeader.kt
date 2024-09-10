@@ -68,7 +68,7 @@ fun SkylineHeaderContent(
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        // Sky with Clouds and Water
+        // Sky with Clouds, Water, and Boat
         Box(
             modifier = Modifier
                 .fillMaxWidth()

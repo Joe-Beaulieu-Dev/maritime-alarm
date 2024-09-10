@@ -32,26 +32,27 @@ import com.example.alarmscratch.core.ui.theme.WetSand
 
 @Composable
 fun BeachBackdrop() {
+    // Heights
     val config = LocalConfiguration.current
     val configHeight = config.screenHeightDp.dp
+    val waterHeight = configHeight / 2
+    val skyHeight = configHeight / 4
 
+    // Offsets
     val wetSandOffset = configHeight * 0.15f
     val seaFoamOffset = configHeight * 0.065f
     val waterOffset = configHeight * 0.05f
-    val skyHeight = configHeight / 4
-    val waterHeight = configHeight / 2
 
     Box(modifier = Modifier.fillMaxSize()) {
-
         // Dry and Wet Sand
-        // Dry sand
+        // Dry Sand
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .background(color = DrySand)
         )
-        // Wet sand
+        // Wet Sand
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -61,8 +62,8 @@ fun BeachBackdrop() {
                 .background(color = WetSand)
         )
 
-        // Foam, Water, and Skyline
-        // Foam
+        // Sea Foam, Water, Skyline, and Boat
+        // Sea Foam
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -87,10 +88,10 @@ fun BeachBackdrop() {
                     )
                 )
         )
-        // Sky
+        // Skyline
         BeachSkyline(skyHeight = skyHeight)
 
-        // Sail Boat
+        // Boat
         SailBoat(
             boatSize = 30.dp,
             hullColor = BoatHull,
@@ -101,15 +102,21 @@ fun BeachBackdrop() {
 }
 
 @Composable
-fun BeachSkyline(skyHeight: Dp) {
+fun BeachSkyline(
+    skyHeight: Dp,
+    modifier: Modifier = Modifier
+) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(skyHeight)
             .background(color = SkyBlue)
     ) {
-
-        // Row 1
+        /*
+         ***********
+         ** Row 1 **
+         ***********
+         */
         // First Cloud
         Box(
             modifier = Modifier
@@ -142,7 +149,6 @@ fun BeachSkyline(skyHeight: Dp) {
                 .clip(shape = CircleShape)
                 .background(color = Color.White)
         )
-
         // Third Cloud Large Part
         Box(
             modifier = Modifier
@@ -164,7 +170,6 @@ fun BeachSkyline(skyHeight: Dp) {
                 .clip(shape = CircleShape)
                 .background(color = Color.Yellow)
         )
-
         // Sun Cloud
         Box(
             modifier = Modifier
@@ -176,7 +181,11 @@ fun BeachSkyline(skyHeight: Dp) {
                 .background(color = Color.White)
         )
 
-        // Row 2
+        /*
+         ***********
+         ** Row 2 **
+         ***********
+         */
         // First Cloud Small Part
         Box(
             modifier = Modifier
