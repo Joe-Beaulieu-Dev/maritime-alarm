@@ -29,7 +29,7 @@ fun BeachBackdrop(modifier: Modifier = Modifier) {
     val skylineHeight = screenHeight / 4
 
     // Offsets
-    val wetSandOffset = screenHeight * 0.15f
+    val wetSandOffset = screenHeight * 0.13f
     val seaFoamOffset = screenHeight * 0.065f
     val waterOffset = screenHeight * 0.05f
 
@@ -47,7 +47,7 @@ fun BeachBackdrop(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .padding(top = wetSandOffset)
                 .height(waterHeight)
-                .clip(WaveShape())
+                .clip(WetSandLineShape())
                 .background(color = WetSand)
         )
 

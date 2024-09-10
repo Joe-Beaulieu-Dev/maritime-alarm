@@ -20,23 +20,23 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
-import com.example.alarmscratch.core.ui.theme.BeachOcean
+import com.example.alarmscratch.core.ui.theme.VolcanicRock
 import com.example.alarmscratch.core.ui.theme.WetSand
 
-class WaveShape : Shape {
+class WetSandLineShape : Shape {
 
     override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-        val waveLine = Path().apply {
+        val wetSandLine = Path().apply {
             val width = size.width
             val height = size.height
-            val startHeight = height * 0.9f
+            val startHeight = height * 0.95f
 
             // Line down the left
             lineTo(x = 0f, y = startHeight)
 
             // First curve
             val bezierTip1X = width * 0.25f
-            val bezierTip1Y = startHeight * 1.2f
+            val bezierTip1Y = startHeight * 1.1f
             val endpoint1X = width * 0.5f
             val endpoint1Y = startHeight
             quadraticTo(
@@ -50,7 +50,7 @@ class WaveShape : Shape {
 
             // Second curve
             val bezierTip2X = ((width * 0.75f - endpoint1X) / 2) + endpoint1X
-            val bezierTip2Y = startHeight * 0.9f
+            val bezierTip2Y = startHeight * 0.95f
             val endpoint2X = width * 0.75f
             val endpoint2Y = startHeight
             quadraticTo(
@@ -64,7 +64,7 @@ class WaveShape : Shape {
 
             // Third curve
             val bezierTip3X = ((width - endpoint2X) / 2) + endpoint2X
-            val bezierTip3Y = bezierTip1Y * 0.9f
+            val bezierTip3Y = bezierTip1Y * 0.95f
             val endpoint3X = width
             val endpoint3Y = startHeight
             quadraticTo(
@@ -83,7 +83,7 @@ class WaveShape : Shape {
             close()
         }
 
-        return Outline.Generic(waveLine)
+        return Outline.Generic(wetSandLine)
     }
 }
 
@@ -93,30 +93,30 @@ class WaveShape : Shape {
 
 @Preview
 @Composable
-private fun WaveShapePreview() {
+private fun WetSandLineShapePreview() {
     AlarmScratchTheme {
         val config = LocalConfiguration.current
         val screenHeight = config.screenHeightDp.dp
-        val waterHeight = screenHeight / 2
+        val wetSandHeight = screenHeight / 2
 
-        // Wet Sand background with WaveShape-clipped Water on top
+        // VolcanicRock background with WetSandLineShape-clipped Wet Sand on top
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(screenHeight * 0.75f)
-                .background(color = WetSand)
+                .background(color = VolcanicRock)
         ) {
-            // Water
+            // Wet Sand
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(waterHeight)
-                    .clip(WaveShape())
-                    .background(color = BeachOcean)
+                    .height(wetSandHeight)
+                    .clip(WetSandLineShape())
+                    .background(color = WetSand)
             )
 
-            // Divider to show the actual bottom of the clipped Water Box
-            HorizontalDivider(thickness = 2.dp, color = Color.Black)
+            // Divider to show the actual bottom of the clipped Wet Sand Box
+            HorizontalDivider(thickness = 2.dp, color = Color.Red)
         }
     }
 }
