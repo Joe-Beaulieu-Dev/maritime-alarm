@@ -202,8 +202,8 @@ fun BeachSkyline(
 private fun BeachSkylinePreview() {
     AlarmScratchTheme {
         val config = LocalConfiguration.current
-        val height = config.screenHeightDp.dp
-        val skylineHeight = height / 4
+        val screenHeight = config.screenHeightDp.dp
+        val skylineHeight = screenHeight / 4
 
         BeachSkyline(skylineHeight = skylineHeight)
     }

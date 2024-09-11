@@ -99,7 +99,7 @@ private fun WaterLineShapePreview() {
         val screenHeight = config.screenHeightDp.dp
         val waterHeight = screenHeight / 2
 
-        // Wet Sand background with WaveShape-clipped Water on top
+        // Wet Sand background with WaterLineShape-clipped Water on top
         Column(
             modifier = Modifier
                 .fillMaxWidth()

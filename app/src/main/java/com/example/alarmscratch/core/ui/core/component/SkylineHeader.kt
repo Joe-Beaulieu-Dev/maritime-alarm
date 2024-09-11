@@ -65,10 +65,8 @@ fun SkylineHeaderContent(
     alarmListState: AlarmListState,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth()
-    ) {
-        // Sky with Clouds, Water, and Boat
+    Column(modifier = modifier.fillMaxWidth()) {
+        // Sky with Clouds and Boat
         Box(
             modifier = Modifier
                 .fillMaxWidth()
