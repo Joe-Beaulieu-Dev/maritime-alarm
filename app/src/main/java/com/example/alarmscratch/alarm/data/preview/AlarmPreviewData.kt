@@ -3,6 +3,7 @@ package com.example.alarmscratch.alarm.data.preview
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.core.data.model.RingtoneData
+import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import java.time.LocalDateTime
 
 const val tueWedThu: Int = 28
@@ -50,9 +51,9 @@ val calendarAlarm =
 // TODO do exception handling for java code
 val consistentFutureAlarm: Alarm =
     Alarm(
-        name = "",
+        name = "Practice",
         enabled = true,
-        dateTime = LocalDateTime.now().withNano(0).plusHours(8).plusMinutes(45),
+        dateTime = LocalDateTimeUtil.nowTruncated().plusHours(8).plusMinutes(45),
         weeklyRepeater = WeeklyRepeater(),
         ringtoneUriString = sampleRingtoneUriString
     )

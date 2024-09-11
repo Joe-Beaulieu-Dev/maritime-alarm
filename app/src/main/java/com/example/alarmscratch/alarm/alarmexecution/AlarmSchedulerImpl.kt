@@ -5,7 +5,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.example.alarmscratch.alarm.data.model.Alarm
-import com.example.alarmscratch.core.extension.toNotificationDateTimeString
 import java.time.ZoneId
 
 class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
@@ -40,7 +39,7 @@ class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
         Intent(context, AlarmReceiver::class.java).apply {
             putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarm.id)
             putExtra(AlarmReceiver.EXTRA_ALARM_NAME, alarm.name)
-            putExtra(AlarmReceiver.EXTRA_ALARM_TIME, alarm.dateTime.toNotificationDateTimeString(context))
+            putExtra(AlarmReceiver.EXTRA_ALARM_DATE_TIME, alarm.dateTime.toString())
             putExtra(AlarmReceiver.EXTRA_RINGTONE_URI_STRING, alarm.ringtoneUriString)
         }
 }
