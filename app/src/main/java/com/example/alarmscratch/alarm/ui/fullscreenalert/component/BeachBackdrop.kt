@@ -58,7 +58,7 @@ fun BeachBackdrop(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .padding(top = seaFoamOffset)
                 .height(waterHeight)
-                .clip(WaveShape())
+                .clip(WaterLineShape())
                 .background(color = Color.White)
         )
         // Water
@@ -67,7 +67,7 @@ fun BeachBackdrop(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .padding(top = waterOffset)
                 .height(waterHeight)
-                .clip(WaveShape())
+                .clip(WaterLineShape())
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(

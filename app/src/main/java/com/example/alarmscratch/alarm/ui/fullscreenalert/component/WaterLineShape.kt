@@ -23,7 +23,7 @@ import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BeachOcean
 import com.example.alarmscratch.core.ui.theme.WetSand
 
-class WaveShape : Shape {
+class WaterLineShape : Shape {
 
     override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
         val waveLine = Path().apply {
@@ -93,7 +93,7 @@ class WaveShape : Shape {
 
 @Preview
 @Composable
-private fun WaveShapePreview() {
+private fun WaterLineShapePreview() {
     AlarmScratchTheme {
         val config = LocalConfiguration.current
         val screenHeight = config.screenHeightDp.dp
@@ -111,7 +111,7 @@ private fun WaveShapePreview() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(waterHeight)
-                    .clip(WaveShape())
+                    .clip(WaterLineShape())
                     .background(color = BeachOcean)
             )
 
