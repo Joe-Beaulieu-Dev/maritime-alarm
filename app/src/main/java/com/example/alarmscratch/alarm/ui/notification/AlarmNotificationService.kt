@@ -29,30 +29,12 @@ class AlarmNotificationService(private val context: Context) {
             context.getString(R.string.default_alarm_time)
         }
 
-        val dismissAlarmIntent = Intent(context, AlarmNotificationActionReceiver::class.java).apply {
-            action = AlarmNotificationActionReceiver.ACTION_DISMISS_ALARM
-            putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId)
-        }
-
-        val dismissAlarmPendingIntent = PendingIntent.getBroadcast(
-            context,
-            alarmId,
-            dismissAlarmIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val dismissAlarmAction = Notification.Action.Builder(
-            Icon.createWithResource(context, R.drawable.ic_alarm_dismiss_24dp),
-            context.getString(R.string.dismiss_alarm),
-            dismissAlarmPendingIntent
-        ).build()
-
         val notification = Notification.Builder(context, CHANNEL_ID_ALARM_NOTIFICATION)
             .setSmallIcon(R.drawable.ic_alarm_24dp)
             .setContentTitle(alarmName)
             .setContentText(formattedDateTime)
             .setCategory(Notification.CATEGORY_ALARM)
-            .addAction(dismissAlarmAction)
+            .addAction(getDismissAlarmAction(alarmId))
             .build()
 
         notificationManager.notify(alarmId, notification)
@@ -70,15 +52,15 @@ class AlarmNotificationService(private val context: Context) {
             context.getString(R.string.default_alarm_time)
         }
 
-        val intent = Intent(context, FullScreenAlarmActivity::class.java).apply {
+        // Create PendingIntent to launch the full screen alert
+        val fullScreenIntent = Intent(context, FullScreenAlarmActivity::class.java).apply {
             putExtra(AlarmReceiver.EXTRA_ALARM_NAME, alarmName)
             putExtra(AlarmReceiver.EXTRA_ALARM_DATE_TIME, alarmDateTime)
         }
-
-        val pendingIntent = PendingIntent.getActivity(
+        val fullScreenPendingIntent = PendingIntent.getActivity(
             context,
             alarmId,
-            intent,
+            fullScreenIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -86,7 +68,9 @@ class AlarmNotificationService(private val context: Context) {
             .setSmallIcon(R.drawable.ic_alarm_24dp)
             .setContentTitle(alarmName)
             .setContentText(notificationDateTimeString)
-            .setFullScreenIntent(pendingIntent, true)
+            .setCategory(Notification.CATEGORY_ALARM)
+            .addAction(getDismissAlarmAction(alarmId))
+            .setFullScreenIntent(fullScreenPendingIntent, true)
             .build()
 
         notificationManager.notify(alarmId, notification)
@@ -94,5 +78,25 @@ class AlarmNotificationService(private val context: Context) {
         // TODO: Check notification permission before sounding Alarm. If you don't,
         //  then the ringtone will sound without the notification.
         RingtonePlayerManager.startAlarmSound(context, ringtoneUri)
+    }
+
+    private fun getDismissAlarmAction(alarmId: Int): Notification.Action {
+        val dismissAlarmIntent = Intent(context, AlarmNotificationActionReceiver::class.java).apply {
+            action = AlarmNotificationActionReceiver.ACTION_DISMISS_ALARM
+            putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId)
+        }
+
+        val dismissAlarmPendingIntent = PendingIntent.getBroadcast(
+            context,
+            alarmId,
+            dismissAlarmIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        return Notification.Action.Builder(
+            Icon.createWithResource(context, R.drawable.ic_alarm_dismiss_24dp),
+            context.getString(R.string.dismiss_alarm),
+            dismissAlarmPendingIntent
+        ).build()
     }
 }
