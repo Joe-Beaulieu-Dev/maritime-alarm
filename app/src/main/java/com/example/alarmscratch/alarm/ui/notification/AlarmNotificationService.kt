@@ -22,7 +22,7 @@ class AlarmNotificationService(private val context: Context) {
         const val CHANNEL_ID_ALARM_NOTIFICATION = "channel_id_alarm_notification"
     }
 
-    fun showNotification(alarmId: Int, alarmName: String, alarmDateTime: String, ringtoneUriString: String) {
+    fun showNotification(alarmId: Int, alarmName: String, alarmDateTime: String, ringtoneUri: String) {
         val formattedDateTime = try {
             LocalDateTime.parse(alarmDateTime).toNotificationDateTimeString(context)
         } catch (e: Exception) {
@@ -59,10 +59,10 @@ class AlarmNotificationService(private val context: Context) {
 
         // TODO: Check notification permission before sounding Alarm. If you don't,
         //  then the ringtone will sound without the notification.
-        RingtonePlayerManager.startAlarmSound(context, ringtoneUriString)
+        RingtonePlayerManager.startAlarmSound(context, ringtoneUri)
     }
 
-    fun showFullScreenNotification(alarmId: Int, alarmName: String, alarmDateTime: String) {
+    fun showFullScreenNotification(alarmId: Int, alarmName: String, alarmDateTime: String, ringtoneUri: String) {
         // This shows up in the Status Bar notification, but not in the full screen alert
         val notificationDateTimeString = try {
             LocalDateTime.parse(alarmDateTime).toNotificationDateTimeString(context)
@@ -90,5 +90,9 @@ class AlarmNotificationService(private val context: Context) {
             .build()
 
         notificationManager.notify(alarmId, notification)
+
+        // TODO: Check notification permission before sounding Alarm. If you don't,
+        //  then the ringtone will sound without the notification.
+        RingtonePlayerManager.startAlarmSound(context, ringtoneUri)
     }
 }
