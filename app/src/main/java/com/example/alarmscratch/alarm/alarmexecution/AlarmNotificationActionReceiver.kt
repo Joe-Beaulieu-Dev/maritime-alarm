@@ -32,17 +32,23 @@ class AlarmNotificationActionReceiver : BroadcastReceiver() {
         }
     }
 
+    /**
+     * Dismisses the Alarm Notification from the Status Bar, disables the Alarm in the Database, and stops Ringtone playback.
+     *
+     * @param context Context used to get handles to things
+     * @param alarmId ID of the Alarm to be dismissed
+     */
     private fun dismissAlarm(context: Context, alarmId: Int) {
+        // Dismiss Notification
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(alarmId)
 
+        // Disable Alarm
         val alarmRepo = AlarmRepository(
             AlarmDatabase
                 .getDatabase(context.createDeviceProtectedStorageContext())
                 .alarmDao()
         )
-
-        // Disable Alarm
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val alarm = async { alarmRepo.getAlarmFlow(alarmId) }.await().first()

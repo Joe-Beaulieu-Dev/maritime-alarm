@@ -14,6 +14,8 @@ class FullScreenAlarmActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Alarm data
+        val alarmId = intent.getIntExtra(AlarmReceiver.EXTRA_ALARM_ID, AlarmReceiver.ALARM_NO_ID)
         val alarmName = intent.getStringExtra(AlarmReceiver.EXTRA_ALARM_NAME) ?: applicationContext.getString(R.string.default_alarm_name)
         val alarmDateTime = try {
             val dateTimeString = intent.getStringExtra(AlarmReceiver.EXTRA_ALARM_DATE_TIME)
@@ -25,6 +27,7 @@ class FullScreenAlarmActivity : ComponentActivity() {
         setContent {
             AlarmScratchTheme {
                 FullScreenAlarmScreen(
+                    alarmId = alarmId,
                     alarmName = alarmName,
                     alarmDateTime = alarmDateTime
                 )
