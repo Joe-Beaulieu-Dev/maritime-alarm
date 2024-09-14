@@ -25,7 +25,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
 import com.example.alarmscratch.alarm.ui.fullscreenalert.component.BeachBackdrop
@@ -40,15 +39,15 @@ import com.example.alarmscratch.core.util.StatusBarUtil
 import java.time.LocalDateTime
 
 @Composable
-fun FullScreenAlarmScreen(
-    alarmId: Int,
-    alarmName: String,
-    alarmDateTime: LocalDateTime?,
-    fullScreenAlarmViewModel: FullScreenAlarmViewModel = viewModel(factory = FullScreenAlarmViewModel.Factory)
-) {
+fun FullScreenAlarmScreen(fullScreenAlarmViewModel: FullScreenAlarmViewModel) {
     // TODO: Test this on the Lock Screen
     // Configure Status Bar
     StatusBarUtil.setLightStatusBar()
+
+    // State
+    val alarmId = fullScreenAlarmViewModel.alarmId
+    val alarmName = fullScreenAlarmViewModel.alarmName
+    val alarmDateTime = fullScreenAlarmViewModel.alarmDateTime
 
     // Actions
     val context = LocalContext.current
@@ -67,6 +66,7 @@ fun FullScreenAlarmScreenContent(
     alarmDateTime: LocalDateTime?,
     dismissAlarm: () -> Unit
 ) {
+    // Alarm data
     val context = LocalContext.current
     val alarmDate = alarmDateTime?.getDay() ?: context.getString(R.string.default_alarm_date)
     val alarm12HourTime = alarmDateTime?.get12HrTime() ?: context.getString(R.string.default_alarm_time)

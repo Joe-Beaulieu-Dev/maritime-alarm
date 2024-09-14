@@ -4,20 +4,28 @@ import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.alarmscratch.alarm.alarmexecution.AlarmNotificationActionReceiver
 import com.example.alarmscratch.alarm.alarmexecution.AlarmReceiver
+import java.time.LocalDateTime
 
-class FullScreenAlarmViewModel : ViewModel() {
+class FullScreenAlarmViewModel(
+    val alarmId: Int,
+    val alarmName: String,
+    val alarmDateTime: LocalDateTime?
+) : ViewModel() {
 
     companion object {
 
-        val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-                return FullScreenAlarmViewModel() as T
+        fun provideFactory(
+            alarmId: Int,
+            alarmName: String,
+            alarmDateTime: LocalDateTime?
+        ): ViewModelProvider.Factory =
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T =
+                    FullScreenAlarmViewModel(alarmId, alarmName, alarmDateTime) as T
             }
-        }
     }
 
     fun dismissAlarm(context: Context, alarmId: Int) {
