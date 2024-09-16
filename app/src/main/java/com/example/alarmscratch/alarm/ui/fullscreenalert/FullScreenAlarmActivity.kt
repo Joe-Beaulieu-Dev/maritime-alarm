@@ -17,6 +17,7 @@ import java.time.LocalDateTime
 
 class FullScreenAlarmActivity : ComponentActivity() {
 
+    private var receiverRegistered = false
     private val fullScreenAlarmReceiver: BroadcastReceiver =
         object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
@@ -61,15 +62,23 @@ class FullScreenAlarmActivity : ComponentActivity() {
         super.onResume()
 
         // Register BroadcastReceiver
-        val intentFilter = IntentFilter(ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY)
-        ContextCompat.registerReceiver(this, fullScreenAlarmReceiver, intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED)
+        if (!receiverRegistered) {
+            val intentFilter = IntentFilter(ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY)
+            ContextCompat.registerReceiver(this, fullScreenAlarmReceiver, intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED)
+            receiverRegistered = true
+        }
     }
 
     override fun onPause() {
         super.onPause()
 
-        // Unregister BroadcastReceiver
-        unregisterReceiver(fullScreenAlarmReceiver)
+        // Unregister BroadcastReceiver.
+        // Don't unregister if it hasn't been registered for some reason
+        // because this will lead to an IllegalArgumentException.
+        if (receiverRegistered) {
+            unregisterReceiver(fullScreenAlarmReceiver)
+            receiverRegistered = false
+        }
     }
 
     private fun turnScreenOn() {
