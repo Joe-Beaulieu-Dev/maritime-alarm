@@ -38,8 +38,10 @@
         <activity
             android:name=".alarm.ui.fullscreenalert.FullScreenAlarmActivity"
             android:directBootAware="true"
+            android:excludeFromRecents="true"
             android:showOnLockScreen="true"
-            android:showWhenLocked="true" />
+            android:showWhenLocked="true"
+            android:taskAffinity="" />
         <!-- Receive alarm execution events -->
         <receiver android:name=".alarm.alarmexecution.AlarmReceiver" />
         <!-- Reschedule alarms on device boot -->

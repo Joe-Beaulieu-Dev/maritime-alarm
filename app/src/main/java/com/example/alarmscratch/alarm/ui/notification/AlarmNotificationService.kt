@@ -54,9 +54,12 @@ class AlarmNotificationService(private val context: Context) {
 
         // Create PendingIntent to launch the full screen alert
         val fullScreenIntent = Intent(context, FullScreenAlarmActivity::class.java).apply {
+            // Add data
             putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId)
             putExtra(AlarmReceiver.EXTRA_ALARM_NAME, alarmName)
             putExtra(AlarmReceiver.EXTRA_ALARM_DATE_TIME, alarmDateTime)
+            // Set flags
+            setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION)
         }
         val fullScreenPendingIntent = PendingIntent.getActivity(
             context,
