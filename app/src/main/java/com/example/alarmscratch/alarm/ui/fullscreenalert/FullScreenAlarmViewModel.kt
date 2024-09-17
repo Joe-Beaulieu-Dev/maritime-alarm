@@ -9,7 +9,7 @@ import com.example.alarmscratch.alarm.alarmexecution.AlarmReceiver
 import java.time.LocalDateTime
 
 class FullScreenAlarmViewModel(
-    val alarmId: Int,
+    private val alarmId: Int,
     val alarmName: String,
     val alarmDateTime: LocalDateTime?
 ) : ViewModel() {
@@ -28,7 +28,7 @@ class FullScreenAlarmViewModel(
             }
     }
 
-    fun dismissAlarm(context: Context, alarmId: Int) {
+    fun dismissAlarm(context: Context) {
         val dismissAlarmIntent = Intent(context.applicationContext, AlarmNotificationActionReceiver::class.java).apply {
             action = AlarmNotificationActionReceiver.ACTION_DISMISS_ALARM
             putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId)

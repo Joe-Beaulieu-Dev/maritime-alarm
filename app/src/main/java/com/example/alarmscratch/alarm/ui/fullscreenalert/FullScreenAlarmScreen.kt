@@ -1,5 +1,6 @@
 package com.example.alarmscratch.alarm.ui.fullscreenalert
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,18 +46,13 @@ fun FullScreenAlarmScreen(fullScreenAlarmViewModel: FullScreenAlarmViewModel) {
     StatusBarUtil.setLightStatusBar()
 
     // State
-    val alarmId = fullScreenAlarmViewModel.alarmId
     val alarmName = fullScreenAlarmViewModel.alarmName
     val alarmDateTime = fullScreenAlarmViewModel.alarmDateTime
-
-    // Actions
-    val context = LocalContext.current
-    val dismissAlarm: () -> Unit = { fullScreenAlarmViewModel.dismissAlarm(context, alarmId) }
 
     FullScreenAlarmScreenContent(
         alarmName = alarmName,
         alarmDateTime = alarmDateTime,
-        dismissAlarm = dismissAlarm
+        dismissAlarm = fullScreenAlarmViewModel::dismissAlarm
     )
 }
 
@@ -64,7 +60,7 @@ fun FullScreenAlarmScreen(fullScreenAlarmViewModel: FullScreenAlarmViewModel) {
 fun FullScreenAlarmScreenContent(
     alarmName: String,
     alarmDateTime: LocalDateTime?,
-    dismissAlarm: () -> Unit
+    dismissAlarm: (Context) -> Unit
 ) {
     // Alarm data
     val context = LocalContext.current
@@ -145,7 +141,7 @@ fun FullScreenAlarmScreenContent(
                 Spacer(modifier = Modifier.height(48.dp))
 
                 // Dismiss Button
-                Button(onClick = dismissAlarm) {
+                Button(onClick = { dismissAlarm(context) }) {
                     Text(text = stringResource(id = R.string.dismiss_alarm), fontSize = 42.sp)
                 }
                 Spacer(modifier = Modifier.height(48.dp))
