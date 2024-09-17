@@ -1,5 +1,6 @@
 package com.example.alarmscratch.alarm.ui.fullscreenalert
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,14 +40,29 @@ import com.example.alarmscratch.core.util.StatusBarUtil
 import java.time.LocalDateTime
 
 @Composable
-fun FullScreenAlarmScreen(
-    alarmName: String,
-    alarmDateTime: LocalDateTime?
-) {
+fun FullScreenAlarmScreen(fullScreenAlarmViewModel: FullScreenAlarmViewModel) {
     // TODO: Test this on the Lock Screen
     // Configure Status Bar
     StatusBarUtil.setLightStatusBar()
 
+    // State
+    val alarmName = fullScreenAlarmViewModel.alarmName
+    val alarmDateTime = fullScreenAlarmViewModel.alarmDateTime
+
+    FullScreenAlarmScreenContent(
+        alarmName = alarmName,
+        alarmDateTime = alarmDateTime,
+        dismissAlarm = fullScreenAlarmViewModel::dismissAlarm
+    )
+}
+
+@Composable
+fun FullScreenAlarmScreenContent(
+    alarmName: String,
+    alarmDateTime: LocalDateTime?,
+    dismissAlarm: (Context) -> Unit
+) {
+    // Alarm data
     val context = LocalContext.current
     val alarmDate = alarmDateTime?.getDay() ?: context.getString(R.string.default_alarm_date)
     val alarm12HourTime = alarmDateTime?.get12HrTime() ?: context.getString(R.string.default_alarm_time)
@@ -125,7 +141,7 @@ fun FullScreenAlarmScreen(
                 Spacer(modifier = Modifier.height(48.dp))
 
                 // Dismiss Button
-                Button(onClick = {}) {
+                Button(onClick = { dismissAlarm(context) }) {
                     Text(text = stringResource(id = R.string.dismiss_alarm), fontSize = 42.sp)
                 }
                 Spacer(modifier = Modifier.height(48.dp))
@@ -142,9 +158,10 @@ fun FullScreenAlarmScreen(
 @Composable
 private fun FullScreenAlarmScreenPreview() {
     AlarmScratchTheme {
-        FullScreenAlarmScreen(
+        FullScreenAlarmScreenContent(
             alarmName = consistentFutureAlarm.name,
-            alarmDateTime = consistentFutureAlarm.dateTime
+            alarmDateTime = consistentFutureAlarm.dateTime,
+            dismissAlarm = {}
         )
     }
 }

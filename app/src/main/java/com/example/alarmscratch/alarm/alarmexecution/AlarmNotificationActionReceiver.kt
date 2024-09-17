@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
+import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmActivity
 import com.example.alarmscratch.core.ringtone.RingtonePlayerManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,17 +33,27 @@ class AlarmNotificationActionReceiver : BroadcastReceiver() {
         }
     }
 
+    /**
+     * Dismisses the Alarm by performing the following actions:
+     *   1) Dismiss the Alarm Notification from the Status Bar
+     *   2) Disable the Alarm in the Database
+     *   3) Stop Ringtone playback
+     *   4) Send a Broadcast to finish the Full Screen Intent Activity
+     *
+     * @param context Context used to get handles to things
+     * @param alarmId ID of the Alarm to be dismissed
+     */
     private fun dismissAlarm(context: Context, alarmId: Int) {
+        // Dismiss Notification
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(alarmId)
 
+        // Disable Alarm
         val alarmRepo = AlarmRepository(
             AlarmDatabase
                 .getDatabase(context.createDeviceProtectedStorageContext())
                 .alarmDao()
         )
-
-        // Disable Alarm
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val alarm = async { alarmRepo.getAlarmFlow(alarmId) }.await().first()
@@ -54,5 +65,11 @@ class AlarmNotificationActionReceiver : BroadcastReceiver() {
 
         // Stop Ringtone playback
         RingtonePlayerManager.stopAlarmSound()
+
+        // Send Broadcast to finish the Full Screen Intent Activity
+        val dismissFullScreenAlertIntent = Intent().apply {
+            action = FullScreenAlarmActivity.ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY
+        }
+        context.sendBroadcast(dismissFullScreenAlertIntent)
     }
 }

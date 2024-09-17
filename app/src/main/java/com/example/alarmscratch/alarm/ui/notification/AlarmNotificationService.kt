@@ -22,13 +22,69 @@ class AlarmNotificationService(private val context: Context) {
         const val CHANNEL_ID_ALARM_NOTIFICATION = "channel_id_alarm_notification"
     }
 
-    fun showNotification(alarmId: Int, alarmName: String, alarmDateTime: String, ringtoneUriString: String) {
+    fun showNotification(alarmId: Int, alarmName: String, alarmDateTime: String, ringtoneUri: String) {
         val formattedDateTime = try {
             LocalDateTime.parse(alarmDateTime).toNotificationDateTimeString(context)
         } catch (e: Exception) {
             context.getString(R.string.default_alarm_time)
         }
 
+        val notification = Notification.Builder(context, CHANNEL_ID_ALARM_NOTIFICATION)
+            .setSmallIcon(R.drawable.ic_alarm_24dp)
+            .setContentTitle(alarmName)
+            .setContentText(formattedDateTime)
+            .setCategory(Notification.CATEGORY_ALARM)
+            .addAction(getDismissAlarmAction(alarmId))
+            .build()
+
+        notificationManager.notify(alarmId, notification)
+
+        // TODO: Check notification permission before sounding Alarm. If you don't,
+        //  then the ringtone will sound without the notification.
+        RingtonePlayerManager.startAlarmSound(context, ringtoneUri)
+    }
+
+    fun showFullScreenNotification(alarmId: Int, alarmName: String, alarmDateTime: String, ringtoneUri: String) {
+        // This shows up in the Status Bar notification, but not in the full screen alert
+        val notificationDateTimeString = try {
+            LocalDateTime.parse(alarmDateTime).toNotificationDateTimeString(context)
+        } catch (e: Exception) {
+            context.getString(R.string.default_alarm_time)
+        }
+
+        // Create PendingIntent to launch the full screen alert
+        val fullScreenIntent = Intent(context, FullScreenAlarmActivity::class.java).apply {
+            // Add data
+            putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId)
+            putExtra(AlarmReceiver.EXTRA_ALARM_NAME, alarmName)
+            putExtra(AlarmReceiver.EXTRA_ALARM_DATE_TIME, alarmDateTime)
+            // Set flags
+            setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION)
+        }
+        val fullScreenPendingIntent = PendingIntent.getActivity(
+            context,
+            alarmId,
+            fullScreenIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notification = Notification.Builder(context, CHANNEL_ID_ALARM_NOTIFICATION)
+            .setSmallIcon(R.drawable.ic_alarm_24dp)
+            .setContentTitle(alarmName)
+            .setContentText(notificationDateTimeString)
+            .setCategory(Notification.CATEGORY_ALARM)
+            .addAction(getDismissAlarmAction(alarmId))
+            .setFullScreenIntent(fullScreenPendingIntent, true)
+            .build()
+
+        notificationManager.notify(alarmId, notification)
+
+        // TODO: Check notification permission before sounding Alarm. If you don't,
+        //  then the ringtone will sound without the notification.
+        RingtonePlayerManager.startAlarmSound(context, ringtoneUri)
+    }
+
+    private fun getDismissAlarmAction(alarmId: Int): Notification.Action {
         val dismissAlarmIntent = Intent(context, AlarmNotificationActionReceiver::class.java).apply {
             action = AlarmNotificationActionReceiver.ACTION_DISMISS_ALARM
             putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId)
@@ -41,54 +97,10 @@ class AlarmNotificationService(private val context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val dismissAlarmAction = Notification.Action.Builder(
+        return Notification.Action.Builder(
             Icon.createWithResource(context, R.drawable.ic_alarm_dismiss_24dp),
             context.getString(R.string.dismiss_alarm),
             dismissAlarmPendingIntent
         ).build()
-
-        val notification = Notification.Builder(context, CHANNEL_ID_ALARM_NOTIFICATION)
-            .setSmallIcon(R.drawable.ic_alarm_24dp)
-            .setContentTitle(alarmName)
-            .setContentText(formattedDateTime)
-            .setCategory(Notification.CATEGORY_ALARM)
-            .addAction(dismissAlarmAction)
-            .build()
-
-        notificationManager.notify(alarmId, notification)
-
-        // TODO: Check notification permission before sounding Alarm. If you don't,
-        //  then the ringtone will sound without the notification.
-        RingtonePlayerManager.startAlarmSound(context, ringtoneUriString)
-    }
-
-    fun showFullScreenNotification(alarmId: Int, alarmName: String, alarmDateTime: String) {
-        // This shows up in the Status Bar notification, but not in the full screen alert
-        val notificationDateTimeString = try {
-            LocalDateTime.parse(alarmDateTime).toNotificationDateTimeString(context)
-        } catch (e: Exception) {
-            context.getString(R.string.default_alarm_time)
-        }
-
-        val intent = Intent(context, FullScreenAlarmActivity::class.java).apply {
-            putExtra(AlarmReceiver.EXTRA_ALARM_NAME, alarmName)
-            putExtra(AlarmReceiver.EXTRA_ALARM_DATE_TIME, alarmDateTime)
-        }
-
-        val pendingIntent = PendingIntent.getActivity(
-            context,
-            alarmId,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val notification = Notification.Builder(context, CHANNEL_ID_ALARM_NOTIFICATION)
-            .setSmallIcon(R.drawable.ic_alarm_24dp)
-            .setContentTitle(alarmName)
-            .setContentText(notificationDateTimeString)
-            .setFullScreenIntent(pendingIntent, true)
-            .build()
-
-        notificationManager.notify(alarmId, notification)
     }
 }
