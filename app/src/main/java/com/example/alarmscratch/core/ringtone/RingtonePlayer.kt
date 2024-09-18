@@ -40,7 +40,7 @@ class RingtonePlayer {
 
                     // Ringtone.setStreamType() is deprecated. However, it is the only way to get
                     // the Ringtone to play when the Device is set to Silent, which is standard
-                    // behavior for an Alarm app.
+                    // behavior for an alarm app.
                     //
                     // Side Note: AudioAttributes.Builder().setLegacyStreamType() looks like it's
                     // supposed to do the same thing, but it doesn't work for this.
