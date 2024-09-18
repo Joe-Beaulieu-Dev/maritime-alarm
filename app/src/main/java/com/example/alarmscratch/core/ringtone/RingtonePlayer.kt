@@ -37,6 +37,16 @@ class RingtonePlayer {
             audioFocusRequest?.let { request ->
                 ringtone?.let { ring ->
                     manager.requestAudioFocus(request)
+
+                    // Ringtone.setStreamType() is deprecated. However, it is the only way to get
+                    // the Ringtone to play when the Device is set to Silent, which is standard
+                    // behavior for an Alarm app.
+                    //
+                    // Side Note: AudioAttributes.Builder().setLegacyStreamType() looks like it's
+                    // supposed to do the same thing, but it doesn't work for this.
+                    // AudioAttributes.Builder().setFlags(AudioAttributes.FLAG_AUDIBILITY_ENFORCED) also
+                    // does not get the Ringtone to play while the Device is set to Silent.
+                    ring.streamType = AudioManager.STREAM_ALARM
                     ring.play()
                 }
             }
