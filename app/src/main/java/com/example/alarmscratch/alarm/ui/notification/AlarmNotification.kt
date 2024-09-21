@@ -1,28 +1,21 @@
 package com.example.alarmscratch.alarm.ui.notification
 
 import android.app.Notification
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Icon
 import com.example.alarmscratch.R
-import com.example.alarmscratch.alarm.alarmexecution.AlarmNotificationActionReceiver
-import com.example.alarmscratch.alarm.alarmexecution.AlarmReceiver
+import com.example.alarmscratch.alarm.alarmexecution.AlarmActionReceiver
 import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmActivity
 import com.example.alarmscratch.core.extension.toNotificationDateTimeString
-import com.example.alarmscratch.core.ringtone.RingtonePlayerManager
 import java.time.LocalDateTime
 
-class AlarmNotificationService(private val context: Context) {
+object AlarmNotification {
 
-    private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    const val CHANNEL_ID_ALARM_NOTIFICATION = "channel_id_alarm_notification"
 
-    companion object {
-        const val CHANNEL_ID_ALARM_NOTIFICATION = "channel_id_alarm_notification"
-    }
-
-    fun showFullScreenNotification(alarmId: Int, alarmName: String, alarmDateTime: String, ringtoneUri: String) {
+    fun fullScreenNotification(context: Context, alarmId: Int, alarmName: String, alarmDateTime: String): Notification {
         // This shows up in the Status Bar Notification, but not in the full screen alert
         val notificationDateTimeString = try {
             LocalDateTime.parse(alarmDateTime).toNotificationDateTimeString(context)
@@ -30,26 +23,20 @@ class AlarmNotificationService(private val context: Context) {
             context.getString(R.string.default_alarm_time)
         }
 
-        val notification = Notification.Builder(context, CHANNEL_ID_ALARM_NOTIFICATION)
+        return Notification.Builder(context, CHANNEL_ID_ALARM_NOTIFICATION)
             .setSmallIcon(R.drawable.ic_alarm_24dp)
             .setContentTitle(alarmName)
             .setContentText(notificationDateTimeString)
             .setCategory(Notification.CATEGORY_ALARM)
-            .addAction(getDismissAlarmAction(alarmId))
-            .setFullScreenIntent(getAlertPendingIntent(alarmId, alarmName, alarmDateTime), true)
+            .addAction(getDismissAlarmAction(context, alarmId))
+            .setFullScreenIntent(getAlertPendingIntent(context, alarmId, alarmName, alarmDateTime), true)
             .build()
-
-        notificationManager.notify(alarmId, notification)
-
-        // TODO: Check notification permission before sounding Alarm. If you don't,
-        //  then the ringtone will sound without the notification.
-        RingtonePlayerManager.startAlarmSound(context, ringtoneUri)
     }
 
-    private fun getDismissAlarmAction(alarmId: Int): Notification.Action {
-        val dismissAlarmIntent = Intent(context, AlarmNotificationActionReceiver::class.java).apply {
-            action = AlarmNotificationActionReceiver.ACTION_DISMISS_ALARM
-            putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId)
+    private fun getDismissAlarmAction(context: Context, alarmId: Int): Notification.Action {
+        val dismissAlarmIntent = Intent(context, AlarmActionReceiver::class.java).apply {
+            action = AlarmActionReceiver.ACTION_DISMISS_ALARM
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmId)
         }
 
         val dismissAlarmPendingIntent = PendingIntent.getBroadcast(
@@ -66,13 +53,13 @@ class AlarmNotificationService(private val context: Context) {
         ).build()
     }
 
-    private fun getAlertPendingIntent(alarmId: Int, alarmName: String, alarmDateTime: String): PendingIntent {
+    private fun getAlertPendingIntent(context: Context, alarmId: Int, alarmName: String, alarmDateTime: String): PendingIntent {
         val fullScreenAlertIntent = Intent(context, FullScreenAlarmActivity::class.java).apply {
-            // Add data
-            putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId)
-            putExtra(AlarmReceiver.EXTRA_ALARM_NAME, alarmName)
-            putExtra(AlarmReceiver.EXTRA_ALARM_DATE_TIME, alarmDateTime)
-            // Set flags
+            // Extras
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmId)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, alarmName)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_DATE_TIME, alarmDateTime)
+            // Flags
             setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION)
         }
 

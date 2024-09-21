@@ -15,6 +15,7 @@ class RingtoneRepository(private val context: Context) {
         var ringtone = RingtoneManager.getRingtone(context.applicationContext, ringtoneUri)
 
         if (ringtone == null) {
+            // TODO: This can return null, just check it out
             val defaultRingtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
             ringtone = RingtoneManager.getRingtone(context.applicationContext, defaultRingtoneUri)
         }

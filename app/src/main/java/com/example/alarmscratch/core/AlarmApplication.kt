@@ -5,7 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import com.example.alarmscratch.R
-import com.example.alarmscratch.alarm.ui.notification.AlarmNotificationService
+import com.example.alarmscratch.alarm.ui.notification.AlarmNotification
 
 class AlarmApplication : Application() {
 
@@ -17,7 +17,7 @@ class AlarmApplication : Application() {
     private fun createNotificationChannel() {
         // TODO: Come up with real strings for this
         val channel = NotificationChannel(
-            AlarmNotificationService.CHANNEL_ID_ALARM_NOTIFICATION,
+            AlarmNotification.CHANNEL_ID_ALARM_NOTIFICATION,
             getString(R.string.permission_channel_alarm_name),
             NotificationManager.IMPORTANCE_HIGH
         )

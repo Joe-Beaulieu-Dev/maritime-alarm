@@ -4,8 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.alarmscratch.alarm.alarmexecution.AlarmNotificationActionReceiver
-import com.example.alarmscratch.alarm.alarmexecution.AlarmReceiver
+import com.example.alarmscratch.alarm.alarmexecution.AlarmActionReceiver
 import java.time.LocalDateTime
 
 class FullScreenAlarmViewModel(
@@ -29,9 +28,9 @@ class FullScreenAlarmViewModel(
     }
 
     fun dismissAlarm(context: Context) {
-        val dismissAlarmIntent = Intent(context.applicationContext, AlarmNotificationActionReceiver::class.java).apply {
-            action = AlarmNotificationActionReceiver.ACTION_DISMISS_ALARM
-            putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarmId)
+        val dismissAlarmIntent = Intent(context.applicationContext, AlarmActionReceiver::class.java).apply {
+            action = AlarmActionReceiver.ACTION_DISMISS_ALARM
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmId)
         }
         context.applicationContext.sendBroadcast(dismissAlarmIntent)
     }
