@@ -48,7 +48,7 @@ class AlarmActionReceiver : BroadcastReceiver() {
         val ringtoneUri = intent.getStringExtra(EXTRA_RINGTONE_URI) ?: ALARM_NO_RINGTONE_URI
 
         // Display Alarm Notification
-        val serviceIntent = Intent(context.applicationContext, AlarmNotificationService::class.java).apply {
+        val displayNotificationIntent = Intent(context.applicationContext, AlarmNotificationService::class.java).apply {
             // Action
             action = AlarmNotificationService.DISPLAY_ALARM_NOTIFICATION
             // Extras
@@ -57,15 +57,15 @@ class AlarmActionReceiver : BroadcastReceiver() {
             putExtra(EXTRA_ALARM_DATE_TIME, alarmDateTime)
             putExtra(EXTRA_RINGTONE_URI, ringtoneUri)
         }
-        context.applicationContext.startService(serviceIntent)
+        context.applicationContext.startService(displayNotificationIntent)
     }
 
     private fun dismissAlarm(context: Context, intent: Intent) {
         // Dismiss Alarm Notification
-        val stopServiceIntent = Intent(context.applicationContext, AlarmNotificationService::class.java).apply {
+        val dismissNotificationIntent = Intent(context.applicationContext, AlarmNotificationService::class.java).apply {
             action = AlarmNotificationService.DISMISS_ALARM_NOTIFICATION
         }
-        context.applicationContext.startService(stopServiceIntent)
+        context.applicationContext.startService(dismissNotificationIntent)
 
         // Disable Alarm in database
         val alarmId = intent.getIntExtra(EXTRA_ALARM_ID, ALARM_NO_ID)

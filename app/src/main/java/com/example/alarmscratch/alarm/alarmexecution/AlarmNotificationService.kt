@@ -25,9 +25,7 @@ class AlarmNotificationService : Service() {
                 dismissAlarmNotification()
         }
 
-        // TODO: Check this before PR
         return START_NOT_STICKY
-//        return super.onStartCommand(intent, flags, startId)
     }
 
     private fun displayAlarmNotification(intent: Intent) {

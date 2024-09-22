@@ -14,7 +14,7 @@
         is allowed for, "Apps holding SCHEDULE_EXACT_ALARM or USE_EXACT_ALARM permission and
         are using Foreground Service to continue alarms in the background, including haptics-only alarms."
 
-        See Google's documentation below:
+        See Google's documentation for details:
         https://developer.android.com/about/versions/14/changes/fgs-types-required#system-exempted
     -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -87,7 +87,7 @@
             is allowed for, "Apps holding SCHEDULE_EXACT_ALARM or USE_EXACT_ALARM permission and
             are using Foreground Service to continue alarms in the background, including haptics-only alarms."
 
-            See Google's documentation below:
+            See Google's documentation for details:
             https://developer.android.com/about/versions/14/changes/fgs-types-required#system-exempted
         -->
         <service
