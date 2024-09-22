@@ -54,13 +54,6 @@ object AlarmNotification {
         ).build()
     }
 
-    // Since API level 34, developers can no longer make Notifications non-dismissible unless
-    // the Notification meets certain exception criteria. This app's Alarm Notifications do not meet
-    // the exception criteria, and therefore setDeleteIntent() must be called on the Notification Builder
-    // to handle cases where the User swipes the Notification away.
-    //
-    // See Google's documentation for details:
-    // https://developer.android.com/about/versions/14/behavior-changes-all#non-dismissable-notifications
     private fun getClearNotificationPendingIntent(context: Context, alarmId: Int): PendingIntent {
         val clearNotificationIntent = Intent(context, AlarmActionReceiver::class.java).apply {
             action = AlarmActionReceiver.ACTION_DISMISS_ALARM
