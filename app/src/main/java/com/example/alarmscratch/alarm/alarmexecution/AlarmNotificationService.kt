@@ -56,6 +56,9 @@ class AlarmNotificationService : Service() {
         // Finish FullScreenAlarmActivity
         val dismissFullScreenAlertIntent = Intent().apply {
             action = FullScreenAlarmActivity.ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY
+            // On devices running API 34+, it is required to call setPackage() on implicit Intents
+            // that are not exported, and are to be used by an application's internal components.
+            setPackage(this@AlarmNotificationService.packageName)
         }
         applicationContext.sendBroadcast(dismissFullScreenAlertIntent)
 
