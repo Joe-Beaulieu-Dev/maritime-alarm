@@ -34,6 +34,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -71,6 +73,7 @@ import com.example.alarmscratch.core.ui.theme.DarkerBoatSails
 import com.example.alarmscratch.core.ui.theme.LightVolcanicRock
 import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
 import com.example.alarmscratch.core.ui.theme.VolcanicRock
+import com.example.alarmscratch.core.ui.theme.WayDarkerBoatSails
 import com.example.alarmscratch.core.util.StatusBarUtil
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -385,6 +388,10 @@ fun AlarmAlertSettings(
     selectedRingtone: String,
     modifier: Modifier = Modifier
 ) {
+    // Temporary state
+    var vibrationEnabled by rememberSaveable { mutableStateOf(false) }
+    val toggleVibration: () -> Unit = { vibrationEnabled = !vibrationEnabled }
+
     Column(modifier = modifier) {
         // Alert Icon and Text
         Row {
@@ -414,6 +421,29 @@ fun AlarmAlertSettings(
             Text(text = stringResource(id = R.string.alarm_create_edit_alarm_sound_label))
             // Ringtone name
             Text(text = selectedRingtone)
+        }
+
+        // Vibration toggle
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { toggleVibration() }
+                .padding(start = 12.dp, top = 12.dp, bottom = 12.dp)
+        ) {
+            // Vibration label
+            Text(text = stringResource(id = R.string.alarm_create_edit_alarm_vibration_label))
+
+            // Vibration Switch
+            Switch(
+                checked = vibrationEnabled,
+                onCheckedChange = { toggleVibration() },
+                colors = SwitchDefaults.colors(
+                    checkedTrackColor = WayDarkerBoatSails,
+                    uncheckedTrackColor = DarkVolcanicRock
+                )
+            )
         }
     }
 }
