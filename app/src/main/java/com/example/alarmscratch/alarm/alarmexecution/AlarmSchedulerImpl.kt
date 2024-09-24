@@ -12,15 +12,27 @@ class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
     override fun scheduleAlarm(alarm: Alarm) {
+        // Create PendingIntent to start Alarm
+        val startAlarmIntent = Intent(context, AlarmActionReceiver::class.java).apply {
+            // Action
+            action = AlarmActionReceiver.ACTION_START_ALARM
+            // Extras
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarm.id)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, alarm.name)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_DATE_TIME, alarm.dateTime.toString())
+            putExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI, alarm.ringtoneUriString)
+        }
+        val startAlarmPendingIntent = PendingIntent.getBroadcast(
+            context,
+            alarm.id,
+            startAlarmIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             alarm.dateTime.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000,
-            PendingIntent.getBroadcast(
-                context,
-                alarm.id,
-                buildAlarmIntent(alarm),
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
+            startAlarmPendingIntent
         )
     }
 
@@ -29,17 +41,9 @@ class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
             PendingIntent.getBroadcast(
                 context,
                 alarm.id,
-                Intent(context, AlarmReceiver::class.java),
+                Intent(context, AlarmActionReceiver::class.java),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         )
     }
-
-    private fun buildAlarmIntent(alarm: Alarm): Intent =
-        Intent(context, AlarmReceiver::class.java).apply {
-            putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarm.id)
-            putExtra(AlarmReceiver.EXTRA_ALARM_NAME, alarm.name)
-            putExtra(AlarmReceiver.EXTRA_ALARM_DATE_TIME, alarm.dateTime.toString())
-            putExtra(AlarmReceiver.EXTRA_RINGTONE_URI, alarm.ringtoneUriString)
-        }
 }

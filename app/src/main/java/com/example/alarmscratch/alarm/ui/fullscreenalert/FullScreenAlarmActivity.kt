@@ -11,7 +11,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import com.example.alarmscratch.R
-import com.example.alarmscratch.alarm.alarmexecution.AlarmReceiver
+import com.example.alarmscratch.alarm.alarmexecution.AlarmActionReceiver
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import java.time.LocalDateTime
 
@@ -35,10 +35,10 @@ class FullScreenAlarmActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // Alarm data
-        val alarmId = intent.getIntExtra(AlarmReceiver.EXTRA_ALARM_ID, AlarmReceiver.ALARM_NO_ID)
-        val alarmName = intent.getStringExtra(AlarmReceiver.EXTRA_ALARM_NAME) ?: applicationContext.getString(R.string.default_alarm_name)
+        val alarmId = intent.getIntExtra(AlarmActionReceiver.EXTRA_ALARM_ID, AlarmActionReceiver.ALARM_NO_ID)
+        val alarmName = intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_NAME) ?: getString(R.string.default_alarm_name)
         val alarmDateTime = try {
-            val dateTimeString = intent.getStringExtra(AlarmReceiver.EXTRA_ALARM_DATE_TIME)
+            val dateTimeString = intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_DATE_TIME)
             LocalDateTime.parse(dateTimeString)
         } catch (e: Exception) {
             null

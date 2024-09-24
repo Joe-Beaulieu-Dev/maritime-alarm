@@ -2,14 +2,25 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Required for setting exact alarms -->
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-    <!-- Required for setting alarms on device boot -->
+    <!-- Required for setting Alarms on Device boot -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Used to show an Alarm when it goes off while the User's screen is off -->
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!--
+        According to Google's documentation, android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED
+        is allowed for, "Apps holding SCHEDULE_EXACT_ALARM or USE_EXACT_ALARM permission and
+        are using Foreground Service to continue alarms in the background, including haptics-only alarms."
+
+        See Google's documentation for details:
+        https://developer.android.com/about/versions/14/changes/fgs-types-required#system-exempted
+    -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
+    <!-- Required for setting exact Alarms -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
     <application
         android:name=".core.AlarmApplication"
@@ -54,9 +65,9 @@
             ** BroadcastReceivers **
             ************************
         -->
-        <!-- Receive alarm execution events -->
-        <receiver android:name=".alarm.alarmexecution.AlarmReceiver" />
-        <!-- Reschedule alarms on device boot -->
+        <!-- Receive Alarm Actions -->
+        <receiver android:name=".alarm.alarmexecution.AlarmActionReceiver" />
+        <!-- Reschedule Alarms on Device boot -->
         <receiver
             android:name=".alarm.alarmexecution.BootCompletedReceiver"
             android:directBootAware="true"
@@ -65,8 +76,23 @@
                 <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <!-- Handles User interaction with the Alarm Notification -->
-        <receiver android:name=".alarm.alarmexecution.AlarmNotificationActionReceiver" />
+
+        <!--
+            **************
+            ** Services **
+            **************
+        -->
+        <!--
+            According to Google's documentation, android:foregroundServiceType="systemExempted"
+            is allowed for, "Apps holding SCHEDULE_EXACT_ALARM or USE_EXACT_ALARM permission and
+            are using Foreground Service to continue alarms in the background, including haptics-only alarms."
+
+            See Google's documentation for details:
+            https://developer.android.com/about/versions/14/changes/fgs-types-required#system-exempted
+        -->
+        <service
+            android:name=".alarm.alarmexecution.AlarmNotificationService"
+            android:foregroundServiceType="systemExempted" />
     </application>
 
 </manifest>
