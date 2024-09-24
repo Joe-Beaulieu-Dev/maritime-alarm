@@ -37,6 +37,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -142,7 +143,7 @@ fun AlarmCreateEditScreen(
             // Alarm Name, and Date/Time Settings
             Column(
                 modifier = Modifier
-                    .padding(20.dp)
+                    .padding(start = 20.dp, top = 20.dp, end = 20.dp)
                     .fillMaxWidth()
             ) {
                 // TODO: Add validation
@@ -168,13 +169,14 @@ fun AlarmCreateEditScreen(
                     color = VolcanicRock,
                     modifier = Modifier.padding(top = 12.dp, bottom = 12.dp)
                 )
-
-                // Alarm Alert Settings
-                AlarmAlertSettings(
-                    navigateToRingtonePickerScreen = { navigateToRingtonePickerScreen(alarm.ringtoneUriString) },
-                    selectedRingtone = alarmRingtoneName
-                )
             }
+
+            // Alarm Alert Settings
+            AlarmAlertSettings(
+                navigateToRingtonePickerScreen = { navigateToRingtonePickerScreen(alarm.ringtoneUriString) },
+                selectedRingtone = alarmRingtoneName,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
@@ -394,7 +396,7 @@ fun AlarmAlertSettings(
 
     Column(modifier = modifier) {
         // Alert Icon and Text
-        Row {
+        Row(modifier = Modifier.padding(start = 20.dp)) {
             Icon(
                 imageVector = Icons.Default.NotificationsActive,
                 contentDescription = null,
@@ -410,41 +412,51 @@ fun AlarmAlertSettings(
         }
 
         // Sound/Ringtone selection
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { navigateToRingtonePickerScreen() }
-                .padding(start = 12.dp, top = 12.dp, bottom = 12.dp)
-        ) {
-            // Sound label
-            Text(text = stringResource(id = R.string.alarm_create_edit_alarm_sound_label))
-            // Ringtone name
-            Text(text = selectedRingtone)
-        }
+        AlarmSettingsRowItem(
+            rowOnClick = { navigateToRingtonePickerScreen() },
+            rowLabelResId = R.string.alarm_create_edit_alarm_sound_label,
+            choiceComponent = { Text(text = selectedRingtone) }
+        )
 
         // Vibration toggle
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { toggleVibration() }
-                .padding(start = 12.dp, top = 12.dp, bottom = 12.dp)
-        ) {
-            // Vibration label
-            Text(text = stringResource(id = R.string.alarm_create_edit_alarm_vibration_label))
-
-            // Vibration Switch
-            Switch(
-                checked = vibrationEnabled,
-                onCheckedChange = { toggleVibration() },
-                colors = SwitchDefaults.colors(
-                    checkedTrackColor = WayDarkerBoatSails,
-                    uncheckedTrackColor = DarkVolcanicRock
+        AlarmSettingsRowItem(
+            rowOnClick = { toggleVibration() },
+            rowLabelResId = R.string.alarm_create_edit_alarm_vibration_label,
+            choiceComponent = {
+                Switch(
+                    checked = vibrationEnabled,
+                    onCheckedChange = { toggleVibration() },
+                    colors = SwitchDefaults.colors(
+                        checkedTrackColor = WayDarkerBoatSails,
+                        uncheckedTrackColor = DarkVolcanicRock
+                    )
                 )
-            )
-        }
+            }
+        )
+    }
+}
+
+@Composable
+fun AlarmSettingsRowItem(
+    rowOnClick: () -> Unit,
+    @StringRes rowLabelResId: Int,
+    choiceComponent: @Composable () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { rowOnClick() }
+            .minimumInteractiveComponentSize()
+            .padding(start = 32.dp, end = 20.dp)
+    ) {
+        // Settings label
+        Text(text = stringResource(id = rowLabelResId))
+
+        // Settings choice
+        choiceComponent()
     }
 }
 
