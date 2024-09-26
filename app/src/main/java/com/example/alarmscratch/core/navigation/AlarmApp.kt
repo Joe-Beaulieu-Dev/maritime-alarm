@@ -61,7 +61,10 @@ fun AlarmApp() {
 
         // Alarm Defaults Screen
         composable<Destination.AlarmDefaultsScreen> {
-            AlarmDefaultsScreen(modifier = Modifier.fillMaxSize())
+            AlarmDefaultsScreen(
+                navHostController = navHostController,
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }

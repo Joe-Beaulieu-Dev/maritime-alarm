@@ -70,6 +70,15 @@
     <string name="settings_alarm_defaults">Alarm Defaults</string>
 
     <!--
+        *************************
+        ** AlarmDefaultsScreen **
+        *************************
+    -->
+    <string name="alarm_defaults_important_notice_header">Important</string>
+    <string name="alarm_defaults_important_notice_body">These are the default settings for newly
+        created Alarms. Modifying these settings will not affect previously created Alarms.</string>
+
+    <!--
         ************************
         ** Alarm Notification **
         ************************

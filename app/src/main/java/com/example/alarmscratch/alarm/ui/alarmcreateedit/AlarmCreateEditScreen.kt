@@ -144,7 +144,7 @@ fun AlarmCreateEditScreen(
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Alarm Name, and Date/Time Settings
+            // Alarm Name and Date/Time Settings
             Column(
                 modifier = Modifier
                     .padding(start = 20.dp, top = 20.dp, end = 20.dp)
@@ -417,14 +417,14 @@ fun AlarmAlertSettings(
 
         // Sound/Ringtone selection
         AlarmSettingsRowItem(
-            rowOnClick = { navigateToRingtonePickerScreen() },
+            rowOnClick = navigateToRingtonePickerScreen,
             rowLabelResId = R.string.alarm_create_edit_alarm_sound_label,
             choiceComponent = { Text(text = selectedRingtone) }
         )
 
         // Vibration toggle
         AlarmSettingsRowItem(
-            rowOnClick = { toggleVibration() },
+            rowOnClick = toggleVibration,
             rowLabelResId = R.string.alarm_create_edit_alarm_vibration_label,
             choiceComponent = {
                 Switch(
