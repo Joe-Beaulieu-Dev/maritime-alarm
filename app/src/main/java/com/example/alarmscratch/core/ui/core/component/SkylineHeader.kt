@@ -33,6 +33,7 @@ import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.navigation.Destination
+import com.example.alarmscratch.core.ui.shared.SailBoat
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatHull
 import com.example.alarmscratch.core.ui.theme.BoatSails
