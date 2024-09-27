@@ -40,7 +40,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -70,6 +69,7 @@ import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.TimeSelection
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.get12HrTime
 import com.example.alarmscratch.core.extension.getAmPm
+import com.example.alarmscratch.core.ui.shared.RowSelectionItem
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
@@ -416,14 +416,14 @@ fun AlarmAlertSettings(
         }
 
         // Sound/Ringtone selection
-        AlarmSettingsRowItem(
+        RowSelectionItem(
             rowOnClick = navigateToRingtonePickerScreen,
             rowLabelResId = R.string.alarm_create_edit_alarm_sound_label,
             choiceComponent = { Text(text = selectedRingtone) }
         )
 
         // Vibration toggle
-        AlarmSettingsRowItem(
+        RowSelectionItem(
             rowOnClick = toggleVibration,
             rowLabelResId = R.string.alarm_create_edit_alarm_vibration_label,
             choiceComponent = {
@@ -437,30 +437,6 @@ fun AlarmAlertSettings(
                 )
             }
         )
-    }
-}
-
-@Composable
-fun AlarmSettingsRowItem(
-    rowOnClick: () -> Unit,
-    @StringRes rowLabelResId: Int,
-    choiceComponent: @Composable () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { rowOnClick() }
-            .minimumInteractiveComponentSize()
-            .padding(start = 32.dp, end = 20.dp)
-    ) {
-        // Settings label
-        Text(text = stringResource(id = rowLabelResId))
-
-        // Settings choice
-        choiceComponent()
     }
 }
 

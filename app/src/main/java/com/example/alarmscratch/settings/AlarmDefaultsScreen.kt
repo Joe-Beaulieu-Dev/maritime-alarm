@@ -48,7 +48,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.sampleRingtoneData
-import com.example.alarmscratch.alarm.ui.alarmcreateedit.AlarmSettingsRowItem
+import com.example.alarmscratch.core.ui.shared.RowSelectionItem
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
@@ -183,13 +183,14 @@ fun AlarmDefaultsTopAppBar(
     }
 }
 
+// TODO: Use M3 TopAppBar once it's no longer experimental
 @Composable
 fun AlarmAlertDefaults(
     navigateToRingtonePickerScreen: () -> Unit,
     selectedRingtone: String,
     modifier: Modifier = Modifier
 ) {
-    // Temporary state
+    // TODO: Temporary state
     var vibrationEnabled by rememberSaveable { mutableStateOf(false) }
     val toggleVibration: () -> Unit = { vibrationEnabled = !vibrationEnabled }
 
@@ -211,14 +212,14 @@ fun AlarmAlertDefaults(
         }
 
         // Sound/Ringtone selection
-        AlarmSettingsRowItem(
+        RowSelectionItem(
             rowOnClick = navigateToRingtonePickerScreen,
             rowLabelResId = R.string.alarm_create_edit_alarm_sound_label,
             choiceComponent = { Text(text = selectedRingtone) }
         )
 
         // Vibration toggle
-        AlarmSettingsRowItem(
+        RowSelectionItem(
             rowOnClick = toggleVibration,
             rowLabelResId = R.string.alarm_create_edit_alarm_vibration_label,
             choiceComponent = {
