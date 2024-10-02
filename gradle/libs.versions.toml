@@ -6,7 +6,7 @@ ksp = "1.9.22-1.0.17"
 room = "2.6.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
-dataStore = "1.1.1"
+preferencesDataStore = "1.1.1"
 espressoCore = "3.5.1"
 androidxLifecycle = "2.8.0"
 activityCompose = "1.9.0"
@@ -19,7 +19,7 @@ serialization = "1.6.3"
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "dataStore" }
+androidx-preferences-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "preferencesDataStore" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "androidxLifecycle" }
 androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
