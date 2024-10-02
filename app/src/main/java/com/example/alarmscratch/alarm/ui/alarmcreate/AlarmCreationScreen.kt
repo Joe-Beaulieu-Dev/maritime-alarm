@@ -19,6 +19,7 @@ import com.example.alarmscratch.alarm.ui.alarmcreateedit.AlarmCreateEditScreen
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.getRingtone
+import com.example.alarmscratch.core.extension.getStringFromBackStack
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import kotlinx.coroutines.launch
 
@@ -32,12 +33,9 @@ fun AlarmCreationScreen(
     // Fetch updated Ringtone URI from this back stack entry's SavedStateHandle.
     // If the User navigated to the RingtonePickerScreen and selected a new Ringtone,
     // then the new Ringtone's URI will be saved here.
-    val ringtoneUriString: String? =
-        navHostController
-            .currentBackStackEntry
-            ?.savedStateHandle
-            ?.get(RingtoneData.KEY_FULL_RINGTONE_URI_STRING)
-    alarmCreationViewModel.updateRingtone(ringtoneUriString)
+    alarmCreationViewModel.updateRingtone(
+        navHostController.getStringFromBackStack(RingtoneData.KEY_FULL_RINGTONE_URI_STRING)
+    )
 
     // State
     val alarmState by alarmCreationViewModel.newAlarm.collectAsState()

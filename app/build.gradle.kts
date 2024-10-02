@@ -58,7 +58,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation("androidx.compose.material:material-icons-extended:1.6.6")
+    implementation(libs.androidx.compose.material.icons)
 
     // Lifecycle
     implementation(libs.androidx.lifecycle.process)
@@ -75,6 +75,9 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+
+    // Preferences DataStore
+    implementation(libs.androidx.preferences.datastore)
 
     testImplementation(libs.junit)
 

@@ -11,7 +11,7 @@ import com.example.alarmscratch.alarm.ui.alarmedit.AlarmEditScreen
 import com.example.alarmscratch.core.extension.navigateSingleTop
 import com.example.alarmscratch.core.ui.core.CoreScreen
 import com.example.alarmscratch.core.ui.ringtonepicker.RingtonePickerScreen
-import com.example.alarmscratch.settings.AlarmDefaultsScreen
+import com.example.alarmscratch.settings.ui.alarmdefaults.AlarmDefaultsScreen
 
 @Composable
 fun AlarmApp() {
@@ -63,6 +63,9 @@ fun AlarmApp() {
         composable<Destination.AlarmDefaultsScreen> {
             AlarmDefaultsScreen(
                 navHostController = navHostController,
+                navigateToRingtonePickerScreen = { ringtoneUri ->
+                    navHostController.navigateSingleTop(Destination.RingtonePickerScreen(ringtoneUriString = ringtoneUri))
+                },
                 modifier = Modifier.fillMaxSize()
             )
         }

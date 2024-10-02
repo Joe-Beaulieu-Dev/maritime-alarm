@@ -25,7 +25,7 @@ class AlarmCreationViewModel(private val alarmRepository: AlarmRepository) : Vie
     private val _newAlarm = MutableStateFlow(
         Alarm(
             dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
-            ringtoneUriString = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)?.toString() ?: ""
+            ringtoneUriString = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)?.toString() ?: RingtoneData.NO_RINGTONE_URI
         )
     )
     val newAlarm: StateFlow<Alarm> = _newAlarm.asStateFlow()

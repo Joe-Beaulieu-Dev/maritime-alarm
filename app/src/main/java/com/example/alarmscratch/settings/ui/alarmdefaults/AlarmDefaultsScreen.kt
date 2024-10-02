@@ -1,4 +1,4 @@
-package com.example.alarmscratch.settings
+package com.example.alarmscratch.settings.ui.alarmdefaults
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
@@ -33,21 +33,24 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.sampleRingtoneData
+import com.example.alarmscratch.core.data.model.RingtoneData
+import com.example.alarmscratch.core.extension.getStringFromBackStack
 import com.example.alarmscratch.core.ui.shared.RowSelectionItem
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatSails
@@ -57,39 +60,66 @@ import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
 import com.example.alarmscratch.core.ui.theme.VolcanicRock
 import com.example.alarmscratch.core.ui.theme.WayDarkerBoatSails
 import com.example.alarmscratch.core.util.StatusBarUtil
+import com.example.alarmscratch.settings.data.repository.AlarmDefaultsState
+import com.example.alarmscratch.settings.extension.getRingtone
+import kotlinx.coroutines.launch
 
 @Composable
 fun AlarmDefaultsScreen(
     navHostController: NavHostController,
-    modifier: Modifier = Modifier
+    navigateToRingtonePickerScreen: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    alarmDefaultsViewModel: AlarmDefaultsViewModel = viewModel(factory = AlarmDefaultsViewModel.Factory)
 ) {
     // Configure Status Bar
     StatusBarUtil.setDarkStatusBar()
 
-    // TODO: Temporary code
-    val alarmRingtoneName = "Temp Ringtone"
-    val navigateToRingtonePickerScreen = {}
+    // State
+    val alarmDefaultsState by alarmDefaultsViewModel.modifiedAlarmDefaults.collectAsState()
 
-    AlarmDefaultsScreenContent(
-        navHostController = navHostController,
-        navigateToRingtonePickerScreen = navigateToRingtonePickerScreen,
-        alarmRingtoneName = alarmRingtoneName,
-        modifier = modifier
-    )
+    if (alarmDefaultsState is AlarmDefaultsState.Success) {
+        // Fetch updated Ringtone URI from this back stack entry's SavedStateHandle.
+        // If the User navigated to the RingtonePickerScreen and selected a new Ringtone,
+        // then the new Ringtone's URI will be saved here.
+        alarmDefaultsViewModel.updateRingtone(
+            navHostController.getStringFromBackStack(RingtoneData.KEY_FULL_RINGTONE_URI_STRING)
+        )
+
+        val context = LocalContext.current
+        val coroutineScope = rememberCoroutineScope()
+        val alarmDefaults = (alarmDefaultsState as AlarmDefaultsState.Success).alarmDefaults
+        val ringtoneName = alarmDefaults.getRingtone(context).getTitle(context)
+
+        AlarmDefaultsScreenContent(
+            navHostController = navHostController,
+            navigateToRingtonePickerScreen = navigateToRingtonePickerScreen,
+            ringtoneName = ringtoneName,
+            ringtoneUri = alarmDefaults.ringtoneUri,
+            isVibrationEnabled = alarmDefaults.isVibrationEnabled,
+            saveAlarmDefaults = { coroutineScope.launch { alarmDefaultsViewModel.saveAlarmDefaults() } },
+            toggleVibration = alarmDefaultsViewModel::toggleVibration,
+            modifier = modifier
+        )
+    }
 }
 
 @Composable
 fun AlarmDefaultsScreenContent(
     navHostController: NavHostController,
-    navigateToRingtonePickerScreen: () -> Unit,
-    alarmRingtoneName: String,
+    navigateToRingtonePickerScreen: (String) -> Unit,
+    ringtoneName: String,
+    ringtoneUri: String,
+    isVibrationEnabled: Boolean,
+    saveAlarmDefaults: () -> Unit,
+    toggleVibration: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         topBar = {
             AlarmDefaultsTopAppBar(
                 navHostController = navHostController,
-                titleRes = R.string.settings_alarm_defaults
+                titleRes = R.string.settings_alarm_defaults,
+                saveAlarmDefaults = saveAlarmDefaults
             )
         },
         containerColor = MaterialTheme.colorScheme.surface,
@@ -143,8 +173,10 @@ fun AlarmDefaultsScreenContent(
 
             // Alarm Alert Defaults
             AlarmAlertDefaults(
-                navigateToRingtonePickerScreen = navigateToRingtonePickerScreen,
-                selectedRingtone = alarmRingtoneName
+                navigateToRingtonePickerScreen = { navigateToRingtonePickerScreen(ringtoneUri) },
+                selectedRingtone = ringtoneName,
+                isVibrationEnabled = isVibrationEnabled,
+                toggleVibration = toggleVibration
             )
         }
     }
@@ -153,7 +185,8 @@ fun AlarmDefaultsScreenContent(
 @Composable
 fun AlarmDefaultsTopAppBar(
     navHostController: NavHostController,
-    @StringRes titleRes: Int
+    @StringRes titleRes: Int,
+    saveAlarmDefaults: () -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -177,7 +210,12 @@ fun AlarmDefaultsTopAppBar(
         }
 
         // Save Button
-        IconButton(onClick = {}) {
+        IconButton(
+            onClick = {
+                saveAlarmDefaults()
+                navHostController.popBackStack()
+            }
+        ) {
             Icon(imageVector = Icons.Default.Save, contentDescription = null)
         }
     }
@@ -188,12 +226,10 @@ fun AlarmDefaultsTopAppBar(
 fun AlarmAlertDefaults(
     navigateToRingtonePickerScreen: () -> Unit,
     selectedRingtone: String,
+    isVibrationEnabled: Boolean,
+    toggleVibration: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // TODO: Temporary state
-    var vibrationEnabled by rememberSaveable { mutableStateOf(false) }
-    val toggleVibration: () -> Unit = { vibrationEnabled = !vibrationEnabled }
-
     Column(modifier = modifier) {
         // Alert Icon and Text
         Row(modifier = Modifier.padding(start = 20.dp)) {
@@ -224,7 +260,7 @@ fun AlarmAlertDefaults(
             rowLabelResId = R.string.alarm_create_edit_alarm_vibration_label,
             choiceComponent = {
                 Switch(
-                    checked = vibrationEnabled,
+                    checked = isVibrationEnabled,
                     onCheckedChange = { toggleVibration() },
                     colors = SwitchDefaults.colors(
                         checkedTrackColor = WayDarkerBoatSails,
@@ -247,7 +283,11 @@ private fun AlarmDefaultsScreenPreview() {
         AlarmDefaultsScreenContent(
             navHostController = rememberNavController(),
             navigateToRingtonePickerScreen = {},
-            alarmRingtoneName = sampleRingtoneData.name
+            ringtoneName = sampleRingtoneData.name,
+            ringtoneUri = sampleRingtoneData.fullUriString,
+            isVibrationEnabled = true,
+            saveAlarmDefaults = {},
+            toggleVibration = {}
         )
     }
 }
@@ -258,7 +298,8 @@ private fun AlarmDefaultsTopAppBarPreview() {
     AlarmScratchTheme {
         AlarmDefaultsTopAppBar(
             navHostController = rememberNavController(),
-            titleRes = R.string.settings_alarm_defaults
+            titleRes = R.string.settings_alarm_defaults,
+            saveAlarmDefaults = {}
         )
     }
 }
