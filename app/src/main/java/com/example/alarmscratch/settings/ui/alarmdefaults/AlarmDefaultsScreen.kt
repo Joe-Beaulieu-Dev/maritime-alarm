@@ -50,6 +50,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.sampleRingtoneData
 import com.example.alarmscratch.core.data.model.RingtoneData
+import com.example.alarmscratch.core.extension.getStringFromBackStack
 import com.example.alarmscratch.core.ui.shared.RowSelectionItem
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatSails
@@ -80,12 +81,9 @@ fun AlarmDefaultsScreen(
         // Fetch updated Ringtone URI from this back stack entry's SavedStateHandle.
         // If the User navigated to the RingtonePickerScreen and selected a new Ringtone,
         // then the new Ringtone's URI will be saved here.
-        val ringtonePickerScreenUri: String? =
-            navHostController
-                .currentBackStackEntry
-                ?.savedStateHandle
-                ?.get(RingtoneData.KEY_FULL_RINGTONE_URI_STRING)
-        alarmDefaultsViewModel.updateRingtone(ringtonePickerScreenUri)
+        alarmDefaultsViewModel.updateRingtone(
+            navHostController.getStringFromBackStack(RingtoneData.KEY_FULL_RINGTONE_URI_STRING)
+        )
 
         val context = LocalContext.current
         val coroutineScope = rememberCoroutineScope()
@@ -99,9 +97,7 @@ fun AlarmDefaultsScreen(
             ringtoneUri = alarmDefaults.ringtoneUri,
             isVibrationEnabled = alarmDefaults.isVibrationEnabled,
             saveAlarmDefaults = { coroutineScope.launch { alarmDefaultsViewModel.saveAlarmDefaults() } },
-            toggleVibration = { isVibrationEnabled ->
-                coroutineScope.launch { alarmDefaultsViewModel.updateVibration(isVibrationEnabled) }
-            },
+            toggleVibration = alarmDefaultsViewModel::toggleVibration,
             modifier = modifier
         )
     }
@@ -115,7 +111,7 @@ fun AlarmDefaultsScreenContent(
     ringtoneUri: String,
     isVibrationEnabled: Boolean,
     saveAlarmDefaults: () -> Unit,
-    toggleVibration: (Boolean) -> Unit,
+    toggleVibration: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -231,7 +227,7 @@ fun AlarmAlertDefaults(
     navigateToRingtonePickerScreen: () -> Unit,
     selectedRingtone: String,
     isVibrationEnabled: Boolean,
-    toggleVibration: (Boolean) -> Unit,
+    toggleVibration: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -260,12 +256,12 @@ fun AlarmAlertDefaults(
 
         // Vibration toggle
         RowSelectionItem(
-            rowOnClick = { toggleVibration(!isVibrationEnabled) },
+            rowOnClick = toggleVibration,
             rowLabelResId = R.string.alarm_create_edit_alarm_vibration_label,
             choiceComponent = {
                 Switch(
                     checked = isVibrationEnabled,
-                    onCheckedChange = { toggleVibration(!isVibrationEnabled) },
+                    onCheckedChange = { toggleVibration() },
                     colors = SwitchDefaults.colors(
                         checkedTrackColor = WayDarkerBoatSails,
                         uncheckedTrackColor = DarkVolcanicRock

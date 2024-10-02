@@ -63,10 +63,12 @@ class AlarmDefaultsViewModel(private val alarmDefaultsRepository: AlarmDefaultsR
         }
     }
 
-    fun updateVibration(isVibrationEnabled: Boolean) {
+    fun toggleVibration() {
         if (_modifiedAlarmDefaults.value is AlarmDefaultsState.Success) {
             val alarmDefaults = (_modifiedAlarmDefaults.value as AlarmDefaultsState.Success).alarmDefaults
-            _modifiedAlarmDefaults.value = AlarmDefaultsState.Success(alarmDefaults.copy(isVibrationEnabled = isVibrationEnabled))
+            _modifiedAlarmDefaults.value = AlarmDefaultsState.Success(
+                alarmDefaults.copy(isVibrationEnabled = !alarmDefaults.isVibrationEnabled)
+            )
         }
     }
 }
