@@ -1,16 +1,13 @@
 package com.example.alarmscratch.settings.ui.alarmdefaults
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
@@ -51,6 +48,7 @@ import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.sampleRingtoneData
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.getStringFromBackStack
+import com.example.alarmscratch.core.ui.shared.CustomTopAppBar
 import com.example.alarmscratch.core.ui.shared.RowSelectionItem
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatSails
@@ -116,10 +114,24 @@ fun AlarmDefaultsScreenContent(
 ) {
     Scaffold(
         topBar = {
-            AlarmDefaultsTopAppBar(
-                navHostController = navHostController,
+            CustomTopAppBar(
                 titleRes = R.string.settings_alarm_defaults,
-                saveAlarmDefaults = saveAlarmDefaults
+                navigationButton = {
+                    IconButton(onClick = { navHostController.navigateUp() }) {
+                        Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
+                    }
+                },
+                actionButton = {
+                    IconButton(
+                        onClick = {
+                            saveAlarmDefaults()
+                            navHostController.popBackStack()
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Default.Save, contentDescription = null)
+                    }
+                },
+                modifier = Modifier.background(color = MediumVolcanicRock)
             )
         },
         containerColor = MaterialTheme.colorScheme.surface,
@@ -182,46 +194,6 @@ fun AlarmDefaultsScreenContent(
     }
 }
 
-@Composable
-fun AlarmDefaultsTopAppBar(
-    navHostController: NavHostController,
-    @StringRes titleRes: Int,
-    saveAlarmDefaults: () -> Unit
-) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .background(color = MediumVolcanicRock)
-            .fillMaxWidth()
-    ) {
-        // Up Navigation Arrow and Title
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            // Up Navigation Arrow
-            IconButton(onClick = { navHostController.navigateUp() }) {
-                Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
-            }
-
-            // Title
-            Text(
-                text = stringResource(id = titleRes),
-                fontSize = 18.sp,
-                modifier = Modifier.padding(start = 12.dp)
-            )
-        }
-
-        // Save Button
-        IconButton(
-            onClick = {
-                saveAlarmDefaults()
-                navHostController.popBackStack()
-            }
-        ) {
-            Icon(imageVector = Icons.Default.Save, contentDescription = null)
-        }
-    }
-}
-
-// TODO: Use M3 TopAppBar once it's no longer experimental
 @Composable
 fun AlarmAlertDefaults(
     navigateToRingtonePickerScreen: () -> Unit,
@@ -288,18 +260,6 @@ private fun AlarmDefaultsScreenPreview() {
             isVibrationEnabled = true,
             saveAlarmDefaults = {},
             toggleVibration = {}
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun AlarmDefaultsTopAppBarPreview() {
-    AlarmScratchTheme {
-        AlarmDefaultsTopAppBar(
-            navHostController = rememberNavController(),
-            titleRes = R.string.settings_alarm_defaults,
-            saveAlarmDefaults = {}
         )
     }
 }

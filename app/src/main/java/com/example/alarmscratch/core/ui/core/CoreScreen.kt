@@ -222,6 +222,7 @@ private fun CoreScreenSettingsPreview() {
             onFabClicked = {}
         ) {
             SettingsScreen(
+                navigateToGeneralSettingsScreen = {},
                 navigateToAlarmDefaultsScreen = {},
                 modifier = Modifier.padding(20.dp)
             )
