@@ -53,6 +53,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
 import com.example.alarmscratch.core.ui.shared.CustomTopAppBar
 import com.example.alarmscratch.core.ui.shared.RowSelectionItem
@@ -66,7 +68,10 @@ import com.example.alarmscratch.core.util.StatusBarUtil
 import com.example.alarmscratch.settings.data.model.TimeDisplay
 
 @Composable
-fun GeneralSettingsScreen(modifier: Modifier = Modifier) {
+fun GeneralSettingsScreen(
+    navHostController: NavHostController,
+    modifier: Modifier = Modifier
+) {
     // Configure Status Bar
     StatusBarUtil.setDarkStatusBar()
 
@@ -75,6 +80,7 @@ fun GeneralSettingsScreen(modifier: Modifier = Modifier) {
     val updateTimeDisplay: (TimeDisplay) -> Unit = { timeDisplay = it }
 
     GeneralSettingsScreenContent(
+        navHostController = navHostController,
         timeDisplay = timeDisplay,
         updateTimeDisplay = updateTimeDisplay,
         modifier = modifier
@@ -83,6 +89,7 @@ fun GeneralSettingsScreen(modifier: Modifier = Modifier) {
 
 @Composable
 fun GeneralSettingsScreenContent(
+    navHostController: NavHostController,
     timeDisplay: TimeDisplay,
     updateTimeDisplay: (TimeDisplay) -> Unit,
     modifier: Modifier = Modifier
@@ -96,7 +103,7 @@ fun GeneralSettingsScreenContent(
             CustomTopAppBar(
                 titleRes = R.string.settings_general,
                 navigationButton = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = navHostController::navigateUp) {
                         Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
                     }
                 },
@@ -222,7 +229,7 @@ fun TimeDisplaySelectionDialog(
                                 selectedColor = DarkerBoatSails,
                                 unselectedColor = LightVolcanicRock
                             ),
-                            modifier = Modifier.padding(start = 14.dp)
+                            modifier = Modifier.padding(start = 18.dp)
                         )
                         Text(text = timeDisplay.value, modifier = Modifier.padding(start = 12.dp))
                     }
@@ -260,6 +267,7 @@ fun TimeDisplaySelectionDialog(
 private fun GeneralSettingsScreenPreview() {
     AlarmScratchTheme {
         GeneralSettingsScreenContent(
+            navHostController = rememberNavController(),
             timeDisplay = TimeDisplay.TwelveHour,
             updateTimeDisplay = {}
         )
