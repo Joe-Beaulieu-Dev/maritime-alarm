@@ -111,7 +111,7 @@ fun RingtonePickerScreenContent(
             CustomTopAppBar(
                 titleRes = R.string.ringtone_picker_screen_title,
                 navigationButton = {
-                    IconButton(onClick = { navHostController.navigateUp() }) {
+                    IconButton(onClick = navHostController::navigateUp) {
                         Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
                     }
                 },

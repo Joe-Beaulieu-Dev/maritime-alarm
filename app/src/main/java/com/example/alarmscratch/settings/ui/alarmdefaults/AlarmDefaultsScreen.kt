@@ -117,7 +117,7 @@ fun AlarmDefaultsScreenContent(
             CustomTopAppBar(
                 titleRes = R.string.settings_alarm_defaults,
                 navigationButton = {
-                    IconButton(onClick = { navHostController.navigateUp() }) {
+                    IconButton(onClick = navHostController::navigateUp) {
                         Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
                     }
                 },

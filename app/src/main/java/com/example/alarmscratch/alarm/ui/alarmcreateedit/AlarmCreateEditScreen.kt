@@ -119,7 +119,7 @@ fun AlarmCreateEditScreen(
             CustomTopAppBar(
                 titleRes = titleRes,
                 navigationButton = {
-                    IconButton(onClick = { navHostController.navigateUp() }) {
+                    IconButton(onClick = navHostController::navigateUp) {
                         Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
                     }
                 },
