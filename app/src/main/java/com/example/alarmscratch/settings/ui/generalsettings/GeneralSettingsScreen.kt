@@ -188,47 +188,43 @@ fun TimeDisplaySelectionDialog(
                 .fillMaxWidth()
                 .height(200.dp)
         ) {
-            Column(
+            // Title
+            Text(
+                text = stringResource(id = R.string.general_settings_time_display),
+                fontSize = 24.sp,
+                modifier = Modifier.padding(start = 14.dp, top = 14.dp, end = 14.dp)
+            )
+
+            // Time Display RadioButtons
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
+                    .padding(top = 8.dp)
+                    .selectableGroup()
             ) {
-                // Title
-                Text(
-                    text = stringResource(id = R.string.general_settings_time_display),
-                    fontSize = 24.sp,
-                    modifier = Modifier.padding(start = 14.dp, top = 14.dp, end = 14.dp)
-                )
-
-                // Time Display Radio Buttons
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .selectableGroup()
-                ) {
-                    items(items = TimeDisplay.entries) { timeDisplay ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .selectable(
-                                    selected = isTimeDisplaySelected(timeDisplay),
-                                    onClick = { updateTimeDisplay(timeDisplay) },
-                                    role = Role.RadioButton
-                                )
-                                .minimumInteractiveComponentSize()
-                        ) {
-                            RadioButton(
+                items(items = TimeDisplay.entries) { timeDisplay ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .selectable(
                                 selected = isTimeDisplaySelected(timeDisplay),
-                                onClick = null,
-                                colors = RadioButtonDefaults.colors(
-                                    selectedColor = DarkerBoatSails,
-                                    unselectedColor = LightVolcanicRock
-                                ),
-                                modifier = Modifier.padding(start = 14.dp)
+                                onClick = { updateTimeDisplay(timeDisplay) },
+                                role = Role.RadioButton
                             )
-                            Text(text = timeDisplay.value, modifier = Modifier.padding(start = 12.dp))
-                        }
+                            .minimumInteractiveComponentSize()
+                    ) {
+                        RadioButton(
+                            selected = isTimeDisplaySelected(timeDisplay),
+                            onClick = null,
+                            colors = RadioButtonDefaults.colors(
+                                selectedColor = DarkerBoatSails,
+                                unselectedColor = LightVolcanicRock
+                            ),
+                            modifier = Modifier.padding(start = 14.dp)
+                        )
+                        Text(text = timeDisplay.value, modifier = Modifier.padding(start = 12.dp))
                     }
                 }
             }
