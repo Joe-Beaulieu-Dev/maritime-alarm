@@ -44,6 +44,7 @@ import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.DarkerBoatSails
 import com.example.alarmscratch.core.ui.theme.LightVolcanicRock
+import com.example.alarmscratch.core.ui.theme.VolcanicRock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -128,10 +129,12 @@ private fun TimeSelectionPicker(timePickerState: TimePickerState) {
         state = timePickerState,
         colors = TimePickerDefaults.colors(
             selectorColor = LightVolcanicRock,
+            clockDialColor = VolcanicRock,
             periodSelectorSelectedContainerColor = LightVolcanicRock,
             periodSelectorSelectedContentColor = BoatSails,
             periodSelectorUnselectedContentColor = LightVolcanicRock,
-            timeSelectorSelectedContainerColor = LightVolcanicRock
+            timeSelectorSelectedContainerColor = LightVolcanicRock,
+            timeSelectorUnselectedContainerColor = VolcanicRock
         )
     )
 }
@@ -143,10 +146,12 @@ private fun TimeSelectionInput(timePickerState: TimePickerState) {
         state = timePickerState,
         colors = TimePickerDefaults.colors(
             selectorColor = LightVolcanicRock,
+            clockDialColor = VolcanicRock,
             periodSelectorSelectedContainerColor = LightVolcanicRock,
             periodSelectorSelectedContentColor = BoatSails,
             periodSelectorUnselectedContentColor = LightVolcanicRock,
-            timeSelectorSelectedContainerColor = LightVolcanicRock
+            timeSelectorSelectedContainerColor = LightVolcanicRock,
+            timeSelectorUnselectedContainerColor = VolcanicRock
         )
     )
 }

@@ -32,6 +32,7 @@ fun AlarmNavHost(
         // Settings Screen
         composable<Destination.SettingsScreen> {
             SettingsScreen(
+                navigateToGeneralSettingsScreen = { rootNavHostController.navigateSingleTop(Destination.GeneralSettingsScreen) },
                 navigateToAlarmDefaultsScreen = { rootNavHostController.navigateSingleTop(Destination.AlarmDefaultsScreen) }
             )
         }

@@ -45,6 +45,7 @@ import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.ringtoneDataSampleList
 import com.example.alarmscratch.alarm.data.preview.sampleRingtoneData
 import com.example.alarmscratch.core.data.model.RingtoneData
+import com.example.alarmscratch.core.ui.shared.CustomTopAppBar
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
 import com.example.alarmscratch.core.ui.theme.DarkerBoatSails
@@ -107,9 +108,24 @@ fun RingtonePickerScreenContent(
     ) {
         Column {
             // Top App Bar
-            RingtonePickerTopAppBar(
-                navHostController = navHostController,
-                saveRingtone = saveRingtone
+            CustomTopAppBar(
+                titleRes = R.string.ringtone_picker_screen_title,
+                navigationButton = {
+                    IconButton(onClick = navHostController::navigateUp) {
+                        Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
+                    }
+                },
+                actionButton = {
+                    IconButton(
+                        onClick = {
+                            saveRingtone()
+                            navHostController.popBackStack()
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Default.Save, contentDescription = null)
+                    }
+                },
+                modifier = Modifier.background(color = MediumVolcanicRock)
             )
 
             // Alarm Sounds Label
@@ -168,45 +184,6 @@ fun RingtonePickerScreenContent(
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun RingtonePickerTopAppBar(
-    navHostController: NavHostController,
-    saveRingtone: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = modifier
-            .background(color = MediumVolcanicRock)
-            .fillMaxWidth()
-    ) {
-        // Up Navigation Arrow and Title
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            // Up Navigation Arrow
-            IconButton(onClick = { navHostController.navigateUp() }) {
-                Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
-            }
-
-            // Title
-            Text(
-                text = stringResource(id = R.string.ringtone_picker_screen_title),
-                fontSize = 18.sp,
-                modifier = Modifier.padding(start = 12.dp)
-            )
-        }
-
-        // Save Button
-        IconButton(
-            onClick = {
-                saveRingtone()
-                navHostController.popBackStack()
-            }
-        ) {
-            Icon(imageVector = Icons.Default.Save, contentDescription = null)
         }
     }
 }

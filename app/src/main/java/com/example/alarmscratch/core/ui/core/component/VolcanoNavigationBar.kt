@@ -55,7 +55,7 @@ fun VolcanoNavigationBar(
     ) {
         VolcanoWithLava()
 
-        NavigationBar(tonalElevation = 0.dp) {
+        NavigationBar(containerColor = DarkVolcanicRock) {
             NavComponent.entries.forEach { navComponent ->
                 NavigationBarItem(
                     selected = selectedNavComponentDest == navComponent.destination,

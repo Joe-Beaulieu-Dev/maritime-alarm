@@ -5,7 +5,6 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -69,6 +68,7 @@ import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.TimeSelection
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.get12HrTime
 import com.example.alarmscratch.core.extension.getAmPm
+import com.example.alarmscratch.core.ui.shared.CustomTopAppBar
 import com.example.alarmscratch.core.ui.shared.RowSelectionItem
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatSails
@@ -104,6 +104,8 @@ fun AlarmCreateEditScreen(
     StatusBarUtil.setDarkStatusBar()
 
     // State
+    val context = LocalContext.current
+    val snackbarString = stringResource(id = R.string.validation_alarm_in_past)
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val showSnackbar: (String) -> Unit = { snackbarMessage ->
@@ -114,13 +116,30 @@ fun AlarmCreateEditScreen(
 
     Scaffold(
         topBar = {
-            AlarmCreationTopAppBar(
-                navHostController = navHostController,
+            CustomTopAppBar(
                 titleRes = titleRes,
-                showSnackbar = showSnackbar,
-                validateAlarm = validateAlarm,
-                saveAlarm = saveAlarm,
-                scheduleAlarm = scheduleAlarm
+                navigationButton = {
+                    IconButton(onClick = navHostController::navigateUp) {
+                        Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
+                    }
+                },
+                actionButton = {
+                    IconButton(
+                        onClick = {
+                            if (validateAlarm()) {
+                                saveAlarm()
+                                // TODO: Only schedule alarm if enabled
+                                scheduleAlarm(context)
+                                navHostController.popBackStack()
+                            } else {
+                                showSnackbar(snackbarString)
+                            }
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Default.Save, contentDescription = null)
+                    }
+                },
+                modifier = Modifier.background(color = MediumVolcanicRock)
             )
         },
         snackbarHost = {
@@ -133,7 +152,6 @@ fun AlarmCreateEditScreen(
             }
         },
         containerColor = MaterialTheme.colorScheme.surface,
-        contentColor = BoatSails,
         modifier = modifier
             .background(color = MediumVolcanicRock)
             .windowInsetsPadding(WindowInsets.systemBars)
@@ -181,57 +199,6 @@ fun AlarmCreateEditScreen(
                 selectedRingtone = alarmRingtoneName,
                 modifier = Modifier.fillMaxWidth()
             )
-        }
-    }
-}
-
-// TODO: Use M3 TopAppBar once it's no longer experimental
-@Composable
-fun AlarmCreationTopAppBar(
-    navHostController: NavHostController,
-    @StringRes titleRes: Int,
-    showSnackbar: (String) -> Unit,
-    validateAlarm: () -> Boolean,
-    saveAlarm: () -> Unit,
-    scheduleAlarm: (Context) -> Unit
-) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .background(color = MediumVolcanicRock)
-            .fillMaxWidth()
-    ) {
-        // Up Navigation Arrow and Title
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            // Up Navigation Arrow
-            IconButton(onClick = { navHostController.navigateUp() }) {
-                Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
-            }
-
-            // Title
-            Text(
-                text = stringResource(id = titleRes),
-                fontSize = 18.sp,
-                modifier = Modifier.padding(start = 12.dp)
-            )
-        }
-
-        val context = LocalContext.current
-        val snackbarString = stringResource(id = R.string.validation_alarm_in_past)
-        // Save Button
-        IconButton(
-            onClick = {
-                if (validateAlarm()) {
-                    saveAlarm()
-                    // TODO: Only schedule alarm if enabled
-                    scheduleAlarm(context)
-                    navHostController.popBackStack()
-                } else {
-                    showSnackbar(snackbarString)
-                }
-            }
-        ) {
-            Icon(imageVector = Icons.Default.Save, contentDescription = null)
         }
     }
 }
@@ -394,7 +361,7 @@ fun AlarmAlertSettings(
     selectedRingtone: String,
     modifier: Modifier = Modifier
 ) {
-    // Temporary state
+    // TODO: Temporary state
     var vibrationEnabled by rememberSaveable { mutableStateOf(false) }
     val toggleVibration: () -> Unit = { vibrationEnabled = !vibrationEnabled }
 
@@ -466,21 +433,6 @@ private fun AlarmCreateEditScreenPreview() {
             updateTime = { _, _ -> },
             addDay = {},
             removeDay = {}
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun AlarmCreationTopAppBarPreview() {
-    AlarmScratchTheme {
-        AlarmCreationTopAppBar(
-            navHostController = rememberNavController(),
-            titleRes = R.string.alarm_creation_screen_title,
-            showSnackbar = {},
-            validateAlarm = { true },
-            saveAlarm = {},
-            scheduleAlarm = {}
         )
     }
 }

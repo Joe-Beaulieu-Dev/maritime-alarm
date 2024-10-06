@@ -31,6 +31,7 @@ import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
 
 @Composable
 fun SettingsScreen(
+    navigateToGeneralSettingsScreen: () -> Unit,
     navigateToAlarmDefaultsScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -39,8 +40,13 @@ fun SettingsScreen(
         modifier = modifier
     ) {
         LazyColumn {
+            // General Settings
             item {
-                SettingsComponent(icon = Icons.Default.Settings, nameRes = R.string.settings_general, onClick = {})
+                SettingsComponent(
+                    icon = Icons.Default.Settings,
+                    nameRes = R.string.settings_general,
+                    onClick = navigateToGeneralSettingsScreen
+                )
             }
             item {
                 HorizontalDivider(
@@ -49,6 +55,8 @@ fun SettingsScreen(
                     modifier = Modifier.padding(horizontal = 15.dp)
                 )
             }
+
+            // Alarm Defaults
             item {
                 SettingsComponent(
                     icon = Icons.Default.Alarm,
@@ -74,6 +82,7 @@ fun SettingsComponent(
             .fillMaxWidth()
             .clickable { onClick() }
     ) {
+        // Icon and Label
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(start = 15.dp, top = 35.dp, bottom = 35.dp)
@@ -85,6 +94,8 @@ fun SettingsComponent(
                 modifier = Modifier.padding(start = 15.dp)
             )
         }
+
+        // Chevron
         Icon(
             imageVector = Icons.Default.ChevronRight,
             contentDescription = null,
@@ -105,6 +116,7 @@ fun SettingsComponent(
 private fun SettingsScreenPreview() {
     AlarmScratchTheme {
         SettingsScreen(
+            navigateToGeneralSettingsScreen = {},
             navigateToAlarmDefaultsScreen = {},
             modifier = Modifier.padding(20.dp)
         )

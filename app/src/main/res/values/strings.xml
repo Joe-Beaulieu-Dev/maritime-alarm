@@ -70,6 +70,14 @@
     <string name="settings_alarm_defaults">Alarm Defaults</string>
 
     <!--
+        ***************************
+        ** GeneralSettingsScreen **
+        ***************************
+    -->
+    <string name="general_settings_time_label">Time</string>
+    <string name="general_settings_time_display">Time Display</string>
+
+    <!--
         *************************
         ** AlarmDefaultsScreen **
         *************************
