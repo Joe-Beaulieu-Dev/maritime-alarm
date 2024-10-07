@@ -7,14 +7,6 @@ enum class TimeDisplay(val value: String) {
     companion object {
 
         fun fromString(timeDisplay: String?): TimeDisplay? =
-            try {
-                if (timeDisplay == null) {
-                    null
-                } else {
-                    TimeDisplay.valueOf(timeDisplay)
-                }
-            } catch (e: Exception) {
-                null
-            }
+            TimeDisplay.entries.firstOrNull { it.value == timeDisplay }
     }
 }
