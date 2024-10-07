@@ -39,8 +39,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -53,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
@@ -66,31 +69,40 @@ import com.example.alarmscratch.core.ui.theme.LightVolcanicRock
 import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
 import com.example.alarmscratch.core.util.StatusBarUtil
 import com.example.alarmscratch.settings.data.model.TimeDisplay
+import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
+import kotlinx.coroutines.launch
 
 @Composable
 fun GeneralSettingsScreen(
     navHostController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    generalSettingsViewModel: GeneralSettingsViewModel = viewModel(factory = GeneralSettingsViewModel.Factory)
 ) {
     // Configure Status Bar
     StatusBarUtil.setDarkStatusBar()
 
-    // TODO: Temporary state
-    var timeDisplay by rememberSaveable { mutableStateOf(TimeDisplay.TwelveHour) }
-    val updateTimeDisplay: (TimeDisplay) -> Unit = { timeDisplay = it }
+    // State
+    val generalSettingsState by generalSettingsViewModel.modifiedGeneralSettings.collectAsState()
 
-    GeneralSettingsScreenContent(
-        navHostController = navHostController,
-        timeDisplay = timeDisplay,
-        updateTimeDisplay = updateTimeDisplay,
-        modifier = modifier
-    )
+    if (generalSettingsState is GeneralSettingsState.Success) {
+        val coroutineScope = rememberCoroutineScope()
+        val generalSettings = (generalSettingsState as GeneralSettingsState.Success).generalSettings
+
+        GeneralSettingsScreenContent(
+            navHostController = navHostController,
+            timeDisplay = generalSettings.timeDisplay,
+            saveGeneralSettings = { coroutineScope.launch { generalSettingsViewModel.saveGeneralSettings() } },
+            updateTimeDisplay = { generalSettingsViewModel.updateTimeDisplay(it) },
+            modifier = modifier
+        )
+    }
 }
 
 @Composable
 fun GeneralSettingsScreenContent(
     navHostController: NavHostController,
     timeDisplay: TimeDisplay,
+    saveGeneralSettings: () -> Unit,
     updateTimeDisplay: (TimeDisplay) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -108,7 +120,12 @@ fun GeneralSettingsScreenContent(
                     }
                 },
                 actionButton = {
-                    IconButton(onClick = {}) {
+                    IconButton(
+                        onClick = {
+                            saveGeneralSettings()
+                            navHostController.popBackStack()
+                        }
+                    ) {
                         Icon(imageVector = Icons.Default.Save, contentDescription = null)
                     }
                 },
@@ -269,6 +286,7 @@ private fun GeneralSettingsScreenPreview() {
         GeneralSettingsScreenContent(
             navHostController = rememberNavController(),
             timeDisplay = TimeDisplay.TwelveHour,
+            saveGeneralSettings = {},
             updateTimeDisplay = {}
         )
     }
