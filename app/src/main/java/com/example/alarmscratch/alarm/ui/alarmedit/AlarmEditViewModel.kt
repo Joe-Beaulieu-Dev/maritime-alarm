@@ -129,6 +129,13 @@ class AlarmEditViewModel(
         }
     }
 
+    fun toggleVibration() {
+        if (_modifiedAlarm.value is AlarmState.Success) {
+            val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
+            _modifiedAlarm.value = AlarmState.Success(alarm.copy(isVibrationEnabled = !alarm.isVibrationEnabled))
+        }
+    }
+
     fun validateAlarm(): Boolean =
         if (_modifiedAlarm.value is AlarmState.Success) {
             val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm

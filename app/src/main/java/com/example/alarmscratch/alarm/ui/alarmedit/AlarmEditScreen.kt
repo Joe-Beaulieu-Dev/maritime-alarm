@@ -63,6 +63,7 @@ fun AlarmEditScreen(
             updateTime = alarmEditViewModel::updateTime,
             addDay = alarmEditViewModel::addDay,
             removeDay = alarmEditViewModel::removeDay,
+            toggleVibration = alarmEditViewModel::toggleVibration,
             modifier = modifier
         )
     }
@@ -84,7 +85,8 @@ private fun AlarmEditScreenPreview() {
                 name = "Meeting",
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
                 weeklyRepeater = WeeklyRepeater(tueWedThu),
-                ringtoneUriString = sampleRingtoneData.fullUriString
+                ringtoneUriString = sampleRingtoneData.fullUriString,
+                isVibrationEnabled = true
             ),
             alarmRingtoneName = sampleRingtoneData.name,
             validateAlarm = { true },
@@ -94,7 +96,8 @@ private fun AlarmEditScreenPreview() {
             updateDate = {},
             updateTime = { _, _ -> },
             addDay = {},
-            removeDay = {}
+            removeDay = {},
+            toggleVibration = {}
         )
     }
 }

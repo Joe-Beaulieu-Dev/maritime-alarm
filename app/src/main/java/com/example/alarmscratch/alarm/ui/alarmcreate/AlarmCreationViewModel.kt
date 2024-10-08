@@ -52,7 +52,8 @@ class AlarmCreationViewModel(
                         _newAlarm.value = AlarmState.Success(
                             Alarm(
                                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
-                                ringtoneUriString = alarmDefaults.ringtoneUri
+                                ringtoneUriString = alarmDefaults.ringtoneUri,
+                                isVibrationEnabled = alarmDefaults.isVibrationEnabled
                             )
                         )
                     }
@@ -139,6 +140,13 @@ class AlarmCreationViewModel(
         ) {
             val alarm = (_newAlarm.value as AlarmState.Success).alarm
             _newAlarm.value = AlarmState.Success(alarm.copy(ringtoneUriString = ringtoneUriString))
+        }
+    }
+
+    fun toggleVibration() {
+        if (_newAlarm.value is AlarmState.Success) {
+            val alarm = (_newAlarm.value as AlarmState.Success).alarm
+            _newAlarm.value = AlarmState.Success(alarm.copy(isVibrationEnabled = !alarm.isVibrationEnabled))
         }
     }
 

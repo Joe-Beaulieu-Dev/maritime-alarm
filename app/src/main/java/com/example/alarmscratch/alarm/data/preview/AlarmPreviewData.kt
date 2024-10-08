@@ -17,7 +17,8 @@ val repeatingAlarm =
         //  Alarm is going to go off based on the WeeklyRepeater
         dateTime = getTomorrowAtTime24Hr(hour = 8, minute = 30, second = 0),
         weeklyRepeater = WeeklyRepeater(encodedRepeatingDays = tueWedThu),
-        ringtoneUriString = sampleRingtoneUriString
+        ringtoneUriString = sampleRingtoneUriString,
+        isVibrationEnabled = true
     )
 
 val todayAlarm =
@@ -26,7 +27,8 @@ val todayAlarm =
         enabled = true,
         dateTime = getTodayAtTime24Hr(hour = 23, minute = 59, second = 0),
         weeklyRepeater = WeeklyRepeater(),
-        ringtoneUriString = sampleRingtoneUriString
+        ringtoneUriString = sampleRingtoneUriString,
+        isVibrationEnabled = false
     )
 
 val tomorrowAlarm =
@@ -35,7 +37,8 @@ val tomorrowAlarm =
         enabled = false,
         dateTime = getTomorrowAtTime24Hr(hour = 14, minute = 0, second = 0),
         weeklyRepeater = WeeklyRepeater(),
-        ringtoneUriString = sampleRingtoneUriString
+        ringtoneUriString = sampleRingtoneUriString,
+        isVibrationEnabled = true
     )
 
 // TODO do exception handling for java code
@@ -45,7 +48,8 @@ val calendarAlarm =
         enabled = true,
         dateTime = LocalDateTime.parse("2024-12-25T00:05:00"),
         weeklyRepeater = WeeklyRepeater(),
-        ringtoneUriString = sampleRingtoneUriString
+        ringtoneUriString = sampleRingtoneUriString,
+        isVibrationEnabled = false
     )
 
 // TODO do exception handling for java code
@@ -55,7 +59,8 @@ val consistentFutureAlarm: Alarm =
         enabled = true,
         dateTime = LocalDateTimeUtil.nowTruncated().plusHours(8).plusMinutes(45),
         weeklyRepeater = WeeklyRepeater(),
-        ringtoneUriString = sampleRingtoneUriString
+        ringtoneUriString = sampleRingtoneUriString,
+        isVibrationEnabled = true
     )
 
 // YYYY-MM-DDTHH:MM:SS

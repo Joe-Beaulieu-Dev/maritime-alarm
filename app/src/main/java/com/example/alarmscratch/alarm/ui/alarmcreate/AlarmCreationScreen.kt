@@ -63,6 +63,7 @@ fun AlarmCreationScreen(
             updateTime = alarmCreationViewModel::updateTime,
             addDay = alarmCreationViewModel::addDay,
             removeDay = alarmCreationViewModel::removeDay,
+            toggleVibration = alarmCreationViewModel::toggleVibration,
             modifier = modifier
         )
     }
@@ -83,7 +84,8 @@ private fun AlarmCreationScreenPreview() {
             alarm = Alarm(
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
                 weeklyRepeater = WeeklyRepeater(tueWedThu),
-                ringtoneUriString = sampleRingtoneData.fullUriString
+                ringtoneUriString = sampleRingtoneData.fullUriString,
+                isVibrationEnabled = true
             ),
             alarmRingtoneName = sampleRingtoneData.name,
             validateAlarm = { true },
@@ -93,7 +95,8 @@ private fun AlarmCreationScreenPreview() {
             updateDate = {},
             updateTime = { _, _ -> },
             addDay = {},
-            removeDay = {}
+            removeDay = {},
+            toggleVibration = {}
         )
     }
 }
