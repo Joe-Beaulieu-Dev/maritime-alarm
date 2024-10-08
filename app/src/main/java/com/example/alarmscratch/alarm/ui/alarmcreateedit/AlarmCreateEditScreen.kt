@@ -98,6 +98,7 @@ fun AlarmCreateEditScreen(
     updateTime: (Int, Int) -> Unit,
     addDay: (WeeklyRepeater.Day) -> Unit,
     removeDay: (WeeklyRepeater.Day) -> Unit,
+    toggleVibration: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Configure Status Bar
@@ -197,6 +198,8 @@ fun AlarmCreateEditScreen(
             AlarmAlertSettings(
                 navigateToRingtonePickerScreen = { navigateToRingtonePickerScreen(alarm.ringtoneUriString) },
                 selectedRingtone = alarmRingtoneName,
+                isVibrationEnabled = alarm.isVibrationEnabled,
+                toggleVibration = toggleVibration,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -359,12 +362,10 @@ fun DayOfWeekButton(
 fun AlarmAlertSettings(
     navigateToRingtonePickerScreen: () -> Unit,
     selectedRingtone: String,
+    isVibrationEnabled: Boolean,
+    toggleVibration: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // TODO: Temporary state
-    var vibrationEnabled by rememberSaveable { mutableStateOf(false) }
-    val toggleVibration: () -> Unit = { vibrationEnabled = !vibrationEnabled }
-
     Column(modifier = modifier) {
         // Alert Icon and Text
         Row(modifier = Modifier.padding(start = 20.dp)) {
@@ -395,7 +396,7 @@ fun AlarmAlertSettings(
             rowLabelResId = R.string.alarm_create_edit_alarm_vibration_label,
             choiceComponent = {
                 Switch(
-                    checked = vibrationEnabled,
+                    checked = isVibrationEnabled,
                     onCheckedChange = { toggleVibration() },
                     colors = SwitchDefaults.colors(
                         checkedTrackColor = WayDarkerBoatSails,
@@ -422,7 +423,8 @@ private fun AlarmCreateEditScreenPreview() {
             alarm = Alarm(
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
                 weeklyRepeater = WeeklyRepeater(tueWedThu),
-                ringtoneUriString = sampleRingtoneData.fullUriString
+                ringtoneUriString = sampleRingtoneData.fullUriString,
+                isVibrationEnabled = true
             ),
             alarmRingtoneName = sampleRingtoneData.name,
             validateAlarm = { true },
@@ -432,7 +434,8 @@ private fun AlarmCreateEditScreenPreview() {
             updateDate = {},
             updateTime = { _, _ -> },
             addDay = {},
-            removeDay = {}
+            removeDay = {},
+            toggleVibration = {}
         )
     }
 }
