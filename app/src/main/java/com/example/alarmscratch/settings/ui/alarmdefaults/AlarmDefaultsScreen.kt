@@ -86,6 +86,8 @@ fun AlarmDefaultsScreen(
         val context = LocalContext.current
         val coroutineScope = rememberCoroutineScope()
         val alarmDefaults = (alarmDefaultsState as AlarmDefaultsState.Success).alarmDefaults
+        // This was extracted for previews, since previews can't actually "get a Ringtone"
+        // from anywhere, therefore they can't get a name to display in the preview.
         val ringtoneName = alarmDefaults.getRingtone(context).getTitle(context)
 
         AlarmDefaultsScreenContent(
