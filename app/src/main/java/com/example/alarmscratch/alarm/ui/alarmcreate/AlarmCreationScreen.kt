@@ -3,7 +3,6 @@ package com.example.alarmscratch.alarm.ui.alarmcreate
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,7 +21,6 @@ import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.getRingtone
 import com.example.alarmscratch.core.extension.getStringFromBackStack
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
-import kotlinx.coroutines.launch
 
 @Composable
 fun AlarmCreationScreen(
@@ -43,7 +41,6 @@ fun AlarmCreationScreen(
         )
 
         val context = LocalContext.current
-        val coroutineScope = rememberCoroutineScope()
         val alarm = (alarmState as AlarmState.Success).alarm
         // This was extracted for previews, since previews can't actually "get a Ringtone"
         // from anywhere, therefore they can't get a name to display in the preview.
@@ -56,8 +53,7 @@ fun AlarmCreationScreen(
             alarm = alarm,
             alarmRingtoneName = alarmRingtoneName,
             validateAlarm = alarmCreationViewModel::validateAlarm,
-            saveAlarm = { coroutineScope.launch { alarmCreationViewModel.saveAlarm() } },
-            scheduleAlarm = alarmCreationViewModel::scheduleAlarm,
+            saveAndScheduleAlarm = { alarmCreationViewModel.saveAndScheduleAlarm(context) },
             updateName = alarmCreationViewModel::updateName,
             updateDate = alarmCreationViewModel::updateDate,
             updateTime = alarmCreationViewModel::updateTime,
@@ -89,8 +85,7 @@ private fun AlarmCreationScreenPreview() {
             ),
             alarmRingtoneName = sampleRingtoneData.name,
             validateAlarm = { true },
-            saveAlarm = {},
-            scheduleAlarm = {},
+            saveAndScheduleAlarm = {},
             updateName = {},
             updateDate = {},
             updateTime = { _, _ -> },

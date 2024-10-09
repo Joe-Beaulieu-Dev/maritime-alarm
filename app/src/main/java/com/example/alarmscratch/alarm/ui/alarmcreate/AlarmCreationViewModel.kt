@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.example.alarmscratch.alarm.alarmexecution.AlarmActionReceiver
 import com.example.alarmscratch.alarm.alarmexecution.AlarmSchedulerImpl
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
@@ -20,6 +21,7 @@ import com.example.alarmscratch.settings.data.model.AlarmDefaults
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsState
 import com.example.alarmscratch.settings.data.repository.alarmDefaultsDataStore
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -77,7 +79,22 @@ class AlarmCreationViewModel(
         }
     }
 
-    suspend fun saveAlarm() {
+    fun saveAndScheduleAlarm(context: Context) {
+        viewModelScope.launch {
+            try {
+                if (_newAlarm.value is AlarmState.Success) {
+                    val newAlarmId = async { saveAlarm() }.await()
+                    val newAlarm = async { getAlarm(newAlarmId.toInt()) }.await()
+                    // TODO: Only schedule alarm if enabled. It should always be enabled here, but it's good practice to check anyways.
+                    scheduleAlarm(context.applicationContext, newAlarm)
+                }
+            } catch (e: Exception) {
+                // toInt() can throw an Exception, but it shouldn't. Just catch here to prevent a crash.
+            }
+        }
+    }
+
+    private suspend fun saveAlarm(): Long =
         if (_newAlarm.value is AlarmState.Success) {
             val alarm = (_newAlarm.value as AlarmState.Success).alarm
             if (alarm.isRepeating()) {
@@ -85,14 +102,15 @@ class AlarmCreationViewModel(
             } else {
                 alarmRepository.insertAlarm(alarm)
             }
+        } else {
+            AlarmActionReceiver.ALARM_NO_ID.toLong()
         }
-    }
 
-    fun scheduleAlarm(context: Context) {
-        if (_newAlarm.value is AlarmState.Success) {
-            val alarm = (_newAlarm.value as AlarmState.Success).alarm
-            AlarmSchedulerImpl(context).scheduleAlarm(alarm)
-        }
+    private suspend fun getAlarm(alarmId: Int): Alarm =
+        alarmRepository.getAlarm(alarmId)
+
+    private fun scheduleAlarm(context: Context, alarm: Alarm) {
+        AlarmSchedulerImpl(context).scheduleAlarm(alarm)
     }
 
     fun updateName(name: String) {

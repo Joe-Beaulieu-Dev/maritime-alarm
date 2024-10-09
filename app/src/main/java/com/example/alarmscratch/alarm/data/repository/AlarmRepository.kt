@@ -12,6 +12,8 @@ class AlarmRepository(private val alarmDao: AlarmDao) {
 
     suspend fun deleteAlarm(alarm: Alarm) = alarmDao.delete(alarm = alarm)
 
+    suspend fun getAlarm(id: Int): Alarm = alarmDao.getAlarm(id = id)
+
     fun getAlarmFlow(id: Int): Flow<Alarm> = alarmDao.getAlarmFlow(id = id)
 
     fun getAllAlarmsFlow(): Flow<List<Alarm>> = alarmDao.getAllAlarmsFlow()
