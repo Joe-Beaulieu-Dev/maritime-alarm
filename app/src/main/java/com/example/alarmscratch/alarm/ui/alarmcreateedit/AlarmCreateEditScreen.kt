@@ -1,6 +1,5 @@
 package com.example.alarmscratch.alarm.ui.alarmcreateedit
 
-import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -91,8 +90,7 @@ fun AlarmCreateEditScreen(
     alarm: Alarm,
     alarmRingtoneName: String,
     validateAlarm: () -> Boolean,
-    saveAlarm: () -> Unit,
-    scheduleAlarm: (Context) -> Unit,
+    saveAndScheduleAlarm: () -> Unit,
     updateName: (String) -> Unit,
     updateDate: (LocalDate) -> Unit,
     updateTime: (Int, Int) -> Unit,
@@ -105,7 +103,6 @@ fun AlarmCreateEditScreen(
     StatusBarUtil.setDarkStatusBar()
 
     // State
-    val context = LocalContext.current
     val snackbarString = stringResource(id = R.string.validation_alarm_in_past)
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -128,9 +125,7 @@ fun AlarmCreateEditScreen(
                     IconButton(
                         onClick = {
                             if (validateAlarm()) {
-                                saveAlarm()
-                                // TODO: Only schedule alarm if enabled
-                                scheduleAlarm(context)
+                                saveAndScheduleAlarm()
                                 navHostController.popBackStack()
                             } else {
                                 showSnackbar(snackbarString)
@@ -428,8 +423,7 @@ private fun AlarmCreateEditScreenPreview() {
             ),
             alarmRingtoneName = sampleRingtoneData.name,
             validateAlarm = { true },
-            saveAlarm = {},
-            scheduleAlarm = {},
+            saveAndScheduleAlarm = {},
             updateName = {},
             updateDate = {},
             updateTime = { _, _ -> },
