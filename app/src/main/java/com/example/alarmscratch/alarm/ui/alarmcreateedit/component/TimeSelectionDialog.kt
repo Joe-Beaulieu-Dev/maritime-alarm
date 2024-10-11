@@ -51,11 +51,16 @@ import com.example.alarmscratch.core.ui.theme.VolcanicRock
 fun TimeSelectionDialog(
     initialHour: Int,
     initialMinute: Int,
+    is24Hour: Boolean,
     onCancel: () -> Unit,
     onConfirm: (hour: Int, minute: Int) -> Unit
 ) {
     // State
-    val timePickerState = rememberTimePickerState(initialHour = initialHour, initialMinute = initialMinute)
+    val timePickerState = rememberTimePickerState(
+        initialHour = initialHour,
+        initialMinute = initialMinute,
+        is24Hour = is24Hour
+    )
     var showFullTimePicker by rememberSaveable { mutableStateOf(true) }
     // TODO: Ran into a weird layout issue with TimePicker in Landscape.
     //  Decided to move on and just lock to TimeInput in Landscape for now.
@@ -167,6 +172,7 @@ private fun TimeSelectionDialogPreview() {
         TimeSelectionDialog(
             initialHour = 15,
             initialMinute = 45,
+            is24Hour = false,
             onCancel = {},
             onConfirm = { _, _ -> }
         )
@@ -176,17 +182,35 @@ private fun TimeSelectionDialogPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-private fun TimeSelectionPickerPreview() {
+private fun TimeSelectionPicker12HourPreview() {
     AlarmScratchTheme {
-        TimeSelectionPicker(timePickerState = rememberTimePickerState())
+        TimeSelectionPicker(timePickerState = rememberTimePickerState(is24Hour = false))
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-private fun TimeSelectionInputPreview() {
+private fun TimeSelectionPicker24HourPreview() {
     AlarmScratchTheme {
-        TimeSelectionInput(timePickerState = rememberTimePickerState())
+        TimeSelectionPicker(timePickerState = rememberTimePickerState(is24Hour = true))
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun TimeSelectionInput12HourPreview() {
+    AlarmScratchTheme {
+        TimeSelectionInput(timePickerState = rememberTimePickerState(is24Hour = false))
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun TimeSelectionInput24HourPreview() {
+    AlarmScratchTheme {
+        TimeSelectionInput(timePickerState = rememberTimePickerState(is24Hour = true))
     }
 }

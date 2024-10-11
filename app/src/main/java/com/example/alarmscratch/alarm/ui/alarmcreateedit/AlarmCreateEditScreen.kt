@@ -89,6 +89,7 @@ fun AlarmCreateEditScreen(
     @StringRes titleRes: Int,
     alarm: Alarm,
     alarmRingtoneName: String,
+    is24Hour: Boolean,
     validateAlarm: () -> Boolean,
     saveAndScheduleAlarm: () -> Unit,
     updateName: (String) -> Unit,
@@ -178,6 +179,7 @@ fun AlarmCreateEditScreen(
                 // Date/Time Settings
                 DateTimeSettings(
                     alarm = alarm,
+                    is24Hour = is24Hour,
                     updateDate = updateDate,
                     updateTime = updateTime,
                     addDay = addDay,
@@ -204,6 +206,7 @@ fun AlarmCreateEditScreen(
 @Composable
 fun DateTimeSettings(
     alarm: Alarm,
+    is24Hour: Boolean,
     updateDate: (LocalDate) -> Unit,
     updateTime: (Int, Int) -> Unit,
     addDay: (WeeklyRepeater.Day) -> Unit,
@@ -217,6 +220,7 @@ fun DateTimeSettings(
         // Time
         AlarmTime(
             dateTime = alarm.dateTime,
+            is24Hour = is24Hour,
             updateTime = updateTime,
             modifier = Modifier.padding(0.dp)
         )
@@ -256,6 +260,7 @@ fun DateTimeSettings(
 @Composable
 fun AlarmTime(
     dateTime: LocalDateTime,
+    is24Hour: Boolean,
     updateTime: (Int, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -293,6 +298,7 @@ fun AlarmTime(
         TimeSelectionDialog(
             initialHour = dateTime.hour,
             initialMinute = dateTime.minute,
+            is24Hour = is24Hour,
             onCancel = toggleTimePickerDialog,
             onConfirm = { hour, minute ->
                 updateTime(hour, minute)
@@ -422,6 +428,7 @@ private fun AlarmCreateEditScreenPreview() {
                 isVibrationEnabled = true
             ),
             alarmRingtoneName = sampleRingtoneData.name,
+            is24Hour = false,
             validateAlarm = { true },
             saveAndScheduleAlarm = {},
             updateName = {},
@@ -440,6 +447,7 @@ private fun DateTimeSettingsPreview() {
     AlarmScratchTheme {
         DateTimeSettings(
             alarm = consistentFutureAlarm,
+            is24Hour = false,
             updateDate = {},
             updateTime = { _, _ -> },
             addDay = {},
@@ -452,6 +460,10 @@ private fun DateTimeSettingsPreview() {
 @Composable
 private fun AlarmTimePreview() {
     AlarmScratchTheme {
-        AlarmTime(dateTime = consistentFutureAlarm.dateTime, updateTime = { _, _ -> })
+        AlarmTime(
+            dateTime = consistentFutureAlarm.dateTime,
+            is24Hour = false,
+            updateTime = { _, _ -> }
+        )
     }
 }

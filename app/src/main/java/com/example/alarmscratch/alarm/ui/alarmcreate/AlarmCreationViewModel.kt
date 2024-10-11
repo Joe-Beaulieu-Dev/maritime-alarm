@@ -18,26 +18,42 @@ import com.example.alarmscratch.core.extension.futurizeDateTime
 import com.example.alarmscratch.core.extension.isRepeating
 import com.example.alarmscratch.core.extension.nextRepeatingDate
 import com.example.alarmscratch.settings.data.model.AlarmDefaults
+import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsState
+import com.example.alarmscratch.settings.data.repository.GeneralSettingsRepository
+import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
 import com.example.alarmscratch.settings.data.repository.alarmDefaultsDataStore
+import com.example.alarmscratch.settings.data.repository.generalSettingsDataStore
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class AlarmCreationViewModel(
+    private val alarmRepository: AlarmRepository,
     private val alarmDefaultsRepository: AlarmDefaultsRepository,
-    private val alarmRepository: AlarmRepository
+    private val generalSettingsRepository: GeneralSettingsRepository
 ) : ViewModel() {
 
-    private val alarmDefaults: MutableStateFlow<AlarmDefaultsState> = MutableStateFlow(AlarmDefaultsState.Loading)
     private val _newAlarm: MutableStateFlow<AlarmState> = MutableStateFlow(AlarmState.Loading)
     val newAlarm: StateFlow<AlarmState> = _newAlarm.asStateFlow()
+    private val alarmDefaults: MutableStateFlow<AlarmDefaultsState> = MutableStateFlow(AlarmDefaultsState.Loading)
+    val generalSettings: StateFlow<GeneralSettingsState> =
+        generalSettingsRepository.generalSettingsFlow
+            .map<GeneralSettings, GeneralSettingsState> { generalSettings -> GeneralSettingsState.Success(generalSettings) }
+            .catch { throwable -> emit(GeneralSettingsState.Error(throwable)) }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+                GeneralSettingsState.Loading
+            )
 
     init {
         viewModelScope.launch {
@@ -72,8 +88,9 @@ class AlarmCreationViewModel(
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
 
                 return AlarmCreationViewModel(
+                    alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(application).alarmDao()),
                     alarmDefaultsRepository = AlarmDefaultsRepository(application.alarmDefaultsDataStore),
-                    alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(application).alarmDao())
+                    generalSettingsRepository = GeneralSettingsRepository(application.generalSettingsDataStore)
                 ) as T
             }
         }
