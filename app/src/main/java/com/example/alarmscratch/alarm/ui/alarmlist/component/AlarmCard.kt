@@ -41,7 +41,7 @@ import com.example.alarmscratch.alarm.data.preview.calendarAlarm
 import com.example.alarmscratch.alarm.data.preview.repeatingAlarm
 import com.example.alarmscratch.alarm.data.preview.todayAlarm
 import com.example.alarmscratch.alarm.data.preview.tomorrowAlarm
-import com.example.alarmscratch.core.extension.get12HrTime
+import com.example.alarmscratch.core.extension.get12HourTime
 import com.example.alarmscratch.core.extension.getAmPm
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatHull
@@ -144,7 +144,7 @@ fun AlarmCard(
                     // Time
                     Row {
                         Text(
-                            text = alarm.dateTime.get12HrTime(),
+                            text = alarm.dateTime.get12HourTime(),
                             fontSize = 32.sp,
                             fontWeight = if (alarm.enabled) {
                                 FontWeight.Bold

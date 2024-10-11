@@ -65,7 +65,8 @@ import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.AlarmDays
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.DateSelectionDialog
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.TimeSelectionDialog
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
-import com.example.alarmscratch.core.extension.get12HrTime
+import com.example.alarmscratch.core.extension.get12HourTime
+import com.example.alarmscratch.core.extension.get24HourTime
 import com.example.alarmscratch.core.extension.getAmPm
 import com.example.alarmscratch.core.ui.shared.CustomTopAppBar
 import com.example.alarmscratch.core.ui.shared.RowSelectionItem
@@ -267,6 +268,7 @@ fun AlarmTime(
     // State
     var showTimePickerDialog by rememberSaveable { mutableStateOf(false) }
     val toggleTimePickerDialog: () -> Unit = { showTimePickerDialog = !showTimePickerDialog }
+    val time = if (is24Hour) dateTime.get24HourTime() else dateTime.get12HourTime()
 
     // Time and AM/PM
     Row(
@@ -276,21 +278,23 @@ fun AlarmTime(
     ) {
         // Time
         Text(
-            text = dateTime.get12HrTime(),
+            text = time,
             color = DarkerBoatSails,
             fontSize = 64.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.alignByBaseline()
         )
 
-        // AM/PM
-        Text(
-            text = dateTime.getAmPm(LocalContext.current),
-            color = DarkerBoatSails,
-            fontSize = 38.sp,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.alignByBaseline()
-        )
+        if (!is24Hour) {
+            // AM/PM
+            Text(
+                text = dateTime.getAmPm(LocalContext.current),
+                color = DarkerBoatSails,
+                fontSize = 38.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.alignByBaseline()
+            )
+        }
     }
 
     // Time Selection Dialog
@@ -415,7 +419,7 @@ fun AlarmAlertSettings(
 
 @Preview
 @Composable
-private fun AlarmCreateEditScreenPreview() {
+private fun AlarmCreateEditScreen12HourPreview() {
     AlarmScratchTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
@@ -429,6 +433,34 @@ private fun AlarmCreateEditScreenPreview() {
             ),
             alarmRingtoneName = sampleRingtoneData.name,
             is24Hour = false,
+            validateAlarm = { true },
+            saveAndScheduleAlarm = {},
+            updateName = {},
+            updateDate = {},
+            updateTime = { _, _ -> },
+            addDay = {},
+            removeDay = {},
+            toggleVibration = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun AlarmCreateEditScreen24HourPreview() {
+    AlarmScratchTheme {
+        AlarmCreateEditScreen(
+            navHostController = rememberNavController(),
+            navigateToRingtonePickerScreen = {},
+            titleRes = R.string.alarm_creation_screen_title,
+            alarm = Alarm(
+                dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
+                weeklyRepeater = WeeklyRepeater(tueWedThu),
+                ringtoneUriString = sampleRingtoneData.fullUriString,
+                isVibrationEnabled = true
+            ),
+            alarmRingtoneName = sampleRingtoneData.name,
+            is24Hour = true,
             validateAlarm = { true },
             saveAndScheduleAlarm = {},
             updateName = {},

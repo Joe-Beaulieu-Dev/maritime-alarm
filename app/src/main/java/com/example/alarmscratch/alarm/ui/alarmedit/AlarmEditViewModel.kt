@@ -41,9 +41,11 @@ class AlarmEditViewModel(
     private val generalSettingsRepository: GeneralSettingsRepository
 ) : ViewModel() {
 
+    // Alarm
     private val alarmId: Int = savedStateHandle.toRoute<Destination.AlarmEditScreen>().alarmId
     private val _modifiedAlarm: MutableStateFlow<AlarmState> = MutableStateFlow(AlarmState.Loading)
     val modifiedAlarm: StateFlow<AlarmState> = _modifiedAlarm.asStateFlow()
+    // Settings
     val generalSettings: StateFlow<GeneralSettingsState> =
         generalSettingsRepository.generalSettingsFlow
             .map<GeneralSettings, GeneralSettingsState> { generalSettings -> GeneralSettingsState.Success(generalSettings) }

@@ -42,8 +42,10 @@ class AlarmCreationViewModel(
     private val generalSettingsRepository: GeneralSettingsRepository
 ) : ViewModel() {
 
+    // Alarm
     private val _newAlarm: MutableStateFlow<AlarmState> = MutableStateFlow(AlarmState.Loading)
     val newAlarm: StateFlow<AlarmState> = _newAlarm.asStateFlow()
+    // Settings
     private val alarmDefaults: MutableStateFlow<AlarmDefaultsState> = MutableStateFlow(AlarmDefaultsState.Loading)
     val generalSettings: StateFlow<GeneralSettingsState> =
         generalSettingsRepository.generalSettingsFlow

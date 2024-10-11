@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
 import com.example.alarmscratch.alarm.ui.fullscreenalert.component.BeachBackdrop
-import com.example.alarmscratch.core.extension.get12HrTime
+import com.example.alarmscratch.core.extension.get12HourTime
 import com.example.alarmscratch.core.extension.getAmPm
 import com.example.alarmscratch.core.extension.getDay
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
@@ -65,7 +65,7 @@ fun FullScreenAlarmScreenContent(
     // Alarm data
     val context = LocalContext.current
     val alarmDate = alarmDateTime?.getDay() ?: context.getString(R.string.default_alarm_date)
-    val alarm12HourTime = alarmDateTime?.get12HrTime() ?: context.getString(R.string.default_alarm_time)
+    val alarm12HourTime = alarmDateTime?.get12HourTime() ?: context.getString(R.string.default_alarm_time)
     val alarm12HourTimePeriod = alarmDateTime?.getAmPm(context) ?: ""
 
     Surface(
