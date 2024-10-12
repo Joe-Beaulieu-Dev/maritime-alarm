@@ -42,6 +42,7 @@ import com.example.alarmscratch.alarm.data.preview.repeatingAlarm
 import com.example.alarmscratch.alarm.data.preview.todayAlarm
 import com.example.alarmscratch.alarm.data.preview.tomorrowAlarm
 import com.example.alarmscratch.core.extension.get12HourTime
+import com.example.alarmscratch.core.extension.get24HourTime
 import com.example.alarmscratch.core.extension.getAmPm
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatHull
@@ -53,6 +54,7 @@ import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
 @Composable
 fun AlarmCard(
     alarm: Alarm,
+    is24Hour: Boolean,
     onAlarmToggled: (Context, Alarm) -> Unit,
     onAlarmDeleted: (Alarm) -> Unit,
     navigateToAlarmEditScreen: (Int) -> Unit,
@@ -60,6 +62,7 @@ fun AlarmCard(
 ) {
     // State
     var dropdownExpanded by rememberSaveable { mutableStateOf(false) }
+    val time = if (is24Hour) alarm.dateTime.get24HourTime() else alarm.dateTime.get12HourTime()
 
     // Colors
     val cardTextAndIconColor = if (alarm.enabled) BoatSails else MaterialTheme.colorScheme.outline
@@ -97,7 +100,6 @@ fun AlarmCard(
                     expanded = dropdownExpanded,
                     onDismissRequest = { dropdownExpanded = false },
                     modifier = Modifier.background(DarkVolcanicRock)
-//                    offset = DpOffset(x = 8.dp, y = (-8).dp)
                 ) {
                     // Delete
                     DropdownMenuItem(
@@ -143,8 +145,9 @@ fun AlarmCard(
                 Column {
                     // Time
                     Row {
+                        // Hour and Minute
                         Text(
-                            text = alarm.dateTime.get12HourTime(),
+                            text = time,
                             fontSize = 32.sp,
                             fontWeight = if (alarm.enabled) {
                                 FontWeight.Bold
@@ -154,16 +157,20 @@ fun AlarmCard(
                             color = timeAmPmColor,
                             modifier = Modifier.alignByBaseline()
                         )
-                        Text(
-                            text = alarm.dateTime.getAmPm(LocalContext.current),
-                            fontWeight = if (alarm.enabled) {
-                                FontWeight.SemiBold
-                            } else {
-                                FontWeight.Medium
-                            },
-                            color = timeAmPmColor,
-                            modifier = Modifier.alignByBaseline()
-                        )
+
+                        // AM/PM
+                        if (!is24Hour) {
+                            Text(
+                                text = alarm.dateTime.getAmPm(LocalContext.current),
+                                fontWeight = if (alarm.enabled) {
+                                    FontWeight.SemiBold
+                                } else {
+                                    FontWeight.Medium
+                                },
+                                color = timeAmPmColor,
+                                modifier = Modifier.alignByBaseline()
+                            )
+                        }
                     }
 
                     // Date
@@ -222,10 +229,29 @@ fun NoAlarmsCard(modifier: Modifier = Modifier) {
     backgroundColor = 0xFF0066CC
 )
 @Composable
-private fun AlarmCardRepeatingPreview() {
+private fun AlarmCardRepeating12HourPreview() {
     AlarmScratchTheme {
         AlarmCard(
             alarm = repeatingAlarm,
+            is24Hour = false,
+            onAlarmToggled = { _, _ -> },
+            onAlarmDeleted = {},
+            navigateToAlarmEditScreen = {},
+            modifier = Modifier.padding(20.dp)
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF0066CC
+)
+@Composable
+private fun AlarmCardRepeating24HourPreview() {
+    AlarmScratchTheme {
+        AlarmCard(
+            alarm = todayAlarm,
+            is24Hour = true,
             onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},
@@ -256,6 +282,7 @@ private fun AlarmCardTodayPreview() {
     AlarmScratchTheme {
         AlarmCard(
             alarm = todayAlarm,
+            is24Hour = false,
             onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},
@@ -273,6 +300,7 @@ private fun AlarmCardTomorrowPreview() {
     AlarmScratchTheme {
         AlarmCard(
             alarm = tomorrowAlarm,
+            is24Hour = false,
             onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},
@@ -290,6 +318,7 @@ private fun AlarmCardCalendarPreview() {
     AlarmScratchTheme {
         AlarmCard(
             alarm = calendarAlarm,
+            is24Hour = false,
             onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},

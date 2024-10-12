@@ -19,6 +19,8 @@ import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.alarm.ui.alarmlist.component.AlarmCard
 import com.example.alarmscratch.alarm.ui.alarmlist.component.NoAlarmsCard
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
+import com.example.alarmscratch.settings.data.model.TimeDisplay
+import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
 import kotlinx.coroutines.launch
 
 @Composable
@@ -29,29 +31,35 @@ fun AlarmListScreen(
 ) {
     // State
     val alarmListState by alarmListViewModel.alarmList.collectAsState()
+    val generalSettingsState by alarmListViewModel.generalSettings.collectAsState()
 
-    // Actions
-    val coroutineScope = rememberCoroutineScope()
-    val onAlarmToggled: (Context, Alarm) -> Unit = { context, alarm ->
-        coroutineScope.launch { alarmListViewModel.toggleAlarm(context, alarm) }
-    }
-    val onAlarmDeleted: (Alarm) -> Unit = { alarm ->
-        coroutineScope.launch { alarmListViewModel.deleteAlarm(alarm) }
-    }
+    if (alarmListState is AlarmListState.Success && generalSettingsState is GeneralSettingsState.Success) {
+        val coroutineScope = rememberCoroutineScope()
+        val alarmList = (alarmListState as AlarmListState.Success).alarmList
+        val generalSettings = (generalSettingsState as GeneralSettingsState.Success).generalSettings
+        val is24Hour =
+            when (generalSettings.timeDisplay) {
+                TimeDisplay.TwelveHour ->
+                    false
+                TimeDisplay.TwentyFourHour ->
+                    true
+            }
 
-    // The entire Alarm List Screen
-    AlarmListScreenContent(
-        alarmListState = alarmListState,
-        onAlarmToggled = onAlarmToggled,
-        onAlarmDeleted = onAlarmDeleted,
-        navigateToAlarmEditScreen = navigateToAlarmEditScreen,
-        modifier = modifier
-    )
+        AlarmListScreenContent(
+            alarmList = alarmList,
+            is24Hour = is24Hour,
+            onAlarmToggled = { context, alarm -> coroutineScope.launch { alarmListViewModel.toggleAlarm(context, alarm) } },
+            onAlarmDeleted = { alarm -> coroutineScope.launch { alarmListViewModel.deleteAlarm(alarm) } },
+            navigateToAlarmEditScreen = navigateToAlarmEditScreen,
+            modifier = modifier
+        )
+    }
 }
 
 @Composable
 fun AlarmListScreenContent(
-    alarmListState: AlarmListState,
+    alarmList: List<Alarm>,
+    is24Hour: Boolean,
     onAlarmToggled: (Context, Alarm) -> Unit,
     onAlarmDeleted: (Alarm) -> Unit,
     navigateToAlarmEditScreen: (Int) -> Unit,
@@ -62,31 +70,20 @@ fun AlarmListScreenContent(
         verticalArrangement = Arrangement.spacedBy(20.dp),
         modifier = modifier
     ) {
-        when (alarmListState) {
-            is AlarmListState.Loading ->
-                // TODO: Maybe show loading animation. Might be better to just have nothing,
-                //  so you don't get a Loading Composable that just flashes on/off.
-                Unit
-            is AlarmListState.Success -> {
-                if (alarmListState.alarmList.isNotEmpty()) {
-                    // TODO: Look into key thing
-                    items(items = alarmListState.alarmList, key = { it.id }) { alarm ->
-                        AlarmCard(
-                            alarm = alarm,
-                            onAlarmToggled = onAlarmToggled,
-                            onAlarmDeleted = onAlarmDeleted,
-                            navigateToAlarmEditScreen = navigateToAlarmEditScreen
-                        )
-                    }
-                } else {
-                    item {
-                        NoAlarmsCard()
-                    }
-                }
+        if (alarmList.isNotEmpty()) {
+            items(items = alarmList) { alarm ->
+                AlarmCard(
+                    alarm = alarm,
+                    is24Hour = is24Hour,
+                    onAlarmToggled = onAlarmToggled,
+                    onAlarmDeleted = onAlarmDeleted,
+                    navigateToAlarmEditScreen = navigateToAlarmEditScreen
+                )
             }
-            is AlarmListState.Error ->
-                // TODO: Do something for error
-                Unit
+        } else {
+            item {
+                NoAlarmsCard()
+            }
         }
     }
 }
@@ -103,7 +100,8 @@ fun AlarmListScreenContent(
 private fun AlarmListScreenPreview() {
     AlarmScratchTheme {
         AlarmListScreenContent(
-            alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds),
+            alarmList = alarmSampleDataHardCodedIds,
+            is24Hour = false,
             onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},
@@ -120,7 +118,8 @@ private fun AlarmListScreenPreview() {
 private fun AlarmListScreenNoAlarmsPreview() {
     AlarmScratchTheme {
         AlarmListScreenContent(
-            alarmListState = AlarmListState.Success(emptyList()),
+            alarmList = emptyList(),
+            is24Hour = false,
             onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},

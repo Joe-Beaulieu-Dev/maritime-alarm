@@ -58,13 +58,13 @@ import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
+import com.example.alarmscratch.alarm.data.preview.calendarAlarm
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
+import com.example.alarmscratch.alarm.data.preview.repeatingAlarm
 import com.example.alarmscratch.alarm.data.preview.sampleRingtoneData
-import com.example.alarmscratch.alarm.data.preview.tueWedThu
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.AlarmDays
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.DateSelectionDialog
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.TimeSelectionDialog
-import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.get12HourTime
 import com.example.alarmscratch.core.extension.get24HourTime
 import com.example.alarmscratch.core.extension.getAmPm
@@ -285,8 +285,8 @@ fun AlarmTime(
             modifier = Modifier.alignByBaseline()
         )
 
+        // AM/PM
         if (!is24Hour) {
-            // AM/PM
             Text(
                 text = dateTime.getAmPm(LocalContext.current),
                 color = DarkerBoatSails,
@@ -425,12 +425,7 @@ private fun AlarmCreateEditScreen12HourPreview() {
             navHostController = rememberNavController(),
             navigateToRingtonePickerScreen = {},
             titleRes = R.string.alarm_creation_screen_title,
-            alarm = Alarm(
-                dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
-                weeklyRepeater = WeeklyRepeater(tueWedThu),
-                ringtoneUriString = sampleRingtoneData.fullUriString,
-                isVibrationEnabled = true
-            ),
+            alarm = repeatingAlarm,
             alarmRingtoneName = sampleRingtoneData.name,
             is24Hour = false,
             validateAlarm = { true },
@@ -453,12 +448,7 @@ private fun AlarmCreateEditScreen24HourPreview() {
             navHostController = rememberNavController(),
             navigateToRingtonePickerScreen = {},
             titleRes = R.string.alarm_creation_screen_title,
-            alarm = Alarm(
-                dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
-                weeklyRepeater = WeeklyRepeater(tueWedThu),
-                ringtoneUriString = sampleRingtoneData.fullUriString,
-                isVibrationEnabled = true
-            ),
+            alarm = calendarAlarm,
             alarmRingtoneName = sampleRingtoneData.name,
             is24Hour = true,
             validateAlarm = { true },

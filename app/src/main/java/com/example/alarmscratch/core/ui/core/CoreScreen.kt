@@ -155,7 +155,8 @@ private fun CoreScreenAlarmListPreview() {
             onFabClicked = {}
         ) {
             AlarmListScreenContent(
-                alarmListState = alarmListState,
+                alarmList = alarmListState.alarmList,
+                is24Hour = false,
                 onAlarmToggled = { _, _ -> },
                 onAlarmDeleted = {},
                 navigateToAlarmEditScreen = {},
@@ -189,7 +190,8 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
             onFabClicked = {}
         ) {
             AlarmListScreenContent(
-                alarmListState = alarmListState,
+                alarmList = alarmListState.alarmList,
+                is24Hour = false,
                 onAlarmToggled = { _, _ -> },
                 onAlarmDeleted = {},
                 navigateToAlarmEditScreen = {},
