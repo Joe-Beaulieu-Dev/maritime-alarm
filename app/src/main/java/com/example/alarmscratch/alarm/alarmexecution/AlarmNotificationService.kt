@@ -7,6 +7,12 @@ import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmActivity
 import com.example.alarmscratch.alarm.ui.notification.AlarmNotification
 import com.example.alarmscratch.core.ringtone.RingtonePlayerManager
+import com.example.alarmscratch.settings.data.repository.GeneralSettingsRepository
+import com.example.alarmscratch.settings.data.repository.generalSettingsDataStore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AlarmNotificationService : Service() {
 
@@ -34,22 +40,34 @@ class AlarmNotificationService : Service() {
         val alarmDateTime = intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_DATE_TIME) ?: getString(R.string.default_alarm_time)
         val ringtoneUri = intent.getStringExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI) ?: AlarmActionReceiver.ALARM_NO_RINGTONE_URI
 
-        // Create Notification
-        val fullScreenNotification =
-            AlarmNotification.fullScreenNotification(
-                applicationContext,
-                alarmId,
-                alarmName,
-                alarmDateTime
-            )
+        // Get the General Settings to determine if we're using 12 or 24 hour time,
+        // then display the Notification and play the Alarm sound.
+        CoroutineScope(Dispatchers.IO).launch {
+            // Get the General Settings
+            val generalSettingsRepository = GeneralSettingsRepository(applicationContext.generalSettingsDataStore)
+            generalSettingsRepository.generalSettingsFlow.collect { generalSettings ->
+                // Switch back to Main Thread for UI related work
+                withContext(Dispatchers.Main) {
+                    // Create Notification
+                    val fullScreenNotification =
+                        AlarmNotification.fullScreenNotification(
+                            applicationContext,
+                            alarmId,
+                            alarmName,
+                            alarmDateTime,
+                            generalSettings.timeDisplay
+                        )
 
-        // Push Service to foreground and display Notification
-        startForeground(alarmId, fullScreenNotification)
+                    // Push Service to foreground and display Notification
+                    startForeground(alarmId, fullScreenNotification)
 
-        // TODO: Check notification permission before sounding Alarm. If you don't,
-        //  then the ringtone will sound without the notification.
-        // Play Ringtone
-        RingtonePlayerManager.startAlarmSound(applicationContext, ringtoneUri)
+                    // TODO: Check notification permission before sounding Alarm. If you don't,
+                    //  then the ringtone will sound without the notification.
+                    // Play Ringtone
+                    RingtonePlayerManager.startAlarmSound(applicationContext, ringtoneUri)
+                }
+            }
+        }
     }
 
     private fun dismissAlarmNotification() {

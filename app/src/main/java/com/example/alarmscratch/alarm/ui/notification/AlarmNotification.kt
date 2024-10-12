@@ -8,17 +8,30 @@ import android.graphics.drawable.Icon
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.alarmexecution.AlarmActionReceiver
 import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmActivity
-import com.example.alarmscratch.core.extension.toNotificationDateTimeString
+import com.example.alarmscratch.core.extension.to12HourNotificationDateTimeString
+import com.example.alarmscratch.core.extension.to24HourNotificationDateTimeString
+import com.example.alarmscratch.settings.data.model.TimeDisplay
 import java.time.LocalDateTime
 
 object AlarmNotification {
 
     const val CHANNEL_ID_ALARM_NOTIFICATION = "channel_id_alarm_notification"
 
-    fun fullScreenNotification(context: Context, alarmId: Int, alarmName: String, alarmDateTime: String): Notification {
+    fun fullScreenNotification(
+        context: Context,
+        alarmId: Int,
+        alarmName: String,
+        alarmDateTime: String,
+        timeDisplay: TimeDisplay
+    ): Notification {
         // This shows up in the Status Bar Notification, but not in the full screen alert
         val notificationDateTimeString = try {
-            LocalDateTime.parse(alarmDateTime).toNotificationDateTimeString(context)
+            when (timeDisplay) {
+                TimeDisplay.TwelveHour ->
+                    LocalDateTime.parse(alarmDateTime).to12HourNotificationDateTimeString(context)
+                TimeDisplay.TwentyFourHour ->
+                    LocalDateTime.parse(alarmDateTime).to24HourNotificationDateTimeString()
+            }
         } catch (e: Exception) {
             context.getString(R.string.default_alarm_time)
         }

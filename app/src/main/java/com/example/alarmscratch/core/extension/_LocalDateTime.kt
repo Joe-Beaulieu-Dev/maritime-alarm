@@ -58,8 +58,11 @@ fun LocalDateTime.getDay(): String = dayOfWeek.getDisplayName(TextStyle.FULL, Lo
 
 fun LocalDateTime.getDayShorthand(): String = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.US)
 
-fun LocalDateTime.toNotificationDateTimeString(context: Context): String =
+fun LocalDateTime.to12HourNotificationDateTimeString(context: Context): String =
     "${getDayShorthand()}, ${get12HourTime()} ${getAmPm(context)}"
+
+fun LocalDateTime.to24HourNotificationDateTimeString(): String =
+    "${getDayShorthand()}, ${get24HourTime()}"
 
 fun LocalDateTime.get12HourTime(): String {
     val time = this.toLocalTime()
