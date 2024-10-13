@@ -43,7 +43,7 @@ object AlarmNotification {
             .setCategory(Notification.CATEGORY_ALARM)
             .addAction(getDismissAlarmAction(context, alarmId))
             .setDeleteIntent(getClearNotificationPendingIntent(context, alarmId))
-            .setFullScreenIntent(getAlertPendingIntent(context, alarmId, alarmName, alarmDateTime), true)
+            .setFullScreenIntent(getAlertPendingIntent(context, alarmId, alarmName, alarmDateTime, timeDisplay), true)
             .build()
     }
 
@@ -81,12 +81,27 @@ object AlarmNotification {
         )
     }
 
-    private fun getAlertPendingIntent(context: Context, alarmId: Int, alarmName: String, alarmDateTime: String): PendingIntent {
+    private fun getAlertPendingIntent(
+        context: Context,
+        alarmId: Int,
+        alarmName: String,
+        alarmDateTime: String,
+        timeDisplay: TimeDisplay
+    ): PendingIntent {
+        val is24Hour =
+            when (timeDisplay) {
+                TimeDisplay.TwelveHour ->
+                    false
+                TimeDisplay.TwentyFourHour ->
+                    true
+            }
+
         val fullScreenAlertIntent = Intent(context, FullScreenAlarmActivity::class.java).apply {
             // Extras
             putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmId)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, alarmName)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_DATE_TIME, alarmDateTime)
+            putExtra(AlarmActionReceiver.EXTRA_IS_24_HOUR, is24Hour)
             // Flags
             setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION)
         }

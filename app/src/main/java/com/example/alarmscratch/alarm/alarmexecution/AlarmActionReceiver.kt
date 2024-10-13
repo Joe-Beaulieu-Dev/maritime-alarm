@@ -24,10 +24,12 @@ class AlarmActionReceiver : BroadcastReceiver() {
         const val EXTRA_ALARM_NAME = "extra_alarm_name"
         const val EXTRA_ALARM_DATE_TIME = "extra_alarm_date_time"
         const val EXTRA_RINGTONE_URI = "extra_ringtone_uri"
+        const val EXTRA_IS_24_HOUR = "extra_is_24_hour"
 
         // Other
         const val ALARM_NO_ID = -1
         const val ALARM_NO_RINGTONE_URI = ""
+        const val ALARM_NO_IS_24_HOUR = false
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {

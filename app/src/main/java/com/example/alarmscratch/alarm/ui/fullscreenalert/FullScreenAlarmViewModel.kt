@@ -10,7 +10,8 @@ import java.time.LocalDateTime
 class FullScreenAlarmViewModel(
     private val alarmId: Int,
     val alarmName: String,
-    val alarmDateTime: LocalDateTime?
+    val alarmDateTime: LocalDateTime?,
+    val is24Hour: Boolean
 ) : ViewModel() {
 
     companion object {
@@ -18,12 +19,13 @@ class FullScreenAlarmViewModel(
         fun provideFactory(
             alarmId: Int,
             alarmName: String,
-            alarmDateTime: LocalDateTime?
+            alarmDateTime: LocalDateTime?,
+            is24Hour: Boolean
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                    FullScreenAlarmViewModel(alarmId, alarmName, alarmDateTime) as T
+                    FullScreenAlarmViewModel(alarmId, alarmName, alarmDateTime, is24Hour) as T
             }
     }
 
