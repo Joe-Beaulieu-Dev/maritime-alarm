@@ -49,13 +49,6 @@ fun AlarmCreationScreen(
         // from anywhere, therefore they can't get a name to display in the preview.
         val alarmRingtoneName = alarm.getRingtone(context).getTitle(context)
         val generalSettings = (generalSettingsState as GeneralSettingsState.Success).generalSettings
-        val is24Hour =
-            when (generalSettings.timeDisplay) {
-                TimeDisplay.TwelveHour ->
-                    false
-                TimeDisplay.TwentyFourHour ->
-                    true
-            }
 
         AlarmCreateEditScreen(
             navHostController = navHostController,
@@ -63,7 +56,7 @@ fun AlarmCreationScreen(
             titleRes = R.string.alarm_creation_screen_title,
             alarm = alarm,
             alarmRingtoneName = alarmRingtoneName,
-            is24Hour = is24Hour,
+            timeDisplay = generalSettings.timeDisplay,
             validateAlarm = alarmCreationViewModel::validateAlarm,
             saveAndScheduleAlarm = { alarmCreationViewModel.saveAndScheduleAlarm(context) },
             updateName = alarmCreationViewModel::updateName,
@@ -96,7 +89,7 @@ private fun AlarmCreationScreenPreview() {
                 isVibrationEnabled = true
             ),
             alarmRingtoneName = sampleRingtoneData.name,
-            is24Hour = false,
+            timeDisplay = TimeDisplay.TwelveHour,
             validateAlarm = { true },
             saveAndScheduleAlarm = {},
             updateName = {},

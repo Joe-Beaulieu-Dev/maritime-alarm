@@ -79,6 +79,7 @@ import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
 import com.example.alarmscratch.core.ui.theme.VolcanicRock
 import com.example.alarmscratch.core.ui.theme.WayDarkerBoatSails
 import com.example.alarmscratch.core.util.StatusBarUtil
+import com.example.alarmscratch.settings.data.model.TimeDisplay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -90,7 +91,7 @@ fun AlarmCreateEditScreen(
     @StringRes titleRes: Int,
     alarm: Alarm,
     alarmRingtoneName: String,
-    is24Hour: Boolean,
+    timeDisplay: TimeDisplay,
     validateAlarm: () -> Boolean,
     saveAndScheduleAlarm: () -> Unit,
     updateName: (String) -> Unit,
@@ -180,7 +181,7 @@ fun AlarmCreateEditScreen(
                 // Date/Time Settings
                 DateTimeSettings(
                     alarm = alarm,
-                    is24Hour = is24Hour,
+                    timeDisplay = timeDisplay,
                     updateDate = updateDate,
                     updateTime = updateTime,
                     addDay = addDay,
@@ -207,7 +208,7 @@ fun AlarmCreateEditScreen(
 @Composable
 fun DateTimeSettings(
     alarm: Alarm,
-    is24Hour: Boolean,
+    timeDisplay: TimeDisplay,
     updateDate: (LocalDate) -> Unit,
     updateTime: (Int, Int) -> Unit,
     addDay: (WeeklyRepeater.Day) -> Unit,
@@ -221,7 +222,7 @@ fun DateTimeSettings(
         // Time
         AlarmTime(
             dateTime = alarm.dateTime,
-            is24Hour = is24Hour,
+            timeDisplay = timeDisplay,
             updateTime = updateTime,
             modifier = Modifier.padding(0.dp)
         )
@@ -261,14 +262,19 @@ fun DateTimeSettings(
 @Composable
 fun AlarmTime(
     dateTime: LocalDateTime,
-    is24Hour: Boolean,
+    timeDisplay: TimeDisplay,
     updateTime: (Int, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     // State
     var showTimePickerDialog by rememberSaveable { mutableStateOf(false) }
     val toggleTimePickerDialog: () -> Unit = { showTimePickerDialog = !showTimePickerDialog }
-    val time = if (is24Hour) dateTime.get24HourTime() else dateTime.get12HourTime()
+    val time = when (timeDisplay) {
+        TimeDisplay.TwelveHour ->
+            dateTime.get12HourTime()
+        TimeDisplay.TwentyFourHour ->
+            dateTime.get24HourTime()
+    }
 
     // Time and AM/PM
     Row(
@@ -286,7 +292,7 @@ fun AlarmTime(
         )
 
         // AM/PM
-        if (!is24Hour) {
+        if (timeDisplay == TimeDisplay.TwelveHour) {
             Text(
                 text = dateTime.getAmPm(LocalContext.current),
                 color = DarkerBoatSails,
@@ -302,7 +308,7 @@ fun AlarmTime(
         TimeSelectionDialog(
             initialHour = dateTime.hour,
             initialMinute = dateTime.minute,
-            is24Hour = is24Hour,
+            timeDisplay = timeDisplay,
             onCancel = toggleTimePickerDialog,
             onConfirm = { hour, minute ->
                 updateTime(hour, minute)
@@ -427,7 +433,7 @@ private fun AlarmCreateEditScreen12HourPreview() {
             titleRes = R.string.alarm_creation_screen_title,
             alarm = repeatingAlarm,
             alarmRingtoneName = sampleRingtoneData.name,
-            is24Hour = false,
+            timeDisplay = TimeDisplay.TwelveHour,
             validateAlarm = { true },
             saveAndScheduleAlarm = {},
             updateName = {},
@@ -450,7 +456,7 @@ private fun AlarmCreateEditScreen24HourPreview() {
             titleRes = R.string.alarm_creation_screen_title,
             alarm = calendarAlarm,
             alarmRingtoneName = sampleRingtoneData.name,
-            is24Hour = true,
+            timeDisplay = TimeDisplay.TwentyFourHour,
             validateAlarm = { true },
             saveAndScheduleAlarm = {},
             updateName = {},
@@ -469,7 +475,7 @@ private fun DateTimeSettingsPreview() {
     AlarmScratchTheme {
         DateTimeSettings(
             alarm = consistentFutureAlarm,
-            is24Hour = false,
+            timeDisplay = TimeDisplay.TwelveHour,
             updateDate = {},
             updateTime = { _, _ -> },
             addDay = {},
@@ -484,7 +490,7 @@ private fun AlarmTimePreview() {
     AlarmScratchTheme {
         AlarmTime(
             dateTime = consistentFutureAlarm.dateTime,
-            is24Hour = false,
+            timeDisplay = TimeDisplay.TwelveHour,
             updateTime = { _, _ -> }
         )
     }

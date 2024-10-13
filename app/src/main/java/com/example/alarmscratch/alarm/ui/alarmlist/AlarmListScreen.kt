@@ -37,17 +37,10 @@ fun AlarmListScreen(
         val coroutineScope = rememberCoroutineScope()
         val alarmList = (alarmListState as AlarmListState.Success).alarmList
         val generalSettings = (generalSettingsState as GeneralSettingsState.Success).generalSettings
-        val is24Hour =
-            when (generalSettings.timeDisplay) {
-                TimeDisplay.TwelveHour ->
-                    false
-                TimeDisplay.TwentyFourHour ->
-                    true
-            }
 
         AlarmListScreenContent(
             alarmList = alarmList,
-            is24Hour = is24Hour,
+            timeDisplay = generalSettings.timeDisplay,
             onAlarmToggled = { context, alarm -> coroutineScope.launch { alarmListViewModel.toggleAlarm(context, alarm) } },
             onAlarmDeleted = { alarm -> coroutineScope.launch { alarmListViewModel.deleteAlarm(alarm) } },
             navigateToAlarmEditScreen = navigateToAlarmEditScreen,
@@ -59,7 +52,7 @@ fun AlarmListScreen(
 @Composable
 fun AlarmListScreenContent(
     alarmList: List<Alarm>,
-    is24Hour: Boolean,
+    timeDisplay: TimeDisplay,
     onAlarmToggled: (Context, Alarm) -> Unit,
     onAlarmDeleted: (Alarm) -> Unit,
     navigateToAlarmEditScreen: (Int) -> Unit,
@@ -74,7 +67,7 @@ fun AlarmListScreenContent(
             items(items = alarmList) { alarm ->
                 AlarmCard(
                     alarm = alarm,
-                    is24Hour = is24Hour,
+                    timeDisplay = timeDisplay,
                     onAlarmToggled = onAlarmToggled,
                     onAlarmDeleted = onAlarmDeleted,
                     navigateToAlarmEditScreen = navigateToAlarmEditScreen
@@ -101,7 +94,7 @@ private fun AlarmListScreenPreview() {
     AlarmScratchTheme {
         AlarmListScreenContent(
             alarmList = alarmSampleDataHardCodedIds,
-            is24Hour = false,
+            timeDisplay = TimeDisplay.TwelveHour,
             onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},
@@ -119,7 +112,7 @@ private fun AlarmListScreenNoAlarmsPreview() {
     AlarmScratchTheme {
         AlarmListScreenContent(
             alarmList = emptyList(),
-            is24Hour = false,
+            timeDisplay = TimeDisplay.TwelveHour,
             onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},

@@ -45,17 +45,24 @@ import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.DarkerBoatSails
 import com.example.alarmscratch.core.ui.theme.LightVolcanicRock
 import com.example.alarmscratch.core.ui.theme.VolcanicRock
+import com.example.alarmscratch.settings.data.model.TimeDisplay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimeSelectionDialog(
     initialHour: Int,
     initialMinute: Int,
-    is24Hour: Boolean,
+    timeDisplay: TimeDisplay,
     onCancel: () -> Unit,
     onConfirm: (hour: Int, minute: Int) -> Unit
 ) {
     // State
+    val is24Hour = when (timeDisplay) {
+        TimeDisplay.TwelveHour ->
+            false
+        TimeDisplay.TwentyFourHour ->
+            true
+    }
     val timePickerState = rememberTimePickerState(
         initialHour = initialHour,
         initialMinute = initialMinute,
@@ -172,7 +179,7 @@ private fun TimeSelectionDialogPreview() {
         TimeSelectionDialog(
             initialHour = 15,
             initialMinute = 45,
-            is24Hour = false,
+            timeDisplay = TimeDisplay.TwelveHour,
             onCancel = {},
             onConfirm = { _, _ -> }
         )

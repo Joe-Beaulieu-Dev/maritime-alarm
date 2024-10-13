@@ -40,6 +40,7 @@ import com.example.alarmscratch.core.ui.theme.SkyBlue
 import com.example.alarmscratch.core.ui.theme.TopOceanBlue
 import com.example.alarmscratch.core.util.StatusBarUtil
 import com.example.alarmscratch.settings.SettingsScreen
+import com.example.alarmscratch.settings.data.model.TimeDisplay
 
 @Composable
 fun CoreScreen(
@@ -156,7 +157,7 @@ private fun CoreScreenAlarmListPreview() {
         ) {
             AlarmListScreenContent(
                 alarmList = alarmListState.alarmList,
-                is24Hour = false,
+                timeDisplay = TimeDisplay.TwelveHour,
                 onAlarmToggled = { _, _ -> },
                 onAlarmDeleted = {},
                 navigateToAlarmEditScreen = {},
@@ -191,7 +192,7 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
         ) {
             AlarmListScreenContent(
                 alarmList = alarmListState.alarmList,
-                is24Hour = false,
+                timeDisplay = TimeDisplay.TwelveHour,
                 onAlarmToggled = { _, _ -> },
                 onAlarmDeleted = {},
                 navigateToAlarmEditScreen = {},

@@ -88,13 +88,12 @@ object AlarmNotification {
         alarmDateTime: String,
         timeDisplay: TimeDisplay
     ): PendingIntent {
-        val is24Hour =
-            when (timeDisplay) {
-                TimeDisplay.TwelveHour ->
-                    false
-                TimeDisplay.TwentyFourHour ->
-                    true
-            }
+        val is24Hour = when (timeDisplay) {
+            TimeDisplay.TwelveHour ->
+                false
+            TimeDisplay.TwentyFourHour ->
+                true
+        }
 
         val fullScreenAlertIntent = Intent(context, FullScreenAlarmActivity::class.java).apply {
             // Extras

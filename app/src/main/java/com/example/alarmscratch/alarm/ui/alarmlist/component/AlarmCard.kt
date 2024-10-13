@@ -50,11 +50,12 @@ import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
 import com.example.alarmscratch.core.ui.theme.DarkerBoatSails
 import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
+import com.example.alarmscratch.settings.data.model.TimeDisplay
 
 @Composable
 fun AlarmCard(
     alarm: Alarm,
-    is24Hour: Boolean,
+    timeDisplay: TimeDisplay,
     onAlarmToggled: (Context, Alarm) -> Unit,
     onAlarmDeleted: (Alarm) -> Unit,
     navigateToAlarmEditScreen: (Int) -> Unit,
@@ -62,7 +63,12 @@ fun AlarmCard(
 ) {
     // State
     var dropdownExpanded by rememberSaveable { mutableStateOf(false) }
-    val time = if (is24Hour) alarm.dateTime.get24HourTime() else alarm.dateTime.get12HourTime()
+    val time = when (timeDisplay) {
+        TimeDisplay.TwelveHour ->
+            alarm.dateTime.get12HourTime()
+        TimeDisplay.TwentyFourHour ->
+            alarm.dateTime.get24HourTime()
+    }
 
     // Colors
     val cardTextAndIconColor = if (alarm.enabled) BoatSails else MaterialTheme.colorScheme.outline
@@ -159,7 +165,7 @@ fun AlarmCard(
                         )
 
                         // AM/PM
-                        if (!is24Hour) {
+                        if (timeDisplay == TimeDisplay.TwelveHour) {
                             Text(
                                 text = alarm.dateTime.getAmPm(LocalContext.current),
                                 fontWeight = if (alarm.enabled) {
@@ -233,7 +239,7 @@ private fun AlarmCardRepeating12HourPreview() {
     AlarmScratchTheme {
         AlarmCard(
             alarm = repeatingAlarm,
-            is24Hour = false,
+            timeDisplay = TimeDisplay.TwelveHour,
             onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},
@@ -251,7 +257,7 @@ private fun AlarmCardRepeating24HourPreview() {
     AlarmScratchTheme {
         AlarmCard(
             alarm = todayAlarm,
-            is24Hour = true,
+            timeDisplay = TimeDisplay.TwentyFourHour,
             onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},
@@ -282,7 +288,7 @@ private fun AlarmCardTodayPreview() {
     AlarmScratchTheme {
         AlarmCard(
             alarm = todayAlarm,
-            is24Hour = false,
+            timeDisplay = TimeDisplay.TwelveHour,
             onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},
@@ -300,7 +306,7 @@ private fun AlarmCardTomorrowPreview() {
     AlarmScratchTheme {
         AlarmCard(
             alarm = tomorrowAlarm,
-            is24Hour = false,
+            timeDisplay = TimeDisplay.TwelveHour,
             onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},
@@ -318,7 +324,7 @@ private fun AlarmCardCalendarPreview() {
     AlarmScratchTheme {
         AlarmCard(
             alarm = calendarAlarm,
-            is24Hour = false,
+            timeDisplay = TimeDisplay.TwelveHour,
             onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},
