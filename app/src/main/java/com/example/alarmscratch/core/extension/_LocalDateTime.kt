@@ -79,7 +79,12 @@ fun LocalDateTime.get12HourTime(): String {
 
 fun LocalDateTime.get24HourTime(): String {
     val time = this.toLocalTime()
-    return "${time.hour}:${getFormattedMinute(time)}"
+
+    return if (time.hour < 10) {
+        "0${time.hour}:${getFormattedMinute(time)}"
+    } else {
+        "${time.hour}:${getFormattedMinute(time)}"
+    }
 }
 
 fun LocalDateTime.getAmPm(context: Context): String =
