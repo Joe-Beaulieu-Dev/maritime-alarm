@@ -20,23 +20,41 @@ import com.example.alarmscratch.core.extension.futurizeDateTime
 import com.example.alarmscratch.core.extension.isRepeating
 import com.example.alarmscratch.core.extension.nextRepeatingDate
 import com.example.alarmscratch.core.navigation.Destination
+import com.example.alarmscratch.settings.data.model.GeneralSettings
+import com.example.alarmscratch.settings.data.repository.GeneralSettingsRepository
+import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
+import com.example.alarmscratch.settings.data.repository.generalSettingsDataStore
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class AlarmEditViewModel(
     savedStateHandle: SavedStateHandle,
-    private val alarmRepository: AlarmRepository
+    private val alarmRepository: AlarmRepository,
+    private val generalSettingsRepository: GeneralSettingsRepository
 ) : ViewModel() {
 
+    // Alarm
     private val alarmId: Int = savedStateHandle.toRoute<Destination.AlarmEditScreen>().alarmId
     private val _modifiedAlarm: MutableStateFlow<AlarmState> = MutableStateFlow(AlarmState.Loading)
     val modifiedAlarm: StateFlow<AlarmState> = _modifiedAlarm.asStateFlow()
+    // Settings
+    val generalSettings: StateFlow<GeneralSettingsState> =
+        generalSettingsRepository.generalSettingsFlow
+            .map<GeneralSettings, GeneralSettingsState> { generalSettings -> GeneralSettingsState.Success(generalSettings) }
+            .catch { throwable -> emit(GeneralSettingsState.Error(throwable)) }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+                GeneralSettingsState.Loading
+            )
 
     init {
         viewModelScope.launch {
@@ -58,7 +76,8 @@ class AlarmEditViewModel(
 
                 return AlarmEditViewModel(
                     savedStateHandle = extras.createSavedStateHandle(),
-                    alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(application).alarmDao())
+                    alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(application).alarmDao()),
+                    generalSettingsRepository = GeneralSettingsRepository(application.generalSettingsDataStore)
                 ) as T
             }
         }

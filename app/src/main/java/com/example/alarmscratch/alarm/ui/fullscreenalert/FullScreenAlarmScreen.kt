@@ -29,7 +29,8 @@ import androidx.compose.ui.unit.sp
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
 import com.example.alarmscratch.alarm.ui.fullscreenalert.component.BeachBackdrop
-import com.example.alarmscratch.core.extension.get12HrTime
+import com.example.alarmscratch.core.extension.get12HourTime
+import com.example.alarmscratch.core.extension.get24HourTime
 import com.example.alarmscratch.core.extension.getAmPm
 import com.example.alarmscratch.core.extension.getDay
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
@@ -41,17 +42,14 @@ import java.time.LocalDateTime
 
 @Composable
 fun FullScreenAlarmScreen(fullScreenAlarmViewModel: FullScreenAlarmViewModel) {
-    // TODO: Test this on the Lock Screen
+    // TODO: The Status Bar has a grey tint to it on the Lock Screen. Fix this.
     // Configure Status Bar
     StatusBarUtil.setLightStatusBar()
 
-    // State
-    val alarmName = fullScreenAlarmViewModel.alarmName
-    val alarmDateTime = fullScreenAlarmViewModel.alarmDateTime
-
     FullScreenAlarmScreenContent(
-        alarmName = alarmName,
-        alarmDateTime = alarmDateTime,
+        alarmName = fullScreenAlarmViewModel.alarmName,
+        alarmDateTime = fullScreenAlarmViewModel.alarmDateTime,
+        is24Hour = fullScreenAlarmViewModel.is24Hour,
         dismissAlarm = fullScreenAlarmViewModel::dismissAlarm
     )
 }
@@ -60,13 +58,16 @@ fun FullScreenAlarmScreen(fullScreenAlarmViewModel: FullScreenAlarmViewModel) {
 fun FullScreenAlarmScreenContent(
     alarmName: String,
     alarmDateTime: LocalDateTime?,
+    is24Hour: Boolean,
     dismissAlarm: (Context) -> Unit
 ) {
     // Alarm data
     val context = LocalContext.current
-    val alarmDate = alarmDateTime?.getDay() ?: context.getString(R.string.default_alarm_date)
-    val alarm12HourTime = alarmDateTime?.get12HrTime() ?: context.getString(R.string.default_alarm_time)
-    val alarm12HourTimePeriod = alarmDateTime?.getAmPm(context) ?: ""
+    val day = alarmDateTime?.getDay() ?: context.getString(R.string.default_alarm_date)
+    val time = alarmDateTime
+        ?.let { if (is24Hour) it.get24HourTime() else it.get12HourTime() }
+        ?: context.getString(R.string.default_alarm_time)
+    val amPm = alarmDateTime?.let { if (!is24Hour) it.getAmPm(context) else "" } ?: ""
 
     Surface(
         modifier = Modifier
@@ -100,9 +101,9 @@ fun FullScreenAlarmScreenContent(
                         fontWeight = FontWeight.Bold
                     )
 
-                    // Date
+                    // Day
                     Text(
-                        text = alarmDate,
+                        text = day,
                         color = InCloudBlack,
                         fontSize = 32.sp,
                         fontWeight = FontWeight.SemiBold
@@ -110,20 +111,25 @@ fun FullScreenAlarmScreenContent(
 
                     // Time
                     Row {
+                        // Hour and Minute
                         Text(
-                            text = alarm12HourTime,
+                            text = time,
                             color = InCloudBlack,
                             fontSize = 64.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.alignByBaseline()
                         )
-                        Text(
-                            text = alarm12HourTimePeriod,
-                            color = InCloudBlack,
-                            fontSize = 42.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.alignByBaseline()
-                        )
+
+                        // AM/PM
+                        if (!is24Hour) {
+                            Text(
+                                text = amPm,
+                                color = InCloudBlack,
+                                fontSize = 42.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.alignByBaseline()
+                            )
+                        }
                     }
                 }
             }
@@ -156,11 +162,25 @@ fun FullScreenAlarmScreenContent(
 
 @Preview
 @Composable
-private fun FullScreenAlarmScreenPreview() {
+private fun FullScreenAlarmScreen12HourPreview() {
     AlarmScratchTheme {
         FullScreenAlarmScreenContent(
             alarmName = consistentFutureAlarm.name,
             alarmDateTime = consistentFutureAlarm.dateTime,
+            is24Hour = false,
+            dismissAlarm = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun FullScreenAlarmScreen24HourPreview() {
+    AlarmScratchTheme {
+        FullScreenAlarmScreenContent(
+            alarmName = consistentFutureAlarm.name,
+            alarmDateTime = consistentFutureAlarm.dateTime,
+            is24Hour = true,
             dismissAlarm = {}
         )
     }

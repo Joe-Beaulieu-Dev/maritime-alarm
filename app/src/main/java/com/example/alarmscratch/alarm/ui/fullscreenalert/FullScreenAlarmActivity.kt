@@ -43,10 +43,11 @@ class FullScreenAlarmActivity : ComponentActivity() {
         } catch (e: Exception) {
             null
         }
+        val is24Hour = intent.getBooleanExtra(AlarmActionReceiver.EXTRA_IS_24_HOUR, AlarmActionReceiver.ALARM_NO_IS_24_HOUR)
 
         // Create/Get ViewModel
         val fullScreenAlarmViewModel by viewModels<FullScreenAlarmViewModel> {
-            FullScreenAlarmViewModel.provideFactory(alarmId, alarmName, alarmDateTime)
+            FullScreenAlarmViewModel.provideFactory(alarmId, alarmName, alarmDateTime, is24Hour)
         }
 
         setContent {

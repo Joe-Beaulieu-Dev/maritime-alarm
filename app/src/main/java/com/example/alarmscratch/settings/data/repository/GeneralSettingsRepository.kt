@@ -29,7 +29,7 @@ class GeneralSettingsRepository(private val dataStore: DataStore<Preferences>) {
         private val KEY_TIME_DISPLAY = stringPreferencesKey("time_display")
 
         // Default values
-        private val DEFAULT_TIME_DISPLAY = TimeDisplay.TwelveHour
+        val DEFAULT_TIME_DISPLAY = TimeDisplay.TwelveHour
     }
 
     val generalSettingsFlow: Flow<GeneralSettings> = dataStore.data

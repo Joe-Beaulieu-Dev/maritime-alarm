@@ -58,14 +58,15 @@ import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
+import com.example.alarmscratch.alarm.data.preview.calendarAlarm
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
+import com.example.alarmscratch.alarm.data.preview.repeatingAlarm
 import com.example.alarmscratch.alarm.data.preview.sampleRingtoneData
-import com.example.alarmscratch.alarm.data.preview.tueWedThu
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.AlarmDays
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.DateSelectionDialog
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.TimeSelectionDialog
-import com.example.alarmscratch.core.extension.LocalDateTimeUtil
-import com.example.alarmscratch.core.extension.get12HrTime
+import com.example.alarmscratch.core.extension.get12HourTime
+import com.example.alarmscratch.core.extension.get24HourTime
 import com.example.alarmscratch.core.extension.getAmPm
 import com.example.alarmscratch.core.ui.shared.CustomTopAppBar
 import com.example.alarmscratch.core.ui.shared.RowSelectionItem
@@ -78,6 +79,7 @@ import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
 import com.example.alarmscratch.core.ui.theme.VolcanicRock
 import com.example.alarmscratch.core.ui.theme.WayDarkerBoatSails
 import com.example.alarmscratch.core.util.StatusBarUtil
+import com.example.alarmscratch.settings.data.model.TimeDisplay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -89,6 +91,7 @@ fun AlarmCreateEditScreen(
     @StringRes titleRes: Int,
     alarm: Alarm,
     alarmRingtoneName: String,
+    timeDisplay: TimeDisplay,
     validateAlarm: () -> Boolean,
     saveAndScheduleAlarm: () -> Unit,
     updateName: (String) -> Unit,
@@ -178,6 +181,7 @@ fun AlarmCreateEditScreen(
                 // Date/Time Settings
                 DateTimeSettings(
                     alarm = alarm,
+                    timeDisplay = timeDisplay,
                     updateDate = updateDate,
                     updateTime = updateTime,
                     addDay = addDay,
@@ -204,6 +208,7 @@ fun AlarmCreateEditScreen(
 @Composable
 fun DateTimeSettings(
     alarm: Alarm,
+    timeDisplay: TimeDisplay,
     updateDate: (LocalDate) -> Unit,
     updateTime: (Int, Int) -> Unit,
     addDay: (WeeklyRepeater.Day) -> Unit,
@@ -217,6 +222,7 @@ fun DateTimeSettings(
         // Time
         AlarmTime(
             dateTime = alarm.dateTime,
+            timeDisplay = timeDisplay,
             updateTime = updateTime,
             modifier = Modifier.padding(0.dp)
         )
@@ -256,12 +262,19 @@ fun DateTimeSettings(
 @Composable
 fun AlarmTime(
     dateTime: LocalDateTime,
+    timeDisplay: TimeDisplay,
     updateTime: (Int, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     // State
     var showTimePickerDialog by rememberSaveable { mutableStateOf(false) }
     val toggleTimePickerDialog: () -> Unit = { showTimePickerDialog = !showTimePickerDialog }
+    val time = when (timeDisplay) {
+        TimeDisplay.TwelveHour ->
+            dateTime.get12HourTime()
+        TimeDisplay.TwentyFourHour ->
+            dateTime.get24HourTime()
+    }
 
     // Time and AM/PM
     Row(
@@ -271,7 +284,7 @@ fun AlarmTime(
     ) {
         // Time
         Text(
-            text = dateTime.get12HrTime(),
+            text = time,
             color = DarkerBoatSails,
             fontSize = 64.sp,
             fontWeight = FontWeight.Bold,
@@ -279,13 +292,15 @@ fun AlarmTime(
         )
 
         // AM/PM
-        Text(
-            text = dateTime.getAmPm(LocalContext.current),
-            color = DarkerBoatSails,
-            fontSize = 38.sp,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.alignByBaseline()
-        )
+        if (timeDisplay == TimeDisplay.TwelveHour) {
+            Text(
+                text = dateTime.getAmPm(LocalContext.current),
+                color = DarkerBoatSails,
+                fontSize = 38.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.alignByBaseline()
+            )
+        }
     }
 
     // Time Selection Dialog
@@ -293,6 +308,7 @@ fun AlarmTime(
         TimeSelectionDialog(
             initialHour = dateTime.hour,
             initialMinute = dateTime.minute,
+            timeDisplay = timeDisplay,
             onCancel = toggleTimePickerDialog,
             onConfirm = { hour, minute ->
                 updateTime(hour, minute)
@@ -409,19 +425,38 @@ fun AlarmAlertSettings(
 
 @Preview
 @Composable
-private fun AlarmCreateEditScreenPreview() {
+private fun AlarmCreateEditScreen12HourPreview() {
     AlarmScratchTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
             navigateToRingtonePickerScreen = {},
             titleRes = R.string.alarm_creation_screen_title,
-            alarm = Alarm(
-                dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
-                weeklyRepeater = WeeklyRepeater(tueWedThu),
-                ringtoneUriString = sampleRingtoneData.fullUriString,
-                isVibrationEnabled = true
-            ),
+            alarm = repeatingAlarm,
             alarmRingtoneName = sampleRingtoneData.name,
+            timeDisplay = TimeDisplay.TwelveHour,
+            validateAlarm = { true },
+            saveAndScheduleAlarm = {},
+            updateName = {},
+            updateDate = {},
+            updateTime = { _, _ -> },
+            addDay = {},
+            removeDay = {},
+            toggleVibration = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun AlarmCreateEditScreen24HourPreview() {
+    AlarmScratchTheme {
+        AlarmCreateEditScreen(
+            navHostController = rememberNavController(),
+            navigateToRingtonePickerScreen = {},
+            titleRes = R.string.alarm_creation_screen_title,
+            alarm = calendarAlarm,
+            alarmRingtoneName = sampleRingtoneData.name,
+            timeDisplay = TimeDisplay.TwentyFourHour,
             validateAlarm = { true },
             saveAndScheduleAlarm = {},
             updateName = {},
@@ -440,6 +475,7 @@ private fun DateTimeSettingsPreview() {
     AlarmScratchTheme {
         DateTimeSettings(
             alarm = consistentFutureAlarm,
+            timeDisplay = TimeDisplay.TwelveHour,
             updateDate = {},
             updateTime = { _, _ -> },
             addDay = {},
@@ -452,6 +488,10 @@ private fun DateTimeSettingsPreview() {
 @Composable
 private fun AlarmTimePreview() {
     AlarmScratchTheme {
-        AlarmTime(dateTime = consistentFutureAlarm.dateTime, updateTime = { _, _ -> })
+        AlarmTime(
+            dateTime = consistentFutureAlarm.dateTime,
+            timeDisplay = TimeDisplay.TwelveHour,
+            updateTime = { _, _ -> }
+        )
     }
 }

@@ -24,10 +24,12 @@ class AlarmActionReceiver : BroadcastReceiver() {
         const val EXTRA_ALARM_NAME = "extra_alarm_name"
         const val EXTRA_ALARM_DATE_TIME = "extra_alarm_date_time"
         const val EXTRA_RINGTONE_URI = "extra_ringtone_uri"
+        const val EXTRA_IS_24_HOUR = "extra_is_24_hour"
 
         // Other
         const val ALARM_NO_ID = -1
         const val ALARM_NO_RINGTONE_URI = ""
+        const val ALARM_NO_IS_24_HOUR = false
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -42,6 +44,11 @@ class AlarmActionReceiver : BroadcastReceiver() {
     }
 
     private fun startAlarm(context: Context, intent: Intent) {
+        // TODO: Grab a Wake Lock here. According to the AlarmManager docs, AlarmManger automatically grabs a CPU Wake Lock
+        //  and holds it until BroadcastReceiver.onReceive() completes. It also explicitly states that because of this, the
+        //  phone may sleep *immediately* after onReceive() completes, so if you call Context.startService() from inside
+        //  onReceive() then the phone may sleep before the Service is started.
+
         val alarmId = intent.getIntExtra(EXTRA_ALARM_ID, ALARM_NO_ID)
         val alarmName = intent.getStringExtra(EXTRA_ALARM_NAME) ?: context.getString(R.string.default_alarm_name)
         val alarmDateTime = intent.getStringExtra(EXTRA_ALARM_DATE_TIME) ?: context.getString(R.string.default_alarm_time)

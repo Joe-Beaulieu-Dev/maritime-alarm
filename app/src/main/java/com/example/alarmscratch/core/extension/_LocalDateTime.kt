@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.alarmscratch.R
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -57,16 +58,15 @@ fun LocalDateTime.getDay(): String = dayOfWeek.getDisplayName(TextStyle.FULL, Lo
 
 fun LocalDateTime.getDayShorthand(): String = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.US)
 
-fun LocalDateTime.toNotificationDateTimeString(context: Context): String =
-    "${getDayShorthand()}, ${get12HrTime()} ${getAmPm(context)}"
+fun LocalDateTime.to12HourNotificationDateTimeString(context: Context): String =
+    "${getDayShorthand()}, ${get12HourTime()} ${getAmPm(context)}"
 
-fun LocalDateTime.get12HrTime(): String {
+fun LocalDateTime.to24HourNotificationDateTimeString(): String =
+    "${getDayShorthand()}, ${get24HourTime()}"
+
+fun LocalDateTime.get12HourTime(): String {
     val time = this.toLocalTime()
-    val minute = if (time.minute < 10) {
-        "0${time.minute}"
-    } else {
-        "${time.minute}"
-    }
+    val minute = getFormattedMinute(time)
 
     return if (time.hour == 0) { // Midnight
         "12:$minute"
@@ -77,9 +77,26 @@ fun LocalDateTime.get12HrTime(): String {
     }
 }
 
+fun LocalDateTime.get24HourTime(): String {
+    val time = this.toLocalTime()
+
+    return if (time.hour < 10) {
+        "0${time.hour}:${getFormattedMinute(time)}"
+    } else {
+        "${time.hour}:${getFormattedMinute(time)}"
+    }
+}
+
 fun LocalDateTime.getAmPm(context: Context): String =
     if (this.toLocalTime().hour < 12) {
         context.getString(R.string.time_am)
     } else {
         context.getString(R.string.time_pm)
+    }
+
+private fun getFormattedMinute(time: LocalTime): String =
+    if (time.minute < 10) {
+        "0${time.minute}"
+    } else {
+        "${time.minute}"
     }
