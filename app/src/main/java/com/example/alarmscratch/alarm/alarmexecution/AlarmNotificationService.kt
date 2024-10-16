@@ -42,6 +42,10 @@ class AlarmNotificationService : Service() {
         val alarmName = intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_NAME) ?: getString(R.string.default_alarm_name)
         val alarmDateTime = intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_DATE_TIME) ?: getString(R.string.default_alarm_time)
         val ringtoneUri = intent.getStringExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI) ?: AlarmActionReceiver.ALARM_NO_RINGTONE_URI
+        val isVibrationEnabled = intent.getBooleanExtra(
+            AlarmActionReceiver.EXTRA_IS_VIBRATION_ENABLED,
+            AlarmActionReceiver.ALARM_NO_IS_VIBRATION_ENABLED
+        )
 
         // Get the General Settings to determine if we're using 12 or 24 hour time,
         // then display the Notification and play the Alarm sound.
@@ -73,6 +77,11 @@ class AlarmNotificationService : Service() {
                 //  then the ringtone will sound without the notification.
                 // Play Ringtone
                 RingtonePlayerManager.startAlarmSound(applicationContext, ringtoneUri)
+
+                // Start vibration
+                if (isVibrationEnabled) {
+                    VibrationController.startVibration(applicationContext)
+                }
             }
         }
     }
@@ -89,6 +98,9 @@ class AlarmNotificationService : Service() {
 
         // Stop Ringtone
         RingtonePlayerManager.stopAlarmSound()
+
+        // Stop vibration
+        VibrationController.stopVibration(applicationContext)
 
         // Stop Service, which dismisses the Notification
         stopSelf()
