@@ -21,6 +21,7 @@ class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
             putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, alarm.name)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_DATE_TIME, alarm.dateTime.toString())
             putExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI, alarm.ringtoneUriString)
+            putExtra(AlarmActionReceiver.EXTRA_IS_VIBRATION_ENABLED, alarm.isVibrationEnabled)
         }
         val startAlarmPendingIntent = PendingIntent.getBroadcast(
             context,
