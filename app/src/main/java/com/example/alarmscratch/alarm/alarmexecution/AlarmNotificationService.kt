@@ -73,6 +73,9 @@ class AlarmNotificationService : Service() {
                 //  then the ringtone will sound without the notification.
                 // Play Ringtone
                 RingtonePlayerManager.startAlarmSound(applicationContext, ringtoneUri)
+
+                // Start vibration
+                VibrationController.startVibration(applicationContext)
             }
         }
     }
@@ -89,6 +92,9 @@ class AlarmNotificationService : Service() {
 
         // Stop Ringtone
         RingtonePlayerManager.stopAlarmSound()
+
+        // Stop vibration
+        VibrationController.stopVibration(applicationContext)
 
         // Stop Service, which dismisses the Notification
         stopSelf()
