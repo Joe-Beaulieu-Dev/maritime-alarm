@@ -31,13 +31,13 @@ class AlarmDefaultsRepository(private val dataStore: DataStore<Preferences>) {
         // Keys
         private val KEY_RINGTONE_URI = stringPreferencesKey("ringtone_uri")
         private val KEY_IS_VIBRATION_ENABLED = booleanPreferencesKey("is_vibration_enabled")
-        private val KEY_SNOOZE_MINUTES = intPreferencesKey("snooze_minutes")
+        private val KEY_SNOOZE_DURATION = intPreferencesKey("snooze_duration")
 
         // Default values
         private val DEFAULT_RINGTONE_URI =
             RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)?.toString() ?: RingtoneData.NO_RINGTONE_URI
         private const val DEFAULT_IS_VIBRATION_ENABLED = false
-        private const val DEFAULT_SNOOZE_MINUTES = 5
+        private const val DEFAULT_SNOOZE_DURATION = 5
     }
 
     val alarmDefaultsFlow: Flow<AlarmDefaults> = dataStore.data
@@ -47,10 +47,10 @@ class AlarmDefaultsRepository(private val dataStore: DataStore<Preferences>) {
             // Get Preferences
             val ringtoneUri = preferences[KEY_RINGTONE_URI] ?: DEFAULT_RINGTONE_URI
             val isVibrationEnabled = preferences[KEY_IS_VIBRATION_ENABLED] ?: DEFAULT_IS_VIBRATION_ENABLED
-            val snoozeMinutes = preferences[KEY_SNOOZE_MINUTES] ?: DEFAULT_SNOOZE_MINUTES
+            val snoozeDuration = preferences[KEY_SNOOZE_DURATION] ?: DEFAULT_SNOOZE_DURATION
 
             // Return AlarmDefaults
-            AlarmDefaults(ringtoneUri, isVibrationEnabled, snoozeMinutes)
+            AlarmDefaults(ringtoneUri, isVibrationEnabled, snoozeDuration)
         }
 
     suspend fun updateAlarmDefaults(alarmDefaults: AlarmDefaults) {
@@ -58,7 +58,7 @@ class AlarmDefaultsRepository(private val dataStore: DataStore<Preferences>) {
         dataStore.edit { preferences ->
             preferences[KEY_RINGTONE_URI] = alarmDefaults.ringtoneUri
             preferences[KEY_IS_VIBRATION_ENABLED] = alarmDefaults.isVibrationEnabled
-            preferences[KEY_SNOOZE_MINUTES] = alarmDefaults.snoozeMinutes
+            preferences[KEY_SNOOZE_DURATION] = alarmDefaults.snoozeDuration
         }
     }
 }

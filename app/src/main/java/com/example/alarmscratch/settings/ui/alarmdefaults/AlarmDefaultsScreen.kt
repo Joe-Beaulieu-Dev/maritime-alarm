@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Snooze
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -96,6 +97,7 @@ fun AlarmDefaultsScreen(
             ringtoneName = ringtoneName,
             ringtoneUri = alarmDefaults.ringtoneUri,
             isVibrationEnabled = alarmDefaults.isVibrationEnabled,
+            snoozeDuration = alarmDefaults.snoozeDuration,
             saveAlarmDefaults = { coroutineScope.launch { alarmDefaultsViewModel.saveAlarmDefaults() } },
             toggleVibration = alarmDefaultsViewModel::toggleVibration,
             modifier = modifier
@@ -110,6 +112,7 @@ fun AlarmDefaultsScreenContent(
     ringtoneName: String,
     ringtoneUri: String,
     isVibrationEnabled: Boolean,
+    snoozeDuration: Int,
     saveAlarmDefaults: () -> Unit,
     toggleVibration: () -> Unit,
     modifier: Modifier = Modifier
@@ -185,19 +188,25 @@ fun AlarmDefaultsScreenContent(
                 )
             }
 
-            // Alarm Alert Defaults
-            AlarmAlertDefaults(
+            // Alert Defaults
+            AlertDefaults(
                 navigateToRingtonePickerScreen = { navigateToRingtonePickerScreen(ringtoneUri) },
                 selectedRingtone = ringtoneName,
                 isVibrationEnabled = isVibrationEnabled,
                 toggleVibration = toggleVibration
+            )
+
+            // Snooze Defaults
+            SnoozeDefaults(
+                snoozeDuration = snoozeDuration,
+                modifier = Modifier.padding(top = 20.dp)
             )
         }
     }
 }
 
 @Composable
-fun AlarmAlertDefaults(
+fun AlertDefaults(
     navigateToRingtonePickerScreen: () -> Unit,
     selectedRingtone: String,
     isVibrationEnabled: Boolean,
@@ -246,6 +255,37 @@ fun AlarmAlertDefaults(
     }
 }
 
+@Composable
+fun SnoozeDefaults(
+    snoozeDuration: Int,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        // Snooze Icon and Text
+        Row(modifier = Modifier.padding(start = 20.dp)) {
+            Icon(
+                imageVector = Icons.Default.Snooze,
+                contentDescription = null,
+                tint = DarkerBoatSails
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = stringResource(id = R.string.section_snooze),
+                color = DarkerBoatSails,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        // Snooze duration
+        RowSelectionItem(
+            rowOnClick = {},
+            rowLabelResId = R.string.alarm_create_edit_alarm_snooze_duration,
+            choiceComponent = { Text(text = "$snoozeDuration ${stringResource(id = R.string.snooze_minutes)}") }
+        )
+    }
+}
+
 /*
  * Previews
  */
@@ -260,6 +300,7 @@ private fun AlarmDefaultsScreenPreview() {
             ringtoneName = sampleRingtoneData.name,
             ringtoneUri = sampleRingtoneData.fullUriString,
             isVibrationEnabled = true,
+            snoozeDuration = 5,
             saveAlarmDefaults = {},
             toggleVibration = {}
         )
