@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.alarmscratch.core.data.model.RingtoneData
@@ -30,11 +31,13 @@ class AlarmDefaultsRepository(private val dataStore: DataStore<Preferences>) {
         // Keys
         private val KEY_RINGTONE_URI = stringPreferencesKey("ringtone_uri")
         private val KEY_IS_VIBRATION_ENABLED = booleanPreferencesKey("is_vibration_enabled")
+        private val KEY_SNOOZE_MINUTES = intPreferencesKey("snooze_minutes")
 
         // Default values
         private val DEFAULT_RINGTONE_URI =
             RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)?.toString() ?: RingtoneData.NO_RINGTONE_URI
         private const val DEFAULT_IS_VIBRATION_ENABLED = false
+        private const val DEFAULT_SNOOZE_MINUTES = 5
     }
 
     val alarmDefaultsFlow: Flow<AlarmDefaults> = dataStore.data
@@ -44,9 +47,10 @@ class AlarmDefaultsRepository(private val dataStore: DataStore<Preferences>) {
             // Get Preferences
             val ringtoneUri = preferences[KEY_RINGTONE_URI] ?: DEFAULT_RINGTONE_URI
             val isVibrationEnabled = preferences[KEY_IS_VIBRATION_ENABLED] ?: DEFAULT_IS_VIBRATION_ENABLED
+            val snoozeMinutes = preferences[KEY_SNOOZE_MINUTES] ?: DEFAULT_SNOOZE_MINUTES
 
             // Return AlarmDefaults
-            AlarmDefaults(ringtoneUri, isVibrationEnabled)
+            AlarmDefaults(ringtoneUri, isVibrationEnabled, snoozeMinutes)
         }
 
     suspend fun updateAlarmDefaults(alarmDefaults: AlarmDefaults) {
@@ -54,6 +58,7 @@ class AlarmDefaultsRepository(private val dataStore: DataStore<Preferences>) {
         dataStore.edit { preferences ->
             preferences[KEY_RINGTONE_URI] = alarmDefaults.ringtoneUri
             preferences[KEY_IS_VIBRATION_ENABLED] = alarmDefaults.isVibrationEnabled
+            preferences[KEY_SNOOZE_MINUTES] = alarmDefaults.snoozeMinutes
         }
     }
 }
