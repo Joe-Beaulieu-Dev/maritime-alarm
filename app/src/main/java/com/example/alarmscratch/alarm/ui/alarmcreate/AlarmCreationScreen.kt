@@ -86,7 +86,9 @@ private fun AlarmCreationScreenPreview() {
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
                 weeklyRepeater = WeeklyRepeater(tueWedThu),
                 ringtoneUriString = sampleRingtoneData.fullUriString,
-                isVibrationEnabled = true
+                isVibrationEnabled = true,
+                snoozeCount = 0,
+                snoozeDuration = 10
             ),
             alarmRingtoneName = sampleRingtoneData.name,
             timeDisplay = TimeDisplay.TwelveHour,
