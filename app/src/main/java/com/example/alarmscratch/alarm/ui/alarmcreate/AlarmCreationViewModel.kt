@@ -73,7 +73,9 @@ class AlarmCreationViewModel(
                             Alarm(
                                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
                                 ringtoneUriString = alarmDefaults.ringtoneUri,
-                                isVibrationEnabled = alarmDefaults.isVibrationEnabled
+                                isVibrationEnabled = alarmDefaults.isVibrationEnabled,
+                                snoozeCount = 0,
+                                snoozeDuration = alarmDefaults.snoozeDuration
                             )
                         )
                     }
