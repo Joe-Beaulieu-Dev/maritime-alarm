@@ -37,7 +37,7 @@ class AlarmDefaultsRepository(private val dataStore: DataStore<Preferences>) {
         private val DEFAULT_RINGTONE_URI =
             RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)?.toString() ?: RingtoneData.NO_RINGTONE_URI
         private const val DEFAULT_IS_VIBRATION_ENABLED = false
-        private const val DEFAULT_SNOOZE_DURATION = 5
+        private const val DEFAULT_SNOOZE_DURATION = 10
     }
 
     val alarmDefaultsFlow: Flow<AlarmDefaults> = dataStore.data
