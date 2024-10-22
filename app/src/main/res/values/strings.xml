@@ -43,6 +43,9 @@
     <string name="section_alert">Alert</string>
     <string name="alarm_create_edit_alarm_sound_label">Sound</string>
     <string name="alarm_create_edit_alarm_vibration_label">Vibration</string>
+    <string name="section_snooze">Snooze</string>
+    <string name="alarm_create_edit_alarm_snooze_duration">Duration</string>
+    <string name="snooze_minutes">minutes</string>
     <string name="validation_alarm_in_past">Alarms cannot be set in the past</string>
     <!-- AlarmTimePickerDialog -->
     <string name="select_time">Select time</string>
@@ -85,6 +88,13 @@
     <string name="alarm_defaults_important_notice_header">Important</string>
     <string name="alarm_defaults_important_notice_body">These are the default settings for newly
         created Alarms. Modifying these settings will not affect previously created Alarms.</string>
+
+    <!--
+        **************************
+        ** SnoozeDurationDialog **
+        **************************
+    -->
+    <string name="snooze_duration">Snooze Duration</string>
 
     <!--
         ************************

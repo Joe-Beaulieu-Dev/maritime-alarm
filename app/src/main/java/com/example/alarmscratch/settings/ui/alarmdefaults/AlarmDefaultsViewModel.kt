@@ -71,4 +71,11 @@ class AlarmDefaultsViewModel(private val alarmDefaultsRepository: AlarmDefaultsR
             )
         }
     }
+
+    fun updateSnoozeDuration(snoozeDuration: Int) {
+        if (_modifiedAlarmDefaults.value is AlarmDefaultsState.Success) {
+            val alarmDefaults = (_modifiedAlarmDefaults.value as AlarmDefaultsState.Success).alarmDefaults
+            _modifiedAlarmDefaults.value = AlarmDefaultsState.Success(alarmDefaults.copy(snoozeDuration = snoozeDuration))
+        }
+    }
 }
