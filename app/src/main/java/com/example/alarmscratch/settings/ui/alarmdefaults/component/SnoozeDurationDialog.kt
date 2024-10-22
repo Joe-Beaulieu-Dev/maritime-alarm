@@ -39,7 +39,7 @@ import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
 fun SnoozeDurationDialog(
     initialSnoozeDuration: Int,
     onCancel: () -> Unit,
-    onConfirm: () -> Unit
+    onConfirm: (Int) -> Unit
 ) {
     // State
     var selectedSnoozeDuration by rememberSaveable { mutableIntStateOf(initialSnoozeDuration) }
@@ -85,7 +85,7 @@ fun SnoozeDurationDialog(
                     }
 
                     // OK Button
-                    TextButton(onClick = {}) {
+                    TextButton(onClick = { onConfirm(selectedSnoozeDuration) }) {
                         Text(text = stringResource(id = R.string.ok), color = BoatSails)
                     }
                 }

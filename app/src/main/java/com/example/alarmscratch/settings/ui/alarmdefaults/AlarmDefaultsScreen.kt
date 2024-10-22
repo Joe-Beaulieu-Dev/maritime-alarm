@@ -33,7 +33,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -61,6 +64,7 @@ import com.example.alarmscratch.core.ui.theme.WayDarkerBoatSails
 import com.example.alarmscratch.core.util.StatusBarUtil
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsState
 import com.example.alarmscratch.settings.extension.getRingtone
+import com.example.alarmscratch.settings.ui.alarmdefaults.component.SnoozeDurationDialog
 import kotlinx.coroutines.launch
 
 @Composable
@@ -100,6 +104,7 @@ fun AlarmDefaultsScreen(
             snoozeDuration = alarmDefaults.snoozeDuration,
             saveAlarmDefaults = { coroutineScope.launch { alarmDefaultsViewModel.saveAlarmDefaults() } },
             toggleVibration = alarmDefaultsViewModel::toggleVibration,
+            updateSnoozeDuration = { alarmDefaultsViewModel.updateSnoozeDuration(it) },
             modifier = modifier
         )
     }
@@ -115,8 +120,13 @@ fun AlarmDefaultsScreenContent(
     snoozeDuration: Int,
     saveAlarmDefaults: () -> Unit,
     toggleVibration: () -> Unit,
+    updateSnoozeDuration: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // State
+    var showSnoozeDurationDialog by rememberSaveable { mutableStateOf(false) }
+    val toggleSnoozeDurationDialog: () -> Unit = { showSnoozeDurationDialog = !showSnoozeDurationDialog }
+
     Scaffold(
         topBar = {
             CustomTopAppBar(
@@ -199,7 +209,20 @@ fun AlarmDefaultsScreenContent(
             // Snooze Defaults
             SnoozeDefaults(
                 snoozeDuration = snoozeDuration,
+                toggleSnoozeDurationDialog = toggleSnoozeDurationDialog,
                 modifier = Modifier.padding(top = 20.dp)
+            )
+        }
+
+        // Snooze Duration Dialog
+        if (showSnoozeDurationDialog) {
+            SnoozeDurationDialog(
+                initialSnoozeDuration = snoozeDuration,
+                onCancel = toggleSnoozeDurationDialog,
+                onConfirm = { newSnoozeDuration ->
+                    updateSnoozeDuration(newSnoozeDuration)
+                    toggleSnoozeDurationDialog()
+                }
             )
         }
     }
@@ -258,6 +281,7 @@ fun AlertDefaults(
 @Composable
 fun SnoozeDefaults(
     snoozeDuration: Int,
+    toggleSnoozeDurationDialog: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -279,7 +303,7 @@ fun SnoozeDefaults(
 
         // Snooze duration
         RowSelectionItem(
-            rowOnClick = {},
+            rowOnClick = toggleSnoozeDurationDialog,
             rowLabelResId = R.string.alarm_create_edit_alarm_snooze_duration,
             choiceComponent = { Text(text = "$snoozeDuration ${stringResource(id = R.string.snooze_minutes)}") }
         )
@@ -302,7 +326,8 @@ private fun AlarmDefaultsScreenPreview() {
             isVibrationEnabled = true,
             snoozeDuration = 5,
             saveAlarmDefaults = {},
-            toggleVibration = {}
+            toggleVibration = {},
+            updateSnoozeDuration = {}
         )
     }
 }
