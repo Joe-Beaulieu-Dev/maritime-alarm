@@ -1,14 +1,9 @@
 package com.example.alarmscratch.settings.ui.alarmdefaults.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,11 +17,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,7 +28,6 @@ import com.example.alarmscratch.R
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
-import com.example.alarmscratch.core.ui.theme.VolcanicRock
 
 // TODO: LocalRippleConfiguration and RippleConfiguration are Experimental APIs. Prior to these you would use
 //  LocalRippleTheme and RippleTheme. However, Google deprecated LocalRippleTheme and RippleTheme with
@@ -51,10 +42,10 @@ fun SnoozeDurationDialog(
     onConfirm: () -> Unit
 ) {
     // State
-    var snoozeDuration by rememberSaveable { mutableIntStateOf(initialSnoozeDuration) }
+    var selectedSnoozeDuration by rememberSaveable { mutableIntStateOf(initialSnoozeDuration) }
 
     // Actions
-    val updateSnoozeDuration: (Int) -> Unit = { snoozeDuration = it }
+    val updateSnoozeDuration: (Int) -> Unit = { selectedSnoozeDuration = it }
 
     Dialog(
         onDismissRequest = onCancel,
@@ -74,28 +65,11 @@ fun SnoozeDurationDialog(
                 modifier = Modifier.padding(start = 14.dp, top = 14.dp, end = 14.dp, bottom = 20.dp)
             )
 
-            // Snooze Duration Selection
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .width(76.dp)
-                    .height(76.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(color = VolcanicRock)
-            ) {
-                Text(
-                    text = "$snoozeDuration",
-                    fontSize = 38.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-
             // Snooze Duration Slider
             SnoozeDurationSlider(
-                initialSnoozeDuration = snoozeDuration,
+                selectedSnoozeDuration = selectedSnoozeDuration,
                 updateSnoozeDuration = updateSnoozeDuration,
-                modifier = Modifier.padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 18.dp)
+                modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 18.dp)
             )
 
             // Cancel and OK Buttons
