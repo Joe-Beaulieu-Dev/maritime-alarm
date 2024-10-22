@@ -9,8 +9,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,10 +26,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
+import com.example.alarmscratch.core.ui.theme.BoatHull
 import com.example.alarmscratch.core.ui.theme.VolcanicRock
 import kotlin.math.floor
 import kotlin.math.round
 
+// Experimental OptIn for Slider
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SnoozeDurationSlider(
     selectedSnoozeDuration: Int,
@@ -67,14 +73,19 @@ fun SnoozeDurationSlider(
             // Snooze Duration Slider
             Slider(
                 value = selectedSnoozeDuration.toFloat(),
-                // Sometimes when clicking on the Slider, rather than sliding, the lambda's Float param will be fractional
-                // and less than what it should be according the incrementation, even though it's visually clipping to portions
-                // of the Slider that should provide a discrete Float value. Therefore, if your Slider is set up in a way where
-                // only discrete values should be possible, and you want to work with Ints instead of Floats, you need to round
-                // to the nearest whole number before converting to an Int to ensure that you're getting the correct Int.
+                // Due to what I can only assume is an internal floating-point arithmetic issue, the Slider does not always
+                // provide discrete values for the Float param in the onValueChange() lambda when it should, given my configuration.
+                // Due to this, the value must be rounded before converting it to an Int.
                 onValueChange = { snoozeDuration -> updateSnoozeDuration(round(snoozeDuration).toInt()) },
                 valueRange = minDuration..maxDuration,
                 steps = 4,
+                thumb = {
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .background(color = BoatHull, shape = CircleShape)
+                    )
+                },
                 modifier = Modifier.weight(1f)
             )
 
