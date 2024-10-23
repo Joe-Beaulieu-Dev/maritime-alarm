@@ -456,7 +456,7 @@ fun SnoozeSettings(
             )
         }
 
-        // Snooze duration
+        // Snooze Duration
         RowSelectionItem(
             rowOnClick = toggleSnoozeDurationDialog,
             rowLabelResId = R.string.alarm_create_edit_alarm_snooze_duration,

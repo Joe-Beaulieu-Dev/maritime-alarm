@@ -104,7 +104,7 @@ fun AlarmDefaultsScreen(
             snoozeDuration = alarmDefaults.snoozeDuration,
             saveAlarmDefaults = { coroutineScope.launch { alarmDefaultsViewModel.saveAlarmDefaults() } },
             toggleVibration = alarmDefaultsViewModel::toggleVibration,
-            updateSnoozeDuration = { alarmDefaultsViewModel.updateSnoozeDuration(it) },
+            updateSnoozeDuration = alarmDefaultsViewModel::updateSnoozeDuration,
             modifier = modifier
         )
     }
@@ -123,10 +123,6 @@ fun AlarmDefaultsScreenContent(
     updateSnoozeDuration: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // State
-    var showSnoozeDurationDialog by rememberSaveable { mutableStateOf(false) }
-    val toggleSnoozeDurationDialog: () -> Unit = { showSnoozeDurationDialog = !showSnoozeDurationDialog }
-
     Scaffold(
         topBar = {
             CustomTopAppBar(
@@ -209,20 +205,8 @@ fun AlarmDefaultsScreenContent(
             // Snooze Defaults
             SnoozeDefaults(
                 snoozeDuration = snoozeDuration,
-                toggleSnoozeDurationDialog = toggleSnoozeDurationDialog,
+                updateSnoozeDuration = updateSnoozeDuration,
                 modifier = Modifier.padding(top = 20.dp)
-            )
-        }
-
-        // Snooze Duration Dialog
-        if (showSnoozeDurationDialog) {
-            SnoozeDurationDialog(
-                initialSnoozeDuration = snoozeDuration,
-                onCancel = toggleSnoozeDurationDialog,
-                onConfirm = { newSnoozeDuration ->
-                    updateSnoozeDuration(newSnoozeDuration)
-                    toggleSnoozeDurationDialog()
-                }
             )
         }
     }
@@ -281,9 +265,13 @@ fun AlertDefaults(
 @Composable
 fun SnoozeDefaults(
     snoozeDuration: Int,
-    toggleSnoozeDurationDialog: () -> Unit,
+    updateSnoozeDuration: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // State
+    var showSnoozeDurationDialog by rememberSaveable { mutableStateOf(false) }
+    val toggleSnoozeDurationDialog: () -> Unit = { showSnoozeDurationDialog = !showSnoozeDurationDialog }
+
     Column(modifier = modifier) {
         // Snooze Icon and Text
         Row(modifier = Modifier.padding(start = 20.dp)) {
@@ -301,11 +289,23 @@ fun SnoozeDefaults(
             )
         }
 
-        // Snooze duration
+        // Snooze Duration
         RowSelectionItem(
             rowOnClick = toggleSnoozeDurationDialog,
             rowLabelResId = R.string.alarm_create_edit_alarm_snooze_duration,
             choiceComponent = { Text(text = "$snoozeDuration ${stringResource(id = R.string.snooze_minutes)}") }
+        )
+    }
+
+    // Snooze Duration Dialog
+    if (showSnoozeDurationDialog) {
+        SnoozeDurationDialog(
+            initialSnoozeDuration = snoozeDuration,
+            onCancel = toggleSnoozeDurationDialog,
+            onConfirm = { newSnoozeDuration ->
+                updateSnoozeDuration(newSnoozeDuration)
+                toggleSnoozeDurationDialog()
+            }
         )
     }
 }
@@ -324,7 +324,7 @@ private fun AlarmDefaultsScreenPreview() {
             ringtoneName = sampleRingtoneData.name,
             ringtoneUri = sampleRingtoneData.fullUriString,
             isVibrationEnabled = true,
-            snoozeDuration = 5,
+            snoozeDuration = 10,
             saveAlarmDefaults = {},
             toggleVibration = {},
             updateSnoozeDuration = {}
