@@ -23,6 +23,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Snooze
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -80,6 +81,7 @@ import com.example.alarmscratch.core.ui.theme.VolcanicRock
 import com.example.alarmscratch.core.ui.theme.WayDarkerBoatSails
 import com.example.alarmscratch.core.util.StatusBarUtil
 import com.example.alarmscratch.settings.data.model.TimeDisplay
+import com.example.alarmscratch.settings.ui.alarmdefaults.component.SnoozeDurationDialog
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -100,6 +102,7 @@ fun AlarmCreateEditScreen(
     addDay: (WeeklyRepeater.Day) -> Unit,
     removeDay: (WeeklyRepeater.Day) -> Unit,
     toggleVibration: () -> Unit,
+    updateSnoozeDuration: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Configure Status Bar
@@ -193,13 +196,20 @@ fun AlarmCreateEditScreen(
                 )
             }
 
-            // Alarm Alert Settings
-            AlarmAlertSettings(
+            // Alert Settings
+            AlertSettings(
                 navigateToRingtonePickerScreen = { navigateToRingtonePickerScreen(alarm.ringtoneUriString) },
                 selectedRingtone = alarmRingtoneName,
                 isVibrationEnabled = alarm.isVibrationEnabled,
                 toggleVibration = toggleVibration,
                 modifier = Modifier.fillMaxWidth()
+            )
+
+            // Snooze Settings
+            SnoozeSettings(
+                snoozeDuration = alarm.snoozeDuration,
+                updateSnoozeDuration = updateSnoozeDuration,
+                modifier = Modifier.padding(top = 20.dp)
             )
         }
     }
@@ -370,7 +380,7 @@ fun DayOfWeekButton(
 }
 
 @Composable
-fun AlarmAlertSettings(
+fun AlertSettings(
     navigateToRingtonePickerScreen: () -> Unit,
     selectedRingtone: String,
     isVibrationEnabled: Boolean,
@@ -419,6 +429,54 @@ fun AlarmAlertSettings(
     }
 }
 
+@Composable
+fun SnoozeSettings(
+    snoozeDuration: Int,
+    updateSnoozeDuration: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // State
+    var showSnoozeDurationDialog by rememberSaveable { mutableStateOf(false) }
+    val toggleSnoozeDurationDialog: () -> Unit = { showSnoozeDurationDialog = !showSnoozeDurationDialog }
+
+    Column(modifier = modifier) {
+        // Snooze Icon and Text
+        Row(modifier = Modifier.padding(start = 20.dp)) {
+            Icon(
+                imageVector = Icons.Default.Snooze,
+                contentDescription = null,
+                tint = DarkerBoatSails
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = stringResource(id = R.string.section_snooze),
+                color = DarkerBoatSails,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        // Snooze Duration
+        RowSelectionItem(
+            rowOnClick = toggleSnoozeDurationDialog,
+            rowLabelResId = R.string.alarm_create_edit_alarm_snooze_duration,
+            choiceComponent = { Text(text = "$snoozeDuration ${stringResource(id = R.string.snooze_minutes)}") }
+        )
+    }
+
+    // Snooze Duration Dialog
+    if (showSnoozeDurationDialog) {
+        SnoozeDurationDialog(
+            initialSnoozeDuration = snoozeDuration,
+            onCancel = toggleSnoozeDurationDialog,
+            onConfirm = { newSnoozeDuration ->
+                updateSnoozeDuration(newSnoozeDuration)
+                toggleSnoozeDurationDialog()
+            }
+        )
+    }
+}
+
 /*
  * Previews
  */
@@ -441,7 +499,8 @@ private fun AlarmCreateEditScreen12HourPreview() {
             updateTime = { _, _ -> },
             addDay = {},
             removeDay = {},
-            toggleVibration = {}
+            toggleVibration = {},
+            updateSnoozeDuration = {}
         )
     }
 }
@@ -464,7 +523,8 @@ private fun AlarmCreateEditScreen24HourPreview() {
             updateTime = { _, _ -> },
             addDay = {},
             removeDay = {},
-            toggleVibration = {}
+            toggleVibration = {},
+            updateSnoozeDuration = {}
         )
     }
 }

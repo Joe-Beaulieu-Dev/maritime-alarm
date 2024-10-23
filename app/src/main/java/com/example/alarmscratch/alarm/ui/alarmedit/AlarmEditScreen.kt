@@ -65,6 +65,7 @@ fun AlarmEditScreen(
             addDay = alarmEditViewModel::addDay,
             removeDay = alarmEditViewModel::removeDay,
             toggleVibration = alarmEditViewModel::toggleVibration,
+            updateSnoozeDuration = alarmEditViewModel::updateSnoozeDuration,
             modifier = modifier
         )
     }
@@ -100,7 +101,8 @@ private fun AlarmEditScreenPreview() {
             updateTime = { _, _ -> },
             addDay = {},
             removeDay = {},
-            toggleVibration = {}
+            toggleVibration = {},
+            updateSnoozeDuration = {}
         )
     }
 }

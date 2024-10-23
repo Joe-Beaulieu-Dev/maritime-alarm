@@ -65,6 +65,7 @@ fun AlarmCreationScreen(
             addDay = alarmCreationViewModel::addDay,
             removeDay = alarmCreationViewModel::removeDay,
             toggleVibration = alarmCreationViewModel::toggleVibration,
+            updateSnoozeDuration = alarmCreationViewModel::updateSnoozeDuration,
             modifier = modifier
         )
     }
@@ -99,7 +100,8 @@ private fun AlarmCreationScreenPreview() {
             updateTime = { _, _ -> },
             addDay = {},
             removeDay = {},
-            toggleVibration = {}
+            toggleVibration = {},
+            updateSnoozeDuration = {}
         )
     }
 }
