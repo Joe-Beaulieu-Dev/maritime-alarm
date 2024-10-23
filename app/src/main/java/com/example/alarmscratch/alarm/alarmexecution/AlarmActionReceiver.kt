@@ -17,6 +17,7 @@ class AlarmActionReceiver : BroadcastReceiver() {
     companion object {
         // Actions
         const val ACTION_START_ALARM = "action_start_alarm"
+        const val ACTION_SNOOZE_ALARM = "action_snooze_alarm"
         const val ACTION_DISMISS_ALARM = "action_dismiss_alarm"
 
         // Extras
@@ -39,6 +40,8 @@ class AlarmActionReceiver : BroadcastReceiver() {
             when (intent.action) {
                 ACTION_START_ALARM ->
                     startAlarm(context, intent)
+                ACTION_SNOOZE_ALARM ->
+                    Unit
                 ACTION_DISMISS_ALARM ->
                     dismissAlarm(context, intent)
             }

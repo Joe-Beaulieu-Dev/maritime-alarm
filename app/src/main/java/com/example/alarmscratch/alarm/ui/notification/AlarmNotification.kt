@@ -41,10 +41,33 @@ object AlarmNotification {
             .setContentTitle(alarmName)
             .setContentText(notificationDateTimeString)
             .setCategory(Notification.CATEGORY_ALARM)
-            .addAction(getDismissAlarmAction(context, alarmId))
+            .setActions(
+                getSnoozeAlarmAction(context, alarmId),
+                getDismissAlarmAction(context, alarmId)
+            )
             .setDeleteIntent(getClearNotificationPendingIntent(context, alarmId))
             .setFullScreenIntent(getAlertPendingIntent(context, alarmId, alarmName, alarmDateTime, timeDisplay), true)
             .build()
+    }
+
+    private fun getSnoozeAlarmAction(context: Context, alarmId: Int): Notification.Action {
+        val snoozeAlarmIntent = Intent(context, AlarmActionReceiver::class.java).apply {
+            action = AlarmActionReceiver.ACTION_SNOOZE_ALARM
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmId)
+        }
+
+        val snoozeAlarmPendingIntent = PendingIntent.getBroadcast(
+            context,
+            alarmId,
+            snoozeAlarmIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        return Notification.Action.Builder(
+            Icon.createWithResource(context, R.drawable.ic_alarm_snooze_24dp),
+            context.getString(R.string.snooze_alarm),
+            snoozeAlarmPendingIntent
+        ).build()
     }
 
     private fun getDismissAlarmAction(context: Context, alarmId: Int): Notification.Action {
