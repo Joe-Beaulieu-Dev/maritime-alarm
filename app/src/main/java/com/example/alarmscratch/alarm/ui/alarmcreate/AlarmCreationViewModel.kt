@@ -189,6 +189,13 @@ class AlarmCreationViewModel(
         }
     }
 
+    fun updateSnoozeDuration(snoozeDuration: Int) {
+        if (_newAlarm.value is AlarmState.Success) {
+            val alarm = (_newAlarm.value as AlarmState.Success).alarm
+            _newAlarm.value = AlarmState.Success(alarm.copy(snoozeDuration = snoozeDuration))
+        }
+    }
+
     fun validateAlarm(): Boolean =
         if (_newAlarm.value is AlarmState.Success) {
             val alarm = (_newAlarm.value as AlarmState.Success).alarm
