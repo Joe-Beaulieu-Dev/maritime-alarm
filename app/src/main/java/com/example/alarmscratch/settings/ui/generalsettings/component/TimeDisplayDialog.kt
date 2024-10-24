@@ -29,7 +29,7 @@ import com.example.alarmscratch.core.ui.theme.LightVolcanicRock
 import com.example.alarmscratch.settings.data.model.TimeDisplay
 
 @Composable
-fun TimeDisplaySelectionDialog(
+fun TimeDisplayDialog(
     initialTimeDisplay: TimeDisplay,
     onCancel: () -> Unit,
     onConfirm: (TimeDisplay) -> Unit
@@ -50,7 +50,7 @@ fun TimeDisplaySelectionDialog(
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 18.dp, top = 8.dp)
+                .padding(top = 8.dp)
                 .selectableGroup()
         ) {
             items(items = TimeDisplay.entries) { timeDisplay ->
@@ -71,7 +71,8 @@ fun TimeDisplaySelectionDialog(
                         colors = RadioButtonDefaults.colors(
                             selectedColor = DarkerBoatSails,
                             unselectedColor = LightVolcanicRock
-                        )
+                        ),
+                        modifier = Modifier.padding(start = 18.dp)
                     )
                     Text(text = timeDisplay.value, modifier = Modifier.padding(start = 12.dp))
                 }
@@ -86,9 +87,9 @@ fun TimeDisplaySelectionDialog(
 
 @Preview
 @Composable
-private fun TimeDisplaySelectionDialogPreview() {
+private fun TimeDisplayDialogPreview() {
     AlarmScratchTheme {
-        TimeDisplaySelectionDialog(
+        TimeDisplayDialog(
             initialTimeDisplay = TimeDisplay.TwelveHour,
             onCancel = {},
             onConfirm = {}

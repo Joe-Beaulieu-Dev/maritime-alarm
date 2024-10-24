@@ -46,7 +46,7 @@ import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
 import com.example.alarmscratch.core.util.StatusBarUtil
 import com.example.alarmscratch.settings.data.model.TimeDisplay
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
-import com.example.alarmscratch.settings.ui.generalsettings.component.TimeDisplaySelectionDialog
+import com.example.alarmscratch.settings.ui.generalsettings.component.TimeDisplayDialog
 import kotlinx.coroutines.launch
 
 @Composable
@@ -84,8 +84,8 @@ fun GeneralSettingsScreenContent(
     modifier: Modifier = Modifier
 ) {
     // State
-    var showTimeDisplaySelectionDialog by rememberSaveable { mutableStateOf(false) }
-    val toggleTimeDisplaySelectionDialog: () -> Unit = { showTimeDisplaySelectionDialog = !showTimeDisplaySelectionDialog }
+    var showTimeDisplayDialog by rememberSaveable { mutableStateOf(false) }
+    val toggleTimeDisplayDialog: () -> Unit = { showTimeDisplayDialog = !showTimeDisplayDialog }
 
     Scaffold(
         topBar = {
@@ -137,20 +137,20 @@ fun GeneralSettingsScreenContent(
 
             // Time Display selection
             RowSelectionItem(
-                rowOnClick = toggleTimeDisplaySelectionDialog,
+                rowOnClick = toggleTimeDisplayDialog,
                 rowLabelResId = R.string.general_settings_time_display,
                 choiceComponent = { Text(text = timeDisplay.value) }
             )
         }
 
-        // Time Display Selection Dialog
-        if (showTimeDisplaySelectionDialog) {
-            TimeDisplaySelectionDialog(
+        // Time Display Dialog
+        if (showTimeDisplayDialog) {
+            TimeDisplayDialog(
                 initialTimeDisplay = timeDisplay,
-                onCancel = toggleTimeDisplaySelectionDialog,
+                onCancel = toggleTimeDisplayDialog,
                 onConfirm = { newTimeDisplay ->
                     updateTimeDisplay(newTimeDisplay)
-                    toggleTimeDisplaySelectionDialog()
+                    toggleTimeDisplayDialog()
                 }
             )
         }
