@@ -89,7 +89,6 @@ private fun AlarmEditScreenPreview() {
                 weeklyRepeater = WeeklyRepeater(tueWedThu),
                 ringtoneUriString = sampleRingtoneData.fullUriString,
                 isVibrationEnabled = true,
-                snoozeCount = 0,
                 snoozeDuration = 10
             ),
             alarmRingtoneName = sampleRingtoneData.name,

@@ -16,6 +16,6 @@ data class Alarm(
     val weeklyRepeater: WeeklyRepeater = WeeklyRepeater(),
     val ringtoneUriString: String,
     val isVibrationEnabled: Boolean = false,
-    val snoozeCount: Int,
+    val snoozeDateTime: LocalDateTime? = null,
     val snoozeDuration: Int
 )

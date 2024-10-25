@@ -19,7 +19,6 @@ val repeatingAlarm =
         weeklyRepeater = WeeklyRepeater(encodedRepeatingDays = tueWedThu),
         ringtoneUriString = sampleRingtoneUriString,
         isVibrationEnabled = true,
-        snoozeCount = 0,
         snoozeDuration = 5
     )
 
@@ -31,7 +30,6 @@ val todayAlarm =
         weeklyRepeater = WeeklyRepeater(),
         ringtoneUriString = sampleRingtoneUriString,
         isVibrationEnabled = false,
-        snoozeCount = 0,
         snoozeDuration = 10
     )
 
@@ -43,7 +41,6 @@ val tomorrowAlarm =
         weeklyRepeater = WeeklyRepeater(),
         ringtoneUriString = sampleRingtoneUriString,
         isVibrationEnabled = true,
-        snoozeCount = 0,
         snoozeDuration = 15
     )
 
@@ -56,7 +53,6 @@ val calendarAlarm =
         weeklyRepeater = WeeklyRepeater(),
         ringtoneUriString = sampleRingtoneUriString,
         isVibrationEnabled = false,
-        snoozeCount = 0,
         snoozeDuration = 20
     )
 
@@ -69,7 +65,6 @@ val consistentFutureAlarm: Alarm =
         weeklyRepeater = WeeklyRepeater(),
         ringtoneUriString = sampleRingtoneUriString,
         isVibrationEnabled = true,
-        snoozeCount = 0,
         snoozeDuration = 25
     )
 
