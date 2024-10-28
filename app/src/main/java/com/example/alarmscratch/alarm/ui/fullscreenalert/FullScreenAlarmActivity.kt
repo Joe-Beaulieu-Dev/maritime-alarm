@@ -38,8 +38,7 @@ class FullScreenAlarmActivity : ComponentActivity() {
         val alarmId = intent.getIntExtra(AlarmActionReceiver.EXTRA_ALARM_ID, AlarmActionReceiver.ALARM_NO_ID)
         val alarmName = intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_NAME) ?: getString(R.string.default_alarm_name)
         val alarmDateTime = try {
-            val dateTimeString = intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_DATE_TIME)
-            LocalDateTime.parse(dateTimeString)
+            LocalDateTime.parse(intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME))
         } catch (e: Exception) {
             null
         }

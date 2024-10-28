@@ -26,7 +26,8 @@ class BootCompletedReceiver : BroadcastReceiver() {
                     alarmList
                         .filter { it.enabled && !it.dateTime.isBefore(LocalDateTimeUtil.nowTruncated()) }
                         .forEach { alarm ->
-                            alarmScheduler.scheduleAlarm(alarm)
+                            // TODO: Account for Snoozed Alarms
+                            alarmScheduler.scheduleInitialAlarm(alarm)
                         }
                 }
             }

@@ -130,7 +130,7 @@ class AlarmCreationViewModel(
         alarmRepository.getAlarm(alarmId)
 
     private fun scheduleAlarm(context: Context, alarm: Alarm) {
-        AlarmSchedulerImpl(context).scheduleAlarm(alarm)
+        AlarmSchedulerImpl(context).scheduleInitialAlarm(alarm)
     }
 
     fun updateName(name: String) {

@@ -8,6 +8,7 @@ import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmActivity
 import com.example.alarmscratch.alarm.ui.notification.AlarmNotification
 import com.example.alarmscratch.core.ringtone.RingtonePlayerManager
 import com.example.alarmscratch.settings.data.model.GeneralSettings
+import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsRepository
 import com.example.alarmscratch.settings.data.repository.generalSettingsDataStore
 import kotlinx.coroutines.CoroutineScope
@@ -38,19 +39,25 @@ class AlarmNotificationService : Service() {
     }
 
     private fun displayAlarmNotification(intent: Intent) {
+        // Parse Intent for Alarm data
         val alarmId = intent.getIntExtra(AlarmActionReceiver.EXTRA_ALARM_ID, AlarmActionReceiver.ALARM_NO_ID)
         val alarmName = intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_NAME) ?: getString(R.string.default_alarm_name)
-        val alarmDateTime = intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_DATE_TIME) ?: getString(R.string.default_alarm_time)
+        val alarmExecutionDateTime =
+            intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME)
+                ?: getString(R.string.default_alarm_time)
         val ringtoneUri = intent.getStringExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI) ?: AlarmActionReceiver.ALARM_NO_RINGTONE_URI
         val isVibrationEnabled = intent.getBooleanExtra(
             AlarmActionReceiver.EXTRA_IS_VIBRATION_ENABLED,
             AlarmActionReceiver.ALARM_NO_IS_VIBRATION_ENABLED
         )
+        val snoozeDuration = intent.getIntExtra(
+            AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION,
+            AlarmDefaultsRepository.DEFAULT_SNOOZE_DURATION
+        )
 
-        // Get the General Settings to determine if we're using 12 or 24 hour time,
-        // then display the Notification and play the Alarm sound.
+        // Get General Settings, Launch Notification, Play Ringtone, Vibrate
         CoroutineScope(Dispatchers.IO).launch {
-            // Get the General Settings
+            // Get General Settings
             val generalSettingsRepository = GeneralSettingsRepository(applicationContext.generalSettingsDataStore)
             val generalSettings = try {
                 async { generalSettingsRepository.generalSettingsFlow }.await().first()
@@ -58,6 +65,7 @@ class AlarmNotificationService : Service() {
                 // Flow was empty. Return GeneralSettings with defaults.
                 GeneralSettings(GeneralSettingsRepository.DEFAULT_TIME_DISPLAY)
             }
+
             // Switch back to Main Thread for UI related work
             withContext(Dispatchers.Main) {
                 // Create Notification
@@ -66,7 +74,8 @@ class AlarmNotificationService : Service() {
                         applicationContext,
                         alarmId,
                         alarmName,
-                        alarmDateTime,
+                        alarmExecutionDateTime,
+                        snoozeDuration,
                         generalSettings.timeDisplay
                     )
 
@@ -78,7 +87,7 @@ class AlarmNotificationService : Service() {
                 // Play Ringtone
                 RingtonePlayerManager.startAlarmSound(applicationContext, ringtoneUri)
 
-                // Start vibration
+                // Start Vibration
                 if (isVibrationEnabled) {
                     VibrationController.startVibration(applicationContext)
                 }
@@ -99,7 +108,7 @@ class AlarmNotificationService : Service() {
         // Stop Ringtone
         RingtonePlayerManager.stopAlarmSound()
 
-        // Stop vibration
+        // Stop Vibration
         VibrationController.stopVibration(applicationContext)
 
         // Stop Service, which dismisses the Notification

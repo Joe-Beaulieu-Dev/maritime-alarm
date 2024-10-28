@@ -5,35 +5,68 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.example.alarmscratch.alarm.data.model.Alarm
-import java.time.ZoneId
+import com.example.alarmscratch.core.extension.LocalDateTimeUtil
+import com.example.alarmscratch.core.extension.zonedEpochMillis
+import java.time.LocalDateTime
 
 class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
 
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
-    override fun scheduleAlarm(alarm: Alarm) {
-        // Create PendingIntent to start Alarm
-        val startAlarmIntent = Intent(context, AlarmActionReceiver::class.java).apply {
-            // Action
-            action = AlarmActionReceiver.ACTION_START_ALARM
-            // Extras
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarm.id)
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, alarm.name)
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_DATE_TIME, alarm.dateTime.toString())
-            putExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI, alarm.ringtoneUriString)
-            putExtra(AlarmActionReceiver.EXTRA_IS_VIBRATION_ENABLED, alarm.isVibrationEnabled)
-        }
-        val startAlarmPendingIntent = PendingIntent.getBroadcast(
-            context,
+    override fun scheduleInitialAlarm(alarm: Alarm) {
+        scheduleAlarm(
             alarm.id,
-            startAlarmIntent,
+            alarm.name,
+            alarm.dateTime,
+            alarm.ringtoneUriString,
+            alarm.isVibrationEnabled,
+            alarm.snoozeDuration
+        )
+    }
+
+    override fun scheduleSnoozedAlarm(alarm: Alarm) {
+        scheduleAlarm(
+            alarm.id,
+            alarm.name,
+            alarm.snoozeDateTime ?: LocalDateTimeUtil.defaultSnoozeDateTime(),
+            alarm.ringtoneUriString,
+            alarm.isVibrationEnabled,
+            alarm.snoozeDuration
+        )
+    }
+
+    private fun scheduleAlarm(
+        alarmId: Int,
+        alarmName: String,
+        alarmExecutionDateTime: LocalDateTime,
+        ringtoneUri: String,
+        isVibrationEnabled: Boolean,
+        snoozeDuration: Int
+    ) {
+        // Create PendingIntent to execute Alarm
+        val alarmIntent = Intent(context, AlarmActionReceiver::class.java).apply {
+            // Action
+            action = AlarmActionReceiver.ACTION_EXECUTE_ALARM
+            // Extras
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmId)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, alarmName)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME, alarmExecutionDateTime.toString())
+            putExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI, ringtoneUri)
+            putExtra(AlarmActionReceiver.EXTRA_IS_VIBRATION_ENABLED, isVibrationEnabled)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION, snoozeDuration)
+        }
+        val alarmPendingIntent = PendingIntent.getBroadcast(
+            context,
+            alarmId,
+            alarmIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        // Schedule Alarm
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
-            alarm.dateTime.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000,
-            startAlarmPendingIntent
+            alarmExecutionDateTime.zonedEpochMillis(),
+            alarmPendingIntent
         )
     }
 

@@ -6,6 +6,8 @@ import android.content.Intent
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
+import com.example.alarmscratch.core.extension.LocalDateTimeUtil
+import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -16,16 +18,17 @@ class AlarmActionReceiver : BroadcastReceiver() {
 
     companion object {
         // Actions
-        const val ACTION_START_ALARM = "action_start_alarm"
-        const val ACTION_SNOOZE_ALARM = "action_snooze_alarm"
+        const val ACTION_EXECUTE_ALARM = "action_execute_alarm"
+        const val ACTION_SNOOZE_AND_RESCHEDULE_ALARM = "action_snooze_and_reschedule_alarm"
         const val ACTION_DISMISS_ALARM = "action_dismiss_alarm"
 
         // Extras
         const val EXTRA_ALARM_ID = "extra_alarm_id"
         const val EXTRA_ALARM_NAME = "extra_alarm_name"
-        const val EXTRA_ALARM_DATE_TIME = "extra_alarm_date_time"
+        const val EXTRA_ALARM_EXECUTION_DATE_TIME = "extra_alarm_execution_date_time"
         const val EXTRA_RINGTONE_URI = "extra_ringtone_uri"
         const val EXTRA_IS_VIBRATION_ENABLED = "extra_is_vibration_enabled"
+        const val EXTRA_ALARM_SNOOZE_DURATION = "extra_alarm_snooze_duration"
         const val EXTRA_IS_24_HOUR = "extra_is_24_hour"
 
         // Other
@@ -38,26 +41,27 @@ class AlarmActionReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context != null && intent != null) {
             when (intent.action) {
-                ACTION_START_ALARM ->
-                    startAlarm(context, intent)
-                ACTION_SNOOZE_ALARM ->
-                    Unit
+                ACTION_EXECUTE_ALARM ->
+                    executeAlarm(context, intent)
+                ACTION_SNOOZE_AND_RESCHEDULE_ALARM ->
+                    snoozeAndRescheduleAlarm(context, intent)
                 ACTION_DISMISS_ALARM ->
                     dismissAlarm(context, intent)
             }
         }
     }
 
-    private fun startAlarm(context: Context, intent: Intent) {
+    private fun executeAlarm(context: Context, intent: Intent) {
         // TODO: Grab a Wake Lock here. According to the AlarmManager docs, AlarmManger automatically grabs a CPU Wake Lock
         //  and holds it until BroadcastReceiver.onReceive() completes. It also explicitly states that because of this, the
         //  phone may sleep *immediately* after onReceive() completes, so if you call Context.startService() from inside
         //  onReceive() then the phone may sleep before the Service is started.
         val alarmId = intent.getIntExtra(EXTRA_ALARM_ID, ALARM_NO_ID)
         val alarmName = intent.getStringExtra(EXTRA_ALARM_NAME) ?: context.getString(R.string.default_alarm_name)
-        val alarmDateTime = intent.getStringExtra(EXTRA_ALARM_DATE_TIME) ?: context.getString(R.string.default_alarm_time)
+        val alarmDateTime = intent.getStringExtra(EXTRA_ALARM_EXECUTION_DATE_TIME) ?: context.getString(R.string.default_alarm_time)
         val ringtoneUri = intent.getStringExtra(EXTRA_RINGTONE_URI) ?: ALARM_NO_RINGTONE_URI
         val isVibrationEnabled = intent.getBooleanExtra(EXTRA_IS_VIBRATION_ENABLED, ALARM_NO_IS_VIBRATION_ENABLED)
+        val snoozeDuration = intent.getIntExtra(EXTRA_ALARM_SNOOZE_DURATION, AlarmDefaultsRepository.DEFAULT_SNOOZE_DURATION)
 
         // Display Alarm Notification
         val displayNotificationIntent = Intent(context.applicationContext, AlarmNotificationService::class.java).apply {
@@ -66,34 +70,58 @@ class AlarmActionReceiver : BroadcastReceiver() {
             // Extras
             putExtra(EXTRA_ALARM_ID, alarmId)
             putExtra(EXTRA_ALARM_NAME, alarmName)
-            putExtra(EXTRA_ALARM_DATE_TIME, alarmDateTime)
+            putExtra(EXTRA_ALARM_EXECUTION_DATE_TIME, alarmDateTime)
             putExtra(EXTRA_RINGTONE_URI, ringtoneUri)
             putExtra(EXTRA_IS_VIBRATION_ENABLED, isVibrationEnabled)
+            putExtra(EXTRA_ALARM_SNOOZE_DURATION, snoozeDuration)
         }
         context.applicationContext.startService(displayNotificationIntent)
     }
 
+    private fun snoozeAndRescheduleAlarm(context: Context, intent: Intent) {
+        // Dismiss Alarm Notification
+        dismissAlarmNotification(context)
+
+        // Snooze Alarm
+        val alarmId = intent.getIntExtra(EXTRA_ALARM_ID, ALARM_NO_ID)
+        val snoozeDuration = intent.getIntExtra(EXTRA_ALARM_SNOOZE_DURATION, AlarmDefaultsRepository.DEFAULT_SNOOZE_DURATION)
+        val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Get Alarm
+                val originalAlarm = async { alarmRepo.getAlarmFlow(alarmId) }.await().first()
+                val newAlarm = originalAlarm.copy(snoozeDateTime = LocalDateTimeUtil.nowTruncated().plusMinutes(snoozeDuration.toLong()))
+                // Update Alarm and re-schedule
+                async { alarmRepo.updateAlarm(newAlarm) }.await()
+                AlarmSchedulerImpl(context.applicationContext).scheduleSnoozedAlarm(newAlarm)
+            } catch (e: Exception) {
+                // Flow was empty. Not doing anything with this. Just don't crash.
+            }
+        }
+    }
+
     private fun dismissAlarm(context: Context, intent: Intent) {
+        // Dismiss Alarm Notification
+        dismissAlarmNotification(context)
+
+        // Disable Alarm and reset Snooze
+        val alarmId = intent.getIntExtra(EXTRA_ALARM_ID, ALARM_NO_ID)
+        val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val alarm = async { alarmRepo.getAlarmFlow(alarmId) }.await().first()
+                alarmRepo.updateAlarm(alarm.copy(enabled = false, snoozeDateTime = null))
+            } catch (e: Exception) {
+                // Flow was empty. Not doing anything with this. Just don't crash.
+            }
+        }
+    }
+
+    private fun dismissAlarmNotification(context: Context) {
         // Dismiss Alarm Notification
         val dismissNotificationIntent = Intent(context.applicationContext, AlarmNotificationService::class.java).apply {
             action = AlarmNotificationService.DISMISS_ALARM_NOTIFICATION
         }
         context.applicationContext.startService(dismissNotificationIntent)
-
-        // Disable Alarm in database
-        val alarmId = intent.getIntExtra(EXTRA_ALARM_ID, ALARM_NO_ID)
-        val alarmRepo = AlarmRepository(
-            AlarmDatabase
-                .getDatabase(context.createDeviceProtectedStorageContext())
-                .alarmDao()
-        )
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val alarm = async { alarmRepo.getAlarmFlow(alarmId) }.await().first()
-                alarmRepo.updateAlarm(alarm.copy(enabled = false))
-            } catch (e: Exception) {
-                // Flow was empty. Not doing anything with this. Just don't crash.
-            }
-        }
     }
 }

@@ -32,7 +32,7 @@ import com.example.alarmscratch.alarm.ui.fullscreenalert.component.BeachBackdrop
 import com.example.alarmscratch.core.extension.get12HourTime
 import com.example.alarmscratch.core.extension.get24HourTime
 import com.example.alarmscratch.core.extension.getAmPm
-import com.example.alarmscratch.core.extension.getDay
+import com.example.alarmscratch.core.extension.getDayFull
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.InCloudBlack
 import com.example.alarmscratch.core.ui.theme.SkyBlue
@@ -63,7 +63,7 @@ fun FullScreenAlarmScreenContent(
 ) {
     // Alarm data
     val context = LocalContext.current
-    val day = alarmDateTime?.getDay() ?: context.getString(R.string.default_alarm_date)
+    val day = alarmDateTime?.getDayFull() ?: context.getString(R.string.default_alarm_date)
     val time = alarmDateTime
         ?.let { if (is24Hour) it.get24HourTime() else it.get12HourTime() }
         ?: context.getString(R.string.default_alarm_time)
