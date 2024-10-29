@@ -85,15 +85,16 @@ class AlarmActionReceiver : BroadcastReceiver() {
         // Snooze Alarm
         val alarmId = intent.getIntExtra(EXTRA_ALARM_ID, ALARM_NO_ID)
         val snoozeDuration = intent.getIntExtra(EXTRA_ALARM_SNOOZE_DURATION, AlarmDefaultsRepository.DEFAULT_SNOOZE_DURATION)
+        val snoozeDateTime = LocalDateTimeUtil.nowTruncated().plusMinutes(snoozeDuration.toLong())
         val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 // Get Alarm
                 val originalAlarm = async { alarmRepo.getAlarmFlow(alarmId) }.await().first()
-                val newAlarm = originalAlarm.copy(snoozeDateTime = LocalDateTimeUtil.nowTruncated().plusMinutes(snoozeDuration.toLong()))
                 // Update Alarm and re-schedule
-                async { alarmRepo.updateAlarm(newAlarm) }.await()
-                AlarmSchedulerImpl(context.applicationContext).scheduleSnoozedAlarm(newAlarm)
+                async { alarmRepo.updateSnoozeDateTime(alarmId, snoozeDateTime) }.await()
+                AlarmSchedulerImpl(context.applicationContext)
+                    .scheduleSnoozedAlarm(originalAlarm.copy(snoozeDateTime = snoozeDateTime))
             } catch (e: Exception) {
                 // Flow was empty. Not doing anything with this. Just don't crash.
             }
