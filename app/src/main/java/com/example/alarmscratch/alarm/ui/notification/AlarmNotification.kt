@@ -48,7 +48,7 @@ object AlarmNotification {
             )
             .setDeleteIntent(getDismissAlarmPendingIntent(context, alarmId))
             .setFullScreenIntent(
-                getAlertPendingIntent(context, alarmId, alarmName, alarmExecutionDateTime, timeDisplay),
+                getAlertPendingIntent(context, alarmId, alarmName, alarmExecutionDateTime, snoozeDuration, timeDisplay),
                 true
             )
             .build()
@@ -103,6 +103,7 @@ object AlarmNotification {
         alarmId: Int,
         alarmName: String,
         alarmDateTime: String,
+        snoozeDuration: Int,
         timeDisplay: TimeDisplay
     ): PendingIntent {
         val is24Hour = when (timeDisplay) {
@@ -117,6 +118,7 @@ object AlarmNotification {
             putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmId)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, alarmName)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME, alarmDateTime)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION, snoozeDuration)
             putExtra(AlarmActionReceiver.EXTRA_IS_24_HOUR, is24Hour)
             // Flags
             setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION)

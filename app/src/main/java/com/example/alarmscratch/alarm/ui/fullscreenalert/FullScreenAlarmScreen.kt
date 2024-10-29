@@ -50,6 +50,7 @@ fun FullScreenAlarmScreen(fullScreenAlarmViewModel: FullScreenAlarmViewModel) {
         alarmName = fullScreenAlarmViewModel.alarmName,
         alarmDateTime = fullScreenAlarmViewModel.alarmDateTime,
         is24Hour = fullScreenAlarmViewModel.is24Hour,
+        snoozeAlarm = fullScreenAlarmViewModel::snoozeAlarm,
         dismissAlarm = fullScreenAlarmViewModel::dismissAlarm
     )
 }
@@ -59,6 +60,7 @@ fun FullScreenAlarmScreenContent(
     alarmName: String,
     alarmDateTime: LocalDateTime?,
     is24Hour: Boolean,
+    snoozeAlarm: (Context) -> Unit,
     dismissAlarm: (Context) -> Unit
 ) {
     // Alarm data
@@ -141,7 +143,7 @@ fun FullScreenAlarmScreenContent(
                 modifier = Modifier.weight(0.75f)
             ) {
                 // Snooze Button
-                Button(onClick = {}) {
+                Button(onClick = { snoozeAlarm(context) }) {
                     Text(text = stringResource(id = R.string.snooze_alarm), fontSize = 42.sp)
                 }
                 Spacer(modifier = Modifier.height(48.dp))
@@ -168,6 +170,7 @@ private fun FullScreenAlarmScreen12HourPreview() {
             alarmName = consistentFutureAlarm.name,
             alarmDateTime = consistentFutureAlarm.dateTime,
             is24Hour = false,
+            snoozeAlarm = {},
             dismissAlarm = {}
         )
     }
@@ -181,6 +184,7 @@ private fun FullScreenAlarmScreen24HourPreview() {
             alarmName = consistentFutureAlarm.name,
             alarmDateTime = consistentFutureAlarm.dateTime,
             is24Hour = true,
+            snoozeAlarm = {},
             dismissAlarm = {}
         )
     }
