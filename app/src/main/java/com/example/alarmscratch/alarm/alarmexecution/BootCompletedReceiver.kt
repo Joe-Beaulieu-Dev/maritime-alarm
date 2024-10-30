@@ -3,11 +3,15 @@ package com.example.alarmscratch.alarm.alarmexecution
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
+import com.example.alarmscratch.core.extension.isSnoozed
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class BootCompletedReceiver : BroadcastReceiver() {
@@ -22,15 +26,42 @@ class BootCompletedReceiver : BroadcastReceiver() {
             )
 
             CoroutineScope(Dispatchers.IO).launch {
-                alarmRepo.getAllAlarmsFlow().collect { alarmList ->
-                    alarmList
-                        .filter { it.enabled && !it.dateTime.isBefore(LocalDateTimeUtil.nowTruncated()) }
-                        .forEach { alarm ->
-                            // TODO: Account for Snoozed Alarms
-                            alarmScheduler.scheduleInitialAlarm(alarm)
-                        }
+                try {
+                    val alarmList = async { alarmRepo.getAllAlarmsFlow() }.await().first()
+                    rescheduleEligibleAlarms(alarmList, alarmScheduler)
+                } catch (e: Exception) {
+                    // Flow was empty. Not doing anything with this. Just don't crash.
                 }
             }
         }
+    }
+
+    /**
+     * Reschedule Alarms if they meet the following criteria:
+     *
+     * 1) Are enabled
+     * 2) Are scheduled to execute either now, or in the future
+     *
+     * @param alarmList List of Alarms to potentially reschedule
+     * @param alarmScheduler AlarmScheduler for rescheduling Alarms
+     */
+    private fun rescheduleEligibleAlarms(alarmList: List<Alarm>, alarmScheduler: AlarmScheduler) {
+        alarmList
+            .filter { alarm ->
+                alarm.enabled &&
+                        if (!alarm.isSnoozed()) {
+                            !alarm.dateTime.isBefore(LocalDateTimeUtil.nowTruncated())
+                        } else {
+                            // TODO: Think of a better default behavior for this
+                            alarm.snoozeDateTime?.isBefore(LocalDateTimeUtil.nowTruncated())?.not() ?: false
+                        }
+            }
+            .forEach { filteredAlarm ->
+                if (!filteredAlarm.isSnoozed()) {
+                    alarmScheduler.scheduleInitialAlarm(filteredAlarm)
+                } else {
+                    alarmScheduler.scheduleSnoozedAlarm(filteredAlarm)
+                }
+            }
     }
 }
