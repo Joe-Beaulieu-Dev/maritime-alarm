@@ -2,15 +2,25 @@ package com.example.alarmscratch.core.extension
 
 import android.content.Context
 import com.example.alarmscratch.R
+import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.ZoneId
 import java.time.format.TextStyle
 import java.util.Locale
 
 object LocalDateTimeUtil {
-    fun nowTruncated(): LocalDateTime = LocalDateTime.now().withSecond(0).withNano(0)
+    fun nowTruncated(): LocalDateTime =
+        LocalDateTime.now().withSecond(0).withNano(0)
+
+    fun defaultSnoozeDateTime(): LocalDateTime =
+        nowTruncated().plusMinutes(AlarmDefaultsRepository.DEFAULT_SNOOZE_DURATION.toLong())
 }
+
+/*
+ * Utility
+ */
 
 fun LocalDateTime.futurizeDateTime(): LocalDateTime {
     val currentDateTime = LocalDateTimeUtil.nowTruncated()
@@ -27,6 +37,23 @@ fun LocalDateTime.futurizeDateTime(): LocalDateTime {
         this
     }
 }
+
+/*
+ * Convenience
+ */
+
+fun LocalDateTime.zonedEpochMillis(): Long =
+    atZone(ZoneId.systemDefault()).toEpochSecond() * 1000
+
+fun LocalDateTime.getDayFull(): String =
+    dayOfWeek.getDisplayName(TextStyle.FULL, Locale.US)
+
+fun LocalDateTime.getDayShorthand(): String =
+    dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.US)
+
+/*
+ * Formatting
+ */
 
 fun LocalDateTime.toAlarmDateString(context: Context) : String {
     val currentDateTime = LocalDateTimeUtil.nowTruncated()
@@ -53,10 +80,6 @@ private fun formatCalendarDate(date: LocalDate): String =
             "${date.month.getDisplayName(TextStyle.SHORT, Locale.US)} " +
             "${date.dayOfMonth.toOrdinal()} " +
             "${date.year}"
-
-fun LocalDateTime.getDay(): String = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.US)
-
-fun LocalDateTime.getDayShorthand(): String = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.US)
 
 fun LocalDateTime.to12HourNotificationDateTimeString(context: Context): String =
     "${getDayShorthand()}, ${get12HourTime()} ${getAmPm(context)}"

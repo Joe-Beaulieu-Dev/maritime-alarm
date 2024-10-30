@@ -21,16 +21,17 @@ object AlarmNotification {
         context: Context,
         alarmId: Int,
         alarmName: String,
-        alarmDateTime: String,
+        alarmExecutionDateTime: String,
+        snoozeDuration: Int,
         timeDisplay: TimeDisplay
     ): Notification {
         // This shows up in the Status Bar Notification, but not in the full screen alert
-        val notificationDateTimeString = try {
+        val notificationDateTime = try {
             when (timeDisplay) {
                 TimeDisplay.TwelveHour ->
-                    LocalDateTime.parse(alarmDateTime).to12HourNotificationDateTimeString(context)
+                    LocalDateTime.parse(alarmExecutionDateTime).to12HourNotificationDateTimeString(context)
                 TimeDisplay.TwentyFourHour ->
-                    LocalDateTime.parse(alarmDateTime).to24HourNotificationDateTimeString()
+                    LocalDateTime.parse(alarmExecutionDateTime).to24HourNotificationDateTimeString()
             }
         } catch (e: Exception) {
             context.getString(R.string.default_alarm_time)
@@ -39,21 +40,27 @@ object AlarmNotification {
         return Notification.Builder(context, CHANNEL_ID_ALARM_NOTIFICATION)
             .setSmallIcon(R.drawable.ic_alarm_24dp)
             .setContentTitle(alarmName)
-            .setContentText(notificationDateTimeString)
+            .setContentText(notificationDateTime)
             .setCategory(Notification.CATEGORY_ALARM)
             .setActions(
-                getSnoozeAlarmAction(context, alarmId),
+                getSnoozeAlarmAction(context, alarmId, snoozeDuration),
                 getDismissAlarmAction(context, alarmId)
             )
-            .setDeleteIntent(getClearNotificationPendingIntent(context, alarmId))
-            .setFullScreenIntent(getAlertPendingIntent(context, alarmId, alarmName, alarmDateTime, timeDisplay), true)
+            .setDeleteIntent(getDismissAlarmPendingIntent(context, alarmId))
+            .setFullScreenIntent(
+                getAlertPendingIntent(context, alarmId, alarmName, alarmExecutionDateTime, snoozeDuration, timeDisplay),
+                true
+            )
             .build()
     }
 
-    private fun getSnoozeAlarmAction(context: Context, alarmId: Int): Notification.Action {
+    private fun getSnoozeAlarmAction(context: Context, alarmId: Int, snoozeDuration: Int): Notification.Action {
         val snoozeAlarmIntent = Intent(context, AlarmActionReceiver::class.java).apply {
-            action = AlarmActionReceiver.ACTION_SNOOZE_ALARM
+            // Action
+            action = AlarmActionReceiver.ACTION_SNOOZE_AND_RESCHEDULE_ALARM
+            // Extras
             putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmId)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION, snoozeDuration)
         }
 
         val snoozeAlarmPendingIntent = PendingIntent.getBroadcast(
@@ -70,27 +77,14 @@ object AlarmNotification {
         ).build()
     }
 
-    private fun getDismissAlarmAction(context: Context, alarmId: Int): Notification.Action {
-        val dismissAlarmIntent = Intent(context, AlarmActionReceiver::class.java).apply {
-            action = AlarmActionReceiver.ACTION_DISMISS_ALARM
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmId)
-        }
-
-        val dismissAlarmPendingIntent = PendingIntent.getBroadcast(
-            context,
-            alarmId,
-            dismissAlarmIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        return Notification.Action.Builder(
+    private fun getDismissAlarmAction(context: Context, alarmId: Int): Notification.Action =
+        Notification.Action.Builder(
             Icon.createWithResource(context, R.drawable.ic_alarm_dismiss_24dp),
             context.getString(R.string.dismiss_alarm),
-            dismissAlarmPendingIntent
+            getDismissAlarmPendingIntent(context, alarmId)
         ).build()
-    }
 
-    private fun getClearNotificationPendingIntent(context: Context, alarmId: Int): PendingIntent {
+    private fun getDismissAlarmPendingIntent(context: Context, alarmId: Int): PendingIntent {
         val clearNotificationIntent = Intent(context, AlarmActionReceiver::class.java).apply {
             action = AlarmActionReceiver.ACTION_DISMISS_ALARM
             putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmId)
@@ -109,6 +103,7 @@ object AlarmNotification {
         alarmId: Int,
         alarmName: String,
         alarmDateTime: String,
+        snoozeDuration: Int,
         timeDisplay: TimeDisplay
     ): PendingIntent {
         val is24Hour = when (timeDisplay) {
@@ -122,7 +117,8 @@ object AlarmNotification {
             // Extras
             putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmId)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, alarmName)
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_DATE_TIME, alarmDateTime)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME, alarmDateTime)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION, snoozeDuration)
             putExtra(AlarmActionReceiver.EXTRA_IS_24_HOUR, is24Hour)
             // Flags
             setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION)

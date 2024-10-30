@@ -32,7 +32,7 @@ import com.example.alarmscratch.alarm.ui.fullscreenalert.component.BeachBackdrop
 import com.example.alarmscratch.core.extension.get12HourTime
 import com.example.alarmscratch.core.extension.get24HourTime
 import com.example.alarmscratch.core.extension.getAmPm
-import com.example.alarmscratch.core.extension.getDay
+import com.example.alarmscratch.core.extension.getDayFull
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.InCloudBlack
 import com.example.alarmscratch.core.ui.theme.SkyBlue
@@ -50,6 +50,7 @@ fun FullScreenAlarmScreen(fullScreenAlarmViewModel: FullScreenAlarmViewModel) {
         alarmName = fullScreenAlarmViewModel.alarmName,
         alarmDateTime = fullScreenAlarmViewModel.alarmDateTime,
         is24Hour = fullScreenAlarmViewModel.is24Hour,
+        snoozeAlarm = fullScreenAlarmViewModel::snoozeAlarm,
         dismissAlarm = fullScreenAlarmViewModel::dismissAlarm
     )
 }
@@ -59,11 +60,12 @@ fun FullScreenAlarmScreenContent(
     alarmName: String,
     alarmDateTime: LocalDateTime?,
     is24Hour: Boolean,
+    snoozeAlarm: (Context) -> Unit,
     dismissAlarm: (Context) -> Unit
 ) {
     // Alarm data
     val context = LocalContext.current
-    val day = alarmDateTime?.getDay() ?: context.getString(R.string.default_alarm_date)
+    val day = alarmDateTime?.getDayFull() ?: context.getString(R.string.default_alarm_date)
     val time = alarmDateTime
         ?.let { if (is24Hour) it.get24HourTime() else it.get12HourTime() }
         ?: context.getString(R.string.default_alarm_time)
@@ -141,7 +143,7 @@ fun FullScreenAlarmScreenContent(
                 modifier = Modifier.weight(0.75f)
             ) {
                 // Snooze Button
-                Button(onClick = {}) {
+                Button(onClick = { snoozeAlarm(context) }) {
                     Text(text = stringResource(id = R.string.snooze_alarm), fontSize = 42.sp)
                 }
                 Spacer(modifier = Modifier.height(48.dp))
@@ -168,6 +170,7 @@ private fun FullScreenAlarmScreen12HourPreview() {
             alarmName = consistentFutureAlarm.name,
             alarmDateTime = consistentFutureAlarm.dateTime,
             is24Hour = false,
+            snoozeAlarm = {},
             dismissAlarm = {}
         )
     }
@@ -181,6 +184,7 @@ private fun FullScreenAlarmScreen24HourPreview() {
             alarmName = consistentFutureAlarm.name,
             alarmDateTime = consistentFutureAlarm.dateTime,
             is24Hour = true,
+            snoozeAlarm = {},
             dismissAlarm = {}
         )
     }

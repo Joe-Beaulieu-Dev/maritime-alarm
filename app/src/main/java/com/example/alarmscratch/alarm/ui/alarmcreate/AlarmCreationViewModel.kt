@@ -74,7 +74,6 @@ class AlarmCreationViewModel(
                                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
                                 ringtoneUriString = alarmDefaults.ringtoneUri,
                                 isVibrationEnabled = alarmDefaults.isVibrationEnabled,
-                                snoozeCount = 0,
                                 snoozeDuration = alarmDefaults.snoozeDuration
                             )
                         )
@@ -131,7 +130,7 @@ class AlarmCreationViewModel(
         alarmRepository.getAlarm(alarmId)
 
     private fun scheduleAlarm(context: Context, alarm: Alarm) {
-        AlarmSchedulerImpl(context).scheduleAlarm(alarm)
+        AlarmSchedulerImpl(context).scheduleInitialAlarm(alarm)
     }
 
     fun updateName(name: String) {

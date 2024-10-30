@@ -7,9 +7,14 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDateTime
 
 @Dao
 interface AlarmDao {
+
+    /*
+     * Coarse-grained transactions
+     */
 
     // TODO: Think about onConflict param more
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -21,12 +26,19 @@ interface AlarmDao {
     @Delete
     suspend fun delete(alarm: Alarm)
 
-    @Query("SELECT * from alarms WHERE id = :id")
+    @Query("SELECT * FROM alarms WHERE id = :id")
     suspend fun getAlarm(id: Int): Alarm
 
-    @Query("SELECT * from alarms WHERE id = :id")
+    @Query("SELECT * FROM alarms WHERE id = :id")
     fun getAlarmFlow(id: Int): Flow<Alarm>
 
-    @Query("SELECT * from alarms")
+    @Query("SELECT * FROM alarms")
     fun getAllAlarmsFlow(): Flow<List<Alarm>>
+
+    /*
+     * Fine-grained transactions
+     */
+
+    @Query("UPDATE alarms SET snoozeDateTime = :snoozeDateTime WHERE id = :id")
+    fun updateSnoozeDateTime(id: Int, snoozeDateTime: LocalDateTime)
 }

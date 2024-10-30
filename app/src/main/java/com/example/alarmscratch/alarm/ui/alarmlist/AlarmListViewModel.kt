@@ -76,13 +76,11 @@ class AlarmListViewModel(
     }
 
     private fun scheduleAlarm(context: Context, alarm: Alarm) {
-        val alarmScheduler = AlarmSchedulerImpl(context)
-        alarmScheduler.scheduleAlarm(alarm)
+        AlarmSchedulerImpl(context).scheduleInitialAlarm(alarm)
     }
 
     private fun cancelAlarm(context: Context, alarm: Alarm) {
-        val alarmScheduler = AlarmSchedulerImpl(context)
-        alarmScheduler.cancelAlarm(alarm)
+        AlarmSchedulerImpl(context).cancelAlarm(alarm)
     }
 
     suspend fun deleteAlarm(alarm: Alarm) {

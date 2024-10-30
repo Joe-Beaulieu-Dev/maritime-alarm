@@ -8,7 +8,9 @@ import com.example.alarmscratch.core.data.repository.RingtoneRepository
 import java.time.DayOfWeek
 import java.time.LocalDateTime
 
-fun Alarm.isRepeating(): Boolean = weeklyRepeater.hasRepeatingDays()
+/*
+ * Utility
+ */
 
 /**
  * Returns a LocalDateTime with the next day the Alarm is set to go off, if and only if the Alarm is set to repeat.
@@ -80,7 +82,15 @@ private fun sortRepeatingDaysByPreference(
         .filter { it.dayNumber() >= today.dayNumber() }
         .plus(repeatingDays.filter { it.dayNumber() < today.dayNumber() })
 
-fun Alarm.getRingtone(context: Context): Ringtone {
-    val ringtoneRepository = RingtoneRepository(context)
-    return ringtoneRepository.getRingtone(ringtoneUriString)
-}
+/*
+ * Convenience
+ */
+
+fun Alarm.isRepeating(): Boolean =
+    weeklyRepeater.hasRepeatingDays()
+
+fun Alarm.isSnoozed(): Boolean =
+    snoozeDateTime != null
+
+fun Alarm.getRingtone(context: Context): Ringtone =
+    RingtoneRepository(context).getRingtone(ringtoneUriString)
