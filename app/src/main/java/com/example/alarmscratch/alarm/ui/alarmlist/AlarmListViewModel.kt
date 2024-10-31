@@ -11,6 +11,7 @@ import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.core.extension.futurizeDateTime
+import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsRepository
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
@@ -76,11 +77,11 @@ class AlarmListViewModel(
     }
 
     private fun scheduleAlarm(context: Context, alarm: Alarm) {
-        AlarmSchedulerImpl(context).scheduleInitialAlarm(alarm)
+        AlarmSchedulerImpl(context).scheduleInitialAlarm(alarm.toAlarmExecutionData())
     }
 
     private fun cancelAlarm(context: Context, alarm: Alarm) {
-        AlarmSchedulerImpl(context).cancelAlarm(alarm)
+        AlarmSchedulerImpl(context).cancelAlarm(alarm.toAlarmExecutionData())
     }
 
     suspend fun deleteAlarm(alarm: Alarm) {

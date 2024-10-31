@@ -19,6 +19,7 @@ import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.futurizeDateTime
 import com.example.alarmscratch.core.extension.isRepeating
 import com.example.alarmscratch.core.extension.nextRepeatingDate
+import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsRepository
@@ -85,19 +86,16 @@ class AlarmEditViewModel(
 
     fun saveAndScheduleAlarm(context: Context) {
         viewModelScope.launch {
-            try {
-                if (_modifiedAlarm.value is AlarmState.Success) {
-                    async { saveAlarm() }.await()
-                    val newAlarm = async { getAlarm(alarmId) }.await()
-                    // TODO: Only schedule alarm if enabled
-                    scheduleAlarm(context.applicationContext, newAlarm)
-                }
-            } catch (e: Exception) {
-                // toInt() can throw an Exception, but it shouldn't. Just catch here to prevent a crash.
+            if (_modifiedAlarm.value is AlarmState.Success) {
+                async { saveAlarm() }.await()
+                val newAlarm = async { getAlarm(alarmId) }.await()
+                // TODO: Only schedule alarm if enabled
+                scheduleAlarm(context.applicationContext, newAlarm)
             }
         }
     }
 
+    // TODO: Clear snooze data
     private suspend fun saveAlarm() {
         if (_modifiedAlarm.value is AlarmState.Success) {
             val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
@@ -113,7 +111,7 @@ class AlarmEditViewModel(
         alarmRepository.getAlarm(alarmId)
 
     private fun scheduleAlarm(context: Context, alarm: Alarm) {
-        AlarmSchedulerImpl(context).scheduleInitialAlarm(alarm)
+        AlarmSchedulerImpl(context).scheduleInitialAlarm(alarm.toAlarmExecutionData())
     }
 
     fun updateName(name: String) {

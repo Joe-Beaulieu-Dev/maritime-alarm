@@ -7,11 +7,11 @@ import android.content.Intent
 import android.graphics.drawable.Icon
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.alarmexecution.AlarmActionReceiver
+import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
 import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmActivity
 import com.example.alarmscratch.core.extension.to12HourNotificationDateTimeString
 import com.example.alarmscratch.core.extension.to24HourNotificationDateTimeString
 import com.example.alarmscratch.settings.data.model.TimeDisplay
-import java.time.LocalDateTime
 
 object AlarmNotification {
 
@@ -19,53 +19,46 @@ object AlarmNotification {
 
     fun fullScreenNotification(
         context: Context,
-        alarmId: Int,
-        alarmName: String,
-        alarmExecutionDateTime: String,
-        snoozeDuration: Int,
+        alarmExecutionData: AlarmExecutionData,
         timeDisplay: TimeDisplay
     ): Notification {
         // This shows up in the Status Bar Notification, but not in the full screen alert
-        val notificationDateTime = try {
-            when (timeDisplay) {
-                TimeDisplay.TwelveHour ->
-                    LocalDateTime.parse(alarmExecutionDateTime).to12HourNotificationDateTimeString(context)
-                TimeDisplay.TwentyFourHour ->
-                    LocalDateTime.parse(alarmExecutionDateTime).to24HourNotificationDateTimeString()
-            }
-        } catch (e: Exception) {
-            context.getString(R.string.default_alarm_time)
+        val notificationDateTime = when (timeDisplay) {
+            TimeDisplay.TwelveHour ->
+                alarmExecutionData.executionDateTime.to12HourNotificationDateTimeString(context)
+            TimeDisplay.TwentyFourHour ->
+                alarmExecutionData.executionDateTime.to24HourNotificationDateTimeString()
         }
 
         return Notification.Builder(context, CHANNEL_ID_ALARM_NOTIFICATION)
             .setSmallIcon(R.drawable.ic_alarm_24dp)
-            .setContentTitle(alarmName)
+            .setContentTitle(alarmExecutionData.name)
             .setContentText(notificationDateTime)
             .setCategory(Notification.CATEGORY_ALARM)
             .setActions(
-                getSnoozeAlarmAction(context, alarmId, snoozeDuration),
-                getDismissAlarmAction(context, alarmId)
+                getSnoozeAlarmAction(context, alarmExecutionData),
+                getDismissAlarmAction(context, alarmExecutionData.id)
             )
-            .setDeleteIntent(getDismissAlarmPendingIntent(context, alarmId))
-            .setFullScreenIntent(
-                getAlertPendingIntent(context, alarmId, alarmName, alarmExecutionDateTime, snoozeDuration, timeDisplay),
-                true
-            )
+            .setDeleteIntent(getDismissAlarmPendingIntent(context, alarmExecutionData.id))
+            .setFullScreenIntent(getAlertPendingIntent(context, alarmExecutionData, timeDisplay), true)
             .build()
     }
 
-    private fun getSnoozeAlarmAction(context: Context, alarmId: Int, snoozeDuration: Int): Notification.Action {
+    private fun getSnoozeAlarmAction(context: Context, alarmExecutionData: AlarmExecutionData): Notification.Action {
         val snoozeAlarmIntent = Intent(context, AlarmActionReceiver::class.java).apply {
             // Action
             action = AlarmActionReceiver.ACTION_SNOOZE_AND_RESCHEDULE_ALARM
             // Extras
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmId)
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION, snoozeDuration)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmExecutionData.id)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, alarmExecutionData.name)
+            putExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI, alarmExecutionData.ringtoneUri)
+            putExtra(AlarmActionReceiver.EXTRA_IS_VIBRATION_ENABLED, alarmExecutionData.isVibrationEnabled)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION, alarmExecutionData.snoozeDuration)
         }
 
         val snoozeAlarmPendingIntent = PendingIntent.getBroadcast(
             context,
-            alarmId,
+            alarmExecutionData.id,
             snoozeAlarmIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -100,10 +93,7 @@ object AlarmNotification {
 
     private fun getAlertPendingIntent(
         context: Context,
-        alarmId: Int,
-        alarmName: String,
-        alarmDateTime: String,
-        snoozeDuration: Int,
+        alarmExecutionData: AlarmExecutionData,
         timeDisplay: TimeDisplay
     ): PendingIntent {
         val is24Hour = when (timeDisplay) {
@@ -115,10 +105,12 @@ object AlarmNotification {
 
         val fullScreenAlertIntent = Intent(context, FullScreenAlarmActivity::class.java).apply {
             // Extras
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmId)
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, alarmName)
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME, alarmDateTime)
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION, snoozeDuration)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmExecutionData.id)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, alarmExecutionData.name)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME, alarmExecutionData.executionDateTime)
+            putExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI, alarmExecutionData.ringtoneUri)
+            putExtra(AlarmActionReceiver.EXTRA_IS_VIBRATION_ENABLED, alarmExecutionData.isVibrationEnabled)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION, alarmExecutionData.snoozeDuration)
             putExtra(AlarmActionReceiver.EXTRA_IS_24_HOUR, is24Hour)
             // Flags
             setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION)
@@ -126,7 +118,7 @@ object AlarmNotification {
 
         return PendingIntent.getActivity(
             context,
-            alarmId,
+            alarmExecutionData.id,
             fullScreenAlertIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
