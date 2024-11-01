@@ -68,13 +68,8 @@ fun AlarmCard(
 ) {
     // State
     val context = LocalContext.current
-    var dropdownExpanded by rememberSaveable { mutableStateOf(false) }
-    val time = when (timeDisplay) {
-        TimeDisplay.TwelveHour ->
-            alarm.dateTime.get12HourTime()
-        TimeDisplay.TwentyFourHour ->
-            alarm.dateTime.get24HourTime()
-    }
+    var isDropdownExpanded by rememberSaveable { mutableStateOf(false) }
+    val onDropdownExpansionToggled: () -> Unit = { isDropdownExpanded = !isDropdownExpanded }
     val snoozedTime = if (alarm.isSnoozed() && alarm.snoozeDateTime != null) {
         when (timeDisplay) {
             TimeDisplay.TwelveHour ->
@@ -88,7 +83,6 @@ fun AlarmCard(
 
     // Colors
     val cardTextAndIconColor = if (alarm.enabled) BoatSails else MaterialTheme.colorScheme.outline
-    val timeAmPmColor = if (alarm.enabled) DarkerBoatSails else MaterialTheme.colorScheme.outline
     val cardColor = if (alarm.enabled) MaterialTheme.colorScheme.surfaceVariant else MediumVolcanicRock
 
     Card(
@@ -105,49 +99,9 @@ fun AlarmCard(
                 .clickable { navigateToAlarmEditScreen(alarm.id) }
                 .padding(start = 12.dp)
         ) {
-            // Dropdown Menu
-            Box(
-                modifier = Modifier.align(Alignment.TopEnd)
-            ) {
-                // Dropdown Icon Button
-                IconButton(onClick = { dropdownExpanded = true }) {
-                    Icon(
-                        imageVector = Icons.Default.MoreHoriz,
-                        contentDescription = null
-                    )
-                }
-
-                // Dropdown Menu
-                DropdownMenu(
-                    expanded = dropdownExpanded,
-                    onDismissRequest = { dropdownExpanded = false },
-                    modifier = Modifier.background(DarkVolcanicRock)
-                ) {
-                    // Delete
-                    DropdownMenuItem(
-                        text = {
-                            Text(text = stringResource(id = R.string.menu_delete))
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Delete,
-                                contentDescription = null,
-                                tint = BoatHull
-                            )
-                        },
-                        colors = MenuDefaults.itemColors(textColor = BoatSails),
-                        onClick = {
-                            onAlarmDeleted(alarm)
-                            dropdownExpanded = false
-                        }
-                    )
-                }
-            }
-
             // Name, Time, Date, and Snooze Indicator
             Column(
                 modifier = Modifier
-                    .align(Alignment.TopStart)
                     .padding(
                         top = if (alarm.name == "") 0.dp else 12.dp,
                         bottom = 12.dp
@@ -164,43 +118,7 @@ fun AlarmCard(
                 )
 
                 // Time and Date
-                Column {
-                    // Time
-                    Row {
-                        // Hour and Minute
-                        Text(
-                            text = time,
-                            fontSize = 32.sp,
-                            fontWeight = if (alarm.enabled) {
-                                FontWeight.Bold
-                            } else {
-                                FontWeight.SemiBold
-                            },
-                            color = timeAmPmColor,
-                            modifier = Modifier.alignByBaseline()
-                        )
-
-                        // AM/PM
-                        if (timeDisplay == TimeDisplay.TwelveHour) {
-                            Text(
-                                text = alarm.dateTime.getAmPm(context),
-                                fontWeight = if (alarm.enabled) {
-                                    FontWeight.SemiBold
-                                } else {
-                                    FontWeight.Medium
-                                },
-                                color = timeAmPmColor,
-                                modifier = Modifier.alignByBaseline()
-                            )
-                        }
-                    }
-
-                    // Date
-                    AlarmDate(
-                        alarm = alarm,
-                        modifier = Modifier.padding(start = 2.dp)
-                    )
-                }
+                AlarmTimeAndDate(alarm = alarm, timeDisplay = timeDisplay)
 
                 // Snooze Indicator
                 if (alarm.isSnoozed()) {
@@ -214,7 +132,15 @@ fun AlarmCard(
                 }
             }
 
-            // Alarm Switch
+            // Dropdown Menu
+            AlarmCardDropdownMenu(
+                isExpanded = isDropdownExpanded,
+                onExpansionToggled = onDropdownExpansionToggled,
+                onAlarmDeleted = { onAlarmDeleted(alarm) },
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
+
+            // Alarm Toggle
             Switch(
                 checked = alarm.enabled,
                 onCheckedChange = { onAlarmToggled(context, alarm) },
@@ -224,6 +150,107 @@ fun AlarmCard(
                     .padding(end = 10.dp)
             )
         }
+    }
+}
+
+@Composable
+private fun AlarmCardDropdownMenu(
+    isExpanded: Boolean,
+    onExpansionToggled: () -> Unit,
+    onAlarmDeleted: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier = modifier) {
+        // Dropdown Icon Button
+        IconButton(onClick = onExpansionToggled) {
+            Icon(
+                imageVector = Icons.Default.MoreHoriz,
+                contentDescription = null
+            )
+        }
+
+        // Dropdown Menu
+        DropdownMenu(
+            expanded = isExpanded,
+            onDismissRequest = onExpansionToggled,
+            modifier = Modifier.background(DarkVolcanicRock)
+        ) {
+            // Delete
+            DropdownMenuItem(
+                text = {
+                    Text(text = stringResource(id = R.string.menu_delete))
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = null,
+                        tint = BoatHull
+                    )
+                },
+                colors = MenuDefaults.itemColors(textColor = BoatSails),
+                onClick = {
+                    onAlarmDeleted()
+                    onExpansionToggled()
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun AlarmTimeAndDate(
+    alarm: Alarm,
+    timeDisplay: TimeDisplay,
+    modifier: Modifier = Modifier
+) {
+    // State
+    val context = LocalContext.current
+    val time = when (timeDisplay) {
+        TimeDisplay.TwelveHour ->
+            alarm.dateTime.get12HourTime()
+        TimeDisplay.TwentyFourHour ->
+            alarm.dateTime.get24HourTime()
+    }
+
+    // Colors
+    val timeAmPmColor = if (alarm.enabled) DarkerBoatSails else MaterialTheme.colorScheme.outline
+
+    Column(modifier = modifier) {
+        // Time
+        Row {
+            // Hour and Minute
+            Text(
+                text = time,
+                fontSize = 32.sp,
+                fontWeight = if (alarm.enabled) {
+                    FontWeight.Bold
+                } else {
+                    FontWeight.SemiBold
+                },
+                color = timeAmPmColor,
+                modifier = Modifier.alignByBaseline()
+            )
+
+            // AM/PM
+            if (timeDisplay == TimeDisplay.TwelveHour) {
+                Text(
+                    text = alarm.dateTime.getAmPm(context),
+                    fontWeight = if (alarm.enabled) {
+                        FontWeight.SemiBold
+                    } else {
+                        FontWeight.Medium
+                    },
+                    color = timeAmPmColor,
+                    modifier = Modifier.alignByBaseline()
+                )
+            }
+        }
+
+        // Date
+        AlarmDate(
+            alarm = alarm,
+            modifier = Modifier.padding(start = 2.dp)
+        )
     }
 }
 
