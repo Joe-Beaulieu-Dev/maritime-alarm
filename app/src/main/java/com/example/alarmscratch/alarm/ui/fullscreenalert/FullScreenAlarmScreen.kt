@@ -63,10 +63,7 @@ fun FullScreenAlarmScreenContent(
     snoozeAlarm: (Context) -> Unit,
     dismissAlarm: (Context) -> Unit
 ) {
-    // Alarm data
     val context = LocalContext.current
-    val day = alarmExecutionDateTime.getDayFull()
-    val time = if (is24Hour) alarmExecutionDateTime.get24HourTime() else alarmExecutionDateTime.get12HourTime()
 
     Surface(
         modifier = Modifier
@@ -102,7 +99,7 @@ fun FullScreenAlarmScreenContent(
 
                     // Day
                     Text(
-                        text = day,
+                        text = alarmExecutionDateTime.getDayFull(),
                         color = InCloudBlack,
                         fontSize = 32.sp,
                         fontWeight = FontWeight.SemiBold
@@ -112,7 +109,11 @@ fun FullScreenAlarmScreenContent(
                     Row {
                         // Hour and Minute
                         Text(
-                            text = time,
+                            text = if (is24Hour) {
+                                alarmExecutionDateTime.get24HourTime()
+                            } else {
+                                alarmExecutionDateTime.get12HourTime()
+                            },
                             color = InCloudBlack,
                             fontSize = 64.sp,
                             fontWeight = FontWeight.Bold,
