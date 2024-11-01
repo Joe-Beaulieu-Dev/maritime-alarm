@@ -39,17 +39,22 @@ import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.preview.calendarAlarm
 import com.example.alarmscratch.alarm.data.preview.repeatingAlarm
+import com.example.alarmscratch.alarm.data.preview.snoozedAlarm
 import com.example.alarmscratch.alarm.data.preview.todayAlarm
 import com.example.alarmscratch.alarm.data.preview.tomorrowAlarm
 import com.example.alarmscratch.core.extension.get12HourTime
 import com.example.alarmscratch.core.extension.get24HourTime
 import com.example.alarmscratch.core.extension.getAmPm
+import com.example.alarmscratch.core.extension.isSnoozed
+import com.example.alarmscratch.core.extension.to12HourNotificationDateTimeString
+import com.example.alarmscratch.core.extension.to24HourNotificationDateTimeString
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatHull
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
 import com.example.alarmscratch.core.ui.theme.DarkerBoatSails
 import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
+import com.example.alarmscratch.core.ui.theme.SkyBlue
 import com.example.alarmscratch.settings.data.model.TimeDisplay
 
 @Composable
@@ -62,12 +67,23 @@ fun AlarmCard(
     modifier: Modifier = Modifier
 ) {
     // State
+    val context = LocalContext.current
     var dropdownExpanded by rememberSaveable { mutableStateOf(false) }
     val time = when (timeDisplay) {
         TimeDisplay.TwelveHour ->
             alarm.dateTime.get12HourTime()
         TimeDisplay.TwentyFourHour ->
             alarm.dateTime.get24HourTime()
+    }
+    val snoozedTime = if (alarm.isSnoozed() && alarm.snoozeDateTime != null) {
+        when (timeDisplay) {
+            TimeDisplay.TwelveHour ->
+                alarm.snoozeDateTime.to12HourNotificationDateTimeString(context)
+            TimeDisplay.TwentyFourHour ->
+                alarm.snoozeDateTime.to24HourNotificationDateTimeString()
+        }
+    } else {
+        ""
     }
 
     // Colors
@@ -128,7 +144,7 @@ fun AlarmCard(
                 }
             }
 
-            // Name, Time, and Date
+            // Name, Time, Date, and Snooze Indicator
             Column(
                 modifier = Modifier
                     .align(Alignment.TopStart)
@@ -167,7 +183,7 @@ fun AlarmCard(
                         // AM/PM
                         if (timeDisplay == TimeDisplay.TwelveHour) {
                             Text(
-                                text = alarm.dateTime.getAmPm(LocalContext.current),
+                                text = alarm.dateTime.getAmPm(context),
                                 fontWeight = if (alarm.enabled) {
                                     FontWeight.SemiBold
                                 } else {
@@ -185,9 +201,18 @@ fun AlarmCard(
                         modifier = Modifier.padding(start = 2.dp)
                     )
                 }
-            }
 
-            val context = LocalContext.current
+                // Snooze Indicator
+                if (alarm.isSnoozed()) {
+                    Text(
+                        text = "${stringResource(id = R.string.snooze_indicator)} $snoozedTime",
+                        color = SkyBlue,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(start = 2.dp)
+                    )
+                }
+            }
 
             // Alarm Switch
             Switch(
@@ -258,6 +283,24 @@ private fun AlarmCardRepeating24HourPreview() {
         AlarmCard(
             alarm = todayAlarm,
             timeDisplay = TimeDisplay.TwentyFourHour,
+            onAlarmToggled = { _, _ -> },
+            onAlarmDeleted = {},
+            navigateToAlarmEditScreen = {},
+            modifier = Modifier.padding(20.dp)
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF0066CC
+)
+@Composable
+private fun SnoozedAlarmPreview() {
+    AlarmScratchTheme {
+        AlarmCard(
+            alarm = snoozedAlarm,
+            timeDisplay = TimeDisplay.TwelveHour,
             onAlarmToggled = { _, _ -> },
             onAlarmDeleted = {},
             navigateToAlarmEditScreen = {},

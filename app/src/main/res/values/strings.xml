@@ -27,6 +27,7 @@
     <string name="date_tomorrow">Tomorrow</string>
     <string name="time_am">AM</string>
     <string name="time_pm">PM</string>
+    <string name="snooze_indicator">Snoozed until -</string>
     <!-- AlarmCardMenu -->
     <string name="menu_delete">Delete</string>
     <!-- NoAlarmsCard -->
