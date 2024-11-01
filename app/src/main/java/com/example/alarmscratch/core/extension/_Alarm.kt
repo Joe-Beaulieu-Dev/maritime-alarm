@@ -3,6 +3,7 @@ package com.example.alarmscratch.core.extension
 import android.content.Context
 import android.media.Ringtone
 import com.example.alarmscratch.alarm.data.model.Alarm
+import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.core.data.repository.RingtoneRepository
 import java.time.DayOfWeek
@@ -11,6 +12,16 @@ import java.time.LocalDateTime
 /*
  * Utility
  */
+
+fun Alarm.toAlarmExecutionData(): AlarmExecutionData =
+    AlarmExecutionData(
+        id = id,
+        name = name,
+        executionDateTime = snoozeDateTime ?: dateTime,
+        ringtoneUri = ringtoneUriString,
+        isVibrationEnabled = isVibrationEnabled,
+        snoozeDuration = snoozeDuration
+    )
 
 /**
  * Returns a LocalDateTime with the next day the Alarm is set to go off, if and only if the Alarm is set to repeat.

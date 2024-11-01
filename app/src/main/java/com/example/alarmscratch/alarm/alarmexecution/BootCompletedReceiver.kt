@@ -8,6 +8,7 @@ import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.isSnoozed
+import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -58,9 +59,9 @@ class BootCompletedReceiver : BroadcastReceiver() {
             }
             .forEach { filteredAlarm ->
                 if (!filteredAlarm.isSnoozed()) {
-                    alarmScheduler.scheduleInitialAlarm(filteredAlarm)
+                    alarmScheduler.scheduleInitialAlarm(filteredAlarm.toAlarmExecutionData())
                 } else {
-                    alarmScheduler.scheduleSnoozedAlarm(filteredAlarm)
+                    alarmScheduler.scheduleSnoozedAlarm(filteredAlarm.toAlarmExecutionData())
                 }
             }
     }

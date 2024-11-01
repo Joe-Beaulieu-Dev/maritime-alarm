@@ -1,9 +1,9 @@
 package com.example.alarmscratch.alarm.alarmexecution
 
-import com.example.alarmscratch.alarm.data.model.Alarm
+import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
 
 interface AlarmScheduler {
-    fun scheduleInitialAlarm(alarm: Alarm)
-    fun scheduleSnoozedAlarm(alarm: Alarm)
-    fun cancelAlarm(alarm: Alarm)
+    fun scheduleInitialAlarm(alarmExecutionData: AlarmExecutionData)
+    fun scheduleSnoozedAlarm(alarmExecutionData: AlarmExecutionData)
+    fun cancelAlarm(alarmExecutionData: AlarmExecutionData)
 }

@@ -17,6 +17,7 @@ import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.futurizeDateTime
 import com.example.alarmscratch.core.extension.isRepeating
 import com.example.alarmscratch.core.extension.nextRepeatingDate
+import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.settings.data.model.AlarmDefaults
 import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
@@ -130,7 +131,7 @@ class AlarmCreationViewModel(
         alarmRepository.getAlarm(alarmId)
 
     private fun scheduleAlarm(context: Context, alarm: Alarm) {
-        AlarmSchedulerImpl(context).scheduleInitialAlarm(alarm)
+        AlarmSchedulerImpl(context).scheduleInitialAlarm(alarm.toAlarmExecutionData())
     }
 
     fun updateName(name: String) {

@@ -4,8 +4,10 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import com.example.alarmscratch.R
+import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
 import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmActivity
 import com.example.alarmscratch.alarm.ui.notification.AlarmNotification
+import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.ringtone.RingtonePlayerManager
 import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
@@ -17,6 +19,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
 
 class AlarmNotificationService : Service() {
 
@@ -39,20 +42,30 @@ class AlarmNotificationService : Service() {
     }
 
     private fun displayAlarmNotification(intent: Intent) {
-        // Parse Intent for Alarm data
-        val alarmId = intent.getIntExtra(AlarmActionReceiver.EXTRA_ALARM_ID, AlarmActionReceiver.ALARM_NO_ID)
-        val alarmName = intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_NAME) ?: getString(R.string.default_alarm_name)
-        val alarmExecutionDateTime =
-            intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME)
-                ?: getString(R.string.default_alarm_time)
+        // Alarm data
+        val id = intent.getIntExtra(AlarmActionReceiver.EXTRA_ALARM_ID, AlarmActionReceiver.ALARM_NO_ID)
+        val executionDateTime = try {
+            LocalDateTime.parse(intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME))
+        } catch (e: Exception) {
+            // This is for use in the Alarm Notification, which is about to be set off below.
+            // The execution DateTime for the Alarm should be for right now anyways, so this fallback makes sense.
+            LocalDateTimeUtil.nowTruncated()
+        }
         val ringtoneUri = intent.getStringExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI) ?: AlarmActionReceiver.ALARM_NO_RINGTONE_URI
         val isVibrationEnabled = intent.getBooleanExtra(
             AlarmActionReceiver.EXTRA_IS_VIBRATION_ENABLED,
             AlarmActionReceiver.ALARM_NO_IS_VIBRATION_ENABLED
         )
-        val snoozeDuration = intent.getIntExtra(
-            AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION,
-            AlarmDefaultsRepository.DEFAULT_SNOOZE_DURATION
+        val alarmExecutionData = AlarmExecutionData(
+            id = id,
+            name = intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_NAME) ?: getString(R.string.default_alarm_name),
+            executionDateTime = executionDateTime,
+            ringtoneUri = ringtoneUri,
+            isVibrationEnabled = isVibrationEnabled,
+            snoozeDuration = intent.getIntExtra(
+                AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION,
+                AlarmDefaultsRepository.DEFAULT_SNOOZE_DURATION
+            )
         )
 
         // Get General Settings, Launch Notification, Play Ringtone, Vibrate
@@ -69,18 +82,14 @@ class AlarmNotificationService : Service() {
             // Switch back to Main Thread for UI related work
             withContext(Dispatchers.Main) {
                 // Create Notification
-                val fullScreenNotification =
-                    AlarmNotification.fullScreenNotification(
-                        applicationContext,
-                        alarmId,
-                        alarmName,
-                        alarmExecutionDateTime,
-                        snoozeDuration,
-                        generalSettings.timeDisplay
-                    )
+                val fullScreenNotification = AlarmNotification.fullScreenNotification(
+                    applicationContext,
+                    alarmExecutionData,
+                    generalSettings.timeDisplay
+                )
 
                 // Push Service to foreground and display Notification
-                startForeground(alarmId, fullScreenNotification)
+                startForeground(id, fullScreenNotification)
 
                 // TODO: Check notification permission before sounding Alarm. If you don't,
                 //  then the ringtone will sound without the notification.

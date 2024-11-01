@@ -48,7 +48,7 @@ fun FullScreenAlarmScreen(fullScreenAlarmViewModel: FullScreenAlarmViewModel) {
 
     FullScreenAlarmScreenContent(
         alarmName = fullScreenAlarmViewModel.alarmName,
-        alarmDateTime = fullScreenAlarmViewModel.alarmDateTime,
+        alarmExecutionDateTime = fullScreenAlarmViewModel.alarmExecutionDateTime,
         is24Hour = fullScreenAlarmViewModel.is24Hour,
         snoozeAlarm = fullScreenAlarmViewModel::snoozeAlarm,
         dismissAlarm = fullScreenAlarmViewModel::dismissAlarm
@@ -58,18 +58,12 @@ fun FullScreenAlarmScreen(fullScreenAlarmViewModel: FullScreenAlarmViewModel) {
 @Composable
 fun FullScreenAlarmScreenContent(
     alarmName: String,
-    alarmDateTime: LocalDateTime?,
+    alarmExecutionDateTime: LocalDateTime,
     is24Hour: Boolean,
     snoozeAlarm: (Context) -> Unit,
     dismissAlarm: (Context) -> Unit
 ) {
-    // Alarm data
     val context = LocalContext.current
-    val day = alarmDateTime?.getDayFull() ?: context.getString(R.string.default_alarm_date)
-    val time = alarmDateTime
-        ?.let { if (is24Hour) it.get24HourTime() else it.get12HourTime() }
-        ?: context.getString(R.string.default_alarm_time)
-    val amPm = alarmDateTime?.let { if (!is24Hour) it.getAmPm(context) else "" } ?: ""
 
     Surface(
         modifier = Modifier
@@ -105,7 +99,7 @@ fun FullScreenAlarmScreenContent(
 
                     // Day
                     Text(
-                        text = day,
+                        text = alarmExecutionDateTime.getDayFull(),
                         color = InCloudBlack,
                         fontSize = 32.sp,
                         fontWeight = FontWeight.SemiBold
@@ -115,7 +109,11 @@ fun FullScreenAlarmScreenContent(
                     Row {
                         // Hour and Minute
                         Text(
-                            text = time,
+                            text = if (is24Hour) {
+                                alarmExecutionDateTime.get24HourTime()
+                            } else {
+                                alarmExecutionDateTime.get12HourTime()
+                            },
                             color = InCloudBlack,
                             fontSize = 64.sp,
                             fontWeight = FontWeight.Bold,
@@ -125,7 +123,7 @@ fun FullScreenAlarmScreenContent(
                         // AM/PM
                         if (!is24Hour) {
                             Text(
-                                text = amPm,
+                                text = alarmExecutionDateTime.getAmPm(context),
                                 color = InCloudBlack,
                                 fontSize = 42.sp,
                                 fontWeight = FontWeight.SemiBold,
@@ -168,7 +166,7 @@ private fun FullScreenAlarmScreen12HourPreview() {
     AlarmScratchTheme {
         FullScreenAlarmScreenContent(
             alarmName = consistentFutureAlarm.name,
-            alarmDateTime = consistentFutureAlarm.dateTime,
+            alarmExecutionDateTime = consistentFutureAlarm.dateTime,
             is24Hour = false,
             snoozeAlarm = {},
             dismissAlarm = {}
@@ -182,7 +180,7 @@ private fun FullScreenAlarmScreen24HourPreview() {
     AlarmScratchTheme {
         FullScreenAlarmScreenContent(
             alarmName = consistentFutureAlarm.name,
-            alarmDateTime = consistentFutureAlarm.dateTime,
+            alarmExecutionDateTime = consistentFutureAlarm.dateTime,
             is24Hour = true,
             snoozeAlarm = {},
             dismissAlarm = {}
