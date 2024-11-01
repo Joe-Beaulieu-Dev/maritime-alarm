@@ -40,7 +40,7 @@ object AlarmNotification {
                 getDismissAlarmAction(context, alarmExecutionData.id)
             )
             .setDeleteIntent(getDismissAlarmPendingIntent(context, alarmExecutionData.id))
-            .setFullScreenIntent(getAlertPendingIntent(context, alarmExecutionData, timeDisplay), true)
+            .setFullScreenIntent(getFullScreenAlertPendingIntent(context, alarmExecutionData, timeDisplay), true)
             .build()
     }
 
@@ -91,7 +91,7 @@ object AlarmNotification {
         )
     }
 
-    private fun getAlertPendingIntent(
+    private fun getFullScreenAlertPendingIntent(
         context: Context,
         alarmExecutionData: AlarmExecutionData,
         timeDisplay: TimeDisplay
@@ -107,7 +107,7 @@ object AlarmNotification {
             // Extras
             putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmExecutionData.id)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, alarmExecutionData.name)
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME, alarmExecutionData.executionDateTime)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME, alarmExecutionData.executionDateTime.toString())
             putExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI, alarmExecutionData.ringtoneUri)
             putExtra(AlarmActionReceiver.EXTRA_IS_VIBRATION_ENABLED, alarmExecutionData.isVibrationEnabled)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION, alarmExecutionData.snoozeDuration)

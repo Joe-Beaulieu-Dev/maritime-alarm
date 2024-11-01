@@ -48,7 +48,7 @@ class AlarmNotificationService : Service() {
             LocalDateTime.parse(intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME))
         } catch (e: Exception) {
             // This is for use in the Alarm Notification, which is about to be set off below.
-            // The execution DateTime from the Alarm should be for right now anyways, so this fallback makes sense.
+            // The execution DateTime for the Alarm should be for right now anyways, so this fallback makes sense.
             LocalDateTimeUtil.nowTruncated()
         }
         val ringtoneUri = intent.getStringExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI) ?: AlarmActionReceiver.ALARM_NO_RINGTONE_URI

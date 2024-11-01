@@ -12,6 +12,7 @@ import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.alarmexecution.AlarmActionReceiver
+import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
 import java.time.LocalDateTime
@@ -38,10 +39,11 @@ class FullScreenAlarmActivity : ComponentActivity() {
         // Alarm data
         val alarmId = intent.getIntExtra(AlarmActionReceiver.EXTRA_ALARM_ID, AlarmActionReceiver.ALARM_NO_ID)
         val alarmName = intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_NAME) ?: getString(R.string.default_alarm_name)
-        val alarmDateTime = try {
+        val alarmExecutionDateTime = try {
             LocalDateTime.parse(intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME))
         } catch (e: Exception) {
-            null
+            // The execution DateTime for the Alarm should be for right now, so this fallback makes sense.
+            LocalDateTimeUtil.nowTruncated()
         }
         val snoozeDuration = intent.getIntExtra(
             AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION,
@@ -51,7 +53,7 @@ class FullScreenAlarmActivity : ComponentActivity() {
 
         // Create/Get ViewModel
         val fullScreenAlarmViewModel by viewModels<FullScreenAlarmViewModel> {
-            FullScreenAlarmViewModel.provideFactory(alarmId, alarmName, alarmDateTime, snoozeDuration, is24Hour)
+            FullScreenAlarmViewModel.provideFactory(alarmId, alarmName, alarmExecutionDateTime, snoozeDuration, is24Hour)
         }
 
         setContent {
