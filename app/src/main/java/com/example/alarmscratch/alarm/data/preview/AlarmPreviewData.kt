@@ -15,7 +15,7 @@ val repeatingAlarm =
         enabled = true,
         // TODO: Make this set the Date according to the next time the
         //  Alarm is going to go off based on the WeeklyRepeater
-        dateTime = getTomorrowAtTime24Hr(hour = 8, minute = 30, second = 0),
+        dateTime = getTomorrowAtTime24Hr(hour = 8, minute = 30),
         weeklyRepeater = WeeklyRepeater(encodedRepeatingDays = tueWedThu),
         ringtoneUriString = sampleRingtoneUriString,
         isVibrationEnabled = true,
@@ -26,7 +26,7 @@ val todayAlarm =
     Alarm(
         name = "Eat pizza",
         enabled = true,
-        dateTime = getTodayAtTime24Hr(hour = 23, minute = 59, second = 0),
+        dateTime = getTodayAtTime24Hr(hour = 23, minute = 59),
         weeklyRepeater = WeeklyRepeater(),
         ringtoneUriString = sampleRingtoneUriString,
         isVibrationEnabled = false,
@@ -37,7 +37,7 @@ val tomorrowAlarm =
     Alarm(
         name = "Do a flip",
         enabled = false,
-        dateTime = getTomorrowAtTime24Hr(hour = 14, minute = 0, second = 0),
+        dateTime = getTomorrowAtTime24Hr(hour = 14, minute = 0),
         weeklyRepeater = WeeklyRepeater(),
         ringtoneUriString = sampleRingtoneUriString,
         isVibrationEnabled = true,
@@ -56,16 +56,27 @@ val calendarAlarm =
         snoozeDuration = 20
     )
 
-// TODO do exception handling for java code
-val consistentFutureAlarm: Alarm =
+val consistentFutureAlarm =
     Alarm(
         name = "Practice",
         enabled = true,
-        dateTime = LocalDateTimeUtil.nowTruncated().plusHours(8).plusMinutes(45),
+        dateTime = getFutureTime(plusHours = 8, plusMinutes = 45),
         weeklyRepeater = WeeklyRepeater(),
         ringtoneUriString = sampleRingtoneUriString,
         isVibrationEnabled = true,
         snoozeDuration = 25
+    )
+
+val snoozedAlarm =
+    Alarm(
+        name = "Gym",
+        enabled = true,
+        dateTime = getFutureTime(plusHours = 0, plusMinutes = 30),
+        weeklyRepeater = WeeklyRepeater(),
+        ringtoneUriString = sampleRingtoneUriString,
+        isVibrationEnabled = true,
+        snoozeDateTime = getFutureTime(plusHours = 0, plusMinutes = 30).plusMinutes(10),
+        snoozeDuration = 10
     )
 
 // YYYY-MM-DDTHH:MM:SS
@@ -87,15 +98,12 @@ val ringtoneDataSampleList: List<RingtoneData> = listOf(
 )
 
 // TODO do exception handling for java code
-private fun getTodayAtTime24Hr(hour: Int, minute: Int, second: Int): LocalDateTime =
-    LocalDateTime.now().withNano(0)
-        .withHour(hour)
-        .withMinute(minute)
-        .withSecond(second)
+private fun getTodayAtTime24Hr(hour: Int, minute: Int): LocalDateTime =
+    LocalDateTimeUtil.nowTruncated().withHour(hour).withMinute(minute)
 
 // TODO do exception handling for java code
-private fun getTomorrowAtTime24Hr(hour: Int, minute: Int, second: Int): LocalDateTime =
-    LocalDateTime.now().plusDays(1).withNano(0)
-        .withHour(hour)
-        .withMinute(minute)
-        .withSecond(second)
+private fun getTomorrowAtTime24Hr(hour: Int, minute: Int): LocalDateTime =
+    getTodayAtTime24Hr(hour, minute).plusDays(1)
+
+private fun getFutureTime(plusHours: Long, plusMinutes: Long): LocalDateTime =
+    LocalDateTimeUtil.nowTruncated().plusHours(plusHours).plusMinutes(plusMinutes)

@@ -26,13 +26,13 @@ fun AlarmDate(
     modifier: Modifier = Modifier
 ) {
     if (alarm.isRepeating()) {
-        RepeatingDateBox(
+        RepeatingAlarmDate(
             repeatingDays = alarm.weeklyRepeater,
             enabled = alarm.enabled,
             modifier = modifier
         )
     } else {
-        NonRepeatingDateBox(
+        NonRepeatingAlarmDate(
             dateTime = alarm.dateTime,
             enabled = alarm.enabled,
             modifier = modifier
@@ -41,7 +41,7 @@ fun AlarmDate(
 }
 
 @Composable
-private fun RepeatingDateBox(
+private fun RepeatingAlarmDate(
     repeatingDays: WeeklyRepeater,
     enabled: Boolean,
     modifier: Modifier = Modifier
@@ -55,7 +55,7 @@ private fun RepeatingDateBox(
 }
 
 @Composable
-private fun NonRepeatingDateBox(
+private fun NonRepeatingAlarmDate(
     dateTime: LocalDateTime,
     enabled: Boolean,
     modifier: Modifier = Modifier

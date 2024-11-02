@@ -2,7 +2,6 @@ package com.example.alarmscratch.core.extension
 
 import android.content.Context
 import com.example.alarmscratch.R
-import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -13,9 +12,6 @@ import java.util.Locale
 object LocalDateTimeUtil {
     fun nowTruncated(): LocalDateTime =
         LocalDateTime.now().withSecond(0).withNano(0)
-
-    fun defaultSnoozeDateTime(): LocalDateTime =
-        nowTruncated().plusMinutes(AlarmDefaultsRepository.DEFAULT_SNOOZE_DURATION.toLong())
 }
 
 /*

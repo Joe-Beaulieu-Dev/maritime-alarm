@@ -164,7 +164,7 @@ fun AlarmCreateEditScreen(
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Alarm Name and Date/Time Settings
+            // Alarm Name, Date/Time Settings, Alert Settings, Snooze Settings
             Column(
                 modifier = Modifier
                     .padding(start = 20.dp, top = 20.dp, end = 20.dp)
