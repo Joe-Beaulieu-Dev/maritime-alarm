@@ -42,7 +42,7 @@ fun AlarmListScreen(
             alarmList = alarmList,
             timeDisplay = generalSettings.timeDisplay,
             onAlarmToggled = { context, alarm -> coroutineScope.launch { alarmListViewModel.toggleAlarm(context, alarm) } },
-            onAlarmDeleted = { alarm -> coroutineScope.launch { alarmListViewModel.deleteAlarm(alarm) } },
+            onAlarmDeleted = { context, alarm -> coroutineScope.launch { alarmListViewModel.cancelAndDeleteAlarm(context, alarm) } },
             navigateToAlarmEditScreen = navigateToAlarmEditScreen,
             modifier = modifier
         )
@@ -54,7 +54,7 @@ fun AlarmListScreenContent(
     alarmList: List<Alarm>,
     timeDisplay: TimeDisplay,
     onAlarmToggled: (Context, Alarm) -> Unit,
-    onAlarmDeleted: (Alarm) -> Unit,
+    onAlarmDeleted: (Context, Alarm) -> Unit,
     navigateToAlarmEditScreen: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -96,7 +96,7 @@ private fun AlarmListScreenPreview() {
             alarmList = alarmSampleDataHardCodedIds,
             timeDisplay = TimeDisplay.TwelveHour,
             onAlarmToggled = { _, _ -> },
-            onAlarmDeleted = {},
+            onAlarmDeleted = { _, _ -> },
             navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)
         )
@@ -114,7 +114,7 @@ private fun AlarmListScreenNoAlarmsPreview() {
             alarmList = emptyList(),
             timeDisplay = TimeDisplay.TwelveHour,
             onAlarmToggled = { _, _ -> },
-            onAlarmDeleted = {},
+            onAlarmDeleted = { _, _ -> },
             navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)
         )

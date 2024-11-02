@@ -62,7 +62,7 @@ fun AlarmCard(
     alarm: Alarm,
     timeDisplay: TimeDisplay,
     onAlarmToggled: (Context, Alarm) -> Unit,
-    onAlarmDeleted: (Alarm) -> Unit,
+    onAlarmDeleted: (Context, Alarm) -> Unit,
     navigateToAlarmEditScreen: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -136,7 +136,7 @@ fun AlarmCard(
             AlarmCardDropdownMenu(
                 isExpanded = isDropdownExpanded,
                 onExpansionToggled = onDropdownExpansionToggled,
-                onAlarmDeleted = { onAlarmDeleted(alarm) },
+                onAlarmDeleted = { onAlarmDeleted(context, alarm) },
                 modifier = Modifier.align(Alignment.TopEnd)
             )
 
@@ -293,7 +293,7 @@ private fun AlarmCardRepeating12HourPreview() {
             alarm = repeatingAlarm,
             timeDisplay = TimeDisplay.TwelveHour,
             onAlarmToggled = { _, _ -> },
-            onAlarmDeleted = {},
+            onAlarmDeleted = { _, _ -> },
             navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)
         )
@@ -311,7 +311,7 @@ private fun AlarmCardRepeating24HourPreview() {
             alarm = todayAlarm,
             timeDisplay = TimeDisplay.TwentyFourHour,
             onAlarmToggled = { _, _ -> },
-            onAlarmDeleted = {},
+            onAlarmDeleted = { _, _ -> },
             navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)
         )
@@ -329,7 +329,7 @@ private fun SnoozedAlarmPreview() {
             alarm = snoozedAlarm,
             timeDisplay = TimeDisplay.TwelveHour,
             onAlarmToggled = { _, _ -> },
-            onAlarmDeleted = {},
+            onAlarmDeleted = { _, _ -> },
             navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)
         )
@@ -360,7 +360,7 @@ private fun AlarmCardTodayPreview() {
             alarm = todayAlarm,
             timeDisplay = TimeDisplay.TwelveHour,
             onAlarmToggled = { _, _ -> },
-            onAlarmDeleted = {},
+            onAlarmDeleted = { _, _ -> },
             navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)
         )
@@ -378,7 +378,7 @@ private fun AlarmCardTomorrowPreview() {
             alarm = tomorrowAlarm,
             timeDisplay = TimeDisplay.TwelveHour,
             onAlarmToggled = { _, _ -> },
-            onAlarmDeleted = {},
+            onAlarmDeleted = { _, _ -> },
             navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)
         )
@@ -396,7 +396,7 @@ private fun AlarmCardCalendarPreview() {
             alarm = calendarAlarm,
             timeDisplay = TimeDisplay.TwelveHour,
             onAlarmToggled = { _, _ -> },
-            onAlarmDeleted = {},
+            onAlarmDeleted = { _, _ -> },
             navigateToAlarmEditScreen = {},
             modifier = Modifier.padding(20.dp)
         )

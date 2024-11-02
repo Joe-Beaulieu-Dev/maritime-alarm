@@ -84,7 +84,8 @@ class AlarmListViewModel(
         AlarmSchedulerImpl(context).cancelAlarm(alarm.toAlarmExecutionData())
     }
 
-    suspend fun deleteAlarm(alarm: Alarm) {
+    suspend fun cancelAndDeleteAlarm(context: Context, alarm: Alarm) {
+        cancelAlarm(context, alarm)
         alarmRepository.deleteAlarm(alarm)
     }
 }

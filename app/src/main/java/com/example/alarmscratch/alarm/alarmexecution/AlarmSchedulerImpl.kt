@@ -48,11 +48,20 @@ class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
     }
 
     override fun cancelAlarm(alarmExecutionData: AlarmExecutionData) {
+        // Create PendingIntent to cancel Alarm
+        val alarmIntent = Intent(context, AlarmActionReceiver::class.java).apply {
+            // This needs to be the same as the scheduling action.
+            // This is because the Intent must pass Intent.filterEquals(), which looks at the flag,
+            // in order for the AlarmManager to be able to find the Alarm with the "same Intent" to cancel.
+            action = AlarmActionReceiver.ACTION_EXECUTE_ALARM
+        }
+
+        // Cancel Alarm
         alarmManager.cancel(
             PendingIntent.getBroadcast(
                 context,
                 alarmExecutionData.id,
-                Intent(context, AlarmActionReceiver::class.java),
+                alarmIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         )

@@ -159,7 +159,7 @@ private fun CoreScreenAlarmListPreview() {
                 alarmList = alarmListState.alarmList,
                 timeDisplay = TimeDisplay.TwelveHour,
                 onAlarmToggled = { _, _ -> },
-                onAlarmDeleted = {},
+                onAlarmDeleted = { _, _ -> },
                 navigateToAlarmEditScreen = {},
                 modifier = Modifier.padding(20.dp)
             )
@@ -194,7 +194,7 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
                 alarmList = alarmListState.alarmList,
                 timeDisplay = TimeDisplay.TwelveHour,
                 onAlarmToggled = { _, _ -> },
-                onAlarmDeleted = {},
+                onAlarmDeleted = { _, _ -> },
                 navigateToAlarmEditScreen = {},
                 modifier = Modifier.padding(20.dp)
             )
