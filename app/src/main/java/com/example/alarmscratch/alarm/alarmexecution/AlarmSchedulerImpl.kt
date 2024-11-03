@@ -7,9 +7,9 @@ import android.content.Intent
 import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
 import com.example.alarmscratch.core.extension.zonedEpochMillis
 
-object AlarmSchedulerImpl : AlarmScheduler {
+object AlarmSchedulerImpl {
 
-    override fun scheduleAlarm(context: Context, alarmExecutionData: AlarmExecutionData) {
+    fun scheduleAlarm(context: Context, alarmExecutionData: AlarmExecutionData) {
         // Create PendingIntent to execute Alarm
         val alarmIntent = Intent(context, AlarmActionReceiver::class.java).apply {
             // Action
@@ -37,7 +37,7 @@ object AlarmSchedulerImpl : AlarmScheduler {
         )
     }
 
-    override fun cancelAlarm(context: Context, alarmExecutionData: AlarmExecutionData) {
+    fun cancelAlarm(context: Context, alarmExecutionData: AlarmExecutionData) {
         // Create PendingIntent to cancel Alarm
         val alarmIntent = Intent(context, AlarmActionReceiver::class.java).apply {
             // This needs to be the same as the scheduling action.

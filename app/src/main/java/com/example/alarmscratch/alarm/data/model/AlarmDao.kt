@@ -40,5 +40,8 @@ interface AlarmDao {
      */
 
     @Query("UPDATE alarms SET snoozeDateTime = :snoozeDateTime WHERE id = :id")
-    fun updateSnoozeDateTime(id: Int, snoozeDateTime: LocalDateTime)
+    suspend fun updateSnoozeDateTime(id: Int, snoozeDateTime: LocalDateTime)
+
+    @Query("UPDATE alarms SET enabled = 0, snoozeDateTime = null WHERE id = :id")
+    suspend fun dismissAlarm(id: Int)
 }

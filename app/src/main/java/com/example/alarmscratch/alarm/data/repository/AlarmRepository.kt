@@ -27,6 +27,8 @@ class AlarmRepository(private val alarmDao: AlarmDao) {
      * Fine-grained transactions
      */
 
-    fun updateSnoozeDateTime(id: Int, snoozeDateTime: LocalDateTime) =
+    suspend fun updateSnoozeDateTime(id: Int, snoozeDateTime: LocalDateTime) =
         alarmDao.updateSnoozeDateTime(id = id, snoozeDateTime = snoozeDateTime)
+
+    suspend fun dismissAlarm(id: Int) = alarmDao.dismissAlarm(id = id)
 }
