@@ -77,11 +77,11 @@ class AlarmListViewModel(
     }
 
     private fun scheduleAlarm(context: Context, alarm: Alarm) {
-        AlarmSchedulerImpl(context).scheduleInitialAlarm(alarm.toAlarmExecutionData())
+        AlarmSchedulerImpl.scheduleAlarm(context, alarm.toAlarmExecutionData())
     }
 
     private fun cancelAlarm(context: Context, alarm: Alarm) {
-        AlarmSchedulerImpl(context).cancelAlarm(alarm.toAlarmExecutionData())
+        AlarmSchedulerImpl.cancelAlarm(context, alarm.toAlarmExecutionData())
     }
 
     suspend fun cancelAndDeleteAlarm(context: Context, alarm: Alarm) {

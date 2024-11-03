@@ -7,19 +7,9 @@ import android.content.Intent
 import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
 import com.example.alarmscratch.core.extension.zonedEpochMillis
 
-class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
+object AlarmSchedulerImpl : AlarmScheduler {
 
-    private val alarmManager = context.getSystemService(AlarmManager::class.java)
-
-    override fun scheduleInitialAlarm(alarmExecutionData: AlarmExecutionData) {
-        scheduleAlarm(alarmExecutionData)
-    }
-
-    override fun scheduleSnoozedAlarm(alarmExecutionData: AlarmExecutionData) {
-        scheduleAlarm(alarmExecutionData)
-    }
-
-    private fun scheduleAlarm(alarmExecutionData: AlarmExecutionData) {
+    override fun scheduleAlarm(context: Context, alarmExecutionData: AlarmExecutionData) {
         // Create PendingIntent to execute Alarm
         val alarmIntent = Intent(context, AlarmActionReceiver::class.java).apply {
             // Action
@@ -40,14 +30,14 @@ class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
         )
 
         // Schedule Alarm
-        alarmManager.setExactAndAllowWhileIdle(
+        getAlarmManager(context).setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             alarmExecutionData.executionDateTime.zonedEpochMillis(),
             alarmPendingIntent
         )
     }
 
-    override fun cancelAlarm(alarmExecutionData: AlarmExecutionData) {
+    override fun cancelAlarm(context: Context, alarmExecutionData: AlarmExecutionData) {
         // Create PendingIntent to cancel Alarm
         val alarmIntent = Intent(context, AlarmActionReceiver::class.java).apply {
             // This needs to be the same as the scheduling action.
@@ -57,7 +47,7 @@ class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
         }
 
         // Cancel Alarm
-        alarmManager.cancel(
+        getAlarmManager(context).cancel(
             PendingIntent.getBroadcast(
                 context,
                 alarmExecutionData.id,
@@ -66,4 +56,7 @@ class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
             )
         )
     }
+
+    private fun getAlarmManager(context: Context): AlarmManager =
+        context.getSystemService(AlarmManager::class.java)
 }
