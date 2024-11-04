@@ -92,7 +92,7 @@ class AlarmActionReceiver : BroadcastReceiver() {
                 alarmRepo.updateSnoozeDateTime(id, snoozeDateTime)
             }.await()
             // Reschedule Alarm
-            AlarmSchedulerImpl.scheduleAlarm(context.applicationContext, alarmExecutionData)
+            AlarmScheduler.scheduleAlarm(context.applicationContext, alarmExecutionData)
         }
     }
 

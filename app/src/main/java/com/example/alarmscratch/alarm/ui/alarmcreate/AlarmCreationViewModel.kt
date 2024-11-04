@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.alarmscratch.alarm.alarmexecution.AlarmActionReceiver
-import com.example.alarmscratch.alarm.alarmexecution.AlarmSchedulerImpl
+import com.example.alarmscratch.alarm.alarmexecution.AlarmScheduler
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
@@ -131,7 +131,7 @@ class AlarmCreationViewModel(
         alarmRepository.getAlarm(alarmId)
 
     private fun scheduleAlarm(context: Context, alarm: Alarm) {
-        AlarmSchedulerImpl.scheduleAlarm(context, alarm.toAlarmExecutionData())
+        AlarmScheduler.scheduleAlarm(context, alarm.toAlarmExecutionData())
     }
 
     fun updateName(name: String) {

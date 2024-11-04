@@ -7,7 +7,7 @@ import android.content.Intent
 import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
 import com.example.alarmscratch.core.extension.zonedEpochMillis
 
-object AlarmSchedulerImpl {
+object AlarmScheduler {
 
     fun scheduleAlarm(context: Context, alarmExecutionData: AlarmExecutionData) {
         // Create PendingIntent to execute Alarm

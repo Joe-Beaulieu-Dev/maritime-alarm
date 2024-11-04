@@ -56,8 +56,6 @@ class BootCompletedReceiver : BroadcastReceiver() {
                             alarm.snoozeDateTime?.isBefore(LocalDateTimeUtil.nowTruncated())?.not() ?: false
                         }
             }
-            .forEach { filteredAlarm ->
-                AlarmSchedulerImpl.scheduleAlarm(context, filteredAlarm.toAlarmExecutionData())
-            }
+            .forEach { AlarmScheduler.scheduleAlarm(context, it.toAlarmExecutionData()) }
     }
 }

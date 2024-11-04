@@ -8,7 +8,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.navigation.toRoute
-import com.example.alarmscratch.alarm.alarmexecution.AlarmSchedulerImpl
+import com.example.alarmscratch.alarm.alarmexecution.AlarmScheduler
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
@@ -111,7 +111,7 @@ class AlarmEditViewModel(
         alarmRepository.getAlarm(alarmId)
 
     private fun scheduleAlarm(context: Context, alarm: Alarm) {
-        AlarmSchedulerImpl.scheduleAlarm(context, alarm.toAlarmExecutionData())
+        AlarmScheduler.scheduleAlarm(context, alarm.toAlarmExecutionData())
     }
 
     fun updateName(name: String) {
