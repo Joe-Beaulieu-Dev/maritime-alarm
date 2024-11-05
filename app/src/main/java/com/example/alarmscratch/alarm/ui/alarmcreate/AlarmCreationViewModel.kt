@@ -103,7 +103,7 @@ class AlarmCreationViewModel(
         viewModelScope.launch {
             try {
                 if (_newAlarm.value is AlarmState.Success) {
-                    val newAlarmId = insertAlarm()
+                    val newAlarmId = saveAlarm()
                     val newAlarm = getAlarm(newAlarmId.toInt())
                     // TODO: Only schedule alarm if enabled. It should always be enabled here, but it's good practice to check anyways.
                     scheduleAlarm(context.applicationContext, newAlarm)
@@ -114,7 +114,7 @@ class AlarmCreationViewModel(
         }
     }
 
-    private suspend fun insertAlarm(): Long =
+    private suspend fun saveAlarm(): Long =
         if (_newAlarm.value is AlarmState.Success) {
             val alarm = (_newAlarm.value as AlarmState.Success).alarm
             if (alarm.isRepeating()) {

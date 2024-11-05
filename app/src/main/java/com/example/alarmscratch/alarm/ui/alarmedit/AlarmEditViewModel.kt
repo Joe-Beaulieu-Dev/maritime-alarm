@@ -86,7 +86,7 @@ class AlarmEditViewModel(
     fun saveAndScheduleAlarm(context: Context) {
         viewModelScope.launch {
             if (_modifiedAlarm.value is AlarmState.Success) {
-                updateAlarm()
+                saveAlarm()
                 val newAlarm = getAlarm(alarmId)
                 // TODO: Only schedule alarm if enabled
                 scheduleAlarm(context.applicationContext, newAlarm)
@@ -95,7 +95,7 @@ class AlarmEditViewModel(
     }
 
     // TODO: Clear snooze data
-    private suspend fun updateAlarm() {
+    private suspend fun saveAlarm() {
         if (_modifiedAlarm.value is AlarmState.Success) {
             val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
             if (alarm.isRepeating()) {
