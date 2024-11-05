@@ -20,7 +20,14 @@ class SkylineHeaderViewModel(private val alarmRepository: AlarmRepository) : Vie
 
     val nextAlarm: StateFlow<AlarmState> =
         alarmRepository.getAllAlarmsFlow()
-            .map<List<Alarm>, AlarmState> { alarmList -> AlarmState.Success(getNextAlarm(alarmList)!!) }
+            .map { alarmList ->
+                val nextAlarm = getNextAlarm(alarmList)
+                if (nextAlarm != null) {
+                    AlarmState.Success(nextAlarm)
+                } else {
+                    AlarmState.Error(Throwable())
+                }
+            }
             .catch { throwable -> emit(AlarmState.Error(throwable)) }
             .stateIn(
                 viewModelScope,
