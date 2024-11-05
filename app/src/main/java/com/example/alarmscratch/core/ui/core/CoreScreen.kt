@@ -144,7 +144,7 @@ private fun CoreScreenAlarmListPreview() {
             header = {
                 SkylineHeaderContent(
                     selectedNavComponentDest = selectedNavComponentDest,
-                    nextAlarmState = AlarmState.Success(alarmSampleDataHardCodedIds[0])
+                    nextAlarmState = AlarmState.Success(alarmSampleDataHardCodedIds.first())
                 )
             },
             navigationBar = {
@@ -213,7 +213,7 @@ private fun CoreScreenSettingsPreview() {
             header = {
                 SkylineHeaderContent(
                     selectedNavComponentDest = selectedNavComponentDest,
-                    nextAlarmState = AlarmState.Success(alarmSampleDataHardCodedIds[0])
+                    nextAlarmState = AlarmState.Success(alarmSampleDataHardCodedIds.first())
                 )
             },
             navigationBar = {
