@@ -25,6 +25,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.alarm.data.preview.alarmSampleDataHardCodedIds
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
+import com.example.alarmscratch.alarm.data.repository.AlarmState
 import com.example.alarmscratch.alarm.ui.alarmlist.AlarmListScreenContent
 import com.example.alarmscratch.core.extension.navigateSingleTop
 import com.example.alarmscratch.core.navigation.AlarmNavHost
@@ -143,7 +144,7 @@ private fun CoreScreenAlarmListPreview() {
             header = {
                 SkylineHeaderContent(
                     selectedNavComponentDest = selectedNavComponentDest,
-                    alarmListState = alarmListState
+                    nextAlarmState = AlarmState.Success(alarmSampleDataHardCodedIds[0])
                 )
             },
             navigationBar = {
@@ -178,7 +179,7 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
             header = {
                 SkylineHeaderContent(
                     selectedNavComponentDest = selectedNavComponentDest,
-                    alarmListState = alarmListState
+                    nextAlarmState = AlarmState.Error(Throwable())
                 )
             },
             navigationBar = {
@@ -212,7 +213,7 @@ private fun CoreScreenSettingsPreview() {
             header = {
                 SkylineHeaderContent(
                     selectedNavComponentDest = selectedNavComponentDest,
-                    alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds)
+                    nextAlarmState = AlarmState.Success(alarmSampleDataHardCodedIds[0])
                 )
             },
             navigationBar = {

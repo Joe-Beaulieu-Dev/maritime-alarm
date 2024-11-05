@@ -1,6 +1,5 @@
 package com.example.alarmscratch.core.ui.core.component
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +12,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
+import androidx.compose.material.icons.filled.AlarmOff
+import androidx.compose.material.icons.filled.Snooze
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,15 +24,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.alarmscratch.R
-import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
-import com.example.alarmscratch.alarm.data.repository.AlarmListState
-import com.example.alarmscratch.core.extension.LocalDateTimeUtil
+import com.example.alarmscratch.alarm.data.preview.snoozedAlarm
+import com.example.alarmscratch.alarm.data.repository.AlarmState
+import com.example.alarmscratch.core.extension.isSnoozed
+import com.example.alarmscratch.core.extension.toCountdownString
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.ui.shared.SailBoat
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
@@ -39,10 +42,6 @@ import com.example.alarmscratch.core.ui.theme.BoatHull
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.InCloudBlack
 import com.example.alarmscratch.core.ui.theme.SkyBlue
-import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
-import kotlin.math.ceil
-import kotlin.math.floor
 
 @Composable
 fun SkylineHeader(
@@ -51,11 +50,11 @@ fun SkylineHeader(
     skylineHeaderViewModel: SkylineHeaderViewModel = viewModel(factory = SkylineHeaderViewModel.Factory)
 ) {
     // State
-    val alarmListState by skylineHeaderViewModel.alarmList.collectAsState()
+    val nextAlarmState by skylineHeaderViewModel.nextAlarm.collectAsState()
 
     SkylineHeaderContent(
         selectedNavComponentDest = selectedNavComponentDest,
-        alarmListState = alarmListState,
+        nextAlarmState = nextAlarmState,
         modifier = modifier
     )
 }
@@ -63,7 +62,7 @@ fun SkylineHeader(
 @Composable
 fun SkylineHeaderContent(
     selectedNavComponentDest: Destination,
-    alarmListState: AlarmListState,
+    nextAlarmState: AlarmState,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -122,18 +121,35 @@ fun SkylineHeaderContent(
                     verticalAlignment = Alignment.Bottom,
                     modifier = Modifier.align(Alignment.Center)
                 ) {
-                    if (selectedNavComponentDest == Destination.AlarmListScreen && alarmListState is AlarmListState.Success) {
-                        // TODO: Change Icon to Icons.Default.AlarmOff if there's no Active Alarms
+                    if (selectedNavComponentDest == Destination.AlarmListScreen) {
+                        // Next Alarm Info
+                        val alarmIcon =
+                            if (nextAlarmState is AlarmState.Success) {
+                                if (nextAlarmState.alarm.isSnoozed()) {
+                                    Icons.Default.Snooze
+                                } else {
+                                    Icons.Default.Alarm
+                                }
+                            } else {
+                                Icons.Default.AlarmOff
+                            }
+                        val countdownText =
+                            if (nextAlarmState is AlarmState.Success) {
+                                nextAlarmState.alarm.toCountdownString(LocalContext.current)
+                            } else {
+                                stringResource(id = R.string.no_active_alarms)
+                            }
+
                         // Alarm Icon
                         Icon(
-                            imageVector = Icons.Default.Alarm,
+                            imageVector = alarmIcon,
                             tint = InCloudBlack,
                             contentDescription = null,
                             modifier = Modifier.padding(end = 4.dp, bottom = 2.dp)
                         )
-                        // Next Alarm Text
+                        // Countdown Text
                         Text(
-                            text = getNextAlarmText(LocalContext.current, alarmListState.alarmList),
+                            text = countdownText,
                             fontWeight = FontWeight.SemiBold,
                             color = InCloudBlack
                         )
@@ -176,60 +192,39 @@ fun SkylineHeaderContent(
     }
 }
 
-// TODO: Handle java exceptions
-private fun getNextAlarmText(context: Context, alarmList: List<Alarm>): String =
-    getNextAlarm(alarmList)
-        ?.let { nextAlarm ->
-            val secondsTillNextAlarm = LocalDateTime.now().until(nextAlarm.dateTime, ChronoUnit.SECONDS).toDouble()
-
-            // Days
-            val days = floor(secondsTillNextAlarm / 86400)
-            val remainderAfterDays = secondsTillNextAlarm - days * 86400
-            // Hours
-            val hours = floor(remainderAfterDays / 3600)
-            val remainderAfterHours = remainderAfterDays - hours * 3600
-            // Minutes - round up because we're not displaying seconds
-            val minutes = ceil(remainderAfterHours / 60)
-
-            // Days
-            (if (days >= 1) "${days.toInt()}${context.getString(R.string.day_abbreviation)}" else "") +
-                    // Space - only needed if we have both Days and Hours
-                    (if (days >= 1 && hours >= 1) " " else "") +
-                    // Hours
-                    (if (hours >= 1) "${hours.toInt()}${context.getString(R.string.hour_abbreviation)}" else "") +
-                    // Space - only needed if we have both Hours and Minutes
-                    (if (hours >= 1 && minutes >= 1) " " else "") +
-                    // Minutes
-                    (if (minutes >= 1) "${minutes.toInt()}${context.getString(R.string.minute_abbreviation)}" else "")
-        } ?: context.getString(R.string.no_active_alarms)
-
-private fun getNextAlarm(alarmList: List<Alarm>): Alarm? =
-    alarmList
-        .filter { it.enabled && it.dateTime.isAfter(LocalDateTimeUtil.nowTruncated()) }
-        .minByOrNull { it.dateTime }
-
 /*
  * Preview
  */
 
 @Preview
 @Composable
-private fun SkylineHeaderAlarmListScreenPreview() {
+private fun SkylineHeaderStandardAlarmPreview() {
     AlarmScratchTheme {
         SkylineHeaderContent(
             selectedNavComponentDest = Destination.AlarmListScreen,
-            alarmListState = AlarmListState.Success(alarmList = listOf(consistentFutureAlarm))
+            nextAlarmState = AlarmState.Success(alarm = consistentFutureAlarm)
         )
     }
 }
 
 @Preview
 @Composable
-private fun SkylineHeaderAlarmListScreenNoAlarmsPreview() {
+private fun SkylineHeaderSnoozedAlarmPreview() {
     AlarmScratchTheme {
         SkylineHeaderContent(
             selectedNavComponentDest = Destination.AlarmListScreen,
-            alarmListState = AlarmListState.Success(alarmList = emptyList())
+            nextAlarmState = AlarmState.Success(alarm = snoozedAlarm)
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SkylineHeaderNoAlarmsPreview() {
+    AlarmScratchTheme {
+        SkylineHeaderContent(
+            selectedNavComponentDest = Destination.AlarmListScreen,
+            nextAlarmState = AlarmState.Error(Throwable())
         )
     }
 }
@@ -240,7 +235,7 @@ private fun SkylineHeaderSettingsScreenPreview() {
     AlarmScratchTheme {
         SkylineHeaderContent(
             selectedNavComponentDest = Destination.SettingsScreen,
-            alarmListState = AlarmListState.Success(alarmList = listOf(consistentFutureAlarm))
+            nextAlarmState = AlarmState.Success(alarm = consistentFutureAlarm)
         )
     }
 }
