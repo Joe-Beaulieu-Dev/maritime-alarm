@@ -11,8 +11,6 @@ import com.example.alarmscratch.core.extension.isSnoozed
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class BootCompletedReceiver : BroadcastReceiver() {
@@ -26,12 +24,8 @@ class BootCompletedReceiver : BroadcastReceiver() {
             )
 
             CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val alarmList = async { alarmRepo.getAllAlarmsFlow() }.await().first()
-                    rescheduleEligibleAlarms(context, alarmList)
-                } catch (e: Exception) {
-                    // Flow was empty. Not doing anything with this. Just don't crash.
-                }
+                val alarmList = alarmRepo.getAllAlarms()
+                rescheduleEligibleAlarms(context, alarmList)
             }
         }
     }

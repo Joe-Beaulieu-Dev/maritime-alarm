@@ -26,7 +26,6 @@ import com.example.alarmscratch.settings.data.repository.GeneralSettingsReposito
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
 import com.example.alarmscratch.settings.data.repository.alarmDefaultsDataStore
 import com.example.alarmscratch.settings.data.repository.generalSettingsDataStore
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -104,8 +103,8 @@ class AlarmCreationViewModel(
         viewModelScope.launch {
             try {
                 if (_newAlarm.value is AlarmState.Success) {
-                    val newAlarmId = async { saveAlarm() }.await()
-                    val newAlarm = async { getAlarm(newAlarmId.toInt()) }.await()
+                    val newAlarmId = insertAlarm()
+                    val newAlarm = getAlarm(newAlarmId.toInt())
                     // TODO: Only schedule alarm if enabled. It should always be enabled here, but it's good practice to check anyways.
                     scheduleAlarm(context.applicationContext, newAlarm)
                 }
@@ -115,7 +114,7 @@ class AlarmCreationViewModel(
         }
     }
 
-    private suspend fun saveAlarm(): Long =
+    private suspend fun insertAlarm(): Long =
         if (_newAlarm.value is AlarmState.Success) {
             val alarm = (_newAlarm.value as AlarmState.Success).alarm
             if (alarm.isRepeating()) {

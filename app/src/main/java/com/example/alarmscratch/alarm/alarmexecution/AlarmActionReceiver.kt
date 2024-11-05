@@ -11,7 +11,6 @@ import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class AlarmActionReceiver : BroadcastReceiver() {
@@ -87,10 +86,8 @@ class AlarmActionReceiver : BroadcastReceiver() {
         // Update Alarm Database and reschedule Alarm
         CoroutineScope(Dispatchers.IO).launch {
             // Update Alarm
-            async {
-                val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
-                alarmRepo.updateSnoozeDateTime(id, snoozeDateTime)
-            }.await()
+            val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
+            alarmRepo.updateSnoozeDateTime(id, snoozeDateTime)
             // Reschedule Alarm
             AlarmScheduler.scheduleAlarm(context.applicationContext, alarmExecutionData)
         }

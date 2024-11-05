@@ -25,7 +25,6 @@ import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsRepository
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
 import com.example.alarmscratch.settings.data.repository.generalSettingsDataStore
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -87,8 +86,8 @@ class AlarmEditViewModel(
     fun saveAndScheduleAlarm(context: Context) {
         viewModelScope.launch {
             if (_modifiedAlarm.value is AlarmState.Success) {
-                async { saveAlarm() }.await()
-                val newAlarm = async { getAlarm(alarmId) }.await()
+                updateAlarm()
+                val newAlarm = getAlarm(alarmId)
                 // TODO: Only schedule alarm if enabled
                 scheduleAlarm(context.applicationContext, newAlarm)
             }
@@ -96,7 +95,7 @@ class AlarmEditViewModel(
     }
 
     // TODO: Clear snooze data
-    private suspend fun saveAlarm() {
+    private suspend fun updateAlarm() {
         if (_modifiedAlarm.value is AlarmState.Success) {
             val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
             if (alarm.isRepeating()) {
