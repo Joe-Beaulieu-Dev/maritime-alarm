@@ -8,7 +8,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.navigation.toRoute
-import com.example.alarmscratch.alarm.alarmexecution.AlarmSchedulerImpl
+import com.example.alarmscratch.alarm.alarmexecution.AlarmScheduler
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
@@ -25,7 +25,6 @@ import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsRepository
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
 import com.example.alarmscratch.settings.data.repository.generalSettingsDataStore
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -87,8 +86,8 @@ class AlarmEditViewModel(
     fun saveAndScheduleAlarm(context: Context) {
         viewModelScope.launch {
             if (_modifiedAlarm.value is AlarmState.Success) {
-                async { saveAlarm() }.await()
-                val newAlarm = async { getAlarm(alarmId) }.await()
+                saveAlarm()
+                val newAlarm = getAlarm(alarmId)
                 // TODO: Only schedule alarm if enabled
                 scheduleAlarm(context.applicationContext, newAlarm)
             }
@@ -111,7 +110,7 @@ class AlarmEditViewModel(
         alarmRepository.getAlarm(alarmId)
 
     private fun scheduleAlarm(context: Context, alarm: Alarm) {
-        AlarmSchedulerImpl(context).scheduleInitialAlarm(alarm.toAlarmExecutionData())
+        AlarmScheduler.scheduleAlarm(context, alarm.toAlarmExecutionData())
     }
 
     fun updateName(name: String) {

@@ -11,8 +11,6 @@ import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class AlarmActionReceiver : BroadcastReceiver() {
@@ -86,12 +84,12 @@ class AlarmActionReceiver : BroadcastReceiver() {
         )
 
         // Update Alarm Database and reschedule Alarm
-        val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
         CoroutineScope(Dispatchers.IO).launch {
             // Update Alarm
-            async { alarmRepo.updateSnoozeDateTime(id, snoozeDateTime) }.await()
+            val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
+            alarmRepo.updateSnoozeDateTime(id, snoozeDateTime)
             // Reschedule Alarm
-            AlarmSchedulerImpl(context.applicationContext).scheduleSnoozedAlarm(alarmExecutionData)
+            AlarmScheduler.scheduleAlarm(context.applicationContext, alarmExecutionData)
         }
     }
 
@@ -101,14 +99,9 @@ class AlarmActionReceiver : BroadcastReceiver() {
 
         // Disable Alarm and reset Snooze
         val alarmId = intent.getIntExtra(EXTRA_ALARM_ID, ALARM_NO_ID)
-        val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
         CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val alarm = async { alarmRepo.getAlarmFlow(alarmId) }.await().first()
-                alarmRepo.updateAlarm(alarm.copy(enabled = false, snoozeDateTime = null))
-            } catch (e: Exception) {
-                // Flow was empty. Not doing anything with this. Just don't crash.
-            }
+            val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
+            alarmRepo.dismissAlarm(alarmId)
         }
     }
 

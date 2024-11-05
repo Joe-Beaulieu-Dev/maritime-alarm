@@ -11,15 +11,12 @@ import com.example.alarmscratch.core.extension.isSnoozed
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class BootCompletedReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context != null && intent?.action == Intent.ACTION_LOCKED_BOOT_COMPLETED) {
-            val alarmScheduler = AlarmSchedulerImpl(context)
             val alarmRepo = AlarmRepository(
                 AlarmDatabase
                     .getDatabase(context.createDeviceProtectedStorageContext())
@@ -27,12 +24,8 @@ class BootCompletedReceiver : BroadcastReceiver() {
             )
 
             CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val alarmList = async { alarmRepo.getAllAlarmsFlow() }.await().first()
-                    rescheduleEligibleAlarms(alarmList, alarmScheduler)
-                } catch (e: Exception) {
-                    // Flow was empty. Not doing anything with this. Just don't crash.
-                }
+                val alarmList = alarmRepo.getAllAlarms()
+                rescheduleEligibleAlarms(context, alarmList)
             }
         }
     }
@@ -43,10 +36,10 @@ class BootCompletedReceiver : BroadcastReceiver() {
      * 1) Are enabled
      * 2) Are scheduled to execute either now, or in the future
      *
+     * @param context Context to be used for scheduling Alarms
      * @param alarmList List of Alarms to potentially reschedule
-     * @param alarmScheduler AlarmScheduler for rescheduling Alarms
      */
-    private fun rescheduleEligibleAlarms(alarmList: List<Alarm>, alarmScheduler: AlarmScheduler) {
+    private fun rescheduleEligibleAlarms(context: Context, alarmList: List<Alarm>) {
         alarmList
             .filter { alarm ->
                 alarm.enabled &&
@@ -57,12 +50,6 @@ class BootCompletedReceiver : BroadcastReceiver() {
                             alarm.snoozeDateTime?.isBefore(LocalDateTimeUtil.nowTruncated())?.not() ?: false
                         }
             }
-            .forEach { filteredAlarm ->
-                if (!filteredAlarm.isSnoozed()) {
-                    alarmScheduler.scheduleInitialAlarm(filteredAlarm.toAlarmExecutionData())
-                } else {
-                    alarmScheduler.scheduleSnoozedAlarm(filteredAlarm.toAlarmExecutionData())
-                }
-            }
+            .forEach { AlarmScheduler.scheduleAlarm(context, it.toAlarmExecutionData()) }
     }
 }

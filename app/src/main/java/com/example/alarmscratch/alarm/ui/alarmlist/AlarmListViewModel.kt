@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.example.alarmscratch.alarm.alarmexecution.AlarmSchedulerImpl
+import com.example.alarmscratch.alarm.alarmexecution.AlarmScheduler
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
@@ -77,11 +77,11 @@ class AlarmListViewModel(
     }
 
     private fun scheduleAlarm(context: Context, alarm: Alarm) {
-        AlarmSchedulerImpl(context).scheduleInitialAlarm(alarm.toAlarmExecutionData())
+        AlarmScheduler.scheduleAlarm(context, alarm.toAlarmExecutionData())
     }
 
     private fun cancelAlarm(context: Context, alarm: Alarm) {
-        AlarmSchedulerImpl(context).cancelAlarm(alarm.toAlarmExecutionData())
+        AlarmScheduler.cancelAlarm(context, alarm.toAlarmExecutionData())
     }
 
     suspend fun cancelAndDeleteAlarm(context: Context, alarm: Alarm) {

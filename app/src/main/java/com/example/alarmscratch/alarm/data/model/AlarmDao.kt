@@ -13,9 +13,14 @@ import java.time.LocalDateTime
 interface AlarmDao {
 
     /*
-     * Coarse-grained transactions
+     *******************************
+     * Coarse-grained Transactions *
+     *******************************
      */
 
+    /*
+     * One-shot Read/Write
+     */
     // TODO: Think about onConflict param more
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(alarm: Alarm): Long
@@ -29,6 +34,12 @@ interface AlarmDao {
     @Query("SELECT * FROM alarms WHERE id = :id")
     suspend fun getAlarm(id: Int): Alarm
 
+    @Query("SELECT * FROM alarms")
+    suspend fun getAllAlarms(): List<Alarm>
+
+    /*
+     * Observable Read
+     */
     @Query("SELECT * FROM alarms WHERE id = :id")
     fun getAlarmFlow(id: Int): Flow<Alarm>
 
@@ -36,9 +47,17 @@ interface AlarmDao {
     fun getAllAlarmsFlow(): Flow<List<Alarm>>
 
     /*
-     * Fine-grained transactions
+     *****************************
+     * Fine-grained Transactions *
+     *****************************
      */
 
+    /*
+     * One-shot Read/Write
+     */
     @Query("UPDATE alarms SET snoozeDateTime = :snoozeDateTime WHERE id = :id")
-    fun updateSnoozeDateTime(id: Int, snoozeDateTime: LocalDateTime)
+    suspend fun updateSnoozeDateTime(id: Int, snoozeDateTime: LocalDateTime)
+
+    @Query("UPDATE alarms SET enabled = 0, snoozeDateTime = null WHERE id = :id")
+    suspend fun dismissAlarm(id: Int)
 }
