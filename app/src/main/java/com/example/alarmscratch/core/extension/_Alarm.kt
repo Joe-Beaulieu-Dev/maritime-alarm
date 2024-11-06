@@ -2,12 +2,16 @@ package com.example.alarmscratch.core.extension
 
 import android.content.Context
 import android.media.Ringtone
+import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.core.data.repository.RingtoneRepository
 import java.time.DayOfWeek
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
+import kotlin.math.ceil
+import kotlin.math.floor
 
 /*
  * Utility
@@ -92,6 +96,31 @@ private fun sortRepeatingDaysByPreference(
     repeatingDays
         .filter { it.dayNumber() >= today.dayNumber() }
         .plus(repeatingDays.filter { it.dayNumber() < today.dayNumber() })
+
+// TODO: This function returns some weird values if the dateTime is in the past
+fun Alarm.toCountdownString(context: Context): String {
+    val secondsTillNextAlarm = LocalDateTime.now().until(snoozeDateTime ?: dateTime, ChronoUnit.SECONDS).toDouble()
+
+    // Days
+    val days = floor(secondsTillNextAlarm / 86400)
+    val remainderAfterDays = secondsTillNextAlarm - days * 86400
+    // Hours
+    val hours = floor(remainderAfterDays / 3600)
+    val remainderAfterHours = remainderAfterDays - hours * 3600
+    // Minutes - round up because we're not displaying seconds
+    val minutes = ceil(remainderAfterHours / 60)
+
+    // Days
+    return (if (days >= 1) "${days.toInt()}${context.getString(R.string.day_abbreviation)}" else "") +
+            // Space - only needed if we have both Days and Hours
+            (if (days >= 1 && hours >= 1) " " else "") +
+            // Hours
+            (if (hours >= 1) "${hours.toInt()}${context.getString(R.string.hour_abbreviation)}" else "") +
+            // Space - only needed if we have both Hours and Minutes
+            (if (hours >= 1 && minutes >= 1) " " else "") +
+            // Minutes
+            (if (minutes >= 1) "${minutes.toInt()}${context.getString(R.string.minute_abbreviation)}" else "")
+}
 
 /*
  * Convenience

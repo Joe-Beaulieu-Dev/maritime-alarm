@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
-import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
+import com.example.alarmscratch.alarm.data.repository.AlarmState
+import com.example.alarmscratch.core.extension.LocalDateTimeUtil
+import com.example.alarmscratch.core.extension.isSnoozed
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -16,15 +18,21 @@ import kotlinx.coroutines.flow.stateIn
 
 class SkylineHeaderViewModel(private val alarmRepository: AlarmRepository) : ViewModel() {
 
-    val alarmList: StateFlow<AlarmListState> =
-        alarmRepository
-            .getAllAlarmsFlow()
-            .map<List<Alarm>, AlarmListState> { alarmList -> AlarmListState.Success(alarmList) }
-            .catch { throwable -> emit(AlarmListState.Error(throwable)) }
+    val nextAlarm: StateFlow<AlarmState> =
+        alarmRepository.getAllAlarmsFlow()
+            .map { alarmList ->
+                val nextAlarm = getNextAlarm(alarmList)
+                if (nextAlarm != null) {
+                    AlarmState.Success(nextAlarm)
+                } else {
+                    AlarmState.Error(Throwable())
+                }
+            }
+            .catch { throwable -> emit(AlarmState.Error(throwable)) }
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-                AlarmListState.Loading
+                AlarmState.Loading
             )
 
     companion object {
@@ -41,4 +49,17 @@ class SkylineHeaderViewModel(private val alarmRepository: AlarmRepository) : Vie
             }
         }
     }
+
+    private fun getNextAlarm(alarmList: List<Alarm>): Alarm? =
+        alarmList
+            .filter { alarm ->
+                alarm.enabled &&
+                        if (alarm.isSnoozed()) {
+                            // TODO: Think of a better default behavior for this
+                            alarm.snoozeDateTime?.isAfter(LocalDateTimeUtil.nowTruncated()) ?: false
+                        } else {
+                            alarm.dateTime.isAfter(LocalDateTimeUtil.nowTruncated())
+                        }
+            }
+            .minByOrNull { alarm -> alarm.snoozeDateTime ?: alarm.dateTime }
 }
