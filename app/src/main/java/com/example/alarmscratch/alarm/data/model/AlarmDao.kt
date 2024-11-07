@@ -56,7 +56,10 @@ interface AlarmDao {
      * One-shot Read/Write
      */
     @Query("UPDATE alarms SET snoozeDateTime = :snoozeDateTime WHERE id = :id")
-    suspend fun updateSnoozeDateTime(id: Int, snoozeDateTime: LocalDateTime)
+    suspend fun updateSnooze(id: Int, snoozeDateTime: LocalDateTime)
+
+    @Query("UPDATE alarms SET snoozeDateTime = null WHERE id = :id")
+    suspend fun resetSnooze(id: Int)
 
     @Query("UPDATE alarms SET enabled = 0, snoozeDateTime = null WHERE id = :id")
     suspend fun dismissAlarm(id: Int)

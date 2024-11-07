@@ -87,7 +87,7 @@ class AlarmActionReceiver : BroadcastReceiver() {
         CoroutineScope(Dispatchers.IO).launch {
             // Update Alarm
             val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
-            alarmRepo.updateSnoozeDateTime(id, snoozeDateTime)
+            alarmRepo.updateSnooze(id, snoozeDateTime)
             // Reschedule Alarm
             AlarmScheduler.scheduleAlarm(context.applicationContext, alarmExecutionData)
         }

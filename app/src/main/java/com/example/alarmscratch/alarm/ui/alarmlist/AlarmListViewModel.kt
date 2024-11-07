@@ -72,7 +72,7 @@ class AlarmListViewModel(
         if (modifiedAlarm.enabled) {
             scheduleAlarm(context, modifiedAlarm)
         } else {
-            cancelAlarm(context, modifiedAlarm)
+            cancelAndResetAlarm(context, modifiedAlarm)
         }
     }
 
@@ -80,12 +80,13 @@ class AlarmListViewModel(
         AlarmScheduler.scheduleAlarm(context, alarm.toAlarmExecutionData())
     }
 
-    private fun cancelAlarm(context: Context, alarm: Alarm) {
+    private suspend fun cancelAndResetAlarm(context: Context, alarm: Alarm) {
         AlarmScheduler.cancelAlarm(context, alarm.toAlarmExecutionData())
+        alarmRepository.resetSnooze(alarm.id)
     }
 
     suspend fun cancelAndDeleteAlarm(context: Context, alarm: Alarm) {
-        cancelAlarm(context, alarm)
+        AlarmScheduler.cancelAlarm(context, alarm.toAlarmExecutionData())
         alarmRepository.deleteAlarm(alarm)
     }
 }
