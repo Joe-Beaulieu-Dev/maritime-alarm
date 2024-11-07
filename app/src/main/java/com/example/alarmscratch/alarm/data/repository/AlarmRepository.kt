@@ -42,8 +42,10 @@ class AlarmRepository(private val alarmDao: AlarmDao) {
     /*
      * One-shot Read/Write
      */
-    suspend fun updateSnoozeDateTime(id: Int, snoozeDateTime: LocalDateTime) =
-        alarmDao.updateSnoozeDateTime(id = id, snoozeDateTime = snoozeDateTime)
+    suspend fun updateSnooze(id: Int, snoozeDateTime: LocalDateTime) =
+        alarmDao.updateSnooze(id = id, snoozeDateTime = snoozeDateTime)
+
+    suspend fun resetSnooze(id: Int) = alarmDao.resetSnooze(id = id)
 
     suspend fun dismissAlarm(id: Int) = alarmDao.dismissAlarm(id = id)
 }
