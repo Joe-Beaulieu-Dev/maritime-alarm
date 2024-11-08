@@ -71,12 +71,12 @@ val snoozedAlarm =
     Alarm(
         name = "Gym",
         enabled = true,
-        dateTime = getFutureTime(plusHours = 0, plusMinutes = 30),
+        dateTime = LocalDateTimeUtil.nowTruncated(),
         weeklyRepeater = WeeklyRepeater(),
         ringtoneUriString = sampleRingtoneUriString,
         isVibrationEnabled = true,
-        snoozeDateTime = getFutureTime(plusHours = 0, plusMinutes = 30).plusMinutes(10),
-        snoozeDuration = 10
+        snoozeDateTime = LocalDateTimeUtil.nowTruncated().plusMinutes(25),
+        snoozeDuration = 25
     )
 
 // YYYY-MM-DDTHH:MM:SS
@@ -105,5 +105,12 @@ private fun getTodayAtTime24Hr(hour: Int, minute: Int): LocalDateTime =
 private fun getTomorrowAtTime24Hr(hour: Int, minute: Int): LocalDateTime =
     getTodayAtTime24Hr(hour, minute).plusDays(1)
 
-private fun getFutureTime(plusHours: Long, plusMinutes: Long): LocalDateTime =
-    LocalDateTimeUtil.nowTruncated().plusHours(plusHours).plusMinutes(plusMinutes)
+private fun getFutureTime(
+    plusDays: Long = 0,
+    plusHours: Long = 0,
+    plusMinutes: Long = 0
+): LocalDateTime =
+    LocalDateTimeUtil.nowTruncated()
+        .plusDays(plusDays)
+        .plusHours(plusHours)
+        .plusMinutes(plusMinutes)
