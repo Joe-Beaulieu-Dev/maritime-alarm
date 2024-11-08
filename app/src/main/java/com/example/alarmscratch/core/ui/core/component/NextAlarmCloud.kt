@@ -46,10 +46,10 @@ import java.time.LocalDateTime
 fun NextAlarmCloud(
     selectedNavComponentDest: Destination,
     modifier: Modifier = Modifier,
-    skylineHeaderViewModel: SkylineHeaderViewModel = viewModel(factory = SkylineHeaderViewModel.Factory)
+    nextAlarmCloudViewModel: NextAlarmCloudViewModel = viewModel(factory = NextAlarmCloudViewModel.Factory)
 ) {
     // State
-    val nextAlarmState by skylineHeaderViewModel.nextAlarm.collectAsState()
+    val nextAlarmState by nextAlarmCloudViewModel.nextAlarm.collectAsState()
 
     NextAlarmCloudContent(
         selectedNavComponentDest = selectedNavComponentDest,
@@ -64,6 +64,7 @@ fun NextAlarmCloudContent(
     nextAlarmState: AlarmState,
     modifier: Modifier = Modifier
 ) {
+    // Countdown Text Properties
     var fontSize: TextUnit
     var lineHeight: TextUnit
 
