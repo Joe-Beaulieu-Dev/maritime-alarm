@@ -32,6 +32,7 @@ import com.example.alarmscratch.core.navigation.AlarmNavHost
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.navigation.NavComponent
 import com.example.alarmscratch.core.ui.core.component.LavaFloatingActionButton
+import com.example.alarmscratch.core.ui.core.component.NextAlarmCloudContent
 import com.example.alarmscratch.core.ui.core.component.SkylineHeader
 import com.example.alarmscratch.core.ui.core.component.SkylineHeaderContent
 import com.example.alarmscratch.core.ui.core.component.VolcanoNavigationBar
@@ -143,18 +144,22 @@ private fun CoreScreenAlarmListPreview() {
         CoreScreenContent(
             header = {
                 SkylineHeaderContent(
-                    selectedNavComponentDest = selectedNavComponentDest,
-                    nextAlarmState = AlarmState.Success(alarmSampleDataHardCodedIds.first())
+                    nextAlarmIndicator = {
+                        NextAlarmCloudContent(
+                            selectedNavComponentDest = selectedNavComponentDest,
+                            nextAlarmState = AlarmState.Success(alarmSampleDataHardCodedIds.first())
+                        )
+                    }
                 )
             },
+            onFabClicked = {},
             navigationBar = {
                 VolcanoNavigationBar(
                     selectedNavComponentDest = selectedNavComponentDest,
                     onDestinationChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
-            },
-            onFabClicked = {}
+            }
         ) {
             AlarmListScreenContent(
                 alarmList = alarmListState.alarmList,
@@ -178,18 +183,22 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
         CoreScreenContent(
             header = {
                 SkylineHeaderContent(
-                    selectedNavComponentDest = selectedNavComponentDest,
-                    nextAlarmState = AlarmState.Error(Throwable())
+                    nextAlarmIndicator = {
+                        NextAlarmCloudContent(
+                            selectedNavComponentDest = selectedNavComponentDest,
+                            nextAlarmState = AlarmState.Error(Throwable())
+                        )
+                    }
                 )
             },
+            onFabClicked = {},
             navigationBar = {
                 VolcanoNavigationBar(
                     selectedNavComponentDest = selectedNavComponentDest,
                     onDestinationChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
-            },
-            onFabClicked = {}
+            }
         ) {
             AlarmListScreenContent(
                 alarmList = alarmListState.alarmList,
@@ -212,18 +221,22 @@ private fun CoreScreenSettingsPreview() {
         CoreScreenContent(
             header = {
                 SkylineHeaderContent(
-                    selectedNavComponentDest = selectedNavComponentDest,
-                    nextAlarmState = AlarmState.Success(alarmSampleDataHardCodedIds.first())
+                    nextAlarmIndicator = {
+                        NextAlarmCloudContent(
+                            selectedNavComponentDest = selectedNavComponentDest,
+                            nextAlarmState = AlarmState.Success(alarmSampleDataHardCodedIds.first())
+                        )
+                    }
                 )
             },
+            onFabClicked = {},
             navigationBar = {
                 VolcanoNavigationBar(
                     selectedNavComponentDest = selectedNavComponentDest,
                     onDestinationChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
-            },
-            onFabClicked = {}
+            }
         ) {
             SettingsScreen(
                 navigateToGeneralSettingsScreen = {},

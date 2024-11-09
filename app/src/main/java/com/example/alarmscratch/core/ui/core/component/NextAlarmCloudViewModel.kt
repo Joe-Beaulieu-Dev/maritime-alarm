@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class SkylineHeaderViewModel(private val alarmRepository: AlarmRepository) : ViewModel() {
+class NextAlarmCloudViewModel(private val alarmRepository: AlarmRepository) : ViewModel() {
 
     val nextAlarm: StateFlow<AlarmState> =
         alarmRepository.getAllAlarmsFlow()
@@ -43,7 +43,7 @@ class SkylineHeaderViewModel(private val alarmRepository: AlarmRepository) : Vie
                 // TODO: Do something about this
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
 
-                return SkylineHeaderViewModel(
+                return NextAlarmCloudViewModel(
                     alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(application).alarmDao())
                 ) as T
             }
