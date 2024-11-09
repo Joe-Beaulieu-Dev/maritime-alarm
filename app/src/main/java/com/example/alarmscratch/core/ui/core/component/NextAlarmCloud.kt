@@ -78,7 +78,6 @@ fun NextAlarmCloudContent(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .align(Alignment.Center)
                 .width(120.dp)
                 .heightIn(min = 50.dp)
                 .padding(horizontal = 8.dp)
