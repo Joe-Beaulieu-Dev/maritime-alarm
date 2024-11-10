@@ -152,7 +152,13 @@ fun Alarm.toCountdownString(context: Context): String {
     val stringBuilder = StringBuilder().apply {
         if (days >= 1) append("${days.toInt()}${context.getString(R.string.day_abbreviation)}")
         if (hours >= 1) append("${hours.toInt()}${context.getString(R.string.hour_abbreviation)}")
-        if (minutes >= 1) append("${minutes.toInt()}${context.getString(R.string.minute_abbreviation)}")
+        if (minutes >= 1) {
+            // Add "<" if there's only one minute left
+            if (minutes == 1.0) {
+                append("${context.getString(R.string.less_than_symbol)} ")
+            }
+            append("${minutes.toInt()}${context.getString(R.string.minute_abbreviation)}")
+        }
     }
 
     // Add spaces between each section

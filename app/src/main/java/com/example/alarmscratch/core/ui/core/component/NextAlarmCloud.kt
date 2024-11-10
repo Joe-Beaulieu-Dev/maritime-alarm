@@ -106,11 +106,11 @@ fun NextAlarmCloudContent(
                 if (countdownText.length > 7) { // Small
                     fontSize = 14.sp
                     lineHeight = 16.sp
-                } else if (countdownText.length in 4..7) { // Medium
+                } else if (countdownText.length in 5..7) { // Medium
                     // Default Text properties
                     fontSize = TextUnit.Unspecified
                     lineHeight = TextUnit.Unspecified
-                } else { // Large: length < 4
+                } else { // Large: length < 5
                     fontSize = 20.sp
                     lineHeight = 22.sp
                 }
@@ -236,7 +236,33 @@ private fun NextAlarmCloudMediumText2Preview() {
     backgroundColor = 0xFFc2e0ff
 )
 @Composable
-private fun NextAlarmCloudSnoozedAlarmLargeTextPreview() {
+private fun NextAlarmCloudLargeText1Preview() {
+    AlarmScratchTheme {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(80.dp)
+        ) {
+            NextAlarmCloudContent(
+                selectedNavComponentDest = Destination.AlarmListScreen,
+                nextAlarmState = AlarmState.Success(
+                    alarm = consistentFutureAlarm.copy(
+                        dateTime = LocalDateTime.now().plusMinutes(1)
+                    )
+                )
+            )
+        }
+    }
+}
+
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFFc2e0ff
+)
+
+@Composable
+private fun NextAlarmCloudSnoozedAlarmLargeText2Preview() {
     AlarmScratchTheme {
         Box(
             contentAlignment = Alignment.Center,
