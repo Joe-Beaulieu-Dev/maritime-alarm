@@ -119,13 +119,33 @@ fun Alarm.toCountdownString(context: Context): String {
     val secondsTillNextAlarm = LocalDateTime.now().until(snoozeDateTime ?: dateTime, ChronoUnit.SECONDS).toDouble()
 
     // Days
-    val days = floor(secondsTillNextAlarm / 86400)
+    var days = floor(secondsTillNextAlarm / 86400)
     val remainderAfterDays = secondsTillNextAlarm - days * 86400
     // Hours
-    val hours = floor(remainderAfterDays / 3600)
+    var hours = floor(remainderAfterDays / 3600)
     val remainderAfterHours = remainderAfterDays - hours * 3600
-    // Minutes - round up because we're not displaying seconds
-    val minutes = ceil(remainderAfterHours / 60)
+    // Minutes - round the minutes since we're not displaying seconds
+    val minutesRaw = remainderAfterHours / 60
+    val minutes =
+        if (minutesRaw <= 59) {
+            ceil(minutesRaw)
+        } else {
+            // Special Case:
+            // 59.X minutes where X > 0
+            //   - Round minutes down to 0, and add 1 to hour to avoid displaying "60m"
+            //   - ex: We don't want to round "1hr 59.5m" to "1hr 60m", instead we want "2h".
+            //   - NOTE: If hours is 23, then we should continue this same logic upwards because
+            //     we also do not want to round "1d 23h 59.5m" "1d 24h", instead we want "2d".
+            if (hours >= 23) {
+                days += 1
+                hours = 0.0
+            } else {
+                hours += 1
+            }
+
+            // Set minutes to 0
+            0.0
+        }
 
     // Adding spaces between sections can get a bit messy since you won't always have every
     // section present. Create the String without spaces first, then add the spaces afterwards.
