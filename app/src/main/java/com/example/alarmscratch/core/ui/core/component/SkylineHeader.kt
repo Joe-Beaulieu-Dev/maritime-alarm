@@ -18,13 +18,13 @@ import androidx.compose.ui.unit.dp
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
 import com.example.alarmscratch.alarm.data.preview.snoozedAlarm
 import com.example.alarmscratch.alarm.data.repository.AlarmState
+import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.ui.shared.SailBoat
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatHull
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.SkyBlue
-import java.time.LocalDateTime
 
 @Composable
 fun SkylineHeader(
@@ -157,7 +157,7 @@ private fun SkylineHeaderTwoLineAlarmPreview() {
                     selectedNavComponentDest = Destination.AlarmListScreen,
                     nextAlarmState = AlarmState.Success(
                         alarm = consistentFutureAlarm.copy(
-                            dateTime = LocalDateTime.now().plusDays(12).plusHours(10).plusMinutes(45)
+                            dateTime = LocalDateTimeUtil.nowTruncated().plusDays(12).plusHours(10).plusMinutes(45)
                         )
                     )
                 )
