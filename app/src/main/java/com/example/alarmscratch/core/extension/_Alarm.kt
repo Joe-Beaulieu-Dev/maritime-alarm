@@ -114,9 +114,18 @@ fun Alarm.getRingtone(context: Context): Ringtone =
  * Formatting
  */
 
-// TODO: This function returns some weird values if the dateTime is in the past
 fun Alarm.toCountdownString(context: Context): String {
-    val secondsTillNextAlarm = LocalDateTime.now().until(snoozeDateTime ?: dateTime, ChronoUnit.SECONDS).toDouble()
+    // Don't truncate the current time since the seconds are used here
+    val now = LocalDateTime.now()
+    val alarmExecutionTime = snoozeDateTime ?: dateTime
+
+    // If this method is called with a LocalDateTime that is not in the future,
+    // just return "0m" by default. This method is not set up to calculate for the past.
+    if (!alarmExecutionTime.isAfter(now)) {
+        return "0${context.getString(R.string.minute_abbreviation)}"
+    }
+
+    val secondsTillNextAlarm = now.until(snoozeDateTime ?: dateTime, ChronoUnit.SECONDS).toDouble()
 
     // Days
     var days = floor(secondsTillNextAlarm / 86400)
