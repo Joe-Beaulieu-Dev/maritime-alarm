@@ -117,15 +117,15 @@ fun Alarm.getRingtone(context: Context): Ringtone =
 fun Alarm.toCountdownString(context: Context): String {
     // Don't truncate the current time since the seconds are used here
     val now = LocalDateTime.now()
-    val alarmExecutionTime = snoozeDateTime ?: dateTime
+    val alarmExecutionDateTime = snoozeDateTime ?: dateTime
 
     // If this method is called with a LocalDateTime that is not in the future,
     // just return "0m" by default. This method is not set up to calculate for the past.
-    if (!alarmExecutionTime.isAfter(now)) {
+    if (!alarmExecutionDateTime.isAfter(now)) {
         return "0${context.getString(R.string.minute_abbreviation)}"
     }
 
-    val secondsTillNextAlarm = now.until(snoozeDateTime ?: dateTime, ChronoUnit.SECONDS).toDouble()
+    val secondsTillNextAlarm = now.until(alarmExecutionDateTime, ChronoUnit.SECONDS).toDouble()
 
     // Days
     var days = floor(secondsTillNextAlarm / 86400)
@@ -142,7 +142,7 @@ fun Alarm.toCountdownString(context: Context): String {
             // Special Case:
             // 59.X minutes where X > 0
             //   - Round minutes down to 0, and add 1 to hour to avoid displaying "60m"
-            //   - ex: We don't want to round "1hr 59.5m" to "1hr 60m", instead we want "2h".
+            //   - Ex: We don't want to round "1hr 59.5m" to "1hr 60m", instead we want "2h"
             //   - NOTE: If hours is 23, then we should continue this same logic upwards because
             //     we also do not want to round "1d 23h 59.5m" "1d 24h", instead we want "2d".
             if (hours >= 23) {
