@@ -35,12 +35,12 @@ import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
 import com.example.alarmscratch.alarm.data.preview.snoozedAlarm
 import com.example.alarmscratch.alarm.data.repository.AlarmState
+import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.isSnoozed
 import com.example.alarmscratch.core.extension.toCountdownString
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.InCloudBlack
-import java.time.LocalDateTime
 
 @Composable
 fun NextAlarmCloud(
@@ -177,7 +177,7 @@ private fun NextAlarmCloudSmallText2Preview() {
                 selectedNavComponentDest = Destination.AlarmListScreen,
                 nextAlarmState = AlarmState.Success(
                     alarm = consistentFutureAlarm.copy(
-                        dateTime = LocalDateTime.now().plusDays(12).plusHours(10).plusMinutes(45)
+                        dateTime = LocalDateTimeUtil.nowTruncated().plusDays(12).plusHours(10).plusMinutes(45)
                     )
                 )
             )
@@ -202,7 +202,7 @@ private fun NextAlarmCloudMediumText1Preview() {
                 selectedNavComponentDest = Destination.AlarmListScreen,
                 nextAlarmState = AlarmState.Success(
                     alarm = consistentFutureAlarm.copy(
-                        dateTime = LocalDateTime.now().plusHours(20).plusMinutes(45)
+                        dateTime = LocalDateTimeUtil.nowTruncated().plusHours(20).plusMinutes(45)
                     )
                 )
             )
@@ -248,7 +248,7 @@ private fun NextAlarmCloudLargeText1Preview() {
                 selectedNavComponentDest = Destination.AlarmListScreen,
                 nextAlarmState = AlarmState.Success(
                     alarm = consistentFutureAlarm.copy(
-                        dateTime = LocalDateTime.now().plusMinutes(1)
+                        dateTime = LocalDateTimeUtil.nowTruncated().plusMinutes(1)
                     )
                 )
             )
