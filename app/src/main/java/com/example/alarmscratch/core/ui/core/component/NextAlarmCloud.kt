@@ -1,5 +1,9 @@
 package com.example.alarmscratch.core.ui.core.component
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,19 +21,24 @@ import androidx.compose.material.icons.filled.Snooze
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
@@ -64,9 +73,39 @@ fun NextAlarmCloudContent(
     nextAlarmState: AlarmState,
     modifier: Modifier = Modifier
 ) {
-    // Countdown Text Properties
+    // State
+    val localContext = LocalContext.current
+    var countdownText by rememberSaveable { mutableStateOf("") }
     var fontSize: TextUnit
     var lineHeight: TextUnit
+
+    // Manage the BroadcastReceiver for keeping the Alarm Countdown Text up to date
+    DisposableEffect(key1 = localContext, key2 = selectedNavComponentDest) {
+        val timeChangeReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                if (context != null && intent?.action == Intent.ACTION_TIME_TICK) {
+                    countdownText = getCountdownText(context, nextAlarmState)
+                }
+            }
+        }
+
+        if (selectedNavComponentDest is Destination.AlarmListScreen) {
+            ContextCompat.registerReceiver(
+                localContext,
+                timeChangeReceiver,
+                IntentFilter(Intent.ACTION_TIME_TICK),
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
+        }
+
+        onDispose {
+            try {
+                localContext.unregisterReceiver(timeChangeReceiver)
+            } catch (e: Exception) {
+                // Receiver was never registered in the first place. Nothing to do here. Just don't crash.
+            }
+        }
+    }
 
     Box(
         modifier = modifier
@@ -83,26 +122,9 @@ fun NextAlarmCloudContent(
                 .padding(horizontal = 8.dp)
         ) {
             if (selectedNavComponentDest == Destination.AlarmListScreen) {
-                // Next Alarm Data
-                val alarmIcon =
-                    if (nextAlarmState is AlarmState.Success) {
-                        if (nextAlarmState.alarm.isSnoozed()) {
-                            Icons.Default.Snooze
-                        } else {
-                            Icons.Default.Alarm
-                        }
-                    } else {
-                        Icons.Default.AlarmOff
-                    }
-                val countdownText =
-                    if (nextAlarmState is AlarmState.Success) {
-                        nextAlarmState.alarm.toCountdownString(LocalContext.current)
-                    } else {
-                        stringResource(id = R.string.no_active_alarms)
-                    }
-
                 // You cannot simultaneously apply both fontSize and lineHeight to the same AnnotatedString.
                 // Therefore a normal String is used, and these values will be applied directly to the Text Composable.
+                countdownText = getCountdownText(localContext, nextAlarmState)
                 if (countdownText.length > 7) { // Small
                     fontSize = 14.sp
                     lineHeight = 16.sp
@@ -117,7 +139,7 @@ fun NextAlarmCloudContent(
 
                 // Alarm Icon
                 Icon(
-                    imageVector = alarmIcon,
+                    imageVector = getAlarmIcon(nextAlarmState),
                     contentDescription = null,
                     tint = InCloudBlack,
                     modifier = Modifier.padding(end = 4.dp, bottom = 2.dp)
@@ -134,6 +156,24 @@ fun NextAlarmCloudContent(
         }
     }
 }
+
+private fun getAlarmIcon(alarmState: AlarmState): ImageVector =
+    if (alarmState is AlarmState.Success) {
+        if (alarmState.alarm.isSnoozed()) {
+            Icons.Default.Snooze
+        } else {
+            Icons.Default.Alarm
+        }
+    } else {
+        Icons.Default.AlarmOff
+    }
+
+private fun getCountdownText(context: Context, alarmState: AlarmState): String =
+    if (alarmState is AlarmState.Success) {
+        alarmState.alarm.toCountdownString(context)
+    } else {
+        context.getString(R.string.no_active_alarms)
+    }
 
 /*
  * Previews
