@@ -1,5 +1,7 @@
 package com.example.alarmscratch.core.extension
 
+private const val DEFAULT_ORDINAL = ""
+
 private val ordinalNumberMap = mapOf(
     '0' to "th",
     '1' to "st",
@@ -14,12 +16,17 @@ private val ordinalNumberMap = mapOf(
 )
 
 fun Int.toOrdinal(): String {
-    // can never be too careful
-    val lastDigitChar = toString().lastOrNull()
+    val intString = toString()
+    val lastDigitChar = intString.lastOrNull()
 
     return if (lastDigitChar != null) {
-        "$this${ordinalNumberMap.getOrDefault(key = lastDigitChar, defaultValue = "")}"
+        // If the Int has more than 1 digit, and the second to last digit is a 1, then always append "th"
+        if (intString.length > 1 && intString[intString.lastIndex - 1] == '1') {
+            "${this}th"
+        } else {
+            "$this${ordinalNumberMap.getOrDefault(key = lastDigitChar, defaultValue = DEFAULT_ORDINAL)}"
+        }
     } else {
-        ""
+        DEFAULT_ORDINAL
     }
 }
