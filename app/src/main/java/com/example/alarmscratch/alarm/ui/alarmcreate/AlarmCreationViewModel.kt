@@ -143,7 +143,9 @@ class AlarmCreationViewModel(
     fun updateDate(date: LocalDate) {
         if (_newAlarm.value is AlarmState.Success) {
             val alarm = (_newAlarm.value as AlarmState.Success).alarm
-            _newAlarm.value = AlarmState.Success(alarm.copy(dateTime = alarm.dateTime.withDayOfYear(date.dayOfYear)))
+            _newAlarm.value = AlarmState.Success(
+                alarm.copy(dateTime = alarm.dateTime.withYear(date.year).withDayOfYear(date.dayOfYear))
+            )
         }
     }
 
