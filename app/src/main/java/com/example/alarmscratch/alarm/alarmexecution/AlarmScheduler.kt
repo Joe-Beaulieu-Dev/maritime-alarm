@@ -38,10 +38,11 @@ object AlarmScheduler {
     }
 
     fun cancelAlarm(context: Context, alarmExecutionData: AlarmExecutionData) {
-        // Create PendingIntent to cancel Alarm
+        // Create PendingIntent to cancel Alarm.
+        // This Intent is never executed. It is only used by the AlarmManager for Alarm cancellation.
         val alarmIntent = Intent(context, AlarmActionReceiver::class.java).apply {
-            // This needs to be the same as the scheduling action.
-            // This is because the Intent must pass Intent.filterEquals(), which looks at the flag,
+            // This action needs to be the same as the scheduling action.
+            // This is because the Intent must pass Intent.filterEquals(), which looks at the action among other things,
             // in order for the AlarmManager to be able to find the Alarm with the "same Intent" to cancel.
             action = AlarmActionReceiver.ACTION_EXECUTE_ALARM
         }

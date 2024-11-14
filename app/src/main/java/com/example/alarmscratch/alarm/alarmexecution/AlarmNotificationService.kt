@@ -120,6 +120,9 @@ class AlarmNotificationService : Service() {
         // Stop Vibration
         VibrationController.stopVibration(applicationContext)
 
+        // Release WakeLock
+        WakeLockManager.releaseWakeLock()
+
         // Stop Service, which dismisses the Notification
         stopSelf()
     }
