@@ -51,10 +51,7 @@ class AlarmActionReceiver : BroadcastReceiver() {
     }
 
     private fun executeAlarm(context: Context, intent: Intent) {
-        // TODO: Grab a Wake Lock here. According to the AlarmManager docs, AlarmManger automatically grabs a CPU Wake Lock
-        //  and holds it until BroadcastReceiver.onReceive() completes. It also explicitly states that because of this, the
-        //  phone may sleep *immediately* after onReceive() completes, so if you call Context.startService() from inside
-        //  onReceive() then the phone may sleep before the Service is started.
+        WakeLockManager.acquireWakeLock(context)
 
         // Display Alarm Notification
         intent.extras?.let { extrasBundle ->
