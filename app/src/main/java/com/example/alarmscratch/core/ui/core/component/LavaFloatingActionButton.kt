@@ -27,17 +27,21 @@ fun LavaFloatingActionButton(
     onFabClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Copy of Android's internal FabPrimaryTokens.ContainerHeight
+    val fabDefaultHeight = 56.dp
+    val largeDripHang = 14.dp
+
     Box(
         contentAlignment = Alignment.TopCenter,
-        // this elevation is not from the top of the volcano, fix this
-        modifier = modifier
+        modifier = modifier.height(fabDefaultHeight + largeDripHang)
     ) {
         // Center Blob
         Box(
             modifier = Modifier
+                .align(Alignment.BottomCenter)
                 .width(40.dp)
                 .height(30.dp)
-                .offset(x = 0.dp, y = 27.dp)
+                .offset(x = 0.dp, y = (-13).dp)
                 .clip(shape = CircleShape)
                 .background(color = AncientLavaOrange)
         )
@@ -45,9 +49,10 @@ fun LavaFloatingActionButton(
         // Left Drip
         Box(
             modifier = Modifier
+                .align(Alignment.BottomCenter)
                 .width(10.dp)
                 .height(20.dp)
-                .offset(x = (-10).dp, y = 45.dp)
+                .offset(x = (-10).dp, y = (-5).dp)
                 .clip(shape = CircleShape)
                 .background(color = AncientLavaOrange)
         )
@@ -55,9 +60,10 @@ fun LavaFloatingActionButton(
         // Right Drip
         Box(
             modifier = Modifier
+                .align(Alignment.BottomCenter)
                 .width(10.dp)
                 .height(25.dp)
-                .offset(x = (8).dp, y = 45.dp)
+                .offset(x = 8.dp, y = 0.dp)
                 .clip(shape = CircleShape)
                 .background(color = AncientLavaOrange)
         )
@@ -91,7 +97,7 @@ private fun LavaFloatingActionButtonPreview() {
     AlarmScratchTheme {
         LavaFloatingActionButton(
             onFabClicked = {},
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(20.dp)
         )
     }
 }
