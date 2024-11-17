@@ -26,11 +26,7 @@ import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
 
-// TODO: LocalRippleConfiguration and RippleConfiguration are Experimental APIs. Prior to these you would use
-//  LocalRippleTheme and RippleTheme. However, Google deprecated LocalRippleTheme and RippleTheme with
-//  DeprecationLevel.ERROR which prevents you from building. Therefore, you are forced to use Experimental APIs
-//  as replacements. Keep an eye on the functionality of LocalRippleConfiguration and RippleConfiguration since
-//  they are Experimental APIs.
+// ExperimentalMaterial3Api OptIn for LocalRippleConfiguration and RippleConfiguration
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BasicDialog(

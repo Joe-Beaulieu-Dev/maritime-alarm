@@ -1,12 +1,20 @@
 package com.example.alarmscratch.core.ui.core
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -17,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -63,6 +72,7 @@ fun CoreScreen(
     // Core Screen wrapping an Internal Screen
     CoreScreenContent(
         modifier = modifier,
+        selectedNavComponentDest = selectedNavComponentDest,
         header = { SkylineHeader(selectedNavComponentDest = selectedNavComponentDest) },
         onFabClicked = navigateToAlarmCreationScreen,
         navigationBar = {
@@ -85,11 +95,17 @@ fun CoreScreen(
 @Composable
 fun CoreScreenContent(
     modifier: Modifier = Modifier,
+    selectedNavComponentDest: Destination,
     header: @Composable () -> Unit,
     onFabClicked: () -> Unit,
     navigationBar: @Composable () -> Unit,
     internalScreen: @Composable () -> Unit
 ) {
+    // LavaFloatingActionButton specs
+    val fabHeight = 70.dp
+    val volcanoSpacerHeight = 6.dp
+    val fabAnimationHeight = with(LocalDensity.current) { (fabHeight + volcanoSpacerHeight).toPx().toInt() }
+
     Surface(
         color = Color.Transparent,
         modifier = modifier
@@ -118,11 +134,24 @@ fun CoreScreenContent(
                 internalScreen()
             }
 
-            // Floating Action Button
-            LavaFloatingActionButton(
-                onFabClicked = onFabClicked,
-                modifier = Modifier.padding(bottom = 14.dp)
-            )
+            // LavaFloatingActionButton with Slide In/Out Animation
+            AnimatedVisibility(
+                visible = selectedNavComponentDest == Destination.AlarmListScreen,
+                enter = slideInVertically(
+                    animationSpec = tween(durationMillis = 150, easing = LinearOutSlowInEasing),
+                    initialOffsetY = { fabAnimationHeight }
+                ),
+                exit = slideOutVertically(
+                    animationSpec = tween(durationMillis = 250, easing = FastOutLinearInEasing),
+                    targetOffsetY = { fabAnimationHeight }
+                )
+            ) {
+                LavaFloatingActionButton(
+                    enabled = selectedNavComponentDest == Destination.AlarmListScreen,
+                    onFabClicked = onFabClicked
+                )
+            }
+            Spacer(modifier = Modifier.height(volcanoSpacerHeight))
 
             // Navigation Bar
             navigationBar()
@@ -142,6 +171,7 @@ private fun CoreScreenAlarmListPreview() {
         val alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds)
 
         CoreScreenContent(
+            selectedNavComponentDest = selectedNavComponentDest,
             header = {
                 SkylineHeaderContent(
                     nextAlarmIndicator = {
@@ -181,6 +211,7 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
         val alarmListState = AlarmListState.Success(alarmList = emptyList())
 
         CoreScreenContent(
+            selectedNavComponentDest = selectedNavComponentDest,
             header = {
                 SkylineHeaderContent(
                     nextAlarmIndicator = {
@@ -219,6 +250,7 @@ private fun CoreScreenSettingsPreview() {
         val selectedNavComponentDest = Destination.SettingsScreen
 
         CoreScreenContent(
+            selectedNavComponentDest = selectedNavComponentDest,
             header = {
                 SkylineHeaderContent(
                     nextAlarmIndicator = {

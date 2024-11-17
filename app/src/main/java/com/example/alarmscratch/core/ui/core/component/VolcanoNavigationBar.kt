@@ -71,14 +71,16 @@ fun VolcanoNavigationBar(
 
 @Composable
 fun VolcanoWithLava(modifier: Modifier = Modifier) {
-    val lavaColor = OtherLavaRed
-
+    // Volcano Height = 48.dp
+    // Lava Peek Height = 4.dp
+    // Box Height = Volcano Height + Lava Peek Height
     Box(
         contentAlignment = Alignment.TopCenter,
         modifier = modifier
             .width(144.dp)
-            .height(58.dp)
+            .height(52.dp)
     ) {
+        // Volcano
         Volcano(modifier = Modifier.align(Alignment.BottomCenter))
 
         // Left Rock
@@ -105,13 +107,27 @@ fun VolcanoWithLava(modifier: Modifier = Modifier) {
                 .background(DarkVolcanicRock)
         )
 
+        // Lava
+        Lava()
+    }
+}
+
+@Composable
+fun Lava(modifier: Modifier = Modifier) {
+    val lavaColor = OtherLavaRed
+    val tallestLavaHeight = 40.dp
+    val tallestLavaOffsetY = 4.dp
+
+    Box(
+        contentAlignment = Alignment.TopCenter,
+        modifier = modifier.height(tallestLavaHeight + tallestLavaOffsetY)
+    ) {
         // Top Lava
         Box(
             modifier = Modifier
-                .align(Alignment.TopCenter)
                 .width(64.dp)
                 .height(12.dp)
-                .offset(x = 0.dp, y = 8.dp)
+                .offset(x = 0.dp, y = 2.dp)
                 .clip(CircleShape)
                 .background(lavaColor)
         )
@@ -119,10 +135,9 @@ fun VolcanoWithLava(modifier: Modifier = Modifier) {
         // Top Lava Bubble Left
         Box(
             modifier = Modifier
-                .align(Alignment.TopCenter)
                 .width(22.dp)
                 .height(20.dp)
-                .offset(x = (-18).dp, y = 6.dp)
+                .offset(x = (-18).dp, y = 0.dp)
                 .clip(CircleShape)
                 .background(lavaColor)
         )
@@ -130,10 +145,9 @@ fun VolcanoWithLava(modifier: Modifier = Modifier) {
         // Top Lava Bubble Center
         Box(
             modifier = Modifier
-                .align(Alignment.TopCenter)
                 .width(22.dp)
                 .height(20.dp)
-                .offset(x = 4.dp, y = 6.dp)
+                .offset(x = 4.dp, y = 0.dp)
                 .clip(CircleShape)
                 .background(lavaColor)
         )
@@ -143,7 +157,7 @@ fun VolcanoWithLava(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .height(28.dp)
                 .width(12.dp)
-                .offset(x = (-32).dp, y = 7.dp)
+                .offset(x = (-32).dp, y = 1.dp)
                 .rotate(degrees = 32f)
                 .clip(CircleShape)
                 .background(lavaColor)
@@ -154,7 +168,7 @@ fun VolcanoWithLava(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .height(28.dp)
                 .width(12.dp)
-                .offset(x = (-24).dp, y = 10.dp)
+                .offset(x = (-24).dp, y = 4.dp)
                 .clip(CircleShape)
                 .background(lavaColor)
         )
@@ -164,7 +178,7 @@ fun VolcanoWithLava(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .height(20.dp)
                 .width(20.dp)
-                .offset(x = (-12).dp, y = 10.dp)
+                .offset(x = (-12).dp, y = 4.dp)
                 .clip(CircleShape)
                 .background(lavaColor)
         )
@@ -174,7 +188,7 @@ fun VolcanoWithLava(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .height(40.dp)
                 .width(12.dp)
-                .offset(x = 0.dp, y = 10.dp)
+                .offset(x = 0.dp, y = tallestLavaOffsetY)
                 .clip(CircleShape)
                 .background(lavaColor)
         )
@@ -184,7 +198,7 @@ fun VolcanoWithLava(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .height(24.dp)
                 .width(20.dp)
-                .offset(x = 12.dp, y = 10.dp)
+                .offset(x = 12.dp, y = 4.dp)
                 .clip(CircleShape)
                 .background(lavaColor)
         )
@@ -194,7 +208,7 @@ fun VolcanoWithLava(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .height(34.dp)
                 .width(12.dp)
-                .offset(x = 24.dp, y = 10.dp)
+                .offset(x = 24.dp, y = 4.dp)
                 .clip(CircleShape)
                 .background(lavaColor)
         )
@@ -204,7 +218,7 @@ fun VolcanoWithLava(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .height(28.dp)
                 .width(12.dp)
-                .offset(x = 32.dp, y = 7.dp)
+                .offset(x = 32.dp, y = 1.dp)
                 .rotate(degrees = -32f)
                 .clip(CircleShape)
                 .background(lavaColor)
@@ -260,7 +274,7 @@ private fun VolcanoNavigationBarPreview() {
         VolcanoNavigationBar(
             selectedNavComponentDest = Destination.AlarmListScreen,
             onDestinationChange = {},
-            modifier = Modifier.padding(top = 12.dp)
+            modifier = Modifier.padding(top = 20.dp)
         )
     }
 }
@@ -272,9 +286,18 @@ private fun VolcanoNavigationBarPreview() {
 @Composable
 private fun VolcanoWithLavaPreview() {
     AlarmScratchTheme {
-        VolcanoWithLava(
-            modifier = Modifier.padding(top = 20.dp)
-        )
+        VolcanoWithLava(modifier = Modifier.padding(top = 20.dp))
+    }
+}
+
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF0066CC
+)
+@Composable
+private fun LavaPreview() {
+    AlarmScratchTheme {
+        Lava(modifier = Modifier.padding(20.dp))
     }
 }
 
