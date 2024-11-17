@@ -9,10 +9,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AlarmAdd
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalRippleConfiguration
+import androidx.compose.material3.RippleConfiguration
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,6 +26,8 @@ import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.AncientLavaOrange
 import com.example.alarmscratch.core.ui.theme.MaxBrightLavaOrange
 
+// ExperimentalMaterial3Api OptIn for LocalRippleConfiguration and RippleConfiguration
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LavaFloatingActionButton(
     enabled: Boolean,
@@ -31,6 +37,17 @@ fun LavaFloatingActionButton(
     // Copy of Android's internal FabPrimaryTokens.ContainerHeight
     val fabDefaultHeight = 56.dp
     val largeDripHang = 14.dp
+    val rippleConfiguration: RippleConfiguration? = if (enabled) RippleConfiguration() else null
+    val elevation = if (enabled) {
+        FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp)
+    } else {
+        FloatingActionButtonDefaults.elevation(
+            defaultElevation = 0.dp,
+            pressedElevation = 0.dp,
+            focusedElevation = 0.dp,
+            hoveredElevation = 0.dp
+        )
+    }
 
     Box(
         contentAlignment = Alignment.TopCenter,
@@ -70,17 +87,19 @@ fun LavaFloatingActionButton(
         )
 
         // Floating Action Button
-        FloatingActionButton(
-            shape = CircleShape,
-            onClick = { if (enabled) onFabClicked() },
-            containerColor = AncientLavaOrange,
-            contentColor = MaxBrightLavaOrange,
-            elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.AlarmAdd,
-                contentDescription = null
-            )
+        CompositionLocalProvider(value = LocalRippleConfiguration provides rippleConfiguration) {
+            FloatingActionButton(
+                shape = CircleShape,
+                onClick = { if (enabled) onFabClicked() },
+                containerColor = AncientLavaOrange,
+                contentColor = MaxBrightLavaOrange,
+                elevation = elevation
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AlarmAdd,
+                    contentDescription = null
+                )
+            }
         }
     }
 }
