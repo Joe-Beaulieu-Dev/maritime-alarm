@@ -274,7 +274,7 @@ private fun VolcanoNavigationBarPreview() {
         VolcanoNavigationBar(
             selectedNavComponentDest = Destination.AlarmListScreen,
             onDestinationChange = {},
-            modifier = Modifier.padding(top = 12.dp)
+            modifier = Modifier.padding(top = 20.dp)
         )
     }
 }
