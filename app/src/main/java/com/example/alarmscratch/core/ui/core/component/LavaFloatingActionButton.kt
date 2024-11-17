@@ -24,6 +24,7 @@ import com.example.alarmscratch.core.ui.theme.MaxBrightLavaOrange
 
 @Composable
 fun LavaFloatingActionButton(
+    enabled: Boolean,
     onFabClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -71,7 +72,7 @@ fun LavaFloatingActionButton(
         // Floating Action Button
         FloatingActionButton(
             shape = CircleShape,
-            onClick = { onFabClicked() },
+            onClick = { if (enabled) onFabClicked() },
             containerColor = AncientLavaOrange,
             contentColor = MaxBrightLavaOrange,
             elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp)
@@ -96,6 +97,7 @@ fun LavaFloatingActionButton(
 private fun LavaFloatingActionButtonPreview() {
     AlarmScratchTheme {
         LavaFloatingActionButton(
+            enabled = true,
             onFabClicked = {},
             modifier = Modifier.padding(20.dp)
         )

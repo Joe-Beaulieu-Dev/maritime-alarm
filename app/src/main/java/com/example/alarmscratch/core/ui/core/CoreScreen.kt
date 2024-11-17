@@ -146,7 +146,10 @@ fun CoreScreenContent(
                     targetOffsetY = { fabAnimationHeight }
                 )
             ) {
-                LavaFloatingActionButton(onFabClicked = onFabClicked)
+                LavaFloatingActionButton(
+                    enabled = selectedNavComponentDest == Destination.AlarmListScreen,
+                    onFabClicked = onFabClicked
+                )
             }
             Spacer(modifier = Modifier.height(volcanoSpacerHeight))
 
