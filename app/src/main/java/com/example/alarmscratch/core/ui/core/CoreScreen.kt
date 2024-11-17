@@ -1,10 +1,11 @@
 package com.example.alarmscratch.core.ui.core
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideIn
-import androidx.compose.animation.slideOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,7 +27,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
@@ -104,7 +104,7 @@ fun CoreScreenContent(
     // LavaFloatingActionButton specs
     val fabHeight = 70.dp
     val volcanoSpacerHeight = 6.dp
-    val fabHeightWithSpacer = with(LocalDensity.current) { (fabHeight + volcanoSpacerHeight).toPx().toInt() }
+    val fabAnimationHeight = with(LocalDensity.current) { (fabHeight + volcanoSpacerHeight).toPx().toInt() }
 
     Surface(
         color = Color.Transparent,
@@ -134,15 +134,17 @@ fun CoreScreenContent(
                 internalScreen()
             }
 
-            // LavaFloatingActionButton with In/Out Animation
+            // LavaFloatingActionButton with Slide In/Out Animation
             AnimatedVisibility(
                 visible = selectedNavComponentDest == Destination.AlarmListScreen,
-                enter = slideIn(animationSpec = tween(durationMillis = 250, easing = LinearEasing)) {
-                    IntOffset(x = 0, y = fabHeightWithSpacer)
-                },
-                exit = slideOut(animationSpec = tween(durationMillis = 250, easing = LinearEasing)) {
-                    IntOffset(x = 0, fabHeightWithSpacer)
-                }
+                enter = slideInVertically(
+                    animationSpec = tween(durationMillis = 150, easing = LinearOutSlowInEasing),
+                    initialOffsetY = { fabAnimationHeight }
+                ),
+                exit = slideOutVertically(
+                    animationSpec = tween(durationMillis = 250, easing = FastOutLinearInEasing),
+                    targetOffsetY = { fabAnimationHeight }
+                )
             ) {
                 LavaFloatingActionButton(onFabClicked = onFabClicked)
             }
