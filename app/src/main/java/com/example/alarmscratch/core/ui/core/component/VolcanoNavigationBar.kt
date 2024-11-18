@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.navigation.NavComponent
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
+import com.example.alarmscratch.core.ui.theme.BrightLavaRed
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
 import com.example.alarmscratch.core.ui.theme.MediumLavaRed
 import com.example.alarmscratch.core.ui.theme.NavIconActive
@@ -40,7 +41,6 @@ import com.example.alarmscratch.core.ui.theme.NavIconInactive
 import com.example.alarmscratch.core.ui.theme.NavIndicator
 import com.example.alarmscratch.core.ui.theme.NavTextActive
 import com.example.alarmscratch.core.ui.theme.NavTextInactive
-import com.example.alarmscratch.core.ui.theme.OtherLavaRed
 
 @Composable
 fun VolcanoNavigationBar(
@@ -124,12 +124,12 @@ fun Lava(modifier: Modifier = Modifier) {
     // Lava Color Animation
     val lavaColorTransition = rememberInfiniteTransition(label = "lava_color_transition")
     val lavaColor by lavaColorTransition.animateColor(
-        initialValue = OtherLavaRed,
+        initialValue = BrightLavaRed,
         targetValue = MediumLavaRed,
         animationSpec = infiniteRepeatable(
             animation = keyframes {
                 durationMillis = 4000
-                OtherLavaRed at 3000
+                BrightLavaRed at 3000
                 MediumLavaRed at 3900
             },
             repeatMode = RepeatMode.Reverse
