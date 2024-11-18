@@ -249,20 +249,23 @@ fun Lava(modifier: Modifier = Modifier) {
 
 @Composable
 fun Volcano(modifier: Modifier = Modifier) {
-    // Volcano coordinates
-    val volcanoTopHeightY = with(LocalDensity.current) { 48.dp.toPx() }
-    val volcanoTopLeftX = with(LocalDensity.current) { 30.dp.toPx() }
-    val volcanoTopRightX = with(LocalDensity.current) { 90.dp.toPx() }
+    /*
+     * Volcano Left-Side Triangle stats
+     *
+     * Right Side -> 48.dp high
+     * Bottom Side -> 30.dp wide
+     * Hypotenuse -> ~56.6.dp long
+     *
+     * BottomRight Corner -> 90 degrees
+     * Top Angle -> ~32 degrees
+     * Left Angle -> ~58 degrees
+     */
 
-    // Side Volcano Left Triangle stats
-    //
-    // Right Side -> 48.dp high
-    // Bottom Side -> 30.dp wide
-    // Hypotenuse -> ~56.6.dp long
-    //
-    // BottomRight Corner -> 90 degrees
-    // Top Angle -> ~32 degrees
-    // Left Angel -> ~58 degrees
+    // Volcano coordinates
+    val density = LocalDensity.current
+    val volcanoTopHeightY = with(density) { 48.dp.toPx() }
+    val volcanoTopLeftX = with(density) { 30.dp.toPx() }
+    val volcanoTopRightX = with(density) { 90.dp.toPx() }
 
     Box(
         modifier = modifier
