@@ -1,5 +1,10 @@
 package com.example.alarmscratch.core.ui.core.component
 
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +19,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,6 +34,7 @@ import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.navigation.NavComponent
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
+import com.example.alarmscratch.core.ui.theme.MediumLavaRed
 import com.example.alarmscratch.core.ui.theme.NavIconActive
 import com.example.alarmscratch.core.ui.theme.NavIconInactive
 import com.example.alarmscratch.core.ui.theme.NavIndicator
@@ -114,7 +121,21 @@ fun VolcanoWithLava(modifier: Modifier = Modifier) {
 
 @Composable
 fun Lava(modifier: Modifier = Modifier) {
-    val lavaColor = OtherLavaRed
+    // Lava Color Animation
+    val lavaColorTransition = rememberInfiniteTransition(label = "lava_color_transition")
+    val lavaColor by lavaColorTransition.animateColor(
+        initialValue = OtherLavaRed,
+        targetValue = MediumLavaRed,
+        animationSpec = infiniteRepeatable(
+            animation = keyframes {
+                durationMillis = 4000
+                OtherLavaRed at 3000
+                MediumLavaRed at 3900
+            },
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "lava_color"
+    )
     val tallestLavaHeight = 40.dp
     val tallestLavaOffsetY = 4.dp
 
@@ -186,7 +207,7 @@ fun Lava(modifier: Modifier = Modifier) {
         // Middle Lava
         Box(
             modifier = Modifier
-                .height(40.dp)
+                .height(tallestLavaHeight)
                 .width(12.dp)
                 .offset(x = 0.dp, y = tallestLavaOffsetY)
                 .clip(CircleShape)

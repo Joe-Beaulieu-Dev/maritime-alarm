@@ -33,6 +33,7 @@ val MaxBrightLavaOrange = Color(0xFFfefee8) // 90% Lighter #f2f217
 val AncientLavaOrange = Color(0xFFff6600)
 val BrightLavaOrange = Color(0xFFe87931)
 val OtherLavaRed = Color(0xFFcf1020)
+val MediumLavaRed = Color(0xFFa60d1a) // 20% Darker OtherLavaRed
 val DarkLavaRed = Color(0xFF660f00) // 60% Darker #ff2500
 
 // General
