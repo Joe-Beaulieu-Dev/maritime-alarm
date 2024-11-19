@@ -32,15 +32,16 @@ val DarkVolcanicRock = Color(0xFF232322) // 37% Darker VolcanicRock
 val MaxBrightLavaOrange = Color(0xFFfefee8) // 90% Lighter #f2f217
 val AncientLavaOrange = Color(0xFFff6600)
 val BrightLavaOrange = Color(0xFFe87931)
-val OtherLavaRed = Color(0xFFcf1020)
+val BrightLavaRed = Color(0xFFcf1020)
+val MediumLavaRed = Color(0xFFa60d1a) // 20% Darker BrightLavaRed
 val DarkLavaRed = Color(0xFF660f00) // 60% Darker #ff2500
 
 // General
 val SelectedGreen = Color(0xFF00b300)
 
 // Navigation
-val NavIconActive = OtherLavaRed
-val NavTextActive = OtherLavaRed
+val NavIconActive = BrightLavaRed
+val NavTextActive = BrightLavaRed
 val NavIconInactive = LightVolcanicRock
 val NavTextInactive = LightVolcanicRock
 val NavIndicator = VolcanicRock
