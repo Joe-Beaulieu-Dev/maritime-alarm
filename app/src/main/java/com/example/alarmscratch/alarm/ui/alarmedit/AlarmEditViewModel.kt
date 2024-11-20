@@ -17,7 +17,7 @@ import com.example.alarmscratch.alarm.data.repository.AlarmState
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.isRepeating
-import com.example.alarmscratch.core.extension.nextRepeatingDate
+import com.example.alarmscratch.core.extension.nextRepeatingDateTime
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.core.extension.withFuturizedDateTime
 import com.example.alarmscratch.core.navigation.Destination
@@ -99,7 +99,7 @@ class AlarmEditViewModel(
         if (_modifiedAlarm.value is AlarmState.Success) {
             val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
             if (alarm.isRepeating()) {
-                alarmRepository.updateAlarm(alarm.copy(dateTime = alarm.nextRepeatingDate()))
+                alarmRepository.updateAlarm(alarm.copy(dateTime = alarm.nextRepeatingDateTime()))
             } else {
                 alarmRepository.updateAlarm(alarm)
             }

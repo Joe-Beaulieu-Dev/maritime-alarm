@@ -32,7 +32,7 @@ fun Alarm.withFuturizedDateTime(): Alarm {
 
     val futurizedDateTime = if (!dateTime.isAfter(currentDateTime)) {
         if (weeklyRepeater.hasRepeatingDays()) {
-            nextRepeatingDate()
+            nextRepeatingDateTime()
         } else {
             val potentialAlarm = LocalDateTime.of(currentDateTime.toLocalDate(), dateTime.toLocalTime())
             // Add the minimum amount of days required to futurize the Alarm
@@ -62,7 +62,7 @@ fun Alarm.withFuturizedDateTime(): Alarm {
  * Ex 2: It's currently Wednesday, 7/17/2024 at 5:30pm. The Alarm is set to go off at 8:30am and it is only set to repeat on Tuesday.
  *       This function would return Tuesday, 7/23/2024 at 8:30am.
  */
-fun Alarm.nextRepeatingDate(): LocalDateTime {
+fun Alarm.nextRepeatingDateTime(): LocalDateTime {
     if (isRepeating()) {
         val currentDateTime = LocalDateTimeUtil.nowTruncated()
         val currentDate = currentDateTime.toLocalDate()

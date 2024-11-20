@@ -15,7 +15,7 @@ import com.example.alarmscratch.alarm.data.repository.AlarmState
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.isRepeating
-import com.example.alarmscratch.core.extension.nextRepeatingDate
+import com.example.alarmscratch.core.extension.nextRepeatingDateTime
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.core.extension.withFuturizedDateTime
 import com.example.alarmscratch.settings.data.model.AlarmDefaults
@@ -118,7 +118,7 @@ class AlarmCreationViewModel(
         if (_newAlarm.value is AlarmState.Success) {
             val alarm = (_newAlarm.value as AlarmState.Success).alarm
             if (alarm.isRepeating()) {
-                alarmRepository.insertAlarm(alarm.copy(dateTime = alarm.nextRepeatingDate()))
+                alarmRepository.insertAlarm(alarm.copy(dateTime = alarm.nextRepeatingDateTime()))
             } else {
                 alarmRepository.insertAlarm(alarm)
             }
