@@ -31,7 +31,7 @@ fun Alarm.withFuturizedDateTime(): Alarm {
     val currentDateTime = LocalDateTimeUtil.nowTruncated()
 
     val futurizedDateTime = if (!dateTime.isAfter(currentDateTime)) {
-        if (weeklyRepeater.hasRepeatingDays()) {
+        if (isRepeating()) {
             nextRepeatingDateTime()
         } else {
             val potentialAlarm = LocalDateTime.of(currentDateTime.toLocalDate(), dateTime.toLocalTime())
