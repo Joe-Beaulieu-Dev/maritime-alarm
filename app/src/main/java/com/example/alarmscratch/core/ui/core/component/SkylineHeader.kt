@@ -1,5 +1,8 @@
 package com.example.alarmscratch.core.ui.core.component
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,17 +11,24 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Alarm
+import androidx.compose.material.icons.filled.AlarmOff
+import androidx.compose.material.icons.filled.Snooze
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
 import com.example.alarmscratch.alarm.data.preview.snoozedAlarm
-import com.example.alarmscratch.alarm.data.repository.AlarmState
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
+import com.example.alarmscratch.core.extension.toCountdownString
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.ui.shared.SailBoat
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
@@ -140,7 +150,13 @@ private fun SkylineHeaderOneLineAlarmPreview() {
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
                     selectedNavComponentDest = Destination.AlarmListScreen,
-                    nextAlarmState = AlarmState.Success(alarm = consistentFutureAlarm)
+                    alarmCountdownState = AlarmCountdownState.Success(
+                        icon = Icons.Default.Alarm,
+                        countdownText = consistentFutureAlarm.toCountdownString(LocalContext.current)
+                    ),
+                    timeChangeReceiver = object : BroadcastReceiver() {
+                        override fun onReceive(context: Context?, intent: Intent?) {}
+                    }
                 )
             }
         )
@@ -150,16 +166,22 @@ private fun SkylineHeaderOneLineAlarmPreview() {
 @Preview
 @Composable
 private fun SkylineHeaderTwoLineAlarmPreview() {
+    val alarm = consistentFutureAlarm.copy(
+        dateTime = LocalDateTimeUtil.nowTruncated().plusDays(12).plusHours(10).plusMinutes(45)
+    )
+
     AlarmScratchTheme {
         SkylineHeaderContent(
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
                     selectedNavComponentDest = Destination.AlarmListScreen,
-                    nextAlarmState = AlarmState.Success(
-                        alarm = consistentFutureAlarm.copy(
-                            dateTime = LocalDateTimeUtil.nowTruncated().plusDays(12).plusHours(10).plusMinutes(45)
-                        )
-                    )
+                    alarmCountdownState = AlarmCountdownState.Success(
+                        icon = Icons.Default.Alarm,
+                        countdownText = alarm.toCountdownString(LocalContext.current)
+                    ),
+                    timeChangeReceiver = object : BroadcastReceiver() {
+                        override fun onReceive(context: Context?, intent: Intent?) {}
+                    }
                 )
             }
         )
@@ -174,7 +196,13 @@ private fun SkylineHeaderSnoozedAlarmPreview() {
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
                     selectedNavComponentDest = Destination.AlarmListScreen,
-                    nextAlarmState = AlarmState.Success(alarm = snoozedAlarm)
+                    alarmCountdownState = AlarmCountdownState.Success(
+                        icon = Icons.Default.Snooze,
+                        countdownText = snoozedAlarm.toCountdownString(LocalContext.current)
+                    ),
+                    timeChangeReceiver = object : BroadcastReceiver() {
+                        override fun onReceive(context: Context?, intent: Intent?) {}
+                    }
                 )
             }
         )
@@ -189,7 +217,13 @@ private fun SkylineHeaderNoAlarmsPreview() {
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
                     selectedNavComponentDest = Destination.AlarmListScreen,
-                    nextAlarmState = AlarmState.Error(Throwable())
+                    alarmCountdownState = AlarmCountdownState.Success(
+                        icon = Icons.Default.AlarmOff,
+                        countdownText = stringResource(id = R.string.no_active_alarms)
+                    ),
+                    timeChangeReceiver = object : BroadcastReceiver() {
+                        override fun onReceive(context: Context?, intent: Intent?) {}
+                    }
                 )
             }
         )
@@ -204,7 +238,13 @@ private fun SkylineHeaderSettingsScreenPreview() {
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
                     selectedNavComponentDest = Destination.SettingsScreen,
-                    nextAlarmState = AlarmState.Success(alarm = consistentFutureAlarm)
+                    alarmCountdownState = AlarmCountdownState.Success(
+                        icon = Icons.Default.Alarm,
+                        countdownText = consistentFutureAlarm.toCountdownString(LocalContext.current)
+                    ),
+                    timeChangeReceiver = object : BroadcastReceiver() {
+                        override fun onReceive(context: Context?, intent: Intent?) {}
+                    }
                 )
             }
         )
