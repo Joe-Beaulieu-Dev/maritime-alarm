@@ -9,7 +9,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,13 +56,12 @@ fun NextAlarmCloud(
     nextAlarmCloudViewModel: NextAlarmCloudViewModel = viewModel(factory = NextAlarmCloudViewModel.Factory)
 ) {
     // State
-    val nextAlarmDisplayState by nextAlarmCloudViewModel.nextAlarmDisplay.collectAsState()
-    val timeChangeReceiver = nextAlarmCloudViewModel.timeChangeReceiver
+    val alarmCountdownState by nextAlarmCloudViewModel.alarmCountdownState.collectAsState()
 
     NextAlarmCloudContent(
         selectedNavComponentDest = selectedNavComponentDest,
-        nextAlarmDisplayState = nextAlarmDisplayState,
-        timeChangeReceiver = timeChangeReceiver,
+        alarmCountdownState = alarmCountdownState,
+        timeChangeReceiver = nextAlarmCloudViewModel.timeChangeReceiver,
         modifier = modifier
     )
 }
@@ -71,7 +69,7 @@ fun NextAlarmCloud(
 @Composable
 fun NextAlarmCloudContent(
     selectedNavComponentDest: Destination,
-    nextAlarmDisplayState: AlarmCloudState,
+    alarmCountdownState: AlarmCountdownState,
     timeChangeReceiver: BroadcastReceiver,
     modifier: Modifier = Modifier
 ) {
@@ -110,29 +108,29 @@ fun NextAlarmCloudContent(
         // Alarm Icon and Countdown Text
         // This Animation is to match the NavHost's
         AnimatedVisibility(
-            visible = selectedNavComponentDest == Destination.AlarmListScreen && nextAlarmDisplayState is AlarmCloudState.Success,
+            visible = selectedNavComponentDest is Destination.AlarmListScreen && alarmCountdownState is AlarmCountdownState.Success,
             enter = fadeIn(animationSpec = tween(durationMillis = 700)),
             exit = fadeOut(animationSpec = tween(durationMillis = 700))
         ) {
             Row(
-                horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(8.dp)
             ) {
                 // Alarm Icon
                 Icon(
-                    imageVector = (nextAlarmDisplayState as AlarmCloudState.Success).icon,
+                    imageVector = (alarmCountdownState as AlarmCountdownState.Success).icon,
                     contentDescription = null,
                     tint = InCloudBlack,
                     modifier = Modifier.padding(end = 4.dp, bottom = 2.dp)
                 )
+
                 // Countdown Text
                 Text(
-                    text = nextAlarmDisplayState.countdownText,
+                    text = alarmCountdownState.countdownText,
                     color = InCloudBlack,
-                    fontSize = getCountdownTextFontSize(nextAlarmDisplayState.countdownText),
+                    fontSize = getCountdownTextFontSize(alarmCountdownState.countdownText),
                     fontWeight = FontWeight.SemiBold,
-                    lineHeight = getCountdownTextLineHeight(nextAlarmDisplayState.countdownText)
+                    lineHeight = getCountdownTextLineHeight(alarmCountdownState.countdownText)
                 )
             }
         }
@@ -143,7 +141,7 @@ private fun getCountdownTextFontSize(countdownText: String): TextUnit =
     when {
         countdownText.length > 7 -> // Small
             14.sp
-        countdownText.length in 5..7 -> // Medium: Default Text properties
+        countdownText.length in 5..7 -> // Medium: Default Font Size
             TextUnit.Unspecified
         else -> // Large: length < 5
             20.sp
@@ -153,7 +151,7 @@ private fun getCountdownTextLineHeight(countdownText: String): TextUnit =
     when {
         countdownText.length > 7 -> // Small
             16.sp
-        countdownText.length in 5..7 -> // Medium: Default Text properties
+        countdownText.length in 5..7 -> // Medium: Default Line Height
             TextUnit.Unspecified
         else -> // Large: length < 5
             22.sp
@@ -178,7 +176,7 @@ private fun NextAlarmCloudNoAlarmsSmallText1Preview() {
         ) {
             NextAlarmCloudContent(
                 selectedNavComponentDest = Destination.AlarmListScreen,
-                nextAlarmDisplayState = AlarmCloudState.Success(
+                alarmCountdownState = AlarmCountdownState.Success(
                     icon = Icons.Default.AlarmOff,
                     countdownText = stringResource(id = R.string.no_active_alarms)
                 ),
@@ -209,7 +207,7 @@ private fun NextAlarmCloudSmallText2Preview() {
         ) {
             NextAlarmCloudContent(
                 selectedNavComponentDest = Destination.AlarmListScreen,
-                nextAlarmDisplayState = AlarmCloudState.Success(
+                alarmCountdownState = AlarmCountdownState.Success(
                     icon = Icons.Default.Alarm,
                     countdownText = alarm.toCountdownString(LocalContext.current)
                 ),
@@ -240,7 +238,7 @@ private fun NextAlarmCloudMediumText1Preview() {
         ) {
             NextAlarmCloudContent(
                 selectedNavComponentDest = Destination.AlarmListScreen,
-                nextAlarmDisplayState = AlarmCloudState.Success(
+                alarmCountdownState = AlarmCountdownState.Success(
                     icon = Icons.Default.Alarm,
                     countdownText = alarm.toCountdownString(LocalContext.current)
                 ),
@@ -267,7 +265,7 @@ private fun NextAlarmCloudMediumText2Preview() {
         ) {
             NextAlarmCloudContent(
                 selectedNavComponentDest = Destination.AlarmListScreen,
-                nextAlarmDisplayState = AlarmCloudState.Success(
+                alarmCountdownState = AlarmCountdownState.Success(
                     icon = Icons.Default.Alarm,
                     countdownText = consistentFutureAlarm.toCountdownString(LocalContext.current)
                 ),
@@ -298,7 +296,7 @@ private fun NextAlarmCloudLargeText1Preview() {
         ) {
             NextAlarmCloudContent(
                 selectedNavComponentDest = Destination.AlarmListScreen,
-                nextAlarmDisplayState = AlarmCloudState.Success(
+                alarmCountdownState = AlarmCountdownState.Success(
                     icon = Icons.Default.Alarm,
                     countdownText = alarm.toCountdownString(LocalContext.current)
                 ),
@@ -326,7 +324,7 @@ private fun NextAlarmCloudSnoozedAlarmLargeText2Preview() {
         ) {
             NextAlarmCloudContent(
                 selectedNavComponentDest = Destination.AlarmListScreen,
-                nextAlarmDisplayState = AlarmCloudState.Success(
+                alarmCountdownState = AlarmCountdownState.Success(
                     icon = Icons.Default.Snooze,
                     countdownText = snoozedAlarm.toCountdownString(LocalContext.current)
                 ),
@@ -353,7 +351,7 @@ private fun NextAlarmCloudSettingsScreenPreview() {
         ) {
             NextAlarmCloudContent(
                 selectedNavComponentDest = Destination.SettingsScreen,
-                nextAlarmDisplayState = AlarmCloudState.Success(
+                alarmCountdownState = AlarmCountdownState.Success(
                     icon = Icons.Default.Alarm,
                     countdownText = consistentFutureAlarm.toCountdownString(LocalContext.current)
                 ),

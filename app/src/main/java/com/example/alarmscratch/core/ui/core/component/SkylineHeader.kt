@@ -150,7 +150,7 @@ private fun SkylineHeaderOneLineAlarmPreview() {
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
                     selectedNavComponentDest = Destination.AlarmListScreen,
-                    nextAlarmDisplayState = AlarmCloudState.Success(
+                    alarmCountdownState = AlarmCountdownState.Success(
                         icon = Icons.Default.Alarm,
                         countdownText = consistentFutureAlarm.toCountdownString(LocalContext.current)
                     ),
@@ -175,7 +175,7 @@ private fun SkylineHeaderTwoLineAlarmPreview() {
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
                     selectedNavComponentDest = Destination.AlarmListScreen,
-                    nextAlarmDisplayState = AlarmCloudState.Success(
+                    alarmCountdownState = AlarmCountdownState.Success(
                         icon = Icons.Default.Alarm,
                         countdownText = alarm.toCountdownString(LocalContext.current)
                     ),
@@ -196,7 +196,7 @@ private fun SkylineHeaderSnoozedAlarmPreview() {
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
                     selectedNavComponentDest = Destination.AlarmListScreen,
-                    nextAlarmDisplayState = AlarmCloudState.Success(
+                    alarmCountdownState = AlarmCountdownState.Success(
                         icon = Icons.Default.Snooze,
                         countdownText = snoozedAlarm.toCountdownString(LocalContext.current)
                     ),
@@ -217,7 +217,7 @@ private fun SkylineHeaderNoAlarmsPreview() {
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
                     selectedNavComponentDest = Destination.AlarmListScreen,
-                    nextAlarmDisplayState = AlarmCloudState.Success(
+                    alarmCountdownState = AlarmCountdownState.Success(
                         icon = Icons.Default.AlarmOff,
                         countdownText = stringResource(id = R.string.no_active_alarms)
                     ),
@@ -238,7 +238,7 @@ private fun SkylineHeaderSettingsScreenPreview() {
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
                     selectedNavComponentDest = Destination.SettingsScreen,
-                    nextAlarmDisplayState = AlarmCloudState.Success(
+                    alarmCountdownState = AlarmCountdownState.Success(
                         icon = Icons.Default.Alarm,
                         countdownText = consistentFutureAlarm.toCountdownString(LocalContext.current)
                     ),

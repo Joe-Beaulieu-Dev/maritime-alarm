@@ -37,15 +37,17 @@ class NextAlarmCloudViewModel(
     val timeChangeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (context != null && intent?.action == Intent.ACTION_TIME_TICK) {
-                refreshDisplay()
+                // Refresh the Alarm Countdown every minute, on the minute,
+                // in sync with the system clock.
+                refreshAlarmCountdownState()
             }
         }
     }
 
     // State
     private val nextAlarm: MutableStateFlow<AlarmState> = MutableStateFlow(AlarmState.Loading)
-    private val _nextAlarmDisplay: MutableStateFlow<AlarmCloudState> = MutableStateFlow(AlarmCloudState.Loading)
-    val nextAlarmDisplay: StateFlow<AlarmCloudState> = _nextAlarmDisplay.asStateFlow()
+    private val _alarmCountdownState: MutableStateFlow<AlarmCountdownState> = MutableStateFlow(AlarmCountdownState.Loading)
+    val alarmCountdownState: StateFlow<AlarmCountdownState> = _alarmCountdownState.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -63,8 +65,8 @@ class NextAlarmCloudViewModel(
                     // Get AlarmState for next Alarm
                     nextAlarm.value = alarmState
 
-                    // Refresh display
-                    refreshDisplay()
+                    // Refresh Alarm Countdown
+                    refreshAlarmCountdownState()
                 }
         }
     }
@@ -98,8 +100,8 @@ class NextAlarmCloudViewModel(
             }
             .minByOrNull { alarm -> alarm.snoozeDateTime ?: alarm.dateTime }
 
-    private fun refreshDisplay() {
-        _nextAlarmDisplay.value = AlarmCloudState.Success(
+    private fun refreshAlarmCountdownState() {
+        _alarmCountdownState.value = AlarmCountdownState.Success(
             icon = getIcon(nextAlarm.value),
             countdownText = getCountdownText(nextAlarm.value)
         )

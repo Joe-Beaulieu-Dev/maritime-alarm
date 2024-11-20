@@ -49,7 +49,7 @@ import com.example.alarmscratch.core.extension.toCountdownString
 import com.example.alarmscratch.core.navigation.AlarmNavHost
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.navigation.NavComponent
-import com.example.alarmscratch.core.ui.core.component.AlarmCloudState
+import com.example.alarmscratch.core.ui.core.component.AlarmCountdownState
 import com.example.alarmscratch.core.ui.core.component.LavaFloatingActionButton
 import com.example.alarmscratch.core.ui.core.component.NextAlarmCloudContent
 import com.example.alarmscratch.core.ui.core.component.SkylineHeader
@@ -187,7 +187,7 @@ private fun CoreScreenAlarmListPreview() {
                     nextAlarmIndicator = {
                         NextAlarmCloudContent(
                             selectedNavComponentDest = selectedNavComponentDest,
-                            nextAlarmDisplayState = AlarmCloudState.Success(
+                            alarmCountdownState = AlarmCountdownState.Success(
                                 icon = Icons.Default.Alarm,
                                 countdownText = alarmListState.alarmList.first().toCountdownString(LocalContext.current)
                             ),
@@ -232,7 +232,7 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
                     nextAlarmIndicator = {
                         NextAlarmCloudContent(
                             selectedNavComponentDest = selectedNavComponentDest,
-                            nextAlarmDisplayState = AlarmCloudState.Success(
+                            alarmCountdownState = AlarmCountdownState.Success(
                                 icon = Icons.Default.AlarmOff,
                                 countdownText = stringResource(id = R.string.no_active_alarms)
                             ),
@@ -277,7 +277,7 @@ private fun CoreScreenSettingsPreview() {
                     nextAlarmIndicator = {
                         NextAlarmCloudContent(
                             selectedNavComponentDest = selectedNavComponentDest,
-                            nextAlarmDisplayState = AlarmCloudState.Success(
+                            alarmCountdownState = AlarmCountdownState.Success(
                                 icon = Icons.Default.Alarm,
                                 countdownText = alarmSampleDataHardCodedIds.first().toCountdownString(LocalContext.current)
                             ),
