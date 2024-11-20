@@ -4,6 +4,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,15 +28,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
@@ -43,9 +44,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
 import com.example.alarmscratch.alarm.data.preview.snoozedAlarm
-import com.example.alarmscratch.alarm.data.repository.AlarmState
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
-import com.example.alarmscratch.core.extension.isSnoozed
 import com.example.alarmscratch.core.extension.toCountdownString
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
@@ -58,11 +57,13 @@ fun NextAlarmCloud(
     nextAlarmCloudViewModel: NextAlarmCloudViewModel = viewModel(factory = NextAlarmCloudViewModel.Factory)
 ) {
     // State
-    val nextAlarmState by nextAlarmCloudViewModel.nextAlarm.collectAsState()
+    val nextAlarmDisplayState by nextAlarmCloudViewModel.nextAlarmDisplay.collectAsState()
+    val timeChangeReceiver = nextAlarmCloudViewModel.timeChangeReceiver
 
     NextAlarmCloudContent(
         selectedNavComponentDest = selectedNavComponentDest,
-        nextAlarmState = nextAlarmState,
+        nextAlarmDisplayState = nextAlarmDisplayState,
+        timeChangeReceiver = timeChangeReceiver,
         modifier = modifier
     )
 }
@@ -70,25 +71,15 @@ fun NextAlarmCloud(
 @Composable
 fun NextAlarmCloudContent(
     selectedNavComponentDest: Destination,
-    nextAlarmState: AlarmState,
+    nextAlarmDisplayState: AlarmCloudState,
+    timeChangeReceiver: BroadcastReceiver,
     modifier: Modifier = Modifier
 ) {
-    // State
     val localContext = LocalContext.current
-    var countdownText by rememberSaveable { mutableStateOf("") }
-    var fontSize: TextUnit
-    var lineHeight: TextUnit
 
     // Manage the BroadcastReceiver for keeping the Alarm Countdown Text up to date
     DisposableEffect(key1 = localContext, key2 = selectedNavComponentDest) {
-        val timeChangeReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                if (context != null && intent?.action == Intent.ACTION_TIME_TICK) {
-                    countdownText = getCountdownText(context, nextAlarmState)
-                }
-            }
-        }
-
+        // Register BroadcastReceiver
         if (selectedNavComponentDest is Destination.AlarmListScreen) {
             ContextCompat.registerReceiver(
                 localContext,
@@ -98,6 +89,7 @@ fun NextAlarmCloudContent(
             )
         }
 
+        // Unregister BroadcastReceiver
         onDispose {
             try {
                 localContext.unregisterReceiver(timeChangeReceiver)
@@ -108,71 +100,63 @@ fun NextAlarmCloudContent(
     }
 
     Box(
+        contentAlignment = Alignment.Center,
         modifier = modifier
+            .width(120.dp)
+            .heightIn(min = 50.dp)
             .clip(shape = CircleShape)
             .background(color = Color.White)
     ) {
-        // Next Alarm Icon and Text
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .width(120.dp)
-                .heightIn(min = 50.dp)
-                .padding(horizontal = 8.dp)
+        // Alarm Icon and Countdown Text
+        // This Animation is to match the NavHost's
+        AnimatedVisibility(
+            visible = selectedNavComponentDest == Destination.AlarmListScreen && nextAlarmDisplayState is AlarmCloudState.Success,
+            enter = fadeIn(animationSpec = tween(durationMillis = 700)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 700))
         ) {
-            if (selectedNavComponentDest == Destination.AlarmListScreen) {
-                // You cannot simultaneously apply both fontSize and lineHeight to the same AnnotatedString.
-                // Therefore a normal String is used, and these values will be applied directly to the Text Composable.
-                countdownText = getCountdownText(localContext, nextAlarmState)
-                if (countdownText.length > 7) { // Small
-                    fontSize = 14.sp
-                    lineHeight = 16.sp
-                } else if (countdownText.length in 5..7) { // Medium
-                    // Default Text properties
-                    fontSize = TextUnit.Unspecified
-                    lineHeight = TextUnit.Unspecified
-                } else { // Large: length < 5
-                    fontSize = 20.sp
-                    lineHeight = 22.sp
-                }
-
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(8.dp)
+            ) {
                 // Alarm Icon
                 Icon(
-                    imageVector = getAlarmIcon(nextAlarmState),
+                    imageVector = (nextAlarmDisplayState as AlarmCloudState.Success).icon,
                     contentDescription = null,
                     tint = InCloudBlack,
                     modifier = Modifier.padding(end = 4.dp, bottom = 2.dp)
                 )
                 // Countdown Text
                 Text(
-                    text = countdownText,
+                    text = nextAlarmDisplayState.countdownText,
                     color = InCloudBlack,
-                    fontSize = fontSize,
+                    fontSize = getCountdownTextFontSize(nextAlarmDisplayState.countdownText),
                     fontWeight = FontWeight.SemiBold,
-                    lineHeight = lineHeight
+                    lineHeight = getCountdownTextLineHeight(nextAlarmDisplayState.countdownText)
                 )
             }
         }
     }
 }
 
-private fun getAlarmIcon(alarmState: AlarmState): ImageVector =
-    if (alarmState is AlarmState.Success) {
-        if (alarmState.alarm.isSnoozed()) {
-            Icons.Default.Snooze
-        } else {
-            Icons.Default.Alarm
-        }
-    } else {
-        Icons.Default.AlarmOff
+private fun getCountdownTextFontSize(countdownText: String): TextUnit =
+    when {
+        countdownText.length > 7 -> // Small
+            14.sp
+        countdownText.length in 5..7 -> // Medium: Default Text properties
+            TextUnit.Unspecified
+        else -> // Large: length < 5
+            20.sp
     }
 
-private fun getCountdownText(context: Context, alarmState: AlarmState): String =
-    if (alarmState is AlarmState.Success) {
-        alarmState.alarm.toCountdownString(context)
-    } else {
-        context.getString(R.string.no_active_alarms)
+private fun getCountdownTextLineHeight(countdownText: String): TextUnit =
+    when {
+        countdownText.length > 7 -> // Small
+            16.sp
+        countdownText.length in 5..7 -> // Medium: Default Text properties
+            TextUnit.Unspecified
+        else -> // Large: length < 5
+            22.sp
     }
 
 /*
@@ -194,7 +178,13 @@ private fun NextAlarmCloudNoAlarmsSmallText1Preview() {
         ) {
             NextAlarmCloudContent(
                 selectedNavComponentDest = Destination.AlarmListScreen,
-                nextAlarmState = AlarmState.Error(Throwable())
+                nextAlarmDisplayState = AlarmCloudState.Success(
+                    icon = Icons.Default.AlarmOff,
+                    countdownText = stringResource(id = R.string.no_active_alarms)
+                ),
+                timeChangeReceiver = object : BroadcastReceiver() {
+                    override fun onReceive(context: Context?, intent: Intent?) {}
+                }
             )
         }
     }
@@ -206,6 +196,10 @@ private fun NextAlarmCloudNoAlarmsSmallText1Preview() {
 )
 @Composable
 private fun NextAlarmCloudSmallText2Preview() {
+    val alarm = consistentFutureAlarm.copy(
+        dateTime = LocalDateTimeUtil.nowTruncated().plusDays(12).plusHours(10).plusMinutes(45)
+    )
+
     AlarmScratchTheme {
         Box(
             contentAlignment = Alignment.Center,
@@ -215,11 +209,13 @@ private fun NextAlarmCloudSmallText2Preview() {
         ) {
             NextAlarmCloudContent(
                 selectedNavComponentDest = Destination.AlarmListScreen,
-                nextAlarmState = AlarmState.Success(
-                    alarm = consistentFutureAlarm.copy(
-                        dateTime = LocalDateTimeUtil.nowTruncated().plusDays(12).plusHours(10).plusMinutes(45)
-                    )
-                )
+                nextAlarmDisplayState = AlarmCloudState.Success(
+                    icon = Icons.Default.Alarm,
+                    countdownText = alarm.toCountdownString(LocalContext.current)
+                ),
+                timeChangeReceiver = object : BroadcastReceiver() {
+                    override fun onReceive(context: Context?, intent: Intent?) {}
+                }
             )
         }
     }
@@ -231,6 +227,10 @@ private fun NextAlarmCloudSmallText2Preview() {
 )
 @Composable
 private fun NextAlarmCloudMediumText1Preview() {
+    val alarm = consistentFutureAlarm.copy(
+        dateTime = LocalDateTimeUtil.nowTruncated().plusHours(20).plusMinutes(45)
+    )
+
     AlarmScratchTheme {
         Box(
             contentAlignment = Alignment.Center,
@@ -240,11 +240,13 @@ private fun NextAlarmCloudMediumText1Preview() {
         ) {
             NextAlarmCloudContent(
                 selectedNavComponentDest = Destination.AlarmListScreen,
-                nextAlarmState = AlarmState.Success(
-                    alarm = consistentFutureAlarm.copy(
-                        dateTime = LocalDateTimeUtil.nowTruncated().plusHours(20).plusMinutes(45)
-                    )
-                )
+                nextAlarmDisplayState = AlarmCloudState.Success(
+                    icon = Icons.Default.Alarm,
+                    countdownText = alarm.toCountdownString(LocalContext.current)
+                ),
+                timeChangeReceiver = object : BroadcastReceiver() {
+                    override fun onReceive(context: Context?, intent: Intent?) {}
+                }
             )
         }
     }
@@ -265,7 +267,13 @@ private fun NextAlarmCloudMediumText2Preview() {
         ) {
             NextAlarmCloudContent(
                 selectedNavComponentDest = Destination.AlarmListScreen,
-                nextAlarmState = AlarmState.Success(alarm = consistentFutureAlarm)
+                nextAlarmDisplayState = AlarmCloudState.Success(
+                    icon = Icons.Default.Alarm,
+                    countdownText = consistentFutureAlarm.toCountdownString(LocalContext.current)
+                ),
+                timeChangeReceiver = object : BroadcastReceiver() {
+                    override fun onReceive(context: Context?, intent: Intent?) {}
+                }
             )
         }
     }
@@ -277,6 +285,10 @@ private fun NextAlarmCloudMediumText2Preview() {
 )
 @Composable
 private fun NextAlarmCloudLargeText1Preview() {
+    val alarm = consistentFutureAlarm.copy(
+        dateTime = LocalDateTimeUtil.nowTruncated().plusMinutes(1)
+    )
+
     AlarmScratchTheme {
         Box(
             contentAlignment = Alignment.Center,
@@ -286,11 +298,13 @@ private fun NextAlarmCloudLargeText1Preview() {
         ) {
             NextAlarmCloudContent(
                 selectedNavComponentDest = Destination.AlarmListScreen,
-                nextAlarmState = AlarmState.Success(
-                    alarm = consistentFutureAlarm.copy(
-                        dateTime = LocalDateTimeUtil.nowTruncated().plusMinutes(1)
-                    )
-                )
+                nextAlarmDisplayState = AlarmCloudState.Success(
+                    icon = Icons.Default.Alarm,
+                    countdownText = alarm.toCountdownString(LocalContext.current)
+                ),
+                timeChangeReceiver = object : BroadcastReceiver() {
+                    override fun onReceive(context: Context?, intent: Intent?) {}
+                }
             )
         }
     }
@@ -312,7 +326,13 @@ private fun NextAlarmCloudSnoozedAlarmLargeText2Preview() {
         ) {
             NextAlarmCloudContent(
                 selectedNavComponentDest = Destination.AlarmListScreen,
-                nextAlarmState = AlarmState.Success(alarm = snoozedAlarm)
+                nextAlarmDisplayState = AlarmCloudState.Success(
+                    icon = Icons.Default.Snooze,
+                    countdownText = snoozedAlarm.toCountdownString(LocalContext.current)
+                ),
+                timeChangeReceiver = object : BroadcastReceiver() {
+                    override fun onReceive(context: Context?, intent: Intent?) {}
+                }
             )
         }
     }
@@ -333,7 +353,13 @@ private fun NextAlarmCloudSettingsScreenPreview() {
         ) {
             NextAlarmCloudContent(
                 selectedNavComponentDest = Destination.SettingsScreen,
-                nextAlarmState = AlarmState.Success(alarm = consistentFutureAlarm)
+                nextAlarmDisplayState = AlarmCloudState.Success(
+                    icon = Icons.Default.Alarm,
+                    countdownText = consistentFutureAlarm.toCountdownString(LocalContext.current)
+                ),
+                timeChangeReceiver = object : BroadcastReceiver() {
+                    override fun onReceive(context: Context?, intent: Intent?) {}
+                }
             )
         }
     }

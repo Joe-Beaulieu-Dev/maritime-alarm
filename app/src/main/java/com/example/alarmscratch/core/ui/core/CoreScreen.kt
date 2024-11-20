@@ -1,5 +1,8 @@
 package com.example.alarmscratch.core.ui.core
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -18,6 +21,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Alarm
+import androidx.compose.material.icons.filled.AlarmOff
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,21 +31,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.alarmSampleDataHardCodedIds
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
-import com.example.alarmscratch.alarm.data.repository.AlarmState
 import com.example.alarmscratch.alarm.ui.alarmlist.AlarmListScreenContent
 import com.example.alarmscratch.core.extension.navigateSingleTop
+import com.example.alarmscratch.core.extension.toCountdownString
 import com.example.alarmscratch.core.navigation.AlarmNavHost
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.navigation.NavComponent
+import com.example.alarmscratch.core.ui.core.component.AlarmCloudState
 import com.example.alarmscratch.core.ui.core.component.LavaFloatingActionButton
 import com.example.alarmscratch.core.ui.core.component.NextAlarmCloudContent
 import com.example.alarmscratch.core.ui.core.component.SkylineHeader
@@ -166,10 +176,10 @@ fun CoreScreenContent(
 @Preview
 @Composable
 private fun CoreScreenAlarmListPreview() {
-    AlarmScratchTheme {
-        val selectedNavComponentDest = Destination.AlarmListScreen
-        val alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds)
+    val selectedNavComponentDest = Destination.AlarmListScreen
+    val alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds)
 
+    AlarmScratchTheme {
         CoreScreenContent(
             selectedNavComponentDest = selectedNavComponentDest,
             header = {
@@ -177,7 +187,13 @@ private fun CoreScreenAlarmListPreview() {
                     nextAlarmIndicator = {
                         NextAlarmCloudContent(
                             selectedNavComponentDest = selectedNavComponentDest,
-                            nextAlarmState = AlarmState.Success(alarmSampleDataHardCodedIds.first())
+                            nextAlarmDisplayState = AlarmCloudState.Success(
+                                icon = Icons.Default.Alarm,
+                                countdownText = alarmListState.alarmList.first().toCountdownString(LocalContext.current)
+                            ),
+                            timeChangeReceiver = object : BroadcastReceiver() {
+                                override fun onReceive(context: Context?, intent: Intent?) {}
+                            }
                         )
                     }
                 )
@@ -206,10 +222,9 @@ private fun CoreScreenAlarmListPreview() {
 @Preview
 @Composable
 private fun CoreScreenAlarmListNoAlarmsPreview() {
-    AlarmScratchTheme {
-        val selectedNavComponentDest = Destination.AlarmListScreen
-        val alarmListState = AlarmListState.Success(alarmList = emptyList())
+    val selectedNavComponentDest = Destination.AlarmListScreen
 
+    AlarmScratchTheme {
         CoreScreenContent(
             selectedNavComponentDest = selectedNavComponentDest,
             header = {
@@ -217,7 +232,13 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
                     nextAlarmIndicator = {
                         NextAlarmCloudContent(
                             selectedNavComponentDest = selectedNavComponentDest,
-                            nextAlarmState = AlarmState.Error(Throwable())
+                            nextAlarmDisplayState = AlarmCloudState.Success(
+                                icon = Icons.Default.AlarmOff,
+                                countdownText = stringResource(id = R.string.no_active_alarms)
+                            ),
+                            timeChangeReceiver = object : BroadcastReceiver() {
+                                override fun onReceive(context: Context?, intent: Intent?) {}
+                            }
                         )
                     }
                 )
@@ -232,7 +253,7 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
             }
         ) {
             AlarmListScreenContent(
-                alarmList = alarmListState.alarmList,
+                alarmList = emptyList(),
                 timeDisplay = TimeDisplay.TwelveHour,
                 onAlarmToggled = { _, _ -> },
                 onAlarmDeleted = { _, _ -> },
@@ -246,9 +267,9 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
 @Preview
 @Composable
 private fun CoreScreenSettingsPreview() {
-    AlarmScratchTheme {
-        val selectedNavComponentDest = Destination.SettingsScreen
+    val selectedNavComponentDest = Destination.SettingsScreen
 
+    AlarmScratchTheme {
         CoreScreenContent(
             selectedNavComponentDest = selectedNavComponentDest,
             header = {
@@ -256,7 +277,13 @@ private fun CoreScreenSettingsPreview() {
                     nextAlarmIndicator = {
                         NextAlarmCloudContent(
                             selectedNavComponentDest = selectedNavComponentDest,
-                            nextAlarmState = AlarmState.Success(alarmSampleDataHardCodedIds.first())
+                            nextAlarmDisplayState = AlarmCloudState.Success(
+                                icon = Icons.Default.Alarm,
+                                countdownText = alarmSampleDataHardCodedIds.first().toCountdownString(LocalContext.current)
+                            ),
+                            timeChangeReceiver = object : BroadcastReceiver() {
+                                override fun onReceive(context: Context?, intent: Intent?) {}
+                            }
                         )
                     }
                 )
