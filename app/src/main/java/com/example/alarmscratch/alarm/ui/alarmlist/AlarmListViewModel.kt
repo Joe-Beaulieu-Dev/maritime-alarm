@@ -10,8 +10,8 @@ import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
-import com.example.alarmscratch.core.extension.futurizeDateTime
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
+import com.example.alarmscratch.core.extension.withFuturizedDateTime
 import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsRepository
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
@@ -65,7 +65,7 @@ class AlarmListViewModel(
     }
 
     suspend fun toggleAlarm(context: Context, alarm: Alarm) {
-        val modifiedAlarm = alarm.copy(enabled = !alarm.enabled, dateTime = alarm.dateTime.futurizeDateTime())
+        val modifiedAlarm = alarm.copy(enabled = !alarm.enabled, dateTime = alarm.dateTime).withFuturizedDateTime()
 
         alarmRepository.updateAlarm(modifiedAlarm)
 

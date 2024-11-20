@@ -27,6 +27,28 @@ fun Alarm.toAlarmExecutionData(): AlarmExecutionData =
         snoozeDuration = snoozeDuration
     )
 
+fun Alarm.withFuturizedDateTime(): Alarm {
+    val currentDateTime = LocalDateTimeUtil.nowTruncated()
+
+    val futurizedDateTime = if (!dateTime.isAfter(currentDateTime)) {
+        if (weeklyRepeater.hasRepeatingDays()) {
+            nextRepeatingDate()
+        } else {
+            val potentialAlarm = LocalDateTime.of(currentDateTime.toLocalDate(), dateTime.toLocalTime())
+            // Add the minimum amount of days required to futurize the Alarm
+            if (!potentialAlarm.isAfter(currentDateTime)) {
+                potentialAlarm.plusDays(1)
+            } else {
+                potentialAlarm
+            }
+        }
+    } else {
+        dateTime
+    }
+
+    return this.copy(dateTime = futurizedDateTime)
+}
+
 /**
  * Returns a LocalDateTime with the next day the Alarm is set to go off, if and only if the Alarm is set to repeat.
  * The returned LocalDateTime is guaranteed to be set in the future.

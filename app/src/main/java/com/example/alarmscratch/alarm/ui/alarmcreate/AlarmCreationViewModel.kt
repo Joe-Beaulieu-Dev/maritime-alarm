@@ -14,10 +14,10 @@ import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.alarm.data.repository.AlarmState
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
-import com.example.alarmscratch.core.extension.futurizeDateTime
 import com.example.alarmscratch.core.extension.isRepeating
 import com.example.alarmscratch.core.extension.nextRepeatingDate
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
+import com.example.alarmscratch.core.extension.withFuturizedDateTime
 import com.example.alarmscratch.settings.data.model.AlarmDefaults
 import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
@@ -153,7 +153,7 @@ class AlarmCreationViewModel(
         if (_newAlarm.value is AlarmState.Success) {
             val alarm = (_newAlarm.value as AlarmState.Success).alarm
             _newAlarm.value = AlarmState.Success(
-                alarm.copy(dateTime = alarm.dateTime.withHour(hour).withMinute(minute).futurizeDateTime())
+                alarm.copy(dateTime = alarm.dateTime.withHour(hour).withMinute(minute)).withFuturizedDateTime()
             )
         }
     }

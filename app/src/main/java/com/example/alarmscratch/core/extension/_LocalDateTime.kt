@@ -15,26 +15,6 @@ object LocalDateTimeUtil {
 }
 
 /*
- * Utility
- */
-
-fun LocalDateTime.futurizeDateTime(): LocalDateTime {
-    val currentDateTime = LocalDateTimeUtil.nowTruncated()
-    return if (!this.isAfter(currentDateTime)) {
-        val potentialAlarm = LocalDateTime.of(currentDateTime.toLocalDate(), this.toLocalTime())
-
-        // Add the minimum amount of days required to futurize the Alarm
-        if (!potentialAlarm.isAfter(currentDateTime)) {
-            potentialAlarm.plusDays(1)
-        } else {
-            potentialAlarm
-        }
-    } else {
-        this
-    }
-}
-
-/*
  * Convenience
  */
 
