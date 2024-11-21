@@ -88,7 +88,6 @@ class AlarmEditViewModel(
             if (_modifiedAlarm.value is AlarmState.Success) {
                 saveAlarm()
                 val newAlarm = getAlarm(alarmId)
-                // TODO: Only schedule alarm if enabled
                 scheduleAlarm(context.applicationContext, newAlarm)
             }
         }
@@ -97,7 +96,7 @@ class AlarmEditViewModel(
     // TODO: Clear snooze data
     private suspend fun saveAlarm() {
         if (_modifiedAlarm.value is AlarmState.Success) {
-            val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
+            val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm.copy(enabled = true)
             if (alarm.isRepeating()) {
                 alarmRepository.updateAlarm(alarm.copy(dateTime = alarm.nextRepeatingDateTime()))
             } else {
