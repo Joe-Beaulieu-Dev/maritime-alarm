@@ -16,36 +16,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.alarmscratch.R
+import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
+import com.example.alarmscratch.core.extension.LocalDateUtil
+import com.example.alarmscratch.core.extension.toUtcMillis
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
 import com.example.alarmscratch.core.ui.theme.LightVolcanicRock
 import com.example.alarmscratch.core.ui.theme.VolcanicRock
-import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateSelectionDialog(
-    alarmTime: LocalTime,
+    dateTime: LocalDateTime,
     onCancel: () -> Unit,
     onConfirm: (LocalDate) -> Unit
 ) {
     // State
     val currentDateTime = LocalDateTimeUtil.nowTruncated()
     val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = dateTime.toLocalDate().toUtcMillis(),
         yearRange = IntRange(currentDateTime.year, 2100),
         selectableDates = object : SelectableDates {
             override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                val calDate = Instant.ofEpochMilli(utcTimeMillis)
-                    .atZone(ZoneId.of("UTC"))
-                    .toLocalDate()
-
-                val potentialNewAlarm = LocalDateTime.of(calDate, alarmTime)
+                val calendarDate = LocalDateUtil.fromUtcMillis(utcTimeMillis)
+                val potentialNewAlarm = LocalDateTime.of(calendarDate, dateTime.toLocalTime())
 
                 return potentialNewAlarm.isAfter(currentDateTime)
             }
@@ -66,13 +64,7 @@ fun DateSelectionDialog(
                     //
                     // It's just to say "The start of the day on Date X is Y milliseconds since Epoch in UTC".
                     // Same thing goes for other "millis" dates in DatePicker.
-                    datePickerState.selectedDateMillis?.let { utcDateMillis ->
-                        val date = Instant.ofEpochMilli(utcDateMillis)
-                            .atZone(ZoneId.of("UTC"))
-                            .toLocalDate()
-
-                        onConfirm(date)
-                    }
+                    datePickerState.selectedDateMillis?.let { onConfirm(LocalDateUtil.fromUtcMillis(it)) }
                 },
                 enabled = datePickerState.selectedDateMillis != null,
                 colors = ButtonDefaults.textButtonColors(
@@ -122,7 +114,7 @@ private fun DateSelector(datePickerState: DatePickerState) {
 private fun DateSelectionDialogPreview() {
     AlarmScratchTheme {
         DateSelectionDialog(
-            alarmTime = LocalDateTimeUtil.nowTruncated().toLocalTime(),
+            dateTime = consistentFutureAlarm.dateTime,
             onCancel = {},
             onConfirm = {}
         )
@@ -134,7 +126,11 @@ private fun DateSelectionDialogPreview() {
 @Composable
 private fun DateSelectorPickerModePreview() {
     AlarmScratchTheme {
-        DateSelector(datePickerState = rememberDatePickerState())
+        DateSelector(
+            datePickerState = rememberDatePickerState(
+                initialSelectedDateMillis = consistentFutureAlarm.dateTime.toLocalDate().toUtcMillis()
+            )
+        )
     }
 }
 
@@ -142,8 +138,12 @@ private fun DateSelectorPickerModePreview() {
 @Preview
 @Composable
 private fun DateSelectorInputModePreview() {
-    val datePickerState = rememberDatePickerState().apply { displayMode = DisplayMode.Input }
     AlarmScratchTheme {
-        DateSelector(datePickerState = datePickerState)
+        DateSelector(
+            datePickerState = rememberDatePickerState(
+                initialSelectedDateMillis = consistentFutureAlarm.dateTime.toLocalDate().toUtcMillis(),
+                initialDisplayMode = DisplayMode.Input
+            )
+        )
     }
 }
