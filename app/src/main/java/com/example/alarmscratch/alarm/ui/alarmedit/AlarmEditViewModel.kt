@@ -125,7 +125,7 @@ class AlarmEditViewModel(
             _modifiedAlarm.value = AlarmState.Success(
                 alarm.copy(
                     dateTime = alarm.dateTime.withYear(date.year).withDayOfYear(date.dayOfYear),
-                    weeklyRepeater = alarm.weeklyRepeater.clear()
+                    weeklyRepeater = WeeklyRepeater()
                 )
             )
         }
@@ -143,14 +143,14 @@ class AlarmEditViewModel(
     fun addDay(day: WeeklyRepeater.Day) {
         if (_modifiedAlarm.value is AlarmState.Success) {
             val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
-            _modifiedAlarm.value = AlarmState.Success(alarm.copy(weeklyRepeater = alarm.weeklyRepeater.addDay(day)))
+            _modifiedAlarm.value = AlarmState.Success(alarm.copy(weeklyRepeater = alarm.weeklyRepeater.withDay(day)))
         }
     }
 
     fun removeDay(day: WeeklyRepeater.Day) {
         if (_modifiedAlarm.value is AlarmState.Success) {
             val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
-            _modifiedAlarm.value = AlarmState.Success(alarm.copy(weeklyRepeater = alarm.weeklyRepeater.removeDay(day)))
+            _modifiedAlarm.value = AlarmState.Success(alarm.copy(weeklyRepeater = alarm.weeklyRepeater.withoutDay(day)))
         }
     }
 
