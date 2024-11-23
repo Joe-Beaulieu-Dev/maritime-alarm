@@ -36,9 +36,21 @@ class WeeklyRepeater(private var encodedRepeatingDays: Int = 0) {
                 }
             }
 
+    /*
+     * Query
+     */
+
     fun hasRepeatingDays(): Boolean = encodedRepeatingDays != 0
 
     fun isRepeatingOn(day: Day): Boolean = repeatingDayMap[day] ?: false
+
+    fun getEncodedRepeatingDays(): Int = encodedRepeatingDays
+
+    fun getRepeatingDays(): List<Day> = repeatingDayMap.filter { it.value }.keys.toList()
+
+    /*
+     * Manipulate
+     */
 
     fun addDay(day: Day): WeeklyRepeater =
         if (encodedRepeatingDays.and(day.mask) != day.mask) {
@@ -54,9 +66,11 @@ class WeeklyRepeater(private var encodedRepeatingDays: Int = 0) {
             WeeklyRepeater(encodedRepeatingDays)
         }
 
-    fun getEncodedRepeatingDays(): Int = encodedRepeatingDays
+    fun clear(): WeeklyRepeater = WeeklyRepeater()
 
-    fun getRepeatingDays(): List<Day> = repeatingDayMap.filter { it.value }.keys.toList()
+    /*
+     * Transform
+     */
 
     fun toAlarmCardDateAnnotatedString(enabled: Boolean): AnnotatedString =
         buildAnnotatedString {

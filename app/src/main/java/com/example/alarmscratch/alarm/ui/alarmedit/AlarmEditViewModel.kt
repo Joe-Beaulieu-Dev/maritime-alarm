@@ -119,11 +119,14 @@ class AlarmEditViewModel(
         }
     }
 
-    fun updateDate(date: LocalDate) {
+    fun updateDateAndResetWeeklyRepeater(date: LocalDate) {
         if (_modifiedAlarm.value is AlarmState.Success) {
             val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
             _modifiedAlarm.value = AlarmState.Success(
-                alarm.copy(dateTime = alarm.dateTime.withYear(date.year).withDayOfYear(date.dayOfYear))
+                alarm.copy(
+                    dateTime = alarm.dateTime.withYear(date.year).withDayOfYear(date.dayOfYear),
+                    weeklyRepeater = alarm.weeklyRepeater.clear()
+                )
             )
         }
     }

@@ -60,7 +60,7 @@ fun AlarmEditScreen(
             validateAlarm = alarmEditViewModel::validateAlarm,
             saveAndScheduleAlarm = { alarmEditViewModel.saveAndScheduleAlarm(context) },
             updateName = alarmEditViewModel::updateName,
-            updateDate = alarmEditViewModel::updateDate,
+            updateDate = alarmEditViewModel::updateDateAndResetWeeklyRepeater,
             updateTime = alarmEditViewModel::updateTime,
             addDay = alarmEditViewModel::addDay,
             removeDay = alarmEditViewModel::removeDay,

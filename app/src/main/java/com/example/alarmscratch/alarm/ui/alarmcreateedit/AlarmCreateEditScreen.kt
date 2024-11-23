@@ -356,20 +356,12 @@ fun DayOfWeekButton(
     modifier: Modifier = Modifier
 ) {
     // State
-    var enabled by rememberSaveable { mutableStateOf(selected) }
-    val borderColor = if (enabled) BoatSails else LightVolcanicRock
+    val textColor = if (selected) BoatSails else LightVolcanicRock
+    val borderColor = if (selected) BoatSails else LightVolcanicRock
     val border = BorderStroke(width = 1.dp, color = borderColor)
-    val textColor = if (enabled) BoatSails else LightVolcanicRock
 
     OutlinedButton(
-        onClick = {
-            enabled = !enabled
-            if (enabled) {
-                addDay()
-            } else {
-                removeDay()
-            }
-        },
+        onClick = { if (selected) removeDay() else addDay()},
         colors = ButtonDefaults.outlinedButtonColors(contentColor = textColor),
         border = border,
         contentPadding = PaddingValues(0.dp),
