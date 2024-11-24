@@ -361,7 +361,7 @@ fun DayOfWeekButton(
     val border = BorderStroke(width = 1.dp, color = borderColor)
 
     OutlinedButton(
-        onClick = { if (selected) removeDay() else addDay()},
+        onClick = { if (selected) removeDay() else addDay() },
         colors = ButtonDefaults.outlinedButtonColors(contentColor = textColor),
         border = border,
         contentPadding = PaddingValues(0.dp),
