@@ -140,11 +140,14 @@ class AlarmCreationViewModel(
         }
     }
 
-    fun updateDate(date: LocalDate) {
+    fun updateDateAndResetWeeklyRepeater(date: LocalDate) {
         if (_newAlarm.value is AlarmState.Success) {
             val alarm = (_newAlarm.value as AlarmState.Success).alarm
             _newAlarm.value = AlarmState.Success(
-                alarm.copy(dateTime = alarm.dateTime.withYear(date.year).withDayOfYear(date.dayOfYear))
+                alarm.copy(
+                    dateTime = alarm.dateTime.withYear(date.year).withDayOfYear(date.dayOfYear),
+                    weeklyRepeater = WeeklyRepeater()
+                )
             )
         }
     }
@@ -161,14 +164,14 @@ class AlarmCreationViewModel(
     fun addDay(day: WeeklyRepeater.Day) {
         if (_newAlarm.value is AlarmState.Success) {
             val alarm = (_newAlarm.value as AlarmState.Success).alarm
-            _newAlarm.value = AlarmState.Success(alarm.copy(weeklyRepeater = alarm.weeklyRepeater.addDay(day)))
+            _newAlarm.value = AlarmState.Success(alarm.copy(weeklyRepeater = alarm.weeklyRepeater.withDay(day)))
         }
     }
 
     fun removeDay(day: WeeklyRepeater.Day) {
         if (_newAlarm.value is AlarmState.Success) {
             val alarm = (_newAlarm.value as AlarmState.Success).alarm
-            _newAlarm.value = AlarmState.Success(alarm.copy(weeklyRepeater = alarm.weeklyRepeater.removeDay(day)))
+            _newAlarm.value = AlarmState.Success(alarm.copy(weeklyRepeater = alarm.weeklyRepeater.withoutDay(day)))
         }
     }
 

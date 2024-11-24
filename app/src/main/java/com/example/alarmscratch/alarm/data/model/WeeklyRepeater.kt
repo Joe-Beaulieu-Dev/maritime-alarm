@@ -8,7 +8,7 @@ import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.LightVolcanicRock
 import com.example.alarmscratch.core.ui.theme.WayDarkerBoatSails
 
-class WeeklyRepeater(private var encodedRepeatingDays: Int = 0) {
+class WeeklyRepeater(encodedRepeatingDays: Int = 0) {
 
     enum class Day(
         val mask: Int,
@@ -36,27 +36,43 @@ class WeeklyRepeater(private var encodedRepeatingDays: Int = 0) {
                 }
             }
 
-    fun hasRepeatingDays(): Boolean = encodedRepeatingDays != 0
+    /*
+     * Query
+     */
 
-    fun isRepeatingOn(day: Day): Boolean = repeatingDayMap[day] ?: false
+    fun hasRepeatingDays(): Boolean =
+        repeatingDayMap.containsValue(true)
 
-    fun addDay(day: Day): WeeklyRepeater =
-        if (encodedRepeatingDays.and(day.mask) != day.mask) {
-            WeeklyRepeater(encodedRepeatingDays + day.mask)
+    fun isRepeatingOn(day: Day): Boolean =
+        repeatingDayMap[day] ?: false
+
+    fun getRepeatingDays(): List<Day> =
+        repeatingDayMap.filterValues { it }.keys.toList()
+
+    /*
+     * Manipulate
+     */
+
+    fun withDay(day: Day): WeeklyRepeater =
+        if (repeatingDayMap[day] == false) {
+            WeeklyRepeater(toEncodedRepeatingDays() + day.mask)
         } else {
-            WeeklyRepeater(encodedRepeatingDays)
+            WeeklyRepeater(toEncodedRepeatingDays())
         }
 
-    fun removeDay(day: Day): WeeklyRepeater =
-        if (encodedRepeatingDays.and(day.mask) == day.mask) {
-            WeeklyRepeater(encodedRepeatingDays - day.mask)
+    fun withoutDay(day: Day): WeeklyRepeater =
+        if (repeatingDayMap[day] == true) {
+            WeeklyRepeater(toEncodedRepeatingDays() - day.mask)
         } else {
-            WeeklyRepeater(encodedRepeatingDays)
+            WeeklyRepeater(toEncodedRepeatingDays())
         }
 
-    fun getEncodedRepeatingDays(): Int = encodedRepeatingDays
+    /*
+     * Transform
+     */
 
-    fun getRepeatingDays(): List<Day> = repeatingDayMap.filter { it.value }.keys.toList()
+    fun toEncodedRepeatingDays(): Int =
+        repeatingDayMap.filterValues { it }.keys.sumOf { it.mask }
 
     fun toAlarmCardDateAnnotatedString(enabled: Boolean): AnnotatedString =
         buildAnnotatedString {
