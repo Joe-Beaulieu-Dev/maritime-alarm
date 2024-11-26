@@ -16,6 +16,7 @@ import com.example.alarmscratch.alarm.data.preview.sampleRingtoneData
 import com.example.alarmscratch.alarm.data.preview.tueWedThu
 import com.example.alarmscratch.alarm.data.repository.AlarmState
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.AlarmCreateEditScreen
+import com.example.alarmscratch.alarm.validation.ValidationResult
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.getRingtone
@@ -34,6 +35,7 @@ fun AlarmCreationScreen(
     // State
     val alarmState by alarmCreationViewModel.newAlarm.collectAsState()
     val generalSettingsState by alarmCreationViewModel.generalSettings.collectAsState()
+    val isAlarmNameValid by alarmCreationViewModel.isAlarmNameValid.collectAsState()
 
     if (alarmState is AlarmState.Success && generalSettingsState is GeneralSettingsState.Success) {
         // Fetch updated Ringtone URI from this back stack entry's SavedStateHandle.
@@ -57,7 +59,6 @@ fun AlarmCreationScreen(
             alarm = alarm,
             alarmRingtoneName = alarmRingtoneName,
             timeDisplay = generalSettings.timeDisplay,
-            validateAlarm = alarmCreationViewModel::validateAlarm,
             saveAndScheduleAlarm = { alarmCreationViewModel.saveAndScheduleAlarm(context) },
             updateName = alarmCreationViewModel::updateName,
             updateDate = alarmCreationViewModel::updateDateAndResetWeeklyRepeater,
@@ -66,6 +67,8 @@ fun AlarmCreationScreen(
             removeDay = alarmCreationViewModel::removeDay,
             toggleVibration = alarmCreationViewModel::toggleVibration,
             updateSnoozeDuration = alarmCreationViewModel::updateSnoozeDuration,
+            validateAlarm = alarmCreationViewModel::validateAlarm,
+            isAlarmNameValid = isAlarmNameValid,
             modifier = modifier
         )
     }
@@ -92,7 +95,6 @@ private fun AlarmCreationScreenPreview() {
             ),
             alarmRingtoneName = sampleRingtoneData.name,
             timeDisplay = TimeDisplay.TwelveHour,
-            validateAlarm = { true },
             saveAndScheduleAlarm = {},
             updateName = {},
             updateDate = {},
@@ -100,7 +102,9 @@ private fun AlarmCreationScreenPreview() {
             addDay = {},
             removeDay = {},
             toggleVibration = {},
-            updateSnoozeDuration = {}
+            updateSnoozeDuration = {},
+            validateAlarm = { true },
+            isAlarmNameValid = ValidationResult.Success()
         )
     }
 }

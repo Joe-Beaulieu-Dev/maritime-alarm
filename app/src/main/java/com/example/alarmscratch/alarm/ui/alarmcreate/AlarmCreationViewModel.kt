@@ -12,6 +12,8 @@ import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.alarm.data.repository.AlarmState
+import com.example.alarmscratch.alarm.validation.AlarmValidator
+import com.example.alarmscratch.alarm.validation.ValidationResult
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.isRepeating
@@ -39,12 +41,14 @@ import java.time.LocalDate
 class AlarmCreationViewModel(
     private val alarmRepository: AlarmRepository,
     private val alarmDefaultsRepository: AlarmDefaultsRepository,
-    private val generalSettingsRepository: GeneralSettingsRepository
+    private val generalSettingsRepository: GeneralSettingsRepository,
+    private val alarmValidator: AlarmValidator
 ) : ViewModel() {
 
     // Alarm
     private val _newAlarm: MutableStateFlow<AlarmState> = MutableStateFlow(AlarmState.Loading)
     val newAlarm: StateFlow<AlarmState> = _newAlarm.asStateFlow()
+
     // Settings
     private val alarmDefaults: MutableStateFlow<AlarmDefaultsState> = MutableStateFlow(AlarmDefaultsState.Loading)
     val generalSettings: StateFlow<GeneralSettingsState> =
@@ -56,6 +60,11 @@ class AlarmCreationViewModel(
                 SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
                 GeneralSettingsState.Loading
             )
+
+    // Validation
+    private val _isAlarmNameValid: MutableStateFlow<ValidationResult<AlarmValidator.AlarmValidationError>> =
+        MutableStateFlow(ValidationResult.Success())
+    val isAlarmNameValid: StateFlow<ValidationResult<AlarmValidator.AlarmValidationError>> = _isAlarmNameValid.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -93,7 +102,8 @@ class AlarmCreationViewModel(
                 return AlarmCreationViewModel(
                     alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(application).alarmDao()),
                     alarmDefaultsRepository = AlarmDefaultsRepository(application.alarmDefaultsDataStore),
-                    generalSettingsRepository = GeneralSettingsRepository(application.generalSettingsDataStore)
+                    generalSettingsRepository = GeneralSettingsRepository(application.generalSettingsDataStore),
+                    alarmValidator = AlarmValidator()
                 ) as T
             }
         }
@@ -137,6 +147,9 @@ class AlarmCreationViewModel(
         if (_newAlarm.value is AlarmState.Success) {
             val alarm = (_newAlarm.value as AlarmState.Success).alarm
             _newAlarm.value = AlarmState.Success(alarm.copy(name = name))
+
+            // Update validation state for TextField
+            validateAlarmName()
         }
     }
 
@@ -200,11 +213,22 @@ class AlarmCreationViewModel(
         }
     }
 
+    /*
+     * Validation
+     */
+
     fun validateAlarm(): Boolean =
         if (_newAlarm.value is AlarmState.Success) {
             val alarm = (_newAlarm.value as AlarmState.Success).alarm
+            // TODO: Validate Alarm name here before PR
             alarm.dateTime.isAfter(LocalDateTimeUtil.nowTruncated())
         } else {
             false
         }
+
+    private fun validateAlarmName() {
+        if (_newAlarm.value is AlarmState.Success) {
+            _isAlarmNameValid.value = alarmValidator.validateName((_newAlarm.value as AlarmState.Success).alarm.name)
+        }
+    }
 }

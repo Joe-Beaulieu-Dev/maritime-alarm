@@ -57,6 +57,9 @@
     <string name="alarm_creation_screen_title">Create Alarm</string>
     <!-- AlarmEditScreen -->
     <string name="alarm_edit_screen_title">Edit Alarm</string>
+    <!-- Validation -->
+    <string name="alarm_name_illegal_character_err">Only letters, numbers, spaces allowed</string>
+    <string name="alarm_name_only_whitespace_err">Cannot be only spaces</string>
 
     <!--
         **************************

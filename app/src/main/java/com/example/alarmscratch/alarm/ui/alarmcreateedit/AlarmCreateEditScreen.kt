@@ -66,6 +66,8 @@ import com.example.alarmscratch.alarm.data.preview.sampleRingtoneData
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.AlarmDays
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.DateSelectionDialog
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.TimeSelectionDialog
+import com.example.alarmscratch.alarm.validation.AlarmValidator
+import com.example.alarmscratch.alarm.validation.ValidationResult
 import com.example.alarmscratch.core.extension.get12HourTime
 import com.example.alarmscratch.core.extension.get24HourTime
 import com.example.alarmscratch.core.extension.getAmPm
@@ -94,7 +96,6 @@ fun AlarmCreateEditScreen(
     alarm: Alarm,
     alarmRingtoneName: String,
     timeDisplay: TimeDisplay,
-    validateAlarm: () -> Boolean,
     saveAndScheduleAlarm: () -> Unit,
     updateName: (String) -> Unit,
     updateDate: (LocalDate) -> Unit,
@@ -103,6 +104,8 @@ fun AlarmCreateEditScreen(
     removeDay: (WeeklyRepeater.Day) -> Unit,
     toggleVibration: () -> Unit,
     updateSnoozeDuration: (Int) -> Unit,
+    validateAlarm: () -> Boolean,
+    isAlarmNameValid: ValidationResult<AlarmValidator.AlarmValidationError>,
     modifier: Modifier = Modifier
 ) {
     // Configure Status Bar
@@ -170,12 +173,21 @@ fun AlarmCreateEditScreen(
                     .padding(start = 20.dp, top = 20.dp, end = 20.dp)
                     .fillMaxWidth()
             ) {
-                // TODO: Add validation
                 // Alarm Name
                 OutlinedTextField(
                     value = alarm.name,
                     onValueChange = { updateName(it) },
                     placeholder = { Text(text = stringResource(id = R.string.alarm_name_placeholder), color = LightVolcanicRock) },
+                    supportingText = {
+                        Text(
+                            text = if (isAlarmNameValid is ValidationResult.Error) {
+                                isAlarmNameValid.error.toErrorString(LocalContext.current)
+                            } else {
+                                "" // Empty String prevents Error text from shifting UI
+                            }
+                        )
+                    },
+                    isError = isAlarmNameValid is ValidationResult.Error,
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = DarkerBoatSails),
                     modifier = Modifier.padding(0.dp)
@@ -484,7 +496,6 @@ private fun AlarmCreateEditScreen12HourPreview() {
             alarm = repeatingAlarm,
             alarmRingtoneName = sampleRingtoneData.name,
             timeDisplay = TimeDisplay.TwelveHour,
-            validateAlarm = { true },
             saveAndScheduleAlarm = {},
             updateName = {},
             updateDate = {},
@@ -492,7 +503,9 @@ private fun AlarmCreateEditScreen12HourPreview() {
             addDay = {},
             removeDay = {},
             toggleVibration = {},
-            updateSnoozeDuration = {}
+            updateSnoozeDuration = {},
+            validateAlarm = { true },
+            isAlarmNameValid = ValidationResult.Success()
         )
     }
 }
@@ -508,7 +521,6 @@ private fun AlarmCreateEditScreen24HourPreview() {
             alarm = calendarAlarm,
             alarmRingtoneName = sampleRingtoneData.name,
             timeDisplay = TimeDisplay.TwentyFourHour,
-            validateAlarm = { true },
             saveAndScheduleAlarm = {},
             updateName = {},
             updateDate = {},
@@ -516,7 +528,59 @@ private fun AlarmCreateEditScreen24HourPreview() {
             addDay = {},
             removeDay = {},
             toggleVibration = {},
-            updateSnoozeDuration = {}
+            updateSnoozeDuration = {},
+            validateAlarm = { true },
+            isAlarmNameValid = ValidationResult.Success()
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun AlarmCreateEditScreenErrorIllegalCharacterPreview() {
+    AlarmScratchTheme {
+        AlarmCreateEditScreen(
+            navHostController = rememberNavController(),
+            navigateToRingtonePickerScreen = {},
+            titleRes = R.string.alarm_creation_screen_title,
+            alarm = repeatingAlarm.copy(name = "Illegal.String"),
+            alarmRingtoneName = sampleRingtoneData.name,
+            timeDisplay = TimeDisplay.TwelveHour,
+            saveAndScheduleAlarm = {},
+            updateName = {},
+            updateDate = {},
+            updateTime = { _, _ -> },
+            addDay = {},
+            removeDay = {},
+            toggleVibration = {},
+            updateSnoozeDuration = {},
+            validateAlarm = { true },
+            isAlarmNameValid = ValidationResult.Error(AlarmValidator.AlarmValidationError.ILLEGAL_CHARACTER)
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun AlarmCreateEditScreenErrorOnlyWhitespacePreview() {
+    AlarmScratchTheme {
+        AlarmCreateEditScreen(
+            navHostController = rememberNavController(),
+            navigateToRingtonePickerScreen = {},
+            titleRes = R.string.alarm_creation_screen_title,
+            alarm = repeatingAlarm.copy(name = " "),
+            alarmRingtoneName = sampleRingtoneData.name,
+            timeDisplay = TimeDisplay.TwelveHour,
+            saveAndScheduleAlarm = {},
+            updateName = {},
+            updateDate = {},
+            updateTime = { _, _ -> },
+            addDay = {},
+            removeDay = {},
+            toggleVibration = {},
+            updateSnoozeDuration = {},
+            validateAlarm = { true },
+            isAlarmNameValid = ValidationResult.Error(AlarmValidator.AlarmValidationError.ONLY_WHITESPACE)
         )
     }
 }
