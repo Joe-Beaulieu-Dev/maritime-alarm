@@ -16,6 +16,7 @@ import com.example.alarmscratch.alarm.data.preview.sampleRingtoneData
 import com.example.alarmscratch.alarm.data.preview.tueWedThu
 import com.example.alarmscratch.alarm.data.repository.AlarmState
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.AlarmCreateEditScreen
+import com.example.alarmscratch.alarm.validation.AlarmValidator
 import com.example.alarmscratch.alarm.validation.ValidationResult
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
@@ -24,6 +25,8 @@ import com.example.alarmscratch.core.extension.getStringFromBackStack
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.settings.data.model.TimeDisplay
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 
 @Composable
 fun AlarmEditScreen(
@@ -37,6 +40,9 @@ fun AlarmEditScreen(
     val generalSettingsState by alarmEditViewModel.generalSettings.collectAsState()
     val isAlarmNameValid by alarmEditViewModel.isAlarmNameValid.collectAsState()
 
+    // Flow
+    val snackbarFlow = alarmEditViewModel.snackbarChannelFlow
+
     if (alarmState is AlarmState.Success && generalSettingsState is GeneralSettingsState.Success) {
         // Fetch updated Ringtone URI from this back stack entry's SavedStateHandle.
         // If the User navigated to the RingtonePickerScreen and selected a new Ringtone,
@@ -45,11 +51,11 @@ fun AlarmEditScreen(
             navHostController.getStringFromBackStack(RingtoneData.KEY_FULL_RINGTONE_URI_STRING)
         )
 
-        val context = LocalContext.current
+        val localContext = LocalContext.current
         val alarm = (alarmState as AlarmState.Success).alarm
         // This was extracted for previews, since previews can't actually "get a Ringtone"
         // from anywhere, therefore they can't get a name to display in the preview.
-        val alarmRingtoneName = alarm.getRingtone(context).getTitle(context)
+        val alarmRingtoneName = alarm.getRingtone(localContext).getTitle(localContext)
         val generalSettings = (generalSettingsState as GeneralSettingsState.Success).generalSettings
 
         AlarmCreateEditScreen(
@@ -59,7 +65,7 @@ fun AlarmEditScreen(
             alarm = alarm,
             alarmRingtoneName = alarmRingtoneName,
             timeDisplay = generalSettings.timeDisplay,
-            saveAndScheduleAlarm = { alarmEditViewModel.saveAndScheduleAlarm(context) },
+            saveAndScheduleAlarm = { context, onSuccess -> alarmEditViewModel.saveAndScheduleAlarm(context, onSuccess) },
             updateName = alarmEditViewModel::updateName,
             updateDate = alarmEditViewModel::updateDateAndResetWeeklyRepeater,
             updateTime = alarmEditViewModel::updateTime,
@@ -67,8 +73,8 @@ fun AlarmEditScreen(
             removeDay = alarmEditViewModel::removeDay,
             toggleVibration = alarmEditViewModel::toggleVibration,
             updateSnoozeDuration = alarmEditViewModel::updateSnoozeDuration,
-            validateAlarm = alarmEditViewModel::validateAlarm,
             isAlarmNameValid = isAlarmNameValid,
+            snackbarFlow = snackbarFlow,
             modifier = modifier
         )
     }
@@ -81,6 +87,9 @@ fun AlarmEditScreen(
 @Preview
 @Composable
 private fun AlarmEditScreenPreview() {
+    val snackbarChannel = Channel<ValidationResult.Error<AlarmValidator.DateTimeError>>()
+    val snackbarChannelFlow = snackbarChannel.receiveAsFlow()
+
     AlarmScratchTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
@@ -96,7 +105,7 @@ private fun AlarmEditScreenPreview() {
             ),
             alarmRingtoneName = sampleRingtoneData.name,
             timeDisplay = TimeDisplay.TwelveHour,
-            saveAndScheduleAlarm = {},
+            saveAndScheduleAlarm = { _, _ -> },
             updateName = {},
             updateDate = {},
             updateTime = { _, _ -> },
@@ -104,8 +113,8 @@ private fun AlarmEditScreenPreview() {
             removeDay = {},
             toggleVibration = {},
             updateSnoozeDuration = {},
-            validateAlarm = { true },
-            isAlarmNameValid = ValidationResult.Success()
+            isAlarmNameValid = ValidationResult.Success(),
+            snackbarFlow = snackbarChannelFlow
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.example.alarmscratch.alarm.ui.alarmcreateedit
 
+import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -40,10 +41,10 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -54,6 +55,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
@@ -84,7 +88,11 @@ import com.example.alarmscratch.core.ui.theme.WayDarkerBoatSails
 import com.example.alarmscratch.core.util.StatusBarUtil
 import com.example.alarmscratch.settings.data.model.TimeDisplay
 import com.example.alarmscratch.settings.ui.alarmdefaults.component.SnoozeDurationDialog
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -96,7 +104,7 @@ fun AlarmCreateEditScreen(
     alarm: Alarm,
     alarmRingtoneName: String,
     timeDisplay: TimeDisplay,
-    saveAndScheduleAlarm: () -> Unit,
+    saveAndScheduleAlarm: (Context, () -> Unit) -> Unit,
     updateName: (String) -> Unit,
     updateDate: (LocalDate) -> Unit,
     updateTime: (Int, Int) -> Unit,
@@ -104,21 +112,21 @@ fun AlarmCreateEditScreen(
     removeDay: (WeeklyRepeater.Day) -> Unit,
     toggleVibration: () -> Unit,
     updateSnoozeDuration: (Int) -> Unit,
-    validateAlarm: () -> Boolean,
-    isAlarmNameValid: ValidationResult<AlarmValidator.AlarmValidationError>,
+    isAlarmNameValid: ValidationResult<AlarmValidator.NameError>,
+    snackbarFlow: Flow<ValidationResult.Error<AlarmValidator.DateTimeError>>,
     modifier: Modifier = Modifier
 ) {
     // Configure Status Bar
     StatusBarUtil.setDarkStatusBar()
 
     // State
-    val snackbarString = stringResource(id = R.string.validation_alarm_in_past)
     val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
-    val showSnackbar: (String) -> Unit = { snackbarMessage ->
-        coroutineScope.launch {
-            snackbarHostState.showSnackbar(message = snackbarMessage)
-        }
+
+    // TODO: Clean this up before PR
+    val context = LocalContext.current
+
+    ObserveAsEvent(flow = snackbarFlow) { validationResult ->
+        snackbarHostState.showSnackbar(message = validationResult.error.toErrorString(context))
     }
 
     Scaffold(
@@ -131,16 +139,7 @@ fun AlarmCreateEditScreen(
                     }
                 },
                 actionButton = {
-                    IconButton(
-                        onClick = {
-                            if (validateAlarm()) {
-                                saveAndScheduleAlarm()
-                                navHostController.popBackStack()
-                            } else {
-                                showSnackbar(snackbarString)
-                            }
-                        }
-                    ) {
+                    IconButton(onClick = { saveAndScheduleAlarm(context, navHostController::popBackStack) }) {
                         Icon(imageVector = Icons.Default.Save, contentDescription = null)
                     }
                 },
@@ -481,6 +480,18 @@ fun SnoozeSettings(
     }
 }
 
+@Composable
+fun <T> ObserveAsEvent(flow: Flow<T>, onEvent: suspend (T) -> Unit) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(key1 = flow, key2 = lifecycleOwner.lifecycle) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            withContext(Dispatchers.Main.immediate) {
+                flow.collect(onEvent)
+            }
+        }
+    }
+}
+
 /*
  * Previews
  */
@@ -488,6 +499,9 @@ fun SnoozeSettings(
 @Preview
 @Composable
 private fun AlarmCreateEditScreen12HourPreview() {
+    val snackbarChannel = Channel<ValidationResult.Error<AlarmValidator.DateTimeError>>()
+    val snackbarChannelFlow = snackbarChannel.receiveAsFlow()
+
     AlarmScratchTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
@@ -496,7 +510,7 @@ private fun AlarmCreateEditScreen12HourPreview() {
             alarm = repeatingAlarm,
             alarmRingtoneName = sampleRingtoneData.name,
             timeDisplay = TimeDisplay.TwelveHour,
-            saveAndScheduleAlarm = {},
+            saveAndScheduleAlarm = { _, _ -> },
             updateName = {},
             updateDate = {},
             updateTime = { _, _ -> },
@@ -504,8 +518,8 @@ private fun AlarmCreateEditScreen12HourPreview() {
             removeDay = {},
             toggleVibration = {},
             updateSnoozeDuration = {},
-            validateAlarm = { true },
-            isAlarmNameValid = ValidationResult.Success()
+            isAlarmNameValid = ValidationResult.Success(),
+            snackbarFlow = snackbarChannelFlow
         )
     }
 }
@@ -513,6 +527,9 @@ private fun AlarmCreateEditScreen12HourPreview() {
 @Preview
 @Composable
 private fun AlarmCreateEditScreen24HourPreview() {
+    val snackbarChannel = Channel<ValidationResult.Error<AlarmValidator.DateTimeError>>()
+    val snackbarChannelFlow = snackbarChannel.receiveAsFlow()
+
     AlarmScratchTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
@@ -521,7 +538,7 @@ private fun AlarmCreateEditScreen24HourPreview() {
             alarm = calendarAlarm,
             alarmRingtoneName = sampleRingtoneData.name,
             timeDisplay = TimeDisplay.TwentyFourHour,
-            saveAndScheduleAlarm = {},
+            saveAndScheduleAlarm = { _, _ -> },
             updateName = {},
             updateDate = {},
             updateTime = { _, _ -> },
@@ -529,8 +546,8 @@ private fun AlarmCreateEditScreen24HourPreview() {
             removeDay = {},
             toggleVibration = {},
             updateSnoozeDuration = {},
-            validateAlarm = { true },
-            isAlarmNameValid = ValidationResult.Success()
+            isAlarmNameValid = ValidationResult.Success(),
+            snackbarFlow = snackbarChannelFlow
         )
     }
 }
@@ -538,6 +555,9 @@ private fun AlarmCreateEditScreen24HourPreview() {
 @Preview
 @Composable
 private fun AlarmCreateEditScreenErrorIllegalCharacterPreview() {
+    val snackbarChannel = Channel<ValidationResult.Error<AlarmValidator.DateTimeError>>()
+    val snackbarChannelFlow = snackbarChannel.receiveAsFlow()
+
     AlarmScratchTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
@@ -546,7 +566,7 @@ private fun AlarmCreateEditScreenErrorIllegalCharacterPreview() {
             alarm = repeatingAlarm.copy(name = "Illegal.String"),
             alarmRingtoneName = sampleRingtoneData.name,
             timeDisplay = TimeDisplay.TwelveHour,
-            saveAndScheduleAlarm = {},
+            saveAndScheduleAlarm = { _, _ -> },
             updateName = {},
             updateDate = {},
             updateTime = { _, _ -> },
@@ -554,8 +574,8 @@ private fun AlarmCreateEditScreenErrorIllegalCharacterPreview() {
             removeDay = {},
             toggleVibration = {},
             updateSnoozeDuration = {},
-            validateAlarm = { true },
-            isAlarmNameValid = ValidationResult.Error(AlarmValidator.AlarmValidationError.ILLEGAL_CHARACTER)
+            isAlarmNameValid = ValidationResult.Error(AlarmValidator.NameError.ILLEGAL_CHARACTER),
+            snackbarFlow = snackbarChannelFlow
         )
     }
 }
@@ -563,6 +583,9 @@ private fun AlarmCreateEditScreenErrorIllegalCharacterPreview() {
 @Preview
 @Composable
 private fun AlarmCreateEditScreenErrorOnlyWhitespacePreview() {
+    val snackbarChannel = Channel<ValidationResult.Error<AlarmValidator.DateTimeError>>()
+    val snackbarChannelFlow = snackbarChannel.receiveAsFlow()
+
     AlarmScratchTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
@@ -571,7 +594,7 @@ private fun AlarmCreateEditScreenErrorOnlyWhitespacePreview() {
             alarm = repeatingAlarm.copy(name = " "),
             alarmRingtoneName = sampleRingtoneData.name,
             timeDisplay = TimeDisplay.TwelveHour,
-            saveAndScheduleAlarm = {},
+            saveAndScheduleAlarm = { _, _ -> },
             updateName = {},
             updateDate = {},
             updateTime = { _, _ -> },
@@ -579,8 +602,8 @@ private fun AlarmCreateEditScreenErrorOnlyWhitespacePreview() {
             removeDay = {},
             toggleVibration = {},
             updateSnoozeDuration = {},
-            validateAlarm = { true },
-            isAlarmNameValid = ValidationResult.Error(AlarmValidator.AlarmValidationError.ONLY_WHITESPACE)
+            isAlarmNameValid = ValidationResult.Error(AlarmValidator.NameError.ONLY_WHITESPACE),
+            snackbarFlow = snackbarChannelFlow
         )
     }
 }
