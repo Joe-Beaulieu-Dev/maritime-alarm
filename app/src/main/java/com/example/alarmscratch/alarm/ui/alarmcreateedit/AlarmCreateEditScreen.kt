@@ -71,6 +71,7 @@ import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.AlarmDays
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.DateSelectionDialog
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.TimeSelectionDialog
 import com.example.alarmscratch.alarm.validation.AlarmValidator
+import com.example.alarmscratch.alarm.validation.ValidationError
 import com.example.alarmscratch.alarm.validation.ValidationResult
 import com.example.alarmscratch.core.extension.get12HourTime
 import com.example.alarmscratch.core.extension.get24HourTime
@@ -112,8 +113,8 @@ fun AlarmCreateEditScreen(
     removeDay: (WeeklyRepeater.Day) -> Unit,
     toggleVibration: () -> Unit,
     updateSnoozeDuration: (Int) -> Unit,
-    isAlarmNameValid: ValidationResult<AlarmValidator.NameError>,
-    snackbarFlow: Flow<ValidationResult.Error<AlarmValidator.DateTimeError>>,
+    isNameValid: ValidationResult<AlarmValidator.NameError>,
+    snackbarChannelFlow: Flow<ValidationResult.Error<ValidationError>>,
     modifier: Modifier = Modifier
 ) {
     // Configure Status Bar
@@ -125,8 +126,8 @@ fun AlarmCreateEditScreen(
     // TODO: Clean this up before PR
     val context = LocalContext.current
 
-    ObserveAsEvent(flow = snackbarFlow) { validationResult ->
-        snackbarHostState.showSnackbar(message = validationResult.error.toErrorString(context))
+    ObserveAsEvent(flow = snackbarChannelFlow) { validationResult ->
+        snackbarHostState.showSnackbar(message = validationResult.error.toSnackbarString(context))
     }
 
     Scaffold(
@@ -179,14 +180,14 @@ fun AlarmCreateEditScreen(
                     placeholder = { Text(text = stringResource(id = R.string.alarm_name_placeholder), color = LightVolcanicRock) },
                     supportingText = {
                         Text(
-                            text = if (isAlarmNameValid is ValidationResult.Error) {
-                                isAlarmNameValid.error.toErrorString(LocalContext.current)
+                            text = if (isNameValid is ValidationResult.Error) {
+                                isNameValid.error.toInlineErrorString(context)
                             } else {
                                 "" // Empty String prevents Error text from shifting UI
                             }
                         )
                     },
-                    isError = isAlarmNameValid is ValidationResult.Error,
+                    isError = isNameValid is ValidationResult.Error,
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = DarkerBoatSails),
                     modifier = Modifier.padding(0.dp)
@@ -518,8 +519,8 @@ private fun AlarmCreateEditScreen12HourPreview() {
             removeDay = {},
             toggleVibration = {},
             updateSnoozeDuration = {},
-            isAlarmNameValid = ValidationResult.Success(),
-            snackbarFlow = snackbarChannelFlow
+            isNameValid = ValidationResult.Success(),
+            snackbarChannelFlow = snackbarChannelFlow
         )
     }
 }
@@ -546,8 +547,8 @@ private fun AlarmCreateEditScreen24HourPreview() {
             removeDay = {},
             toggleVibration = {},
             updateSnoozeDuration = {},
-            isAlarmNameValid = ValidationResult.Success(),
-            snackbarFlow = snackbarChannelFlow
+            isNameValid = ValidationResult.Success(),
+            snackbarChannelFlow = snackbarChannelFlow
         )
     }
 }
@@ -574,8 +575,8 @@ private fun AlarmCreateEditScreenErrorIllegalCharacterPreview() {
             removeDay = {},
             toggleVibration = {},
             updateSnoozeDuration = {},
-            isAlarmNameValid = ValidationResult.Error(AlarmValidator.NameError.ILLEGAL_CHARACTER),
-            snackbarFlow = snackbarChannelFlow
+            isNameValid = ValidationResult.Error(AlarmValidator.NameError.ILLEGAL_CHARACTER),
+            snackbarChannelFlow = snackbarChannelFlow
         )
     }
 }
@@ -602,8 +603,8 @@ private fun AlarmCreateEditScreenErrorOnlyWhitespacePreview() {
             removeDay = {},
             toggleVibration = {},
             updateSnoozeDuration = {},
-            isAlarmNameValid = ValidationResult.Error(AlarmValidator.NameError.ONLY_WHITESPACE),
-            snackbarFlow = snackbarChannelFlow
+            isNameValid = ValidationResult.Error(AlarmValidator.NameError.ONLY_WHITESPACE),
+            snackbarChannelFlow = snackbarChannelFlow
         )
     }
 }

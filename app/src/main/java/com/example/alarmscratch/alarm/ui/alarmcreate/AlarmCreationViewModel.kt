@@ -13,6 +13,7 @@ import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.alarm.data.repository.AlarmState
 import com.example.alarmscratch.alarm.validation.AlarmValidator
+import com.example.alarmscratch.alarm.validation.ValidationError
 import com.example.alarmscratch.alarm.validation.ValidationResult
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
@@ -66,14 +67,14 @@ class AlarmCreationViewModel(
             )
 
     // Snackbar
-    private val snackbarChannel = Channel<ValidationResult.Error<AlarmValidator.DateTimeError>>()
+    private val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
     val snackbarChannelFlow = snackbarChannel.receiveAsFlow()
 
     // Validation
-    private var isAlarmDateTimeValid: ValidationResult<AlarmValidator.DateTimeError> = ValidationResult.Success()
-    private val _isAlarmNameValid: MutableStateFlow<ValidationResult<AlarmValidator.NameError>> =
+    private val _isNameValid: MutableStateFlow<ValidationResult<AlarmValidator.NameError>> =
         MutableStateFlow(ValidationResult.Success())
-    val isAlarmNameValid: StateFlow<ValidationResult<AlarmValidator.NameError>> = _isAlarmNameValid.asStateFlow()
+    val isNameValid: StateFlow<ValidationResult<AlarmValidator.NameError>> = _isNameValid.asStateFlow()
+    private var isDateTimeValid: ValidationResult<AlarmValidator.DateTimeError> = ValidationResult.Success()
 
     init {
         viewModelScope.launch {
@@ -118,24 +119,32 @@ class AlarmCreationViewModel(
         }
     }
 
-    fun saveAndScheduleAlarm(context: Context, onSuccess: () -> Unit) {
-        viewModelScope.launch {
-            try {
-                if (
-                    _newAlarm.value is AlarmState.Success &&
-                    validateAlarm()
-                ) {
-                    val newAlarmId = saveAlarm()
-                    val newAlarm = getAlarm(newAlarmId.toInt())
-                    scheduleAlarm(context.applicationContext, newAlarm)
+    /*
+     * Save and Schedule
+     */
 
-                    // Switch back to Main Thread for UI related work
-                    withContext(Dispatchers.Main) {
-                        onSuccess()
+    fun saveAndScheduleAlarm(context: Context, onSuccess: () -> Unit) {
+        if (_newAlarm.value is AlarmState.Success) {
+            viewModelScope.launch {
+                withContext(Dispatchers.IO) {
+                    try {
+                        if (validateAlarm()) {
+                            val newAlarmId = saveAlarm()
+                            val newAlarm = getAlarm(newAlarmId.toInt())
+                            scheduleAlarm(context.applicationContext, newAlarm)
+
+                            withContext(Dispatchers.Main) {
+                                onSuccess()
+                            }
+                        } else {
+                            withContext(Dispatchers.Main) {
+                                pushTriagedErrorToSnackbar()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // toInt() can throw an Exception, but it shouldn't. Just catch here to prevent a crash.
                     }
                 }
-            } catch (e: Exception) {
-                // toInt() can throw an Exception, but it shouldn't. Just catch here to prevent a crash.
             }
         }
     }
@@ -158,6 +167,10 @@ class AlarmCreationViewModel(
     private fun scheduleAlarm(context: Context, alarm: Alarm) {
         AlarmScheduler.scheduleAlarm(context, alarm.toAlarmExecutionData())
     }
+
+    /*
+     * Modify
+     */
 
     fun updateName(name: String) {
         if (_newAlarm.value is AlarmState.Success) {
@@ -230,6 +243,28 @@ class AlarmCreationViewModel(
     }
 
     /*
+     * Snackbar
+     */
+
+    private suspend fun pushTriagedErrorToSnackbar() {
+        val snackbarError: ValidationResult.Error<ValidationError>? =
+            isDateTimeValid as? ValidationResult.Error
+                ?: _isNameValid.value as? ValidationResult.Error
+
+        if (snackbarError != null) {
+            pushErrorToSnackbar(snackbarError)
+        }
+    }
+
+    private suspend fun pushErrorToSnackbar(validationResult: ValidationResult.Error<ValidationError>) {
+        try {
+            snackbarChannel.send(validationResult)
+        } catch (e: Exception) {
+            // send() can throw Exceptions. Edge case where there's nothing to be done besides not crash.
+        }
+    }
+
+    /*
      * Validation
      */
 
@@ -237,11 +272,11 @@ class AlarmCreationViewModel(
         if (_newAlarm.value is AlarmState.Success) {
             // Validate
             validateName()
-            validateDateTimeAndPushToSnackbar()
+            validateDateTime()
 
             // Check validation results
-            !(_isAlarmNameValid.value is ValidationResult.Error ||
-                    isAlarmDateTimeValid is ValidationResult.Error)
+            !(_isNameValid.value is ValidationResult.Error ||
+                    isDateTimeValid is ValidationResult.Error)
         } else {
             false
         }
@@ -249,28 +284,14 @@ class AlarmCreationViewModel(
     private fun validateName() {
         if (_newAlarm.value is AlarmState.Success) {
             val alarm = (_newAlarm.value as AlarmState.Success).alarm
-            _isAlarmNameValid.value = alarmValidator.validateName(alarm.name)
+            _isNameValid.value = alarmValidator.validateName(alarm.name)
         }
     }
 
-    private fun validateDateTimeAndPushToSnackbar() {
+    private fun validateDateTime() {
         if (_newAlarm.value is AlarmState.Success) {
-            // Validate
             val alarm = (_newAlarm.value as AlarmState.Success).alarm
-            isAlarmDateTimeValid = alarmValidator.validateDateTime(alarm.dateTime)
-
-            // Push to Snackbar Channel
-            (isAlarmDateTimeValid as? ValidationResult.Error)?.let { pushToSnackbarChannel(it) }
-        }
-    }
-
-    private fun pushToSnackbarChannel(validationResult: ValidationResult.Error<AlarmValidator.DateTimeError>) {
-        viewModelScope.launch {
-            try {
-                snackbarChannel.send(validationResult)
-            } catch (e: Exception) {
-                // send() can throw Exceptions. Edge case where there's nothing to be done besides not crash.
-            }
+            isDateTimeValid = alarmValidator.validateDateTime(alarm.dateTime)
         }
     }
 }

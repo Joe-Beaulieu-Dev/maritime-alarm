@@ -1,3 +1,7 @@
 package com.example.alarmscratch.alarm.validation
 
-sealed interface ValidationError
+import android.content.Context
+
+sealed interface ValidationError {
+    fun toSnackbarString(context: Context): String
+}

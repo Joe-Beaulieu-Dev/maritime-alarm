@@ -38,10 +38,10 @@ fun AlarmEditScreen(
     // State
     val alarmState by alarmEditViewModel.modifiedAlarm.collectAsState()
     val generalSettingsState by alarmEditViewModel.generalSettings.collectAsState()
-    val isAlarmNameValid by alarmEditViewModel.isAlarmNameValid.collectAsState()
+    val isNameValid by alarmEditViewModel.isNameValid.collectAsState()
 
     // Flow
-    val snackbarFlow = alarmEditViewModel.snackbarChannelFlow
+    val snackbarChannelFlow = alarmEditViewModel.snackbarChannelFlow
 
     if (alarmState is AlarmState.Success && generalSettingsState is GeneralSettingsState.Success) {
         // Fetch updated Ringtone URI from this back stack entry's SavedStateHandle.
@@ -73,8 +73,8 @@ fun AlarmEditScreen(
             removeDay = alarmEditViewModel::removeDay,
             toggleVibration = alarmEditViewModel::toggleVibration,
             updateSnoozeDuration = alarmEditViewModel::updateSnoozeDuration,
-            isAlarmNameValid = isAlarmNameValid,
-            snackbarFlow = snackbarFlow,
+            isNameValid = isNameValid,
+            snackbarChannelFlow = snackbarChannelFlow,
             modifier = modifier
         )
     }
@@ -113,8 +113,8 @@ private fun AlarmEditScreenPreview() {
             removeDay = {},
             toggleVibration = {},
             updateSnoozeDuration = {},
-            isAlarmNameValid = ValidationResult.Success(),
-            snackbarFlow = snackbarChannelFlow
+            isNameValid = ValidationResult.Success(),
+            snackbarChannelFlow = snackbarChannelFlow
         )
     }
 }

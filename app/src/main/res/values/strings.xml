@@ -48,7 +48,6 @@
     <string name="section_snooze">Snooze</string>
     <string name="alarm_create_edit_alarm_snooze_duration">Duration</string>
     <string name="snooze_minutes">minutes</string>
-    <string name="validation_alarm_in_past">Alarms cannot be set in the past</string>
     <!-- AlarmTimePickerDialog -->
     <string name="select_time">Select time</string>
     <string name="cancel">Cancel</string>
@@ -58,8 +57,10 @@
     <!-- AlarmEditScreen -->
     <string name="alarm_edit_screen_title">Edit Alarm</string>
     <!-- Validation -->
-    <string name="alarm_name_illegal_character_err">Only letters, numbers, spaces allowed</string>
-    <string name="alarm_name_only_whitespace_err">Cannot be only spaces</string>
+    <string name="alarm_name_err_snackbar">Alarm name improperly formatted</string>
+    <string name="alarm_datetime_in_past_err_snackbar">Alarms cannot be set in the past</string>
+    <string name="alarm_name_illegal_character_err_inline">Only letters, numbers, spaces allowed</string>
+    <string name="alarm_name_only_whitespace_err_inline">Cannot just be spaces</string>
 
     <!--
         **************************
