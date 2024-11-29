@@ -22,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Snooze
@@ -184,6 +185,11 @@ fun AlarmCreateEditScreen(
                     value = alarm.name,
                     onValueChange = { updateName(it) },
                     placeholder = { Text(text = stringResource(id = R.string.alarm_name_placeholder), color = LightVolcanicRock) },
+                    trailingIcon = if (isNameValid is ValidationResult.Error) {
+                        { Icon(imageVector = Icons.Default.Error, contentDescription = null) }
+                    } else {
+                        null
+                    },
                     supportingText = {
                         Text(
                             text = if (isNameValid is ValidationResult.Error) {
