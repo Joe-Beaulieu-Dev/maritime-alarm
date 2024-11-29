@@ -16,7 +16,6 @@ class AlarmValidator {
         ILLEGAL_CHARACTER,
         ONLY_WHITESPACE;
 
-        // TODO: Make composable override before PR
         override fun toSnackbarString(context: Context): String =
             when (this) {
                 ILLEGAL_CHARACTER, ONLY_WHITESPACE ->
@@ -35,7 +34,6 @@ class AlarmValidator {
     enum class DateTimeError: ValidationError {
         NOT_SET_IN_FUTURE;
 
-        // TODO: Make composable override before PR
         override fun toSnackbarString(context: Context): String =
             when (this) {
                 NOT_SET_IN_FUTURE ->

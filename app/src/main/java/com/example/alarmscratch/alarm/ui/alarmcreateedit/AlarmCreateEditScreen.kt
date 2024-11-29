@@ -121,13 +121,19 @@ fun AlarmCreateEditScreen(
     StatusBarUtil.setDarkStatusBar()
 
     // State
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // TODO: Clean this up before PR
-    val context = LocalContext.current
-
-    ObserveAsEvent(flow = snackbarChannelFlow) { validationResult ->
-        snackbarHostState.showSnackbar(message = validationResult.error.toSnackbarString(context))
+    // Show Snackbar
+    LaunchedEffect(key1 = context, key2 = lifecycleOwner.lifecycle, key3 = snackbarChannelFlow) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            withContext(Dispatchers.Main.immediate) {
+                snackbarChannelFlow.collect {
+                    snackbarHostState.showSnackbar(message = it.error.toSnackbarString(context))
+                }
+            }
+        }
     }
 
     Scaffold(
@@ -478,18 +484,6 @@ fun SnoozeSettings(
                 toggleSnoozeDurationDialog()
             }
         )
-    }
-}
-
-@Composable
-fun <T> ObserveAsEvent(flow: Flow<T>, onEvent: suspend (T) -> Unit) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    LaunchedEffect(key1 = flow, key2 = lifecycleOwner.lifecycle) {
-        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            withContext(Dispatchers.Main.immediate) {
-                flow.collect(onEvent)
-            }
-        }
     }
 }
 
