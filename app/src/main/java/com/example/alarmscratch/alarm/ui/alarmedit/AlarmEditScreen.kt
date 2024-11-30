@@ -16,7 +16,7 @@ import com.example.alarmscratch.alarm.data.preview.sampleRingtoneData
 import com.example.alarmscratch.alarm.data.preview.tueWedThu
 import com.example.alarmscratch.alarm.data.repository.AlarmState
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.AlarmCreateEditScreen
-import com.example.alarmscratch.alarm.validation.AlarmValidator
+import com.example.alarmscratch.alarm.validation.ValidationError
 import com.example.alarmscratch.alarm.validation.ValidationResult
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
@@ -87,7 +87,7 @@ fun AlarmEditScreen(
 @Preview
 @Composable
 private fun AlarmEditScreenPreview() {
-    val snackbarChannel = Channel<ValidationResult.Error<AlarmValidator.DateTimeError>>()
+    val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
     val snackbarChannelFlow = snackbarChannel.receiveAsFlow()
 
     AlarmScratchTheme {

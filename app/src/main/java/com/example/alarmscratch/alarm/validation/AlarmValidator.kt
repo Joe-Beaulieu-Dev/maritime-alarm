@@ -22,7 +22,7 @@ class AlarmValidator {
                     context.getString(R.string.alarm_name_err_snackbar)
             }
 
-        fun toInlineErrorString(context: Context): String =
+        fun toInlineString(context: Context): String =
             when (this) {
                 ILLEGAL_CHARACTER ->
                     context.getString(R.string.alarm_name_illegal_character_err_inline)
