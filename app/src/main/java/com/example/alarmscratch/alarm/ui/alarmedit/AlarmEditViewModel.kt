@@ -14,8 +14,10 @@ import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.alarm.data.repository.AlarmState
+import com.example.alarmscratch.alarm.validation.AlarmValidator
+import com.example.alarmscratch.alarm.validation.ValidationError
+import com.example.alarmscratch.alarm.validation.ValidationResult
 import com.example.alarmscratch.core.data.model.RingtoneData
-import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.isRepeating
 import com.example.alarmscratch.core.extension.nextRepeatingDateTime
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
@@ -25,26 +27,32 @@ import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsRepository
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
 import com.example.alarmscratch.settings.data.repository.generalSettingsDataStore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 class AlarmEditViewModel(
     savedStateHandle: SavedStateHandle,
     private val alarmRepository: AlarmRepository,
-    private val generalSettingsRepository: GeneralSettingsRepository
+    private val generalSettingsRepository: GeneralSettingsRepository,
+    private val alarmValidator: AlarmValidator
 ) : ViewModel() {
 
     // Alarm
     private val alarmId: Int = savedStateHandle.toRoute<Destination.AlarmEditScreen>().alarmId
     private val _modifiedAlarm: MutableStateFlow<AlarmState> = MutableStateFlow(AlarmState.Loading)
     val modifiedAlarm: StateFlow<AlarmState> = _modifiedAlarm.asStateFlow()
+
     // Settings
     val generalSettings: StateFlow<GeneralSettingsState> =
         generalSettingsRepository.generalSettingsFlow
@@ -55,6 +63,16 @@ class AlarmEditViewModel(
                 SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
                 GeneralSettingsState.Loading
             )
+
+    // Snackbar
+    private val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
+    val snackbarChannelFlow = snackbarChannel.receiveAsFlow()
+
+    // Validation
+    private val _isNameValid: MutableStateFlow<ValidationResult<AlarmValidator.NameError>> =
+        MutableStateFlow(ValidationResult.Success())
+    val isNameValid: StateFlow<ValidationResult<AlarmValidator.NameError>> = _isNameValid.asStateFlow()
+    private var isDateTimeValid: ValidationResult<AlarmValidator.DateTimeError> = ValidationResult.Success()
 
     init {
         viewModelScope.launch {
@@ -77,18 +95,35 @@ class AlarmEditViewModel(
                 return AlarmEditViewModel(
                     savedStateHandle = extras.createSavedStateHandle(),
                     alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(application).alarmDao()),
-                    generalSettingsRepository = GeneralSettingsRepository(application.generalSettingsDataStore)
+                    generalSettingsRepository = GeneralSettingsRepository(application.generalSettingsDataStore),
+                    alarmValidator = AlarmValidator()
                 ) as T
             }
         }
     }
 
-    fun saveAndScheduleAlarm(context: Context) {
-        viewModelScope.launch {
-            if (_modifiedAlarm.value is AlarmState.Success) {
-                saveAlarm()
-                val newAlarm = getAlarm(alarmId)
-                scheduleAlarm(context.applicationContext, newAlarm)
+    /*
+     * Save and Schedule
+     */
+
+    fun saveAndScheduleAlarm(context: Context, onSuccess: () -> Unit) {
+        if (_modifiedAlarm.value is AlarmState.Success) {
+            viewModelScope.launch {
+                withContext(Dispatchers.IO) {
+                    if (validateAlarm()) {
+                        saveAlarm()
+                        val newAlarm = getAlarm(alarmId)
+                        scheduleAlarm(context.applicationContext, newAlarm)
+
+                        withContext(Dispatchers.Main) {
+                            onSuccess()
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            pushTriagedErrorToSnackbar()
+                        }
+                    }
+                }
             }
         }
     }
@@ -112,10 +147,17 @@ class AlarmEditViewModel(
         AlarmScheduler.scheduleAlarm(context, alarm.toAlarmExecutionData())
     }
 
+    /*
+     * Modify
+     */
+
     fun updateName(name: String) {
         if (_modifiedAlarm.value is AlarmState.Success) {
             val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
             _modifiedAlarm.value = AlarmState.Success(alarm.copy(name = name))
+
+            // Update validation state for TextField
+            validateName()
         }
     }
 
@@ -179,11 +221,56 @@ class AlarmEditViewModel(
         }
     }
 
-    fun validateAlarm(): Boolean =
+    /*
+     * Snackbar
+     */
+
+    private suspend fun pushTriagedErrorToSnackbar() {
+        val snackbarError: ValidationResult.Error<ValidationError>? =
+            isDateTimeValid as? ValidationResult.Error
+                ?: _isNameValid.value as? ValidationResult.Error
+
+        if (snackbarError != null) {
+            pushErrorToSnackbar(snackbarError)
+        }
+    }
+
+    private suspend fun pushErrorToSnackbar(validationResult: ValidationResult.Error<ValidationError>) {
+        try {
+            snackbarChannel.send(validationResult)
+        } catch (e: Exception) {
+            // send() can throw Exceptions. Edge case where there's nothing to be done besides not crash.
+        }
+    }
+
+    /*
+     * Validation
+     */
+
+    private fun validateAlarm(): Boolean =
         if (_modifiedAlarm.value is AlarmState.Success) {
-            val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
-            alarm.dateTime.isAfter(LocalDateTimeUtil.nowTruncated())
+            // Validate
+            validateName()
+            validateDateTime()
+
+            // Check validation results
+            !(_isNameValid.value is ValidationResult.Error ||
+                    isDateTimeValid is ValidationResult.Error)
         } else {
             false
         }
+
+    private fun validateName() {
+        if (_modifiedAlarm.value is AlarmState.Success) {
+            val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
+            _isNameValid.value = alarmValidator.validateName(alarm.name)
+        }
+    }
+
+    private fun validateDateTime() {
+        if (_modifiedAlarm.value is AlarmState.Success) {
+            val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
+            isDateTimeValid = alarmValidator.validateDateTime(alarm.dateTime)
+        }
+    }
 }

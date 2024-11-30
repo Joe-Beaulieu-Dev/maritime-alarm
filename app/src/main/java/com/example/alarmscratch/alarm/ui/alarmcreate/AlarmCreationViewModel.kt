@@ -12,6 +12,9 @@ import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.alarm.data.repository.AlarmState
+import com.example.alarmscratch.alarm.validation.AlarmValidator
+import com.example.alarmscratch.alarm.validation.ValidationError
+import com.example.alarmscratch.alarm.validation.ValidationResult
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.isRepeating
@@ -26,25 +29,31 @@ import com.example.alarmscratch.settings.data.repository.GeneralSettingsReposito
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
 import com.example.alarmscratch.settings.data.repository.alarmDefaultsDataStore
 import com.example.alarmscratch.settings.data.repository.generalSettingsDataStore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 class AlarmCreationViewModel(
     private val alarmRepository: AlarmRepository,
     private val alarmDefaultsRepository: AlarmDefaultsRepository,
-    private val generalSettingsRepository: GeneralSettingsRepository
+    private val generalSettingsRepository: GeneralSettingsRepository,
+    private val alarmValidator: AlarmValidator
 ) : ViewModel() {
 
     // Alarm
     private val _newAlarm: MutableStateFlow<AlarmState> = MutableStateFlow(AlarmState.Loading)
     val newAlarm: StateFlow<AlarmState> = _newAlarm.asStateFlow()
+
     // Settings
     private val alarmDefaults: MutableStateFlow<AlarmDefaultsState> = MutableStateFlow(AlarmDefaultsState.Loading)
     val generalSettings: StateFlow<GeneralSettingsState> =
@@ -56,6 +65,16 @@ class AlarmCreationViewModel(
                 SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
                 GeneralSettingsState.Loading
             )
+
+    // Snackbar
+    private val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
+    val snackbarChannelFlow = snackbarChannel.receiveAsFlow()
+
+    // Validation
+    private val _isNameValid: MutableStateFlow<ValidationResult<AlarmValidator.NameError>> =
+        MutableStateFlow(ValidationResult.Success())
+    val isNameValid: StateFlow<ValidationResult<AlarmValidator.NameError>> = _isNameValid.asStateFlow()
+    private var isDateTimeValid: ValidationResult<AlarmValidator.DateTimeError> = ValidationResult.Success()
 
     init {
         viewModelScope.launch {
@@ -93,23 +112,39 @@ class AlarmCreationViewModel(
                 return AlarmCreationViewModel(
                     alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(application).alarmDao()),
                     alarmDefaultsRepository = AlarmDefaultsRepository(application.alarmDefaultsDataStore),
-                    generalSettingsRepository = GeneralSettingsRepository(application.generalSettingsDataStore)
+                    generalSettingsRepository = GeneralSettingsRepository(application.generalSettingsDataStore),
+                    alarmValidator = AlarmValidator()
                 ) as T
             }
         }
     }
 
-    fun saveAndScheduleAlarm(context: Context) {
-        viewModelScope.launch {
-            try {
-                if (_newAlarm.value is AlarmState.Success) {
-                    val newAlarmId = saveAlarm()
-                    val newAlarm = getAlarm(newAlarmId.toInt())
-                    // TODO: Only schedule alarm if enabled. It should always be enabled here, but it's good practice to check anyways.
-                    scheduleAlarm(context.applicationContext, newAlarm)
+    /*
+     * Save and Schedule
+     */
+
+    fun saveAndScheduleAlarm(context: Context, onSuccess: () -> Unit) {
+        if (_newAlarm.value is AlarmState.Success) {
+            viewModelScope.launch {
+                withContext(Dispatchers.IO) {
+                    try {
+                        if (validateAlarm()) {
+                            val newAlarmId = saveAlarm()
+                            val newAlarm = getAlarm(newAlarmId.toInt())
+                            scheduleAlarm(context.applicationContext, newAlarm)
+
+                            withContext(Dispatchers.Main) {
+                                onSuccess()
+                            }
+                        } else {
+                            withContext(Dispatchers.Main) {
+                                pushTriagedErrorToSnackbar()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // toInt() can throw an Exception, but it shouldn't. Just catch here to prevent a crash.
+                    }
                 }
-            } catch (e: Exception) {
-                // toInt() can throw an Exception, but it shouldn't. Just catch here to prevent a crash.
             }
         }
     }
@@ -133,10 +168,17 @@ class AlarmCreationViewModel(
         AlarmScheduler.scheduleAlarm(context, alarm.toAlarmExecutionData())
     }
 
+    /*
+     * Modify
+     */
+
     fun updateName(name: String) {
         if (_newAlarm.value is AlarmState.Success) {
             val alarm = (_newAlarm.value as AlarmState.Success).alarm
             _newAlarm.value = AlarmState.Success(alarm.copy(name = name))
+
+            // Update validation state for TextField
+            validateName()
         }
     }
 
@@ -200,11 +242,56 @@ class AlarmCreationViewModel(
         }
     }
 
-    fun validateAlarm(): Boolean =
+    /*
+     * Snackbar
+     */
+
+    private suspend fun pushTriagedErrorToSnackbar() {
+        val snackbarError: ValidationResult.Error<ValidationError>? =
+            isDateTimeValid as? ValidationResult.Error
+                ?: _isNameValid.value as? ValidationResult.Error
+
+        if (snackbarError != null) {
+            pushErrorToSnackbar(snackbarError)
+        }
+    }
+
+    private suspend fun pushErrorToSnackbar(validationResult: ValidationResult.Error<ValidationError>) {
+        try {
+            snackbarChannel.send(validationResult)
+        } catch (e: Exception) {
+            // send() can throw Exceptions. Edge case where there's nothing to be done besides not crash.
+        }
+    }
+
+    /*
+     * Validation
+     */
+
+    private fun validateAlarm(): Boolean =
         if (_newAlarm.value is AlarmState.Success) {
-            val alarm = (_newAlarm.value as AlarmState.Success).alarm
-            alarm.dateTime.isAfter(LocalDateTimeUtil.nowTruncated())
+            // Validate
+            validateName()
+            validateDateTime()
+
+            // Check validation results
+            !(_isNameValid.value is ValidationResult.Error ||
+                    isDateTimeValid is ValidationResult.Error)
         } else {
             false
         }
+
+    private fun validateName() {
+        if (_newAlarm.value is AlarmState.Success) {
+            val alarm = (_newAlarm.value as AlarmState.Success).alarm
+            _isNameValid.value = alarmValidator.validateName(alarm.name)
+        }
+    }
+
+    private fun validateDateTime() {
+        if (_newAlarm.value is AlarmState.Success) {
+            val alarm = (_newAlarm.value as AlarmState.Success).alarm
+            isDateTimeValid = alarmValidator.validateDateTime(alarm.dateTime)
+        }
+    }
 }
