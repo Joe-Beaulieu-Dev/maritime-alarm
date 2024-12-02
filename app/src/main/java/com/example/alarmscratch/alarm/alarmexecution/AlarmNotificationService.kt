@@ -15,10 +15,8 @@ import com.example.alarmscratch.settings.data.repository.GeneralSettingsReposito
 import com.example.alarmscratch.settings.data.repository.generalSettingsDataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 
 class AlarmNotificationService : Service() {
@@ -69,37 +67,34 @@ class AlarmNotificationService : Service() {
         )
 
         // Get General Settings, Launch Notification, Play Ringtone, Vibrate
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             // Get General Settings
             val generalSettingsRepository = GeneralSettingsRepository(applicationContext.generalSettingsDataStore)
             val generalSettings = try {
-                async { generalSettingsRepository.generalSettingsFlow }.await().first()
+                generalSettingsRepository.generalSettingsFlow.first()
             } catch (e: Exception) {
                 // Flow was empty. Return GeneralSettings with defaults.
                 GeneralSettings(GeneralSettingsRepository.DEFAULT_TIME_DISPLAY)
             }
 
-            // Switch back to Main Thread for UI related work
-            withContext(Dispatchers.Main) {
-                // Create Notification
-                val fullScreenNotification = AlarmNotification.fullScreenNotification(
-                    applicationContext,
-                    alarmExecutionData,
-                    generalSettings.timeDisplay
-                )
+            // Create Notification
+            val fullScreenNotification = AlarmNotification.fullScreenNotification(
+                applicationContext,
+                alarmExecutionData,
+                generalSettings.timeDisplay
+            )
 
-                // Push Service to foreground and display Notification
-                startForeground(id, fullScreenNotification)
+            // Push Service to foreground and display Notification
+            startForeground(id, fullScreenNotification)
 
-                // TODO: Check notification permission before sounding Alarm. If you don't,
-                //  then the ringtone will sound without the notification.
-                // Play Ringtone
-                RingtonePlayerManager.startAlarmSound(applicationContext, ringtoneUri)
+            // TODO: Check notification permission before sounding Alarm. If you don't,
+            //  then the ringtone will sound without the notification.
+            // Play Ringtone
+            RingtonePlayerManager.startAlarmSound(applicationContext, ringtoneUri)
 
-                // Start Vibration
-                if (isVibrationEnabled) {
-                    VibrationController.startVibration(applicationContext)
-                }
+            // Start Vibration
+            if (isVibrationEnabled) {
+                VibrationController.startVibration(applicationContext)
             }
         }
     }

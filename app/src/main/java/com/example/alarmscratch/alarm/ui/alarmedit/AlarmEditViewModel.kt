@@ -27,7 +27,6 @@ import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsRepository
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
 import com.example.alarmscratch.settings.data.repository.generalSettingsDataStore
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -38,7 +37,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 class AlarmEditViewModel(
@@ -109,20 +107,16 @@ class AlarmEditViewModel(
     fun saveAndScheduleAlarm(context: Context, onSuccess: () -> Unit) {
         if (_modifiedAlarm.value is AlarmState.Success) {
             viewModelScope.launch {
-                withContext(Dispatchers.IO) {
-                    if (validateAlarm()) {
-                        saveAlarm()
-                        val newAlarm = getAlarm(alarmId)
-                        scheduleAlarm(context.applicationContext, newAlarm)
+                if (validateAlarm()) {
+                    // Save and schedule Alarm
+                    saveAlarm()
+                    val newAlarm = getAlarm(alarmId)
+                    scheduleAlarm(context.applicationContext, newAlarm)
 
-                        withContext(Dispatchers.Main) {
-                            onSuccess()
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            pushTriagedErrorToSnackbar()
-                        }
-                    }
+                    // Perform supplied success action
+                    onSuccess()
+                } else {
+                    pushTriagedErrorToSnackbar()
                 }
             }
         }
