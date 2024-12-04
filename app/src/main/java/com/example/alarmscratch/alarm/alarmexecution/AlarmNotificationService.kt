@@ -15,13 +15,19 @@ import com.example.alarmscratch.settings.data.repository.GeneralSettingsReposito
 import com.example.alarmscratch.settings.data.repository.generalSettingsDataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 class AlarmNotificationService : Service() {
 
+    // Coroutine
+    private val job = SupervisorJob()
+    private val coroutineScope = CoroutineScope(job)
+
     companion object {
+        // Actions
         const val DISPLAY_ALARM_NOTIFICATION = "display_alarm_notification"
         const val DISMISS_ALARM_NOTIFICATION = "dismiss_alarm_notification"
     }
@@ -67,7 +73,7 @@ class AlarmNotificationService : Service() {
         )
 
         // Get General Settings, Launch Notification, Play Ringtone, Vibrate
-        CoroutineScope(Dispatchers.Main).launch {
+        coroutineScope.launch(Dispatchers.Main) {
             // Get General Settings
             val generalSettingsRepository = GeneralSettingsRepository(applicationContext.generalSettingsDataStore)
             val generalSettings = try {
@@ -120,5 +126,10 @@ class AlarmNotificationService : Service() {
 
         // Stop Service, which dismisses the Notification
         stopSelf()
+    }
+
+    override fun onDestroy() {
+        // Cancel coroutines
+        job.cancel()
     }
 }
