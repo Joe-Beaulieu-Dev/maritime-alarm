@@ -78,7 +78,7 @@ class AlarmNotificationService : Service() {
             val generalSettingsRepository = GeneralSettingsRepository(applicationContext.generalSettingsDataStore)
             val generalSettings = try {
                 generalSettingsRepository.generalSettingsFlow.first()
-            } catch (e: Exception) {
+            } catch (e: NoSuchElementException) {
                 // Flow was empty. Return GeneralSettings with defaults.
                 GeneralSettings(GeneralSettingsRepository.DEFAULT_TIME_DISPLAY)
             }

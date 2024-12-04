@@ -29,6 +29,7 @@ import com.example.alarmscratch.settings.data.repository.GeneralSettingsReposito
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
 import com.example.alarmscratch.settings.data.repository.alarmDefaultsDataStore
 import com.example.alarmscratch.settings.data.repository.generalSettingsDataStore
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -124,20 +125,16 @@ class AlarmCreationViewModel(
     fun saveAndScheduleAlarm(context: Context, onSuccess: () -> Unit) {
         if (_newAlarm.value is AlarmState.Success) {
             viewModelScope.launch {
-                try {
-                    if (validateAlarm()) {
-                        // Save and schedule Alarm
-                        val newAlarmId = saveAlarm()
-                        val newAlarm = getAlarm(newAlarmId.toInt())
-                        scheduleAlarm(context.applicationContext, newAlarm)
+                if (validateAlarm()) {
+                    // Save and schedule Alarm
+                    val newAlarmId = saveAlarm()
+                    val newAlarm = getAlarm(newAlarmId.toInt())
+                    scheduleAlarm(context.applicationContext, newAlarm)
 
-                        // Perform supplied success action
-                        onSuccess()
-                    } else {
-                        pushTriagedErrorToSnackbar()
-                    }
-                } catch (e: Exception) {
-                    // toInt() can throw an Exception, but it shouldn't. Just catch here to prevent a crash.
+                    // Perform supplied success action
+                    onSuccess()
+                } else {
+                    pushTriagedErrorToSnackbar()
                 }
             }
         }
@@ -246,15 +243,18 @@ class AlarmCreationViewModel(
                 ?: _isNameValid.value as? ValidationResult.Error
 
         if (snackbarError != null) {
-            pushErrorToSnackbar(snackbarError)
-        }
-    }
-
-    private suspend fun pushErrorToSnackbar(validationResult: ValidationResult.Error<ValidationError>) {
-        try {
-            snackbarChannel.send(validationResult)
-        } catch (e: Exception) {
-            // send() can throw Exceptions. Edge case where there's nothing to be done besides not crash.
+            try {
+                snackbarChannel.send(snackbarError)
+            } catch (e: Exception) {
+                // SendChannel.send() can theoretically throw any type of Exception
+                // if called on a Channel that is already closed.
+                // Re-throw CancellationException.
+                // No functionality beyond this is desired, so all other Exceptions
+                // are simply consumed to prevent crashes.
+                if (e is CancellationException) {
+                    throw e
+                }
+            }
         }
     }
 
