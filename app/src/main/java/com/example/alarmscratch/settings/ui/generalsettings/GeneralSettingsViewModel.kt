@@ -45,10 +45,12 @@ class GeneralSettingsViewModel(private val generalSettingsRepository: GeneralSet
         }
     }
 
-    suspend fun saveGeneralSettings() {
+    fun saveGeneralSettings() {
         if (_modifiedGeneralSettings.value is GeneralSettingsState.Success) {
             val generalSettings = (_modifiedGeneralSettings.value as GeneralSettingsState.Success).generalSettings
-            generalSettingsRepository.updateGeneralSettings(generalSettings)
+            viewModelScope.launch {
+                generalSettingsRepository.updateGeneralSettings(generalSettings)
+            }
         }
     }
 

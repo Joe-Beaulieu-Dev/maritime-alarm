@@ -45,10 +45,12 @@ class AlarmDefaultsViewModel(private val alarmDefaultsRepository: AlarmDefaultsR
         }
     }
 
-    suspend fun saveAlarmDefaults() {
+    fun saveAlarmDefaults() {
         if (_modifiedAlarmDefaults.value is AlarmDefaultsState.Success) {
             val alarmDefaults = (_modifiedAlarmDefaults.value as AlarmDefaultsState.Success).alarmDefaults
-            alarmDefaultsRepository.updateAlarmDefaults(alarmDefaults)
+            viewModelScope.launch {
+                alarmDefaultsRepository.updateAlarmDefaults(alarmDefaults)
+            }
         }
     }
 

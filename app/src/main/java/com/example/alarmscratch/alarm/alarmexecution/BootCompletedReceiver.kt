@@ -7,11 +7,11 @@ import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
+import com.example.alarmscratch.core.extension.alarmApplication
+import com.example.alarmscratch.core.extension.doAsync
 import com.example.alarmscratch.core.extension.isSnoozed
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class BootCompletedReceiver : BroadcastReceiver() {
 
@@ -23,7 +23,7 @@ class BootCompletedReceiver : BroadcastReceiver() {
                     .alarmDao()
             )
 
-            CoroutineScope(Dispatchers.IO).launch {
+            doAsync(context.alarmApplication.applicationScope, Dispatchers.IO) {
                 val alarmList = alarmRepo.getAllAlarms()
                 rescheduleEligibleAlarms(context, alarmList)
             }

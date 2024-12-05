@@ -34,7 +34,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -65,7 +64,6 @@ import com.example.alarmscratch.core.util.StatusBarUtil
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsState
 import com.example.alarmscratch.settings.extension.getRingtone
 import com.example.alarmscratch.settings.ui.alarmdefaults.component.SnoozeDurationDialog
-import kotlinx.coroutines.launch
 
 @Composable
 fun AlarmDefaultsScreen(
@@ -89,7 +87,6 @@ fun AlarmDefaultsScreen(
         )
 
         val context = LocalContext.current
-        val coroutineScope = rememberCoroutineScope()
         val alarmDefaults = (alarmDefaultsState as AlarmDefaultsState.Success).alarmDefaults
         // This was extracted for previews, since previews can't actually "get a Ringtone"
         // from anywhere, therefore they can't get a name to display in the preview.
@@ -102,7 +99,7 @@ fun AlarmDefaultsScreen(
             ringtoneUri = alarmDefaults.ringtoneUri,
             isVibrationEnabled = alarmDefaults.isVibrationEnabled,
             snoozeDuration = alarmDefaults.snoozeDuration,
-            saveAlarmDefaults = { coroutineScope.launch { alarmDefaultsViewModel.saveAlarmDefaults() } },
+            saveAlarmDefaults = alarmDefaultsViewModel::saveAlarmDefaults,
             toggleVibration = alarmDefaultsViewModel::toggleVibration,
             updateSnoozeDuration = alarmDefaultsViewModel::updateSnoozeDuration,
             modifier = modifier

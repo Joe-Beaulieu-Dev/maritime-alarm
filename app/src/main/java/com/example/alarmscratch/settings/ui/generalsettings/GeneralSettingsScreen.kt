@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -47,7 +46,6 @@ import com.example.alarmscratch.core.util.StatusBarUtil
 import com.example.alarmscratch.settings.data.model.TimeDisplay
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
 import com.example.alarmscratch.settings.ui.generalsettings.component.TimeDisplayDialog
-import kotlinx.coroutines.launch
 
 @Composable
 fun GeneralSettingsScreen(
@@ -62,13 +60,12 @@ fun GeneralSettingsScreen(
     val generalSettingsState by generalSettingsViewModel.modifiedGeneralSettings.collectAsState()
 
     if (generalSettingsState is GeneralSettingsState.Success) {
-        val coroutineScope = rememberCoroutineScope()
         val generalSettings = (generalSettingsState as GeneralSettingsState.Success).generalSettings
 
         GeneralSettingsScreenContent(
             navHostController = navHostController,
             timeDisplay = generalSettings.timeDisplay,
-            saveGeneralSettings = { coroutineScope.launch { generalSettingsViewModel.saveGeneralSettings() } },
+            saveGeneralSettings = generalSettingsViewModel::saveGeneralSettings,
             updateTimeDisplay = { generalSettingsViewModel.updateTimeDisplay(it) },
             modifier = modifier
         )

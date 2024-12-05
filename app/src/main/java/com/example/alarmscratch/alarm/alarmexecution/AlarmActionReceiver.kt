@@ -8,10 +8,10 @@ import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
+import com.example.alarmscratch.core.extension.alarmApplication
+import com.example.alarmscratch.core.extension.doAsync
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class AlarmActionReceiver : BroadcastReceiver() {
 
@@ -81,7 +81,7 @@ class AlarmActionReceiver : BroadcastReceiver() {
         )
 
         // Update Alarm Database and reschedule Alarm
-        CoroutineScope(Dispatchers.IO).launch {
+        doAsync(context.alarmApplication.applicationScope, Dispatchers.IO) {
             // Update Alarm
             val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
             alarmRepo.updateSnooze(id, snoozeDateTime)
@@ -96,7 +96,7 @@ class AlarmActionReceiver : BroadcastReceiver() {
 
         // Disable Alarm and reset Snooze
         val alarmId = intent.getIntExtra(EXTRA_ALARM_ID, ALARM_NO_ID)
-        CoroutineScope(Dispatchers.IO).launch {
+        doAsync(context.alarmApplication.applicationScope, Dispatchers.IO) {
             val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
             alarmRepo.dismissAlarm(alarmId)
         }

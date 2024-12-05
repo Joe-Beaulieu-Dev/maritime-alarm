@@ -15,15 +15,19 @@ import com.example.alarmscratch.settings.data.repository.GeneralSettingsReposito
 import com.example.alarmscratch.settings.data.repository.generalSettingsDataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 
 class AlarmNotificationService : Service() {
 
+    // Coroutine
+    private val job = SupervisorJob()
+    private val coroutineScope = CoroutineScope(job)
+
     companion object {
+        // Actions
         const val DISPLAY_ALARM_NOTIFICATION = "display_alarm_notification"
         const val DISMISS_ALARM_NOTIFICATION = "dismiss_alarm_notification"
     }
@@ -69,37 +73,34 @@ class AlarmNotificationService : Service() {
         )
 
         // Get General Settings, Launch Notification, Play Ringtone, Vibrate
-        CoroutineScope(Dispatchers.IO).launch {
+        coroutineScope.launch(Dispatchers.Main) {
             // Get General Settings
             val generalSettingsRepository = GeneralSettingsRepository(applicationContext.generalSettingsDataStore)
             val generalSettings = try {
-                async { generalSettingsRepository.generalSettingsFlow }.await().first()
-            } catch (e: Exception) {
+                generalSettingsRepository.generalSettingsFlow.first()
+            } catch (e: NoSuchElementException) {
                 // Flow was empty. Return GeneralSettings with defaults.
                 GeneralSettings(GeneralSettingsRepository.DEFAULT_TIME_DISPLAY)
             }
 
-            // Switch back to Main Thread for UI related work
-            withContext(Dispatchers.Main) {
-                // Create Notification
-                val fullScreenNotification = AlarmNotification.fullScreenNotification(
-                    applicationContext,
-                    alarmExecutionData,
-                    generalSettings.timeDisplay
-                )
+            // Create Notification
+            val fullScreenNotification = AlarmNotification.fullScreenNotification(
+                applicationContext,
+                alarmExecutionData,
+                generalSettings.timeDisplay
+            )
 
-                // Push Service to foreground and display Notification
-                startForeground(id, fullScreenNotification)
+            // Push Service to foreground and display Notification
+            startForeground(id, fullScreenNotification)
 
-                // TODO: Check notification permission before sounding Alarm. If you don't,
-                //  then the ringtone will sound without the notification.
-                // Play Ringtone
-                RingtonePlayerManager.startAlarmSound(applicationContext, ringtoneUri)
+            // TODO: Check notification permission before sounding Alarm. If you don't,
+            //  then the ringtone will sound without the notification.
+            // Play Ringtone
+            RingtonePlayerManager.startAlarmSound(applicationContext, ringtoneUri)
 
-                // Start Vibration
-                if (isVibrationEnabled) {
-                    VibrationController.startVibration(applicationContext)
-                }
+            // Start Vibration
+            if (isVibrationEnabled) {
+                VibrationController.startVibration(applicationContext)
             }
         }
     }
@@ -125,5 +126,10 @@ class AlarmNotificationService : Service() {
 
         // Stop Service, which dismisses the Notification
         stopSelf()
+    }
+
+    override fun onDestroy() {
+        // Cancel coroutines
+        job.cancel()
     }
 }

@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class AlarmListViewModel(
     private val alarmRepository: AlarmRepository,
@@ -64,15 +65,17 @@ class AlarmListViewModel(
         }
     }
 
-    suspend fun toggleAlarm(context: Context, alarm: Alarm) {
-        val modifiedAlarm = alarm.copy(enabled = !alarm.enabled, dateTime = alarm.dateTime).withFuturizedDateTime()
+    fun toggleAlarm(context: Context, alarm: Alarm) {
+        viewModelScope.launch {
+            val modifiedAlarm = alarm.copy(enabled = !alarm.enabled, dateTime = alarm.dateTime).withFuturizedDateTime()
 
-        alarmRepository.updateAlarm(modifiedAlarm)
+            alarmRepository.updateAlarm(modifiedAlarm)
 
-        if (modifiedAlarm.enabled) {
-            scheduleAlarm(context, modifiedAlarm)
-        } else {
-            cancelAndResetAlarm(context, modifiedAlarm)
+            if (modifiedAlarm.enabled) {
+                scheduleAlarm(context, modifiedAlarm)
+            } else {
+                cancelAndResetAlarm(context, modifiedAlarm)
+            }
         }
     }
 
@@ -85,8 +88,10 @@ class AlarmListViewModel(
         alarmRepository.resetSnooze(alarm.id)
     }
 
-    suspend fun cancelAndDeleteAlarm(context: Context, alarm: Alarm) {
-        AlarmScheduler.cancelAlarm(context, alarm.toAlarmExecutionData())
-        alarmRepository.deleteAlarm(alarm)
+    fun cancelAndDeleteAlarm(context: Context, alarm: Alarm) {
+        viewModelScope.launch {
+            AlarmScheduler.cancelAlarm(context, alarm.toAlarmExecutionData())
+            alarmRepository.deleteAlarm(alarm)
+        }
     }
 }

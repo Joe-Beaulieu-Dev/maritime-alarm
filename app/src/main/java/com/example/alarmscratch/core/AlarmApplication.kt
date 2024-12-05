@@ -6,8 +6,12 @@ import android.app.NotificationManager
 import android.content.Context
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.ui.notification.AlarmNotification
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 
 class AlarmApplication : Application() {
+
+    val applicationScope = CoroutineScope(SupervisorJob())
 
     override fun onCreate() {
         super.onCreate()

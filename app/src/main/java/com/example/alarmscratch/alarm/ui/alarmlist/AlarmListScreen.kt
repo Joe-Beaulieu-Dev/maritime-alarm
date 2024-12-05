@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,7 +20,6 @@ import com.example.alarmscratch.alarm.ui.alarmlist.component.NoAlarmsCard
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.settings.data.model.TimeDisplay
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
-import kotlinx.coroutines.launch
 
 @Composable
 fun AlarmListScreen(
@@ -34,15 +32,14 @@ fun AlarmListScreen(
     val generalSettingsState by alarmListViewModel.generalSettings.collectAsState()
 
     if (alarmListState is AlarmListState.Success && generalSettingsState is GeneralSettingsState.Success) {
-        val coroutineScope = rememberCoroutineScope()
         val alarmList = (alarmListState as AlarmListState.Success).alarmList
         val generalSettings = (generalSettingsState as GeneralSettingsState.Success).generalSettings
 
         AlarmListScreenContent(
             alarmList = alarmList,
             timeDisplay = generalSettings.timeDisplay,
-            onAlarmToggled = { context, alarm -> coroutineScope.launch { alarmListViewModel.toggleAlarm(context, alarm) } },
-            onAlarmDeleted = { context, alarm -> coroutineScope.launch { alarmListViewModel.cancelAndDeleteAlarm(context, alarm) } },
+            onAlarmToggled = { context, alarm -> alarmListViewModel.toggleAlarm(context, alarm) },
+            onAlarmDeleted = { context, alarm -> alarmListViewModel.cancelAndDeleteAlarm(context, alarm) },
             navigateToAlarmEditScreen = navigateToAlarmEditScreen,
             modifier = modifier
         )
