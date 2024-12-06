@@ -53,9 +53,9 @@ class BootCompletedReceiver : BroadcastReceiver() {
      * Alarms that are already clean are a no-op.
      *
      * To clean an Alarm is to:
-     * 1) Reset snooze
-     * 2) If Alarm is repeating -> set to next repeating DateTime
-     * 3) If Alarm is not repeating -> disable Alarm
+     * - Reset snooze
+     * - If Alarm is repeating -> set to next repeating date/time
+     * - If Alarm is not repeating -> disable Alarm
      *
      * @param alarm Alarm candidate for cleaning
      * @param alarmRepository repository in which cleaned Alarms are updated
