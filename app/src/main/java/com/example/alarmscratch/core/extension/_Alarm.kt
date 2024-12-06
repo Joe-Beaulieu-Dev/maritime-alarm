@@ -129,6 +129,26 @@ fun Alarm.isRepeating(): Boolean =
 fun Alarm.isSnoozed(): Boolean =
     snoozeDateTime != null
 
+/**
+ * Returns whether or not the Alarm is dirty. Dirty Alarms are those that have invalid configurations.
+ * This can happen if the phone is off during a time in which an Alarm is scheduled to execute.
+ *
+ * Returns true if, and only if, both of the following conditions are met:
+ * 1) Alarm is enabled
+ * 2) Alarm is not configured to go off in the future, taking snooze into account
+ *
+ * @return true if the Alarm is dirty, false otherwise
+ */
+fun Alarm.isDirty(): Boolean {
+    val now = LocalDateTimeUtil.nowTruncated()
+    return enabled &&
+            if (isSnoozed()) {
+                snoozeDateTime?.isAfter(now) == false
+            } else {
+                !dateTime.isAfter(now)
+            }
+}
+
 fun Alarm.getRingtone(context: Context): Ringtone =
     RingtoneRepository(context).getRingtone(ringtoneUriString)
 
