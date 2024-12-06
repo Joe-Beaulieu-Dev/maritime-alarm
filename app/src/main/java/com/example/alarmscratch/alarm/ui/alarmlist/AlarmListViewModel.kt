@@ -67,7 +67,9 @@ class AlarmListViewModel(
 
     fun toggleAlarm(context: Context, alarm: Alarm) {
         viewModelScope.launch {
-            val modifiedAlarm = alarm.copy(enabled = !alarm.enabled, dateTime = alarm.dateTime).withFuturizedDateTime()
+            val modifiedAlarm = alarm
+                .copy(enabled = !alarm.enabled)
+                .run { if (enabled) withFuturizedDateTime() else this }
 
             alarmRepository.updateAlarm(modifiedAlarm)
 
