@@ -12,6 +12,7 @@ import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.alarmexecution.AlarmActionReceiver
+import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
@@ -37,23 +38,35 @@ class FullScreenAlarmActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // Alarm data
-        val alarmId = intent.getIntExtra(AlarmActionReceiver.EXTRA_ALARM_ID, AlarmActionReceiver.ALARM_NO_ID)
-        val alarmName = intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_NAME) ?: getString(R.string.default_alarm_name)
-        val alarmExecutionDateTime = try {
+        val dateTime = try {
             LocalDateTime.parse(intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME))
         } catch (e: Exception) {
             // The execution DateTime for the Alarm should be for right now, so this fallback makes sense.
             LocalDateTimeUtil.nowTruncated()
         }
-        val snoozeDuration = intent.getIntExtra(
-            AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION,
-            AlarmDefaultsRepository.DEFAULT_SNOOZE_DURATION
-        )
         val is24Hour = intent.getBooleanExtra(AlarmActionReceiver.EXTRA_IS_24_HOUR, AlarmActionReceiver.ALARM_NO_IS_24_HOUR)
+        val alarmExecutionData = AlarmExecutionData(
+            id = intent.getIntExtra(AlarmActionReceiver.EXTRA_ALARM_ID, AlarmActionReceiver.ALARM_NO_ID),
+            name = intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_NAME) ?: getString(R.string.default_alarm_name),
+            executionDateTime = dateTime,
+            repeatingDays = intent.getIntExtra(
+                AlarmActionReceiver.EXTRA_REPEATING_DAYS,
+                AlarmActionReceiver.ALARM_MISSING_REPEATING_DAYS
+            ),
+            ringtoneUri = intent.getStringExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI) ?: AlarmActionReceiver.ALARM_NO_RINGTONE_URI,
+            isVibrationEnabled = intent.getBooleanExtra(
+                AlarmActionReceiver.EXTRA_IS_VIBRATION_ENABLED,
+                AlarmActionReceiver.ALARM_NO_IS_VIBRATION_ENABLED
+            ),
+            snoozeDuration = intent.getIntExtra(
+                AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION,
+                AlarmDefaultsRepository.DEFAULT_SNOOZE_DURATION
+            )
+        )
 
         // Create/Get ViewModel
         val fullScreenAlarmViewModel by viewModels<FullScreenAlarmViewModel> {
-            FullScreenAlarmViewModel.provideFactory(alarmId, alarmName, alarmExecutionDateTime, snoozeDuration, is24Hour)
+            FullScreenAlarmViewModel.provideFactory(alarmExecutionData, is24Hour)
         }
 
         setContent {

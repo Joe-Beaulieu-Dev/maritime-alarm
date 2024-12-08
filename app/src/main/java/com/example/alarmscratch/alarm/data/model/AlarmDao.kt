@@ -63,4 +63,7 @@ interface AlarmDao {
 
     @Query("UPDATE alarms SET enabled = 0, snoozeDateTime = null WHERE id = :id")
     suspend fun dismissAlarm(id: Int)
+
+    @Query("UPDATE alarms SET dateTime = :dateTime, snoozeDateTime = null WHERE id = :id")
+    suspend fun dismissAndRescheduleRepeating(id: Int, dateTime: LocalDateTime)
 }

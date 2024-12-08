@@ -22,6 +22,7 @@ fun Alarm.toAlarmExecutionData(): AlarmExecutionData =
         id = id,
         name = name,
         executionDateTime = snoozeDateTime ?: dateTime,
+        repeatingDays = weeklyRepeater.toEncodedRepeatingDays(),
         ringtoneUri = ringtoneUriString,
         isVibrationEnabled = isVibrationEnabled,
         snoozeDuration = snoozeDuration

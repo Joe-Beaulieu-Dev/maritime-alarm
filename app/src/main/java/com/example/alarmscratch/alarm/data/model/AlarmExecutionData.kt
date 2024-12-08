@@ -6,6 +6,7 @@ data class AlarmExecutionData(
     val id: Int,
     val name: String,
     val executionDateTime: LocalDateTime,
+    val repeatingDays: Int,
     val ringtoneUri: String,
     val isVibrationEnabled: Boolean,
     val snoozeDuration: Int

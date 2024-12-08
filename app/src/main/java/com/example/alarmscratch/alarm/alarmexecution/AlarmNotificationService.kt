@@ -64,6 +64,10 @@ class AlarmNotificationService : Service() {
             id = id,
             name = intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_NAME) ?: getString(R.string.default_alarm_name),
             executionDateTime = executionDateTime,
+            repeatingDays = intent.getIntExtra(
+                AlarmActionReceiver.EXTRA_REPEATING_DAYS,
+                AlarmActionReceiver.ALARM_MISSING_REPEATING_DAYS
+            ),
             ringtoneUri = ringtoneUri,
             isVibrationEnabled = isVibrationEnabled,
             snoozeDuration = intent.getIntExtra(

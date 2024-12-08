@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.drawable.Icon
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.alarmexecution.AlarmActionReceiver
+import com.example.alarmscratch.alarm.alarmexecution.AlarmIntentBuilder
 import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
 import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmActivity
 import com.example.alarmscratch.core.extension.to12HourNotificationDateTimeString
@@ -37,29 +38,18 @@ object AlarmNotification {
             .setCategory(Notification.CATEGORY_ALARM)
             .setActions(
                 getSnoozeAlarmAction(context, alarmExecutionData),
-                getDismissAlarmAction(context, alarmExecutionData.id)
+                getDismissAlarmAction(context, alarmExecutionData)
             )
-            .setDeleteIntent(getDismissAlarmPendingIntent(context, alarmExecutionData.id))
+            .setDeleteIntent(getDismissAlarmPendingIntent(context, alarmExecutionData))
             .setFullScreenIntent(getFullScreenAlertPendingIntent(context, alarmExecutionData, timeDisplay), true)
             .build()
     }
 
     private fun getSnoozeAlarmAction(context: Context, alarmExecutionData: AlarmExecutionData): Notification.Action {
-        val snoozeAlarmIntent = Intent(context, AlarmActionReceiver::class.java).apply {
-            // Action
-            action = AlarmActionReceiver.ACTION_SNOOZE_AND_RESCHEDULE_ALARM
-            // Extras
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmExecutionData.id)
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, alarmExecutionData.name)
-            putExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI, alarmExecutionData.ringtoneUri)
-            putExtra(AlarmActionReceiver.EXTRA_IS_VIBRATION_ENABLED, alarmExecutionData.isVibrationEnabled)
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION, alarmExecutionData.snoozeDuration)
-        }
-
         val snoozeAlarmPendingIntent = PendingIntent.getBroadcast(
             context,
             alarmExecutionData.id,
-            snoozeAlarmIntent,
+            AlarmIntentBuilder.snoozeAlarmIntent(context, alarmExecutionData),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -70,26 +60,20 @@ object AlarmNotification {
         ).build()
     }
 
-    private fun getDismissAlarmAction(context: Context, alarmId: Int): Notification.Action =
+    private fun getDismissAlarmAction(context: Context, alarmExecutionData: AlarmExecutionData): Notification.Action =
         Notification.Action.Builder(
             Icon.createWithResource(context, R.drawable.ic_alarm_dismiss_24dp),
             context.getString(R.string.dismiss_alarm),
-            getDismissAlarmPendingIntent(context, alarmId)
+            getDismissAlarmPendingIntent(context, alarmExecutionData)
         ).build()
 
-    private fun getDismissAlarmPendingIntent(context: Context, alarmId: Int): PendingIntent {
-        val clearNotificationIntent = Intent(context, AlarmActionReceiver::class.java).apply {
-            action = AlarmActionReceiver.ACTION_DISMISS_ALARM
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmId)
-        }
-
-        return PendingIntent.getBroadcast(
+    private fun getDismissAlarmPendingIntent(context: Context, alarmExecutionData: AlarmExecutionData): PendingIntent =
+        PendingIntent.getBroadcast(
             context,
-            alarmId,
-            clearNotificationIntent,
+            alarmExecutionData.id,
+            AlarmIntentBuilder.dismissAlarmIntent(context, alarmExecutionData),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-    }
 
     private fun getFullScreenAlertPendingIntent(
         context: Context,
@@ -108,6 +92,7 @@ object AlarmNotification {
             putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmExecutionData.id)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, alarmExecutionData.name)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME, alarmExecutionData.executionDateTime.toString())
+            putExtra(AlarmActionReceiver.EXTRA_REPEATING_DAYS, alarmExecutionData.repeatingDays)
             putExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI, alarmExecutionData.ringtoneUri)
             putExtra(AlarmActionReceiver.EXTRA_IS_VIBRATION_ENABLED, alarmExecutionData.isVibrationEnabled)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION, alarmExecutionData.snoozeDuration)

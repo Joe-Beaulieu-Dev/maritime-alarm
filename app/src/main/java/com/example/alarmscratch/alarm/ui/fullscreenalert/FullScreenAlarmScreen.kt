@@ -47,8 +47,8 @@ fun FullScreenAlarmScreen(fullScreenAlarmViewModel: FullScreenAlarmViewModel) {
     StatusBarUtil.setLightStatusBar()
 
     FullScreenAlarmScreenContent(
-        alarmName = fullScreenAlarmViewModel.alarmName,
-        alarmExecutionDateTime = fullScreenAlarmViewModel.alarmExecutionDateTime,
+        alarmName = fullScreenAlarmViewModel.alarmExecutionData.name,
+        alarmExecutionDateTime = fullScreenAlarmViewModel.alarmExecutionData.executionDateTime,
         is24Hour = fullScreenAlarmViewModel.is24Hour,
         snoozeAlarm = fullScreenAlarmViewModel::snoozeAlarm,
         dismissAlarm = fullScreenAlarmViewModel::dismissAlarm

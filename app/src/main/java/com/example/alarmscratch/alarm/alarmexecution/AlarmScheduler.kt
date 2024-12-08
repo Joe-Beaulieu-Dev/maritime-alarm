@@ -11,21 +11,10 @@ object AlarmScheduler {
 
     fun scheduleAlarm(context: Context, alarmExecutionData: AlarmExecutionData) {
         // Create PendingIntent to execute Alarm
-        val alarmIntent = Intent(context, AlarmActionReceiver::class.java).apply {
-            // Action
-            action = AlarmActionReceiver.ACTION_EXECUTE_ALARM
-            // Extras
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmExecutionData.id)
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, alarmExecutionData.name)
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME, alarmExecutionData.executionDateTime.toString())
-            putExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI, alarmExecutionData.ringtoneUri)
-            putExtra(AlarmActionReceiver.EXTRA_IS_VIBRATION_ENABLED, alarmExecutionData.isVibrationEnabled)
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION, alarmExecutionData.snoozeDuration)
-        }
         val alarmPendingIntent = PendingIntent.getBroadcast(
             context,
             alarmExecutionData.id,
-            alarmIntent,
+            AlarmIntentBuilder.executeAlarmIntent(context, alarmExecutionData),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
