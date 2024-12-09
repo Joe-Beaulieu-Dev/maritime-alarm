@@ -12,13 +12,13 @@ import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.alarm.data.repository.AlarmState
+import com.example.alarmscratch.alarm.util.AlarmUtil
 import com.example.alarmscratch.alarm.validation.AlarmValidator
 import com.example.alarmscratch.alarm.validation.ValidationError
 import com.example.alarmscratch.alarm.validation.ValidationResult
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.isRepeating
-import com.example.alarmscratch.core.extension.nextRepeatingDateTime
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.core.extension.withFuturizedDateTime
 import com.example.alarmscratch.settings.data.model.AlarmDefaults
@@ -144,7 +144,9 @@ class AlarmCreationViewModel(
         if (_newAlarm.value is AlarmState.Success) {
             val alarm = (_newAlarm.value as AlarmState.Success).alarm
             if (alarm.isRepeating()) {
-                alarmRepository.insertAlarm(alarm.copy(dateTime = alarm.nextRepeatingDateTime()))
+                alarmRepository.insertAlarm(
+                    alarm.copy(dateTime = AlarmUtil.nextRepeatingDateTime(alarm.dateTime, alarm.weeklyRepeater))
+                )
             } else {
                 alarmRepository.insertAlarm(alarm)
             }

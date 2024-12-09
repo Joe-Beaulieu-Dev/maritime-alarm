@@ -13,7 +13,7 @@ object AlarmUtil {
      * The returned LocalDateTime is guaranteed to be set in the future if you passed data from a repeating Alarm.
      * However, if the Alarm is not set to repeat, then the LocalDateTime passed to this function will be returned, unmodified.
      *
-     * If the Alarm is only set to repeat on days that would result in this function returning a LocalDateTime in
+     * If the Alarm is repeating, and is only set to repeat on days that would result in this function returning a LocalDateTime in
      * the past, then this function will add one week to the chosen day. See examples below.
      *
      * Ex 1: It's currently Wednesday, 7/17/2024 at 5:30pm. The Alarm is set to go off at 8:30am and it is only set to repeat on Wednesday.
@@ -22,13 +22,13 @@ object AlarmUtil {
      * Ex 2: It's currently Wednesday, 7/17/2024 at 5:30pm. The Alarm is set to go off at 8:30am and it is only set to repeat on Tuesday.
      *       This function would return Tuesday, 7/23/2024 at 8:30am.
      *
-     * @param dateTime the LocalDateTime starting point
+     * @param alarmDateTime the Alarm's current LocalDateTime, unsnoozed. Do not pass a snoozed LocalDateTime.
      * @param weeklyRepeater current day of week repeater configuration
      *
      * @return the next repeating LocalDateTime if the WeeklyRepeater has repeating days.
      *         Otherwise, this will return the LocalDateTime passed in, unmodified.
      */
-    fun nextRepeatingDateTime(dateTime: LocalDateTime, weeklyRepeater: WeeklyRepeater): LocalDateTime {
+    fun nextRepeatingDateTime(alarmDateTime: LocalDateTime, weeklyRepeater: WeeklyRepeater): LocalDateTime {
         if (weeklyRepeater.hasRepeatingDays()) {
             val currentDateTime = LocalDateTimeUtil.nowTruncated()
             val currentDate = currentDateTime.toLocalDate()
@@ -42,10 +42,10 @@ object AlarmUtil {
             // If there are other days in the array     -> remove Today from the list
             var daysBetween = sortedRepeatingDays[0].dayNumber() - currentDay.dayNumber()
             if (daysBetween == 0) {
-                val potentialAlarm = LocalDateTime.of(currentDate, dateTime.toLocalTime())
+                val potentialAlarm = LocalDateTime.of(currentDate, alarmDateTime.toLocalTime())
                 if (!potentialAlarm.isAfter(currentDateTime)) {
                     if (sortedRepeatingDays.size == 1) {
-                        return LocalDateTime.of(currentDate.plusDays(7), dateTime.toLocalTime())
+                        return LocalDateTime.of(currentDate.plusDays(7), alarmDateTime.toLocalTime())
                     } else {
                         daysBetween = sortedRepeatingDays[1].dayNumber() - currentDay.dayNumber()
                     }
@@ -58,9 +58,9 @@ object AlarmUtil {
                 daysBetween
             }
 
-            return LocalDateTime.of(currentDate.plusDays(offsetDays.toLong()), dateTime.toLocalTime())
+            return LocalDateTime.of(currentDate.plusDays(offsetDays.toLong()), alarmDateTime.toLocalTime())
         } else {
-            return dateTime
+            return alarmDateTime
         }
     }
 
