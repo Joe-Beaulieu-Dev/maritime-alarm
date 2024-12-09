@@ -49,7 +49,7 @@ class FullScreenAlarmActivity : ComponentActivity() {
             id = intent.getIntExtra(AlarmActionReceiver.EXTRA_ALARM_ID, AlarmActionReceiver.ALARM_NO_ID),
             name = intent.getStringExtra(AlarmActionReceiver.EXTRA_ALARM_NAME) ?: getString(R.string.default_alarm_name),
             executionDateTime = dateTime,
-            repeatingDays = intent.getIntExtra(
+            encodedRepeatingDays = intent.getIntExtra(
                 AlarmActionReceiver.EXTRA_REPEATING_DAYS,
                 AlarmActionReceiver.ALARM_MISSING_REPEATING_DAYS
             ),

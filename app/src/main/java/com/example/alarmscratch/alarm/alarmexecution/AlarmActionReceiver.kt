@@ -79,7 +79,7 @@ class AlarmActionReceiver : BroadcastReceiver() {
             id = id,
             name = intent.getStringExtra(EXTRA_ALARM_NAME) ?: context.getString(R.string.default_alarm_name),
             executionDateTime = snoozeDateTime,
-            repeatingDays = intent.getIntExtra(EXTRA_REPEATING_DAYS, ALARM_MISSING_REPEATING_DAYS),
+            encodedRepeatingDays = intent.getIntExtra(EXTRA_REPEATING_DAYS, ALARM_MISSING_REPEATING_DAYS),
             ringtoneUri = intent.getStringExtra(EXTRA_RINGTONE_URI) ?: ALARM_NO_RINGTONE_URI,
             isVibrationEnabled = intent.getBooleanExtra(EXTRA_IS_VIBRATION_ENABLED, ALARM_NO_IS_VIBRATION_ENABLED),
             snoozeDuration = snoozeDuration
@@ -101,23 +101,21 @@ class AlarmActionReceiver : BroadcastReceiver() {
 
         // Alarm data
         val id = intent.getIntExtra(EXTRA_ALARM_ID, ALARM_NO_ID)
-        val repeatingDays = intent.getIntExtra(EXTRA_REPEATING_DAYS, ALARM_MISSING_REPEATING_DAYS)
+        val encodedRepeatingDays = intent.getIntExtra(EXTRA_REPEATING_DAYS, ALARM_MISSING_REPEATING_DAYS)
 
-        // Disable Alarm if non-repeating, and reset Snooze
+        // Dismiss Alarm. Also reschedule if it's a repeating Alarm.
         doAsync(context.alarmApplication.applicationScope, Dispatchers.IO) {
             val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
-
-            // Dismiss Alarm. Also reschedule if it's a repeating Alarm.
-            if (id != ALARM_NO_ID && repeatingDays != ALARM_MISSING_REPEATING_DAYS) {
-                if (repeatingDays > 0) {
-                    // Must pull the original LocalDateTime from the database, since the one
+            if (id != ALARM_NO_ID && encodedRepeatingDays != ALARM_MISSING_REPEATING_DAYS) {
+                if (encodedRepeatingDays > 0) {
+                    // Must pull the original LocalDateTime from the database. This is because the one
                     // passed in the Intent just represents when the Alarm was supposed to execute,
                     // which may be a snoozed time that was modified from the original.
                     // Here we need the original, unmodified LocalDateTime for rescheduling.
                     val originalDateTime = alarmRepo.getAlarm(id).dateTime
                     alarmRepo.dismissAndRescheduleRepeating(
                         id,
-                        AlarmUtil.nextRepeatingDateTime(originalDateTime, WeeklyRepeater(repeatingDays))
+                        AlarmUtil.nextRepeatingDateTime(originalDateTime, WeeklyRepeater(encodedRepeatingDays))
                     )
                 } else {
                     alarmRepo.dismissAlarm(id)

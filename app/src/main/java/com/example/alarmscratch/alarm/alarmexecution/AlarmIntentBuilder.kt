@@ -22,7 +22,7 @@ object AlarmIntentBuilder {
             putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmExecutionData.id)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, alarmExecutionData.name)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME, alarmExecutionData.executionDateTime.toString())
-            putExtra(AlarmActionReceiver.EXTRA_REPEATING_DAYS, alarmExecutionData.repeatingDays)
+            putExtra(AlarmActionReceiver.EXTRA_REPEATING_DAYS, alarmExecutionData.encodedRepeatingDays)
             putExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI, alarmExecutionData.ringtoneUri)
             putExtra(AlarmActionReceiver.EXTRA_IS_VIBRATION_ENABLED, alarmExecutionData.isVibrationEnabled)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION, alarmExecutionData.snoozeDuration)
@@ -32,7 +32,7 @@ object AlarmIntentBuilder {
      * Creates an Intent for snoozing Alarms. This Intent does not contain all the properties of AlarmExecutionData.
      *
      * @param context used for Intent creation
-     * @param alarmExecutionData snooze data for the Alarm
+     * @param alarmExecutionData execution data for the Alarm
      *
      * @return Intent for snoozing Alarms
      */
@@ -43,7 +43,7 @@ object AlarmIntentBuilder {
             // Extras
             putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmExecutionData.id)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, alarmExecutionData.name)
-            putExtra(AlarmActionReceiver.EXTRA_REPEATING_DAYS, alarmExecutionData.repeatingDays)
+            putExtra(AlarmActionReceiver.EXTRA_REPEATING_DAYS, alarmExecutionData.encodedRepeatingDays)
             putExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI, alarmExecutionData.ringtoneUri)
             putExtra(AlarmActionReceiver.EXTRA_IS_VIBRATION_ENABLED, alarmExecutionData.isVibrationEnabled)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION, alarmExecutionData.snoozeDuration)
@@ -53,7 +53,7 @@ object AlarmIntentBuilder {
      * Creates an Intent for dismissing Alarms. This Intent does not contain all the properties of AlarmExecutionData.
      *
      * @param context used for Intent creation
-     * @param alarmExecutionData dismissal data for the Alarm
+     * @param alarmExecutionData execution data for the Alarm
      *
      * @return Intent for dismissing Alarms
      */
@@ -64,6 +64,6 @@ object AlarmIntentBuilder {
             // Extras
             putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmExecutionData.id)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME, alarmExecutionData.executionDateTime.toString())
-            putExtra(AlarmActionReceiver.EXTRA_REPEATING_DAYS, alarmExecutionData.repeatingDays)
+            putExtra(AlarmActionReceiver.EXTRA_REPEATING_DAYS, alarmExecutionData.encodedRepeatingDays)
         }
 }
