@@ -14,12 +14,12 @@ import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.alarm.data.repository.AlarmState
+import com.example.alarmscratch.alarm.util.AlarmUtil
 import com.example.alarmscratch.alarm.validation.AlarmValidator
 import com.example.alarmscratch.alarm.validation.ValidationError
 import com.example.alarmscratch.alarm.validation.ValidationResult
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.isRepeating
-import com.example.alarmscratch.core.extension.nextRepeatingDateTime
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.core.extension.withFuturizedDateTime
 import com.example.alarmscratch.core.navigation.Destination
@@ -128,7 +128,9 @@ class AlarmEditViewModel(
         if (_modifiedAlarm.value is AlarmState.Success) {
             val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm.copy(enabled = true)
             if (alarm.isRepeating()) {
-                alarmRepository.updateAlarm(alarm.copy(dateTime = alarm.nextRepeatingDateTime()))
+                alarmRepository.updateAlarm(
+                    alarm.copy(dateTime = AlarmUtil.nextRepeatingDateTime(alarm.dateTime, alarm.weeklyRepeater))
+                )
             } else {
                 alarmRepository.updateAlarm(alarm)
             }

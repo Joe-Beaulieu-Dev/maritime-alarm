@@ -48,4 +48,7 @@ class AlarmRepository(private val alarmDao: AlarmDao) {
     suspend fun resetSnooze(id: Int) = alarmDao.resetSnooze(id = id)
 
     suspend fun dismissAlarm(id: Int) = alarmDao.dismissAlarm(id = id)
+
+    suspend fun dismissAndRescheduleRepeating(id: Int, dateTime: LocalDateTime) =
+        alarmDao.dismissAndRescheduleRepeating(id = id, dateTime = dateTime)
 }
