@@ -10,7 +10,8 @@ object AlarmUtil {
 
     /**
      * Returns a LocalDateTime with the next day the Alarm is set to go off, if and only if the Alarm is set to repeat.
-     * The returned LocalDateTime is guaranteed to be set in the future.
+     * The returned LocalDateTime is guaranteed to be set in the future if you passed data from a repeating Alarm.
+     * However, if the Alarm is not set to repeat, then the LocalDateTime passed to this function will be returned, unmodified.
      *
      * If the Alarm is only set to repeat on days that would result in this function returning a LocalDateTime in
      * the past, then this function will add one week to the chosen day. See examples below.

@@ -14,7 +14,6 @@ import com.example.alarmscratch.core.extension.alarmApplication
 import com.example.alarmscratch.core.extension.doAsync
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
 import kotlinx.coroutines.Dispatchers
-import java.time.LocalDateTime
 
 class AlarmActionReceiver : BroadcastReceiver() {
 
@@ -102,11 +101,6 @@ class AlarmActionReceiver : BroadcastReceiver() {
 
         // Alarm data
         val id = intent.getIntExtra(EXTRA_ALARM_ID, ALARM_NO_ID)
-        val dateTime: LocalDateTime? = try {
-            LocalDateTime.parse(intent.getStringExtra(EXTRA_ALARM_EXECUTION_DATE_TIME))
-        } catch (e: Exception) {
-            null
-        }
         val repeatingDays = intent.getIntExtra(EXTRA_REPEATING_DAYS, ALARM_MISSING_REPEATING_DAYS)
 
         // Disable Alarm if non-repeating, and reset Snooze
@@ -114,15 +108,16 @@ class AlarmActionReceiver : BroadcastReceiver() {
             val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
 
             // Dismiss Alarm. Also reschedule if it's a repeating Alarm.
-            if (
-                id != ALARM_NO_ID &&
-                dateTime != null &&
-                repeatingDays != ALARM_MISSING_REPEATING_DAYS
-            ) {
+            if (id != ALARM_NO_ID && repeatingDays != ALARM_MISSING_REPEATING_DAYS) {
                 if (repeatingDays > 0) {
+                    // Must pull the original LocalDateTime from the database, since the one
+                    // passed in the Intent just represents when the Alarm was supposed to execute,
+                    // which may be a snoozed time that was modified from the original.
+                    // Here we need the original, unmodified LocalDateTime for rescheduling.
+                    val originalDateTime = alarmRepo.getAlarm(id).dateTime
                     alarmRepo.dismissAndRescheduleRepeating(
                         id,
-                        AlarmUtil.nextRepeatingDateTime(dateTime, WeeklyRepeater(repeatingDays))
+                        AlarmUtil.nextRepeatingDateTime(originalDateTime, WeeklyRepeater(repeatingDays))
                     )
                 } else {
                     alarmRepo.dismissAlarm(id)
