@@ -5,10 +5,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.preview.calendarAlarm
@@ -60,8 +62,13 @@ private fun NonRepeatingAlarmDate(
     enabled: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val dateText = if (enabled) {
+        dateTime.toAlarmDateString(context = LocalContext.current)
+    } else {
+        stringResource(id = R.string.not_scheduled)
+    }
     Text(
-        text = dateTime.toAlarmDateString(context = LocalContext.current),
+        text = dateText,
         fontSize = 12.sp,
         fontWeight = if (enabled) FontWeight.Medium else null,
         modifier = modifier
@@ -77,7 +84,7 @@ private fun NonRepeatingAlarmDate(
     backgroundColor = 0xFF373736
 )
 @Composable
-private fun AlarmDateRepeatingPreview() {
+private fun AlarmDateRepeatingEnabledPreview() {
     AlarmScratchTheme {
         AlarmDate(
             alarm = repeatingAlarm,
@@ -119,10 +126,10 @@ private fun AlarmDateTodayPreview() {
     backgroundColor = 0xFF373736
 )
 @Composable
-private fun AlarmDateTomorrowDisabledPreview() {
+private fun AlarmDateTomorrowPreview() {
     AlarmScratchTheme {
         AlarmDate(
-            alarm = tomorrowAlarm,
+            alarm = tomorrowAlarm.copy(enabled = true),
             modifier = Modifier.padding(20.dp)
         )
     }
@@ -137,6 +144,20 @@ private fun AlarmDateBeyondTomorrowPreview() {
     AlarmScratchTheme {
         AlarmDate(
             alarm = calendarAlarm,
+            modifier = Modifier.padding(20.dp)
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF373736
+)
+@Composable
+private fun AlarmDateNotScheduledPreview() {
+    AlarmScratchTheme {
+        AlarmDate(
+            alarm = tomorrowAlarm,
             modifier = Modifier.padding(20.dp)
         )
     }

@@ -15,6 +15,7 @@ import com.example.alarmscratch.alarm.data.preview.calendarAlarm
 import com.example.alarmscratch.alarm.data.preview.repeatingAlarm
 import com.example.alarmscratch.alarm.data.preview.todayAlarm
 import com.example.alarmscratch.alarm.data.preview.tomorrowAlarm
+import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.isRepeating
 import com.example.alarmscratch.core.extension.toAlarmDateString
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
@@ -106,6 +107,22 @@ private fun AlarmDaysBeyondTomorrowPreview() {
     AlarmScratchTheme {
         AlarmDays(
             alarm = calendarAlarm,
+            modifier = Modifier.padding(20.dp)
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF373736
+)
+@Composable
+private fun AlarmDaysBeforeTodayPreview() {
+    AlarmScratchTheme {
+        AlarmDays(
+            alarm = todayAlarm.copy(
+                dateTime = LocalDateTimeUtil.nowTruncated().minusDays(1)
+            ),
             modifier = Modifier.padding(20.dp)
         )
     }
