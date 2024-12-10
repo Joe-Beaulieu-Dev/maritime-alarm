@@ -67,6 +67,7 @@ private fun NonRepeatingAlarmDate(
     } else {
         stringResource(id = R.string.not_scheduled)
     }
+
     Text(
         text = dateText,
         fontSize = 12.sp,

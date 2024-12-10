@@ -46,6 +46,9 @@ class WeeklyRepeater(encodedRepeatingDays: Int = 0) {
     fun isRepeatingOn(day: Day): Boolean =
         repeatingDayMap[day] ?: false
 
+    fun isRepeatingEveryDay(): Boolean =
+        repeatingDayMap.filterValues { !it }.isEmpty()
+
     fun getRepeatingDays(): List<Day> =
         repeatingDayMap.filterValues { it }.keys.toList()
 
