@@ -12,9 +12,11 @@ import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.preview.calendarAlarm
+import com.example.alarmscratch.alarm.data.preview.everyDay
 import com.example.alarmscratch.alarm.data.preview.repeatingAlarm
 import com.example.alarmscratch.alarm.data.preview.todayAlarm
 import com.example.alarmscratch.alarm.data.preview.tomorrowAlarm
+import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.isRepeating
 import com.example.alarmscratch.core.extension.toAlarmDateString
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
@@ -37,10 +39,13 @@ private fun RepeatingAlarmDays(
     repeatingDays: WeeklyRepeater,
     modifier: Modifier = Modifier
 ) {
-    Text(
-        text = "${stringResource(id = R.string.repeating_alarm_date_label)} ${repeatingDays.toAlarmCreationDateString()}",
-        modifier = modifier
-    )
+    val dateText = if (repeatingDays.isRepeatingEveryDay()) {
+        stringResource(id = R.string.repeating_alarm_every_day)
+    } else {
+        "${stringResource(id = R.string.repeating_alarm_date_label)} ${repeatingDays.toAlarmCreationDateString()}"
+    }
+
+    Text(text = dateText, modifier = modifier)
 }
 
 @Composable
@@ -48,7 +53,10 @@ private fun NonRepeatingAlarmDays(
     dateTime: LocalDateTime,
     modifier: Modifier = Modifier
 ) {
-    Text(text = dateTime.toAlarmDateString(context = LocalContext.current), modifier = modifier)
+    Text(
+        text = dateTime.toAlarmDateString(context = LocalContext.current),
+        modifier = modifier
+    )
 }
 
 /*
@@ -64,6 +72,20 @@ private fun AlarmDaysRepeatingPreview() {
     AlarmScratchTheme {
         AlarmDays(
             alarm = repeatingAlarm,
+            modifier = Modifier.padding(20.dp)
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF373736
+)
+@Composable
+private fun AlarmDaysRepeatingEveryDayPreview() {
+    AlarmScratchTheme {
+        AlarmDays(
+            alarm = repeatingAlarm.copy(weeklyRepeater = WeeklyRepeater(everyDay)),
             modifier = Modifier.padding(20.dp)
         )
     }
@@ -106,6 +128,20 @@ private fun AlarmDaysBeyondTomorrowPreview() {
     AlarmScratchTheme {
         AlarmDays(
             alarm = calendarAlarm,
+            modifier = Modifier.padding(20.dp)
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF373736
+)
+@Composable
+private fun AlarmDaysBeforeTodayPreview() {
+    AlarmScratchTheme {
+        AlarmDays(
+            alarm = todayAlarm.copy(dateTime = LocalDateTimeUtil.nowTruncated().minusDays(1)),
             modifier = Modifier.padding(20.dp)
         )
     }

@@ -32,21 +32,15 @@ fun LocalDateTime.getDayShorthand(): String =
  */
 
 fun LocalDateTime.toAlarmDateString(context: Context) : String {
-    val currentDateTime = LocalDateTimeUtil.nowTruncated()
-    return if (!this.isBefore(currentDateTime)) {
-        val alarmDate = this.toLocalDate()
-        val currentDate = currentDateTime.toLocalDate()
+    val alarmDate = this.toLocalDate()
+    val currentDate = LocalDateTimeUtil.nowTruncated().toLocalDate()
 
-        // Alarm is for today
-        if (alarmDate.isEqual(currentDate)) {
-            context.getString(R.string.date_today)
-        } else if (alarmDate.dayOfYear - currentDate.dayOfYear == 1) { // Alarm is for tomorrow
-            context.getString(R.string.date_tomorrow)
-        } else { // Alarm is for a day beyond tomorrow
-            formatCalendarDate(alarmDate)
-        }
-    } else {
-        context.getString(R.string.error)
+    return if (alarmDate.isEqual(currentDate)) { // Alarm is for today
+        context.getString(R.string.date_today)
+    } else if (alarmDate.dayOfYear - currentDate.dayOfYear == 1) { // Alarm is for tomorrow
+        context.getString(R.string.date_tomorrow)
+    } else { // Alarm is for a day either before today, or beyond tomorrow
+        formatCalendarDate(alarmDate)
     }
 }
 

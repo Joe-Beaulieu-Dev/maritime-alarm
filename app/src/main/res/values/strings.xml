@@ -1,7 +1,6 @@
 <resources>
     <!-- General -->
     <string name="app_name">AlarmScratch</string>
-    <string name="error">Error</string>
 
     <!--
         ****************
@@ -28,6 +27,7 @@
     <string name="date_tomorrow">Tomorrow</string>
     <string name="time_am">AM</string>
     <string name="time_pm">PM</string>
+    <string name="not_scheduled">Not scheduled</string>
     <string name="snooze_indicator">Snoozed until -</string>
     <!-- AlarmCardMenu -->
     <string name="menu_delete">Delete</string>
@@ -42,6 +42,7 @@
     <!-- AlarmCreateEditScreen -->
     <string name="alarm_name_placeholder">Alarm name</string>
     <string name="repeating_alarm_date_label">Every:</string>
+    <string name="repeating_alarm_every_day">Every day</string>
     <string name="section_alert">Alert</string>
     <string name="alarm_create_edit_alarm_sound_label">Sound</string>
     <string name="alarm_create_edit_alarm_vibration_label">Vibration</string>

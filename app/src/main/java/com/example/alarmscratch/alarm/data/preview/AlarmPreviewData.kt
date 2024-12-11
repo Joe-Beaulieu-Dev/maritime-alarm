@@ -7,6 +7,7 @@ import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import java.time.LocalDateTime
 
 const val tueWedThu: Int = 28
+const val everyDay: Int = 127
 private const val sampleRingtoneUriString = "content://settings/system/alarm_alert"
 
 val repeatingAlarm =
@@ -44,12 +45,11 @@ val tomorrowAlarm =
         snoozeDuration = 15
     )
 
-// TODO do exception handling for java code
 val calendarAlarm =
     Alarm(
         name = "",
         enabled = true,
-        dateTime = LocalDateTime.parse("2024-12-25T00:05:00"),
+        dateTime = getFutureTime(plusDays = 2),
         weeklyRepeater = WeeklyRepeater(),
         ringtoneUriString = sampleRingtoneUriString,
         isVibrationEnabled = false,
