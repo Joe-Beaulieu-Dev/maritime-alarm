@@ -49,7 +49,7 @@ val calendarAlarm =
     Alarm(
         name = "",
         enabled = true,
-        dateTime = LocalDateTimeUtil.nowTruncated().plusDays(2),
+        dateTime = getFutureTime(plusDays = 2),
         weeklyRepeater = WeeklyRepeater(),
         ringtoneUriString = sampleRingtoneUriString,
         isVibrationEnabled = false,
