@@ -74,6 +74,7 @@ fun AlarmEditScreen(
             toggleVibration = alarmEditViewModel::toggleVibration,
             updateSnoozeDuration = alarmEditViewModel::updateSnoozeDuration,
             isNameValid = isNameValid,
+            isDateSelectable = alarmEditViewModel::isCalendarDateSelectable,
             snackbarChannelFlow = snackbarChannelFlow,
             modifier = modifier
         )
@@ -114,6 +115,7 @@ private fun AlarmEditScreenPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Success(),
+            isDateSelectable = { _, _, _ -> true },
             snackbarChannelFlow = snackbarChannelFlow
         )
     }

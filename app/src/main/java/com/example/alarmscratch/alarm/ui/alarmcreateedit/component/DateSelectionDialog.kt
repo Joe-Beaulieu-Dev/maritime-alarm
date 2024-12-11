@@ -31,22 +31,19 @@ import java.time.LocalDateTime
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateSelectionDialog(
-    dateTime: LocalDateTime,
+    alarmDateTime: LocalDateTime,
+    isDateSelectable: (Long, LocalDateTime, LocalDateTime) -> Boolean,
     onCancel: () -> Unit,
     onConfirm: (LocalDate) -> Unit
 ) {
     // State
     val currentDateTime = LocalDateTimeUtil.nowTruncated()
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = dateTime.toLocalDate().toUtcMillis(),
+        initialSelectedDateMillis = alarmDateTime.toLocalDate().toUtcMillis(),
         yearRange = IntRange(currentDateTime.year, 2100),
         selectableDates = object : SelectableDates {
-            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                val calendarDate = LocalDateUtil.fromUtcMillis(utcTimeMillis)
-                val potentialNewAlarm = LocalDateTime.of(calendarDate, dateTime.toLocalTime())
-
-                return potentialNewAlarm.isAfter(currentDateTime)
-            }
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean =
+                isDateSelectable(utcTimeMillis, alarmDateTime, currentDateTime)
         }
     )
 
@@ -66,7 +63,9 @@ fun DateSelectionDialog(
                     // Same thing goes for other "millis" dates in DatePicker.
                     datePickerState.selectedDateMillis?.let { onConfirm(LocalDateUtil.fromUtcMillis(it)) }
                 },
-                enabled = datePickerState.selectedDateMillis != null,
+                enabled = datePickerState.selectedDateMillis?.let {
+                    isDateSelectable(it, alarmDateTime, LocalDateTimeUtil.nowTruncated())
+                } ?: false,
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = BoatSails,
                     disabledContentColor = LightVolcanicRock
@@ -114,9 +113,10 @@ private fun DateSelector(datePickerState: DatePickerState) {
 private fun DateSelectionDialogPreview() {
     AlarmScratchTheme {
         DateSelectionDialog(
-            dateTime = consistentFutureAlarm.dateTime,
+            alarmDateTime = consistentFutureAlarm.dateTime,
             onCancel = {},
-            onConfirm = {}
+            onConfirm = {},
+            isDateSelectable = { _, _, _ -> true }
         )
     }
 }
