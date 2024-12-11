@@ -45,12 +45,11 @@ val tomorrowAlarm =
         snoozeDuration = 15
     )
 
-// TODO do exception handling for java code
 val calendarAlarm =
     Alarm(
         name = "",
         enabled = true,
-        dateTime = LocalDateTime.parse("2024-12-25T00:05:00"),
+        dateTime = LocalDateTimeUtil.nowTruncated().plusDays(2),
         weeklyRepeater = WeeklyRepeater(),
         ringtoneUriString = sampleRingtoneUriString,
         isVibrationEnabled = false,

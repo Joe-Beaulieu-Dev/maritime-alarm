@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
+import com.example.alarmscratch.alarm.data.preview.calendarAlarm
 import com.example.alarmscratch.alarm.data.preview.everyDay
 import com.example.alarmscratch.alarm.data.preview.repeatingAlarm
 import com.example.alarmscratch.alarm.data.preview.todayAlarm
@@ -126,7 +127,7 @@ private fun AlarmDaysTomorrowPreview() {
 private fun AlarmDaysBeyondTomorrowPreview() {
     AlarmScratchTheme {
         AlarmDays(
-            alarm = todayAlarm.copy(dateTime = LocalDateTimeUtil.nowTruncated().plusDays(2)),
+            alarm = calendarAlarm,
             modifier = Modifier.padding(20.dp)
         )
     }
