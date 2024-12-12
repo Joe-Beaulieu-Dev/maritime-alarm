@@ -74,7 +74,6 @@ fun AlarmCreationScreen(
             toggleVibration = alarmCreationViewModel::toggleVibration,
             updateSnoozeDuration = alarmCreationViewModel::updateSnoozeDuration,
             isNameValid = isNameValid,
-            isDateSelectable = alarmCreationViewModel::isCalendarDateSelectable,
             snackbarChannelFlow = snackbarChannelFlow,
             modifier = modifier
         )
@@ -114,7 +113,6 @@ private fun AlarmCreationScreenPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Success(),
-            isDateSelectable = { _, _, _ -> true },
             snackbarChannelFlow = snackbarChannelFlow
         )
     }

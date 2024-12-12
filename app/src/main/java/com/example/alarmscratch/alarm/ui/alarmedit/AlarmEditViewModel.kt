@@ -19,7 +19,6 @@ import com.example.alarmscratch.alarm.validation.AlarmValidator
 import com.example.alarmscratch.alarm.validation.ValidationError
 import com.example.alarmscratch.alarm.validation.ValidationResult
 import com.example.alarmscratch.core.data.model.RingtoneData
-import com.example.alarmscratch.core.extension.LocalDateUtil
 import com.example.alarmscratch.core.extension.isRepeating
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.core.extension.withFuturizedDateTime
@@ -40,7 +39,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 class AlarmEditViewModel(
     savedStateHandle: SavedStateHandle,
@@ -274,16 +272,5 @@ class AlarmEditViewModel(
             val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
             isDateTimeValid = alarmValidator.validateDateTime(alarm.dateTime)
         }
-    }
-
-    fun isCalendarDateSelectable(
-        potentialUtcTimeMillis: Long,
-        alarmDateTime: LocalDateTime,
-        currentDateTime: LocalDateTime
-    ): Boolean {
-        val potentialDate = LocalDateUtil.fromUtcMillis(potentialUtcTimeMillis)
-        val potentialNewAlarm = LocalDateTime.of(potentialDate, alarmDateTime.toLocalTime())
-
-        return potentialNewAlarm.isAfter(currentDateTime)
     }
 }

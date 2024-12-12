@@ -115,7 +115,6 @@ fun AlarmCreateEditScreen(
     toggleVibration: () -> Unit,
     updateSnoozeDuration: (Int) -> Unit,
     isNameValid: ValidationResult<AlarmValidator.NameError>,
-    isDateSelectable: (Long, LocalDateTime, LocalDateTime) -> Boolean,
     snackbarChannelFlow: Flow<ValidationResult.Error<ValidationError>>,
     modifier: Modifier = Modifier
 ) {
@@ -213,8 +212,7 @@ fun AlarmCreateEditScreen(
                     updateDate = updateDate,
                     updateTime = updateTime,
                     addDay = addDay,
-                    removeDay = removeDay,
-                    isDateSelectable = isDateSelectable
+                    removeDay = removeDay
                 )
                 HorizontalDivider(
                     color = VolcanicRock,
@@ -248,8 +246,7 @@ fun DateTimeSettings(
     updateDate: (LocalDate) -> Unit,
     updateTime: (Int, Int) -> Unit,
     addDay: (WeeklyRepeater.Day) -> Unit,
-    removeDay: (WeeklyRepeater.Day) -> Unit,
-    isDateSelectable: (Long, LocalDateTime, LocalDateTime) -> Boolean
+    removeDay: (WeeklyRepeater.Day) -> Unit
 ) {
     // State
     var showDateSelectionDialog by rememberSaveable { mutableStateOf(false) }
@@ -287,7 +284,6 @@ fun DateTimeSettings(
     if (showDateSelectionDialog) {
         DateSelectionDialog(
             alarmDateTime = alarm.dateTime,
-            isDateSelectable = isDateSelectable,
             onCancel = toggleDateSelectionDialog,
             onConfirm = { date ->
                 updateDate(date)
@@ -524,7 +520,6 @@ private fun AlarmCreateEditScreen12HourPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Success(),
-            isDateSelectable = { _, _, _ -> true },
             snackbarChannelFlow = snackbarChannelFlow
         )
     }
@@ -553,7 +548,6 @@ private fun AlarmCreateEditScreen24HourPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Success(),
-            isDateSelectable = { _, _, _ -> true },
             snackbarChannelFlow = snackbarChannelFlow
         )
     }
@@ -582,7 +576,6 @@ private fun AlarmCreateEditScreenErrorIllegalCharacterPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Error(AlarmValidator.NameError.ILLEGAL_CHARACTER),
-            isDateSelectable = { _, _, _ -> true },
             snackbarChannelFlow = snackbarChannelFlow
         )
     }
@@ -611,7 +604,6 @@ private fun AlarmCreateEditScreenErrorOnlyWhitespacePreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Error(AlarmValidator.NameError.ONLY_WHITESPACE),
-            isDateSelectable = { _, _, _ -> true },
             snackbarChannelFlow = snackbarChannelFlow
         )
     }
@@ -627,8 +619,7 @@ private fun DateTimeSettingsPreview() {
             updateDate = {},
             updateTime = { _, _ -> },
             addDay = {},
-            removeDay = {},
-            isDateSelectable = { _, _, _ -> true }
+            removeDay = {}
         )
     }
 }
