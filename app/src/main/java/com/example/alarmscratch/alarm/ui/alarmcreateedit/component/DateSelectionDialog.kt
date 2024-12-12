@@ -176,7 +176,7 @@ private fun DateSelectionDialogTomorrowLatePreview() {
 @Preview
 @Composable
 private fun DateSelectorPickerTodayLatePreview() {
-    val alarmDateTime = todayAlarm.dateTime.withHour(23).withMinute(59)
+    val alarmDateTime = todayAlarm.dateTime
 
     AlarmScratchTheme {
         DateSelector(
@@ -227,7 +227,7 @@ private fun DateSelectorPickerTomorrowEarlyPreview() {
 @Preview
 @Composable
 private fun DateSelectorPickerYesterdayLatePreview() {
-    val alarmDateTime = todayAlarm.dateTime.minusDays(1).withHour(23).withMinute(59)
+    val alarmDateTime = todayAlarm.dateTime.minusDays(1)
 
     AlarmScratchTheme {
         DateSelector(
@@ -244,7 +244,7 @@ private fun DateSelectorPickerYesterdayLatePreview() {
 @Preview
 @Composable
 private fun DateSelectorInputModePreview() {
-    val alarmDateTime = todayAlarm.dateTime.withHour(23).withMinute(59)
+    val alarmDateTime = todayAlarm.dateTime
 
     AlarmScratchTheme {
         DateSelector(
