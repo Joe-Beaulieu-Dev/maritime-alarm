@@ -1,5 +1,7 @@
 package com.example.alarmscratch.alarm.ui.alarmcreateedit.component
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
@@ -13,14 +15,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.DialogProperties
 import com.example.alarmscratch.R
-import com.example.alarmscratch.alarm.data.preview.consistentFutureAlarm
+import com.example.alarmscratch.alarm.data.preview.todayAlarm
+import com.example.alarmscratch.alarm.data.preview.tomorrowAlarm
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.LocalDateUtil
 import com.example.alarmscratch.core.extension.toUtcMillis
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
+import com.example.alarmscratch.core.ui.theme.AndroidDisabledAlpha
+import com.example.alarmscratch.core.ui.theme.BoatHull
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
 import com.example.alarmscratch.core.ui.theme.LightVolcanicRock
@@ -31,23 +38,14 @@ import java.time.LocalDateTime
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateSelectionDialog(
-    dateTime: LocalDateTime,
+    alarmDateTime: LocalDateTime,
     onCancel: () -> Unit,
     onConfirm: (LocalDate) -> Unit
 ) {
     // State
-    val currentDateTime = LocalDateTimeUtil.nowTruncated()
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = dateTime.toLocalDate().toUtcMillis(),
-        yearRange = IntRange(currentDateTime.year, 2100),
-        selectableDates = object : SelectableDates {
-            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                val calendarDate = LocalDateUtil.fromUtcMillis(utcTimeMillis)
-                val potentialNewAlarm = LocalDateTime.of(calendarDate, dateTime.toLocalTime())
-
-                return potentialNewAlarm.isAfter(currentDateTime)
-            }
-        }
+    val datePickerState = rememberDatePickerStateWrapper(
+        alarmDateTime = alarmDateTime,
+        currentDateTime = LocalDateTimeUtil.nowTruncated()
     )
 
     DatePickerDialog(
@@ -66,7 +64,9 @@ fun DateSelectionDialog(
                     // Same thing goes for other "millis" dates in DatePicker.
                     datePickerState.selectedDateMillis?.let { onConfirm(LocalDateUtil.fromUtcMillis(it)) }
                 },
-                enabled = datePickerState.selectedDateMillis != null,
+                enabled = datePickerState.selectedDateMillis?.let {
+                    isCalendarDateSelectable(it, alarmDateTime, LocalDateTimeUtil.nowTruncated())
+                } ?: false,
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = BoatSails,
                     disabledContentColor = LightVolcanicRock
@@ -80,29 +80,80 @@ fun DateSelectionDialog(
                 Text(text = stringResource(id = R.string.cancel))
             }
         },
-        colors = DatePickerDefaults.colors(containerColor = DarkVolcanicRock)
+        colors = DatePickerDefaults.colors(containerColor = DarkVolcanicRock),
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false,
+            usePlatformDefaultWidth = true
+        )
     ) {
-        DateSelector(datePickerState = datePickerState)
+        DateSelector(
+            datePickerState = datePickerState,
+            alarmDateTime = alarmDateTime,
+            modifier = Modifier.verticalScroll(rememberScrollState())
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DateSelector(datePickerState: DatePickerState) {
+private fun DateSelector(
+    datePickerState: DatePickerState,
+    alarmDateTime: LocalDateTime,
+    modifier: Modifier = Modifier
+) {
+    val todayUtcMillis = LocalDateTimeUtil.nowTruncated().toLocalDate().toUtcMillis()
+    val isTodaySelectable = isCalendarDateSelectable(todayUtcMillis, alarmDateTime, LocalDateTimeUtil.nowTruncated())
+
     DatePicker(
         state = datePickerState,
         colors = DatePickerDefaults.colors(
             containerColor = DarkVolcanicRock,
             currentYearContentColor = BoatSails,
             disabledDayContentColor = LightVolcanicRock,
-            todayContentColor = BoatSails,
+            todayContentColor = if (isTodaySelectable) BoatSails else LightVolcanicRock,
+            // This alpha value is copied from Android's internal ColorScheme.DisabledAlpha.
+            // This internal constant is applied here to mimic the "disabled shading" of
+            // disabledSelectedDayContainerColor. Without applying this alpha, today's outline would
+            // be bright red when it's not selectable, rather than being the darker disabled color.
+            todayDateBorderColor = if (isTodaySelectable) BoatHull else BoatHull.copy(alpha = AndroidDisabledAlpha),
             dividerColor = VolcanicRock,
             dateTextFieldColors = OutlinedTextFieldDefaults.colors(
                 focusedLabelColor = BoatSails,
                 focusedBorderColor = BoatSails
             )
-        )
+        ),
+        modifier = modifier
     )
+}
+
+// ExperimentalMaterial3Api OptIn for DatePickerState, rememberDatePickerState, and SelectableDates
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun rememberDatePickerStateWrapper(
+    alarmDateTime: LocalDateTime,
+    currentDateTime: LocalDateTime,
+    initialDisplayMode: DisplayMode = DisplayMode.Picker
+): DatePickerState =
+    rememberDatePickerState(
+        initialSelectedDateMillis = alarmDateTime.toLocalDate().toUtcMillis(),
+        yearRange = IntRange(currentDateTime.year, 2100),
+        initialDisplayMode = initialDisplayMode,
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean =
+                isCalendarDateSelectable(utcTimeMillis, alarmDateTime, currentDateTime)
+        }
+    )
+
+private fun isCalendarDateSelectable(
+    calendarDateUtcMillis: Long,
+    alarmDateTime: LocalDateTime,
+    currentDateTime: LocalDateTime
+): Boolean {
+    val calendarDate = LocalDateUtil.fromUtcMillis(calendarDateUtcMillis)
+    val potentialNewAlarm = LocalDateTime.of(calendarDate, alarmDateTime.toLocalTime())
+
+    return potentialNewAlarm.isAfter(currentDateTime)
 }
 
 /*
@@ -111,10 +162,10 @@ private fun DateSelector(datePickerState: DatePickerState) {
 
 @Preview
 @Composable
-private fun DateSelectionDialogPreview() {
+private fun DateSelectionDialogTomorrowLatePreview() {
     AlarmScratchTheme {
         DateSelectionDialog(
-            dateTime = consistentFutureAlarm.dateTime,
+            alarmDateTime = tomorrowAlarm.dateTime.withHour(23).withMinute(59),
             onCancel = {},
             onConfirm = {}
         )
@@ -124,12 +175,67 @@ private fun DateSelectionDialogPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-private fun DateSelectorPickerModePreview() {
+private fun DateSelectorPickerTodayLatePreview() {
+    val alarmDateTime = todayAlarm.dateTime
+
     AlarmScratchTheme {
         DateSelector(
-            datePickerState = rememberDatePickerState(
-                initialSelectedDateMillis = consistentFutureAlarm.dateTime.toLocalDate().toUtcMillis()
-            )
+            datePickerState = rememberDatePickerStateWrapper(
+                alarmDateTime = alarmDateTime,
+                currentDateTime = LocalDateTimeUtil.nowTruncated()
+            ),
+            alarmDateTime = alarmDateTime
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun DateSelectorPickerTodayEarlyPreview() {
+    val alarmDateTime = todayAlarm.dateTime.withHour(0).withMinute(5)
+
+    AlarmScratchTheme {
+        DateSelector(
+            datePickerState = rememberDatePickerStateWrapper(
+                alarmDateTime = alarmDateTime,
+                currentDateTime = LocalDateTimeUtil.nowTruncated()
+            ),
+            alarmDateTime = alarmDateTime
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun DateSelectorPickerTomorrowEarlyPreview() {
+    val alarmDateTime = tomorrowAlarm.dateTime.withHour(0).withMinute(5)
+
+    AlarmScratchTheme {
+        DateSelector(
+            datePickerState = rememberDatePickerStateWrapper(
+                alarmDateTime = alarmDateTime,
+                currentDateTime = LocalDateTimeUtil.nowTruncated()
+            ),
+            alarmDateTime = alarmDateTime
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun DateSelectorPickerYesterdayLatePreview() {
+    val alarmDateTime = todayAlarm.dateTime.minusDays(1)
+
+    AlarmScratchTheme {
+        DateSelector(
+            datePickerState = rememberDatePickerStateWrapper(
+                alarmDateTime = alarmDateTime,
+                currentDateTime = LocalDateTimeUtil.nowTruncated()
+            ),
+            alarmDateTime = alarmDateTime
         )
     }
 }
@@ -138,12 +244,16 @@ private fun DateSelectorPickerModePreview() {
 @Preview
 @Composable
 private fun DateSelectorInputModePreview() {
+    val alarmDateTime = todayAlarm.dateTime
+
     AlarmScratchTheme {
         DateSelector(
-            datePickerState = rememberDatePickerState(
-                initialSelectedDateMillis = consistentFutureAlarm.dateTime.toLocalDate().toUtcMillis(),
+            datePickerState = rememberDatePickerStateWrapper(
+                alarmDateTime = alarmDateTime,
+                currentDateTime = LocalDateTimeUtil.nowTruncated(),
                 initialDisplayMode = DisplayMode.Input
-            )
+            ),
+            alarmDateTime = alarmDateTime
         )
     }
 }

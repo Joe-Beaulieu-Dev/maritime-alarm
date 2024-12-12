@@ -283,7 +283,7 @@ fun DateTimeSettings(
     // Date Selection Dialog
     if (showDateSelectionDialog) {
         DateSelectionDialog(
-            dateTime = alarm.dateTime,
+            alarmDateTime = alarm.dateTime,
             onCancel = toggleDateSelectionDialog,
             onConfirm = { date ->
                 updateDate(date)

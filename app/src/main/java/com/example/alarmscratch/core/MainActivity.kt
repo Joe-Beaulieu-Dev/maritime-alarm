@@ -9,7 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.graphics.toArgb
 import com.example.alarmscratch.core.navigation.AlarmApp
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
-import com.example.alarmscratch.core.ui.theme.AndroidDarkScrim
+import com.example.alarmscratch.core.ui.theme.AndroidDefaultDarkScrim
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
-            navigationBarStyle = SystemBarStyle.dark(AndroidDarkScrim.toArgb())
+            navigationBarStyle = SystemBarStyle.dark(AndroidDefaultDarkScrim.toArgb())
         )
 
         setContent {
