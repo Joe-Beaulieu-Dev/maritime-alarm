@@ -2,7 +2,6 @@ package com.example.alarmscratch.alarm.ui.alarmcreateedit.component
 
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
@@ -92,38 +91,27 @@ private fun DateSelector(
     datePickerState: DatePickerState,
     alarmDateTime: LocalDateTime
 ) {
-    val defaultColors = DatePickerDefaults.colors(
-        containerColor = DarkVolcanicRock,
-        currentYearContentColor = BoatSails,
-        disabledDayContentColor = LightVolcanicRock,
-        todayContentColor = BoatSails,
-        dividerColor = VolcanicRock,
-        dateTextFieldColors = OutlinedTextFieldDefaults.colors(
-            focusedLabelColor = BoatSails,
-            focusedBorderColor = BoatSails
-        )
-    )
-
     val todayUtcMillis = LocalDateTimeUtil.nowTruncated().toLocalDate().toUtcMillis()
     val isTodaySelectable = isCalendarDateSelectable(todayUtcMillis, alarmDateTime, LocalDateTimeUtil.nowTruncated())
 
-    val colorSet: DatePickerColors =
-        if (isTodaySelectable) {
-            defaultColors
-        } else {
-            defaultColors.copy(
-                todayContentColor = LightVolcanicRock,
-                // This alpha value is copied from Android's internal ColorScheme.DisabledAlpha.
-                // This internal constant is applied here to mimic the "disabled shading" of
-                // disabledSelectedDayContainerColor. Without applying this alpha, Today's outline would
-                // remain bright red when it's not selectable, rather than being the darker disabled color.
-                todayDateBorderColor = BoatHull.copy(alpha = AndroidDisabledAlpha)
-            )
-        }
-
     DatePicker(
         state = datePickerState,
-        colors = colorSet
+        colors = DatePickerDefaults.colors(
+            containerColor = DarkVolcanicRock,
+            currentYearContentColor = BoatSails,
+            disabledDayContentColor = LightVolcanicRock,
+            todayContentColor = if (isTodaySelectable) BoatSails else LightVolcanicRock,
+            // This alpha value is copied from Android's internal ColorScheme.DisabledAlpha.
+            // This internal constant is applied here to mimic the "disabled shading" of
+            // disabledSelectedDayContainerColor. Without applying this alpha, today's outline would
+            // be bright red when it's not selectable, rather than being the darker disabled color.
+            todayDateBorderColor = if (isTodaySelectable) BoatHull else BoatHull.copy(alpha = AndroidDisabledAlpha),
+            dividerColor = VolcanicRock,
+            dateTextFieldColors = OutlinedTextFieldDefaults.colors(
+                focusedLabelColor = BoatSails,
+                focusedBorderColor = BoatSails
+            )
+        )
     )
 }
 
@@ -146,12 +134,12 @@ fun rememberDatePickerStateWrapper(
     )
 
 private fun isCalendarDateSelectable(
-    potentialUtcTimeMillis: Long,
+    calendarDateUtcMillis: Long,
     alarmDateTime: LocalDateTime,
     currentDateTime: LocalDateTime
 ): Boolean {
-    val potentialDate = LocalDateUtil.fromUtcMillis(potentialUtcTimeMillis)
-    val potentialNewAlarm = LocalDateTime.of(potentialDate, alarmDateTime.toLocalTime())
+    val calendarDate = LocalDateUtil.fromUtcMillis(calendarDateUtcMillis)
+    val potentialNewAlarm = LocalDateTime.of(calendarDate, alarmDateTime.toLocalTime())
 
     return potentialNewAlarm.isAfter(currentDateTime)
 }
@@ -162,7 +150,7 @@ private fun isCalendarDateSelectable(
 
 @Preview
 @Composable
-private fun DateSelectionDialogPreview() {
+private fun DateSelectionDialogTomorrowLatePreview() {
     AlarmScratchTheme {
         DateSelectionDialog(
             alarmDateTime = tomorrowAlarm.dateTime.withHour(23).withMinute(59),
@@ -177,6 +165,23 @@ private fun DateSelectionDialogPreview() {
 @Composable
 private fun DateSelectorPickerTodayLatePreview() {
     val alarmDateTime = todayAlarm.dateTime.withHour(23).withMinute(59)
+
+    AlarmScratchTheme {
+        DateSelector(
+            datePickerState = rememberDatePickerStateWrapper(
+                alarmDateTime = alarmDateTime,
+                currentDateTime = LocalDateTimeUtil.nowTruncated()
+            ),
+            alarmDateTime = alarmDateTime
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun DateSelectorPickerTodayEarlyPreview() {
+    val alarmDateTime = todayAlarm.dateTime.withHour(0).withMinute(5)
 
     AlarmScratchTheme {
         DateSelector(
