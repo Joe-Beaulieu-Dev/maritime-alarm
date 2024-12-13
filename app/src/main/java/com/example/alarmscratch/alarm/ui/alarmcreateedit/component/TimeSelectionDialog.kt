@@ -70,8 +70,8 @@ fun TimeSelectionDialog(
         is24Hour = is24Hour
     )
     var showFullTimePicker by rememberSaveable { mutableStateOf(true) }
-    // TODO: Ran into a weird layout issue with TimePicker in Landscape.
-    //  Decided to move on and just lock to TimeInput in Landscape for now.
+    // TimeSelectionPicker gets extremely wonky when compressed vertically
+    // Keep track of orientation in order to lock to TimeSelectionInput in landscape
     val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
 
     Dialog(
