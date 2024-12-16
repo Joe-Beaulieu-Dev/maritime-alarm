@@ -79,6 +79,8 @@ import com.example.alarmscratch.core.extension.get24HourTime
 import com.example.alarmscratch.core.extension.getAmPm
 import com.example.alarmscratch.core.ui.shared.CustomTopAppBar
 import com.example.alarmscratch.core.ui.shared.RowSelectionItem
+import com.example.alarmscratch.core.ui.snackbar.GlobalSnackbarController
+import com.example.alarmscratch.core.ui.snackbar.SnackbarEvent
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
@@ -106,7 +108,7 @@ fun AlarmCreateEditScreen(
     alarm: Alarm,
     alarmRingtoneName: String,
     timeDisplay: TimeDisplay,
-    saveAndScheduleAlarm: (Context, () -> Unit) -> Unit,
+    saveAndScheduleAlarm: (Context, suspend () -> Unit) -> Unit,
     updateName: (String) -> Unit,
     updateDate: (LocalDate) -> Unit,
     updateTime: (Int, Int) -> Unit,
@@ -147,7 +149,15 @@ fun AlarmCreateEditScreen(
                     }
                 },
                 actionButton = {
-                    IconButton(onClick = { saveAndScheduleAlarm(context, navHostController::popBackStack) }) {
+                    IconButton(
+                        onClick = {
+                            saveAndScheduleAlarm(context) {
+                                // TODO: use real Alarm data
+                                navHostController.popBackStack()
+                                GlobalSnackbarController.sendEvent(SnackbarEvent("Alarm saved"))
+                            }
+                        }
+                    ) {
                         Icon(imageVector = Icons.Default.Save, contentDescription = null)
                     }
                 },

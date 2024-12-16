@@ -122,7 +122,7 @@ class AlarmCreationViewModel(
      * Save and Schedule
      */
 
-    fun saveAndScheduleAlarm(context: Context, onSuccess: () -> Unit) {
+    fun saveAndScheduleAlarm(context: Context, onSuccess: suspend () -> Unit) {
         if (_newAlarm.value is AlarmState.Success) {
             viewModelScope.launch {
                 if (validateAlarm()) {
