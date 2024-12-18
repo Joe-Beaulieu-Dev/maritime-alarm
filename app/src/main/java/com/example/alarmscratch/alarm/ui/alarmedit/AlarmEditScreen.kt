@@ -75,6 +75,7 @@ fun AlarmEditScreen(
             updateSnoozeDuration = alarmEditViewModel::updateSnoozeDuration,
             isNameValid = isNameValid,
             snackbarChannelFlow = snackbarChannelFlow,
+            sendSnackbarToPreviousScreen = alarmEditViewModel::sendSnackbarToPreviousScreen,
             modifier = modifier
         )
     }
@@ -114,7 +115,8 @@ private fun AlarmEditScreenPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Success(),
-            snackbarChannelFlow = snackbarChannelFlow
+            snackbarChannelFlow = snackbarChannelFlow,
+            sendSnackbarToPreviousScreen = { _, _ -> }
         )
     }
 }

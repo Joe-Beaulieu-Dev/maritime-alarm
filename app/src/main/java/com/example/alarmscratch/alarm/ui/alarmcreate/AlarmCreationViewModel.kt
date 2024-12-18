@@ -1,6 +1,7 @@
 package com.example.alarmscratch.alarm.ui.alarmcreate
 
 import android.content.Context
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -21,6 +22,7 @@ import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.isRepeating
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.core.extension.withFuturizedDateTime
+import com.example.alarmscratch.core.ui.snackbar.SnackbarEvent
 import com.example.alarmscratch.settings.data.model.AlarmDefaults
 import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
@@ -238,6 +240,10 @@ class AlarmCreationViewModel(
     /*
      * Snackbar
      */
+
+    fun sendSnackbarToPreviousScreen(savedStateHandle: SavedStateHandle?, snackbarEvent: SnackbarEvent) {
+        savedStateHandle?.set(SnackbarEvent.KEY_SNACKBAR_EVENT_MESSAGE, snackbarEvent.message)
+    }
 
     private suspend fun pushTriagedErrorToSnackbar() {
         val snackbarError: ValidationResult.Error<ValidationError>? =

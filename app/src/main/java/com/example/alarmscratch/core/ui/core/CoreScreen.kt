@@ -27,9 +27,9 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -60,7 +61,7 @@ import com.example.alarmscratch.core.ui.core.component.SkylineHeader
 import com.example.alarmscratch.core.ui.core.component.SkylineHeaderContent
 import com.example.alarmscratch.core.ui.core.component.VolcanoNavigationBar
 import com.example.alarmscratch.core.ui.core.component.VolcanoWithLava
-import com.example.alarmscratch.core.ui.snackbar.GlobalSnackbarController
+import com.example.alarmscratch.core.ui.snackbar.SnackbarEvent
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.BottomOceanBlue
@@ -70,13 +71,16 @@ import com.example.alarmscratch.core.ui.theme.VolcanicRock
 import com.example.alarmscratch.core.util.StatusBarUtil
 import com.example.alarmscratch.settings.SettingsScreen
 import com.example.alarmscratch.settings.data.model.TimeDisplay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 
 @Composable
 fun CoreScreen(
     rootNavHostController: NavHostController,
     navigateToAlarmCreationScreen: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    coreScreenViewModel: CoreScreenViewModel = viewModel(factory = CoreScreenViewModel.Factory)
 ) {
     // Configure Status Bar
     StatusBarUtil.setLightStatusBar()
@@ -87,6 +91,12 @@ fun CoreScreen(
     val selectedNavComponentDest = NavComponent.entries.find { navComponent ->
         currentBackStackEntry?.destination?.hasRoute(navComponent.destination::class) ?: false
     }?.destination ?: NavComponent.ALARM_LIST.destination
+
+    // Snackbar
+    val snackbarFlow = coreScreenViewModel.snackbarChannelFlow
+    LaunchedEffect(key1 = Unit) {
+        coreScreenViewModel.updateSnackbar(rootNavHostController)
+    }
 
     // Core Screen wrapping an Internal Screen
     CoreScreenContent(
@@ -100,7 +110,8 @@ fun CoreScreen(
                 onDestinationChange = { destination -> localNavHostController.navigateSingleTop(destination) },
                 modifier = Modifier.fillMaxWidth()
             )
-        }
+        },
+        snackbarFlow = snackbarFlow
     ) {
         // Nested Internal Screen
         AlarmNavHost(
@@ -118,6 +129,7 @@ fun CoreScreenContent(
     header: @Composable () -> Unit,
     onFabClicked: () -> Unit,
     navigationBar: @Composable () -> Unit,
+    snackbarFlow: Flow<SnackbarEvent>,
     internalScreen: @Composable () -> Unit
 ) {
     // LavaFloatingActionButton specs
@@ -126,12 +138,9 @@ fun CoreScreenContent(
     val fabAnimationHeight = with(LocalDensity.current) { (fabHeight + volcanoSpacerHeight).toPx().toInt() }
 
     // Snackbar
-    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    ObserveAsEvent(flow = GlobalSnackbarController.eventChannel, key = snackbarHostState) { event ->
-        scope.launch {
-            snackbarHostState.showSnackbar(message = event.message)
-        }
+    ObserveAsEvent(flow = snackbarFlow, key = snackbarHostState) { event ->
+        snackbarHostState.showSnackbar(message = event.message)
     }
 
     Scaffold(
@@ -202,6 +211,8 @@ fun CoreScreenContent(
 private fun CoreScreenAlarmListPreview() {
     val selectedNavComponentDest = Destination.AlarmListScreen
     val alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds)
+    val snackbarChannel = Channel<SnackbarEvent>()
+    val snackbarFlow = snackbarChannel.receiveAsFlow()
 
     AlarmScratchTheme {
         CoreScreenContent(
@@ -229,7 +240,8 @@ private fun CoreScreenAlarmListPreview() {
                     onDestinationChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
-            }
+            },
+            snackbarFlow = snackbarFlow
         ) {
             AlarmListScreenContent(
                 alarmList = alarmListState.alarmList,
@@ -247,6 +259,8 @@ private fun CoreScreenAlarmListPreview() {
 @Composable
 private fun CoreScreenAlarmListNoAlarmsPreview() {
     val selectedNavComponentDest = Destination.AlarmListScreen
+    val snackbarChannel = Channel<SnackbarEvent>()
+    val snackbarFlow = snackbarChannel.receiveAsFlow()
 
     AlarmScratchTheme {
         CoreScreenContent(
@@ -274,7 +288,8 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
                     onDestinationChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
-            }
+            },
+            snackbarFlow = snackbarFlow
         ) {
             AlarmListScreenContent(
                 alarmList = emptyList(),
@@ -292,6 +307,8 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
 @Composable
 private fun CoreScreenSettingsPreview() {
     val selectedNavComponentDest = Destination.SettingsScreen
+    val snackbarChannel = Channel<SnackbarEvent>()
+    val snackbarFlow = snackbarChannel.receiveAsFlow()
 
     AlarmScratchTheme {
         CoreScreenContent(
@@ -319,7 +336,8 @@ private fun CoreScreenSettingsPreview() {
                     onDestinationChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
-            }
+            },
+            snackbarFlow = snackbarFlow
         ) {
             SettingsScreen(
                 navigateToGeneralSettingsScreen = {},
