@@ -99,9 +99,17 @@ private class DaysHoursMinutes(
 
     /**
      * Returns a String which represents the hours, minutes, and seconds of this Object separated by a given delimiter.
-     * The String will be in the following format, where X, Y, and Z are arbitrary integers,
-     * d h and y represent days, hours, and minutes, and {D} is a given delimiter:
+     * The output String will be in the following format, using the following variables:
+     *
+     * Variables
+     * 1) X, Y, and Z are arbitrary integers
+     * 2) d, h, and y represent days, hours, and minutes, respectively
+     * 3) {D} is a given delimiter
+     *
+     * Format
      * - Xd{D}Yh{D}Zm
+     *
+     * Ex: 1d, 2h, 35m
      *
      * @param context Context used to get String Resources
      * @param delimiter delimiter to be placed between the hours, minutes, and seconds of the output String
@@ -109,6 +117,11 @@ private class DaysHoursMinutes(
      * @return a String in the following format: Xd{D}Yh{D}Zm
      */
     fun toString(context: Context, delimiter: String): String {
+        // Special case when there's no time. Return "0m".
+        if (days == 0 && hours == 0 && minutes == 0) {
+            return "0${context.getString(R.string.minute_abbreviation)}"
+        }
+
         // Adding spaces between sections can get a bit messy since you won't always have every
         // section present. Create the String without spaces first, then add the spaces afterwards.
         val stringBuilder = StringBuilder().apply {
