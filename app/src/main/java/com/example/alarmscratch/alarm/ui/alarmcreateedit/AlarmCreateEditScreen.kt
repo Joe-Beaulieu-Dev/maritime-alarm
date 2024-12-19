@@ -78,6 +78,7 @@ import com.example.alarmscratch.alarm.validation.ValidationResult
 import com.example.alarmscratch.core.extension.get12HourTime
 import com.example.alarmscratch.core.extension.get24HourTime
 import com.example.alarmscratch.core.extension.getAmPm
+import com.example.alarmscratch.core.extension.toScheduleString
 import com.example.alarmscratch.core.ui.shared.CustomTopAppBar
 import com.example.alarmscratch.core.ui.shared.RowSelectionItem
 import com.example.alarmscratch.core.ui.snackbar.SnackbarEvent
@@ -155,8 +156,10 @@ fun AlarmCreateEditScreen(
                             saveAndScheduleAlarm(context) {
                                 val coreScreenSavedStateHandle: SavedStateHandle? =
                                     navHostController.previousBackStackEntry?.savedStateHandle
-                                // TODO: use real Alarm data
-                                sendSnackbarToPreviousScreen(coreScreenSavedStateHandle, SnackbarEvent("Alarm scheduled"))
+                                sendSnackbarToPreviousScreen(
+                                    coreScreenSavedStateHandle,
+                                    SnackbarEvent(alarm.toScheduleString(context))
+                                )
                                 navHostController.popBackStack()
                             }
                         }

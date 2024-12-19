@@ -8,10 +8,6 @@
         ****************
     -->
     <!-- NextAlarmCloud -->
-    <string name="day_abbreviation">d</string>
-    <string name="hour_abbreviation">h</string>
-    <string name="minute_abbreviation">m</string>
-    <string name="less_than_symbol">&lt;</string>
     <string name="no_active_alarms">No Active Alarms</string>
     <!-- VolcanoNavigationBar -->
     <string name="nav_alarm">Alarm</string>
@@ -62,6 +58,8 @@
     <string name="alarm_datetime_in_past_err_snackbar">Alarms must be set in the future</string>
     <string name="alarm_name_illegal_character_err_inline">Only letters, numbers, spaces allowed</string>
     <string name="alarm_name_only_whitespace_err_inline">Cannot just be spaces</string>
+    <!-- Snackbar -->
+    <string name="snackbar_alarm_scheduled">Alarm scheduled for %1$s from now</string>
 
     <!--
         **************************
@@ -113,6 +111,16 @@
     <string name="default_alarm_name">Alarm</string>
     <string name="default_alarm_date">Today</string>
     <string name="default_alarm_time">Now</string>
+
+    <!--
+        **********************
+        ** DaysHoursMinutes **
+        **********************
+    -->
+    <string name="day_abbreviation">d</string>
+    <string name="hour_abbreviation">h</string>
+    <string name="minute_abbreviation">m</string>
+    <string name="less_than_symbol">&lt;</string>
 
     <!--
         *****************
