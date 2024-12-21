@@ -48,6 +48,7 @@ import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.alarmSampleDataHardCodedIds
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.alarm.ui.alarmlist.AlarmListScreenContent
+import com.example.alarmscratch.core.extension.getAndRemoveStringFromBackStack
 import com.example.alarmscratch.core.extension.navigateSingleTop
 import com.example.alarmscratch.core.extension.toCountdownString
 import com.example.alarmscratch.core.navigation.AlarmNavHost
@@ -92,12 +93,6 @@ fun CoreScreen(
         currentBackStackEntry?.destination?.hasRoute(navComponent.destination::class) ?: false
     }?.destination ?: NavComponent.ALARM_LIST.destination
 
-    // Snackbar
-    val snackbarFlow = coreScreenViewModel.snackbarChannelFlow
-    LaunchedEffect(key1 = Unit) {
-        coreScreenViewModel.updateSnackbar(rootNavHostController)
-    }
-
     // Core Screen wrapping an Internal Screen
     CoreScreenContent(
         modifier = modifier,
@@ -111,7 +106,12 @@ fun CoreScreen(
                 modifier = Modifier.fillMaxWidth()
             )
         },
-        snackbarFlow = snackbarFlow
+        snackbarFlow = coreScreenViewModel.snackbarChannelFlow,
+        updateSnackbarChannel = {
+            coreScreenViewModel.updateSnackbarChannel(
+                rootNavHostController.getAndRemoveStringFromBackStack(SnackbarEvent.KEY_SNACKBAR_EVENT_MESSAGE)
+            )
+        }
     ) {
         // Nested Internal Screen
         AlarmNavHost(
@@ -130,6 +130,7 @@ fun CoreScreenContent(
     onFabClicked: () -> Unit,
     navigationBar: @Composable () -> Unit,
     snackbarFlow: Flow<SnackbarEvent>,
+    updateSnackbarChannel: () -> Unit,
     internalScreen: @Composable () -> Unit
 ) {
     // LavaFloatingActionButton specs
@@ -138,8 +139,13 @@ fun CoreScreenContent(
     val fabAnimationHeight = with(LocalDensity.current) { (fabHeight + volcanoSpacerHeight).toPx().toInt() }
 
     // Snackbar
+    // Update the ViewModel with the Snackbar message from the previous screen (Alarm Create/Edit)
+    LaunchedEffect(key1 = Unit) {
+        updateSnackbarChannel()
+    }
+    // Observe the Snackbar Flow and display a Snackbar every time a SnackbarEvent is emitted
     val snackbarHostState = remember { SnackbarHostState() }
-    ObserveAsEvent(flow = snackbarFlow, key = snackbarHostState) { event ->
+    ObserveAsEvent(flow = snackbarFlow) { event ->
         snackbarHostState.showSnackbar(message = event.message)
     }
 
@@ -241,7 +247,8 @@ private fun CoreScreenAlarmListPreview() {
                     modifier = Modifier.fillMaxWidth()
                 )
             },
-            snackbarFlow = snackbarFlow
+            snackbarFlow = snackbarFlow,
+            updateSnackbarChannel = {}
         ) {
             AlarmListScreenContent(
                 alarmList = alarmListState.alarmList,
@@ -289,7 +296,8 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
                     modifier = Modifier.fillMaxWidth()
                 )
             },
-            snackbarFlow = snackbarFlow
+            snackbarFlow = snackbarFlow,
+            updateSnackbarChannel = {}
         ) {
             AlarmListScreenContent(
                 alarmList = emptyList(),
@@ -337,7 +345,8 @@ private fun CoreScreenSettingsPreview() {
                     modifier = Modifier.fillMaxWidth()
                 )
             },
-            snackbarFlow = snackbarFlow
+            snackbarFlow = snackbarFlow,
+            updateSnackbarChannel = {}
         ) {
             SettingsScreen(
                 navigateToGeneralSettingsScreen = {},

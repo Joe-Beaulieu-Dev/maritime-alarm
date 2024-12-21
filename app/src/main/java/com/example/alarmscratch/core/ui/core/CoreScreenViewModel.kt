@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import androidx.navigation.NavHostController
-import com.example.alarmscratch.core.extension.getStringFromBackStack
 import com.example.alarmscratch.core.ui.snackbar.SnackbarEvent
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
@@ -27,12 +25,11 @@ class CoreScreenViewModel : ViewModel() {
         }
     }
 
-    fun updateSnackbar(navHostController: NavHostController) {
-        val snackbarMessage = navHostController.getStringFromBackStack(SnackbarEvent.KEY_SNACKBAR_EVENT_MESSAGE)
-        if (snackbarMessage != null) {
+    fun updateSnackbarChannel(message: String?) {
+        if (message != null) {
             viewModelScope.launch {
                 try {
-                    snackbarChannel.send(SnackbarEvent(snackbarMessage))
+                    snackbarChannel.send(SnackbarEvent(message))
                 } catch (e: Exception) {
                     // SendChannel.send() can theoretically throw any type of Exception
                     // if called on a Channel that is already closed.
