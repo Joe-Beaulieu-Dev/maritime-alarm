@@ -106,9 +106,9 @@ fun CoreScreen(
                 modifier = Modifier.fillMaxWidth()
             )
         },
-        snackbarFlow = coreScreenViewModel.snackbarChannelFlow,
-        updateSnackbarChannel = {
-            coreScreenViewModel.updateSnackbarChannel(
+        snackbarFlow = coreScreenViewModel.snackbarFlow,
+        updateSnackbar = {
+            coreScreenViewModel.updateSnackbar(
                 rootNavHostController.getAndRemoveStringFromBackStack(SnackbarEvent.KEY_SNACKBAR_EVENT_MESSAGE)
             )
         }
@@ -130,7 +130,7 @@ fun CoreScreenContent(
     onFabClicked: () -> Unit,
     navigationBar: @Composable () -> Unit,
     snackbarFlow: Flow<SnackbarEvent>,
-    updateSnackbarChannel: () -> Unit,
+    updateSnackbar: () -> Unit,
     internalScreen: @Composable () -> Unit
 ) {
     // LavaFloatingActionButton specs
@@ -141,7 +141,7 @@ fun CoreScreenContent(
     // Snackbar
     // Update the ViewModel with the Snackbar message from the previous screen (Alarm Create/Edit)
     LaunchedEffect(key1 = Unit) {
-        updateSnackbarChannel()
+        updateSnackbar()
     }
     // Observe the Snackbar Flow and display a Snackbar every time a SnackbarEvent is emitted
     val snackbarHostState = remember { SnackbarHostState() }
@@ -248,7 +248,7 @@ private fun CoreScreenAlarmListPreview() {
                 )
             },
             snackbarFlow = snackbarFlow,
-            updateSnackbarChannel = {}
+            updateSnackbar = {}
         ) {
             AlarmListScreenContent(
                 alarmList = alarmListState.alarmList,
@@ -297,7 +297,7 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
                 )
             },
             snackbarFlow = snackbarFlow,
-            updateSnackbarChannel = {}
+            updateSnackbar = {}
         ) {
             AlarmListScreenContent(
                 alarmList = emptyList(),
@@ -346,7 +346,7 @@ private fun CoreScreenSettingsPreview() {
                 )
             },
             snackbarFlow = snackbarFlow,
-            updateSnackbarChannel = {}
+            updateSnackbar = {}
         ) {
             SettingsScreen(
                 navigateToGeneralSettingsScreen = {},

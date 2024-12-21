@@ -14,7 +14,7 @@ class CoreScreenViewModel : ViewModel() {
 
     // Snackbar
     private val snackbarChannel = Channel<SnackbarEvent>()
-    val snackbarChannelFlow = snackbarChannel.receiveAsFlow()
+    val snackbarFlow = snackbarChannel.receiveAsFlow()
 
     companion object {
 
@@ -25,7 +25,7 @@ class CoreScreenViewModel : ViewModel() {
         }
     }
 
-    fun updateSnackbarChannel(message: String?) {
+    fun updateSnackbar(message: String?) {
         if (message != null) {
             viewModelScope.launch {
                 try {
