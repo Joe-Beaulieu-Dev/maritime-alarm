@@ -10,12 +10,10 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,9 +22,14 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.AlarmOff
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -36,6 +39,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -44,30 +48,40 @@ import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.alarmSampleDataHardCodedIds
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.alarm.ui.alarmlist.AlarmListScreenContent
+import com.example.alarmscratch.core.extension.getAndRemoveStringFromBackStack
 import com.example.alarmscratch.core.extension.navigateSingleTop
 import com.example.alarmscratch.core.extension.toCountdownString
 import com.example.alarmscratch.core.navigation.AlarmNavHost
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.navigation.NavComponent
+import com.example.alarmscratch.core.runtime.ObserveAsEvent
 import com.example.alarmscratch.core.ui.core.component.AlarmCountdownState
 import com.example.alarmscratch.core.ui.core.component.LavaFloatingActionButton
 import com.example.alarmscratch.core.ui.core.component.NextAlarmCloudContent
 import com.example.alarmscratch.core.ui.core.component.SkylineHeader
 import com.example.alarmscratch.core.ui.core.component.SkylineHeaderContent
 import com.example.alarmscratch.core.ui.core.component.VolcanoNavigationBar
+import com.example.alarmscratch.core.ui.core.component.VolcanoWithLava
+import com.example.alarmscratch.core.ui.snackbar.SnackbarEvent
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
+import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.BottomOceanBlue
 import com.example.alarmscratch.core.ui.theme.SkyBlue
 import com.example.alarmscratch.core.ui.theme.TopOceanBlue
+import com.example.alarmscratch.core.ui.theme.VolcanicRock
 import com.example.alarmscratch.core.util.StatusBarUtil
 import com.example.alarmscratch.settings.SettingsScreen
 import com.example.alarmscratch.settings.data.model.TimeDisplay
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 
 @Composable
 fun CoreScreen(
     rootNavHostController: NavHostController,
     navigateToAlarmCreationScreen: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    coreScreenViewModel: CoreScreenViewModel = viewModel(factory = CoreScreenViewModel.Factory)
 ) {
     // Configure Status Bar
     StatusBarUtil.setLightStatusBar()
@@ -91,6 +105,12 @@ fun CoreScreen(
                 onDestinationChange = { destination -> localNavHostController.navigateSingleTop(destination) },
                 modifier = Modifier.fillMaxWidth()
             )
+        },
+        snackbarFlow = coreScreenViewModel.snackbarFlow,
+        updateSnackbar = {
+            coreScreenViewModel.updateSnackbar(
+                rootNavHostController.getAndRemoveStringFromBackStack(SnackbarEvent.KEY_SNACKBAR_EVENT_MESSAGE)
+            )
         }
     ) {
         // Nested Internal Screen
@@ -109,6 +129,8 @@ fun CoreScreenContent(
     header: @Composable () -> Unit,
     onFabClicked: () -> Unit,
     navigationBar: @Composable () -> Unit,
+    snackbarFlow: Flow<SnackbarEvent>,
+    updateSnackbar: () -> Unit,
     internalScreen: @Composable () -> Unit
 ) {
     // LavaFloatingActionButton specs
@@ -116,25 +138,42 @@ fun CoreScreenContent(
     val volcanoSpacerHeight = 6.dp
     val fabAnimationHeight = with(LocalDensity.current) { (fabHeight + volcanoSpacerHeight).toPx().toInt() }
 
-    Surface(
-        color = Color.Transparent,
-        modifier = modifier
-            .background(color = SkyBlue)
-            .windowInsetsPadding(WindowInsets.systemBars)
-    ) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            TopOceanBlue,
-                            BottomOceanBlue
-                        )
-                    )
+    // Snackbar
+    // Update the ViewModel with the Snackbar message from the previous screen (Alarm Create/Edit)
+    LaunchedEffect(key1 = Unit) {
+        updateSnackbar()
+    }
+    // Observe the Snackbar Flow and display a Snackbar every time a SnackbarEvent is emitted
+    val snackbarHostState = remember { SnackbarHostState() }
+    ObserveAsEvent(flow = snackbarFlow) { event ->
+        snackbarHostState.showSnackbar(message = event.message)
+    }
+
+    Scaffold(
+        bottomBar = navigationBar,
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { snackbarData ->
+                Snackbar(
+                    snackbarData = snackbarData,
+                    containerColor = VolcanicRock,
+                    contentColor = BoatSails
                 )
+            }
+        },
+        containerColor = Color.Transparent,
+        modifier = modifier
+            .background(
+                brush = Brush.verticalGradient(
+                    0.07f to SkyBlue,
+                    0.08f to TopOceanBlue,
+                    1.0f to BottomOceanBlue
+                )
+            )
+            .windowInsetsPadding(WindowInsets.systemBars)
+    ) { innerPadding ->
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(innerPadding)
         ) {
             // Header
             header()
@@ -163,8 +202,8 @@ fun CoreScreenContent(
             }
             Spacer(modifier = Modifier.height(volcanoSpacerHeight))
 
-            // Navigation Bar
-            navigationBar()
+            // Volcano
+            VolcanoWithLava()
         }
     }
 }
@@ -178,6 +217,8 @@ fun CoreScreenContent(
 private fun CoreScreenAlarmListPreview() {
     val selectedNavComponentDest = Destination.AlarmListScreen
     val alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds)
+    val snackbarChannel = Channel<SnackbarEvent>()
+    val snackbarFlow = snackbarChannel.receiveAsFlow()
 
     AlarmScratchTheme {
         CoreScreenContent(
@@ -205,7 +246,9 @@ private fun CoreScreenAlarmListPreview() {
                     onDestinationChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
-            }
+            },
+            snackbarFlow = snackbarFlow,
+            updateSnackbar = {}
         ) {
             AlarmListScreenContent(
                 alarmList = alarmListState.alarmList,
@@ -223,6 +266,8 @@ private fun CoreScreenAlarmListPreview() {
 @Composable
 private fun CoreScreenAlarmListNoAlarmsPreview() {
     val selectedNavComponentDest = Destination.AlarmListScreen
+    val snackbarChannel = Channel<SnackbarEvent>()
+    val snackbarFlow = snackbarChannel.receiveAsFlow()
 
     AlarmScratchTheme {
         CoreScreenContent(
@@ -250,7 +295,9 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
                     onDestinationChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
-            }
+            },
+            snackbarFlow = snackbarFlow,
+            updateSnackbar = {}
         ) {
             AlarmListScreenContent(
                 alarmList = emptyList(),
@@ -268,6 +315,8 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
 @Composable
 private fun CoreScreenSettingsPreview() {
     val selectedNavComponentDest = Destination.SettingsScreen
+    val snackbarChannel = Channel<SnackbarEvent>()
+    val snackbarFlow = snackbarChannel.receiveAsFlow()
 
     AlarmScratchTheme {
         CoreScreenContent(
@@ -295,7 +344,9 @@ private fun CoreScreenSettingsPreview() {
                     onDestinationChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
-            }
+            },
+            snackbarFlow = snackbarFlow,
+            updateSnackbar = {}
         ) {
             SettingsScreen(
                 navigateToGeneralSettingsScreen = {},

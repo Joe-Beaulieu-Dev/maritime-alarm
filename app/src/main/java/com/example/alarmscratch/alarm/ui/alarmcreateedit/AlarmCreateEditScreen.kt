@@ -57,6 +57,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
@@ -77,8 +78,10 @@ import com.example.alarmscratch.alarm.validation.ValidationResult
 import com.example.alarmscratch.core.extension.get12HourTime
 import com.example.alarmscratch.core.extension.get24HourTime
 import com.example.alarmscratch.core.extension.getAmPm
+import com.example.alarmscratch.core.extension.toScheduleString
 import com.example.alarmscratch.core.ui.shared.CustomTopAppBar
 import com.example.alarmscratch.core.ui.shared.RowSelectionItem
+import com.example.alarmscratch.core.ui.snackbar.SnackbarEvent
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
@@ -115,7 +118,8 @@ fun AlarmCreateEditScreen(
     toggleVibration: () -> Unit,
     updateSnoozeDuration: (Int) -> Unit,
     isNameValid: ValidationResult<AlarmValidator.NameError>,
-    snackbarChannelFlow: Flow<ValidationResult.Error<ValidationError>>,
+    snackbarFlow: Flow<ValidationResult.Error<ValidationError>>,
+    sendSnackbarToPreviousScreen: (SavedStateHandle?, SnackbarEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Configure Status Bar
@@ -127,10 +131,10 @@ fun AlarmCreateEditScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     // Show Snackbar
-    LaunchedEffect(key1 = context, key2 = lifecycleOwner.lifecycle, key3 = snackbarChannelFlow) {
+    LaunchedEffect(key1 = context, key2 = lifecycleOwner.lifecycle, key3 = snackbarFlow) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             withContext(Dispatchers.Main.immediate) {
-                snackbarChannelFlow.collect {
+                snackbarFlow.collect {
                     snackbarHostState.showSnackbar(message = it.error.toSnackbarString(context))
                 }
             }
@@ -147,7 +151,19 @@ fun AlarmCreateEditScreen(
                     }
                 },
                 actionButton = {
-                    IconButton(onClick = { saveAndScheduleAlarm(context, navHostController::popBackStack) }) {
+                    IconButton(
+                        onClick = {
+                            saveAndScheduleAlarm(context) {
+                                val coreScreenSavedStateHandle: SavedStateHandle? =
+                                    navHostController.previousBackStackEntry?.savedStateHandle
+                                sendSnackbarToPreviousScreen(
+                                    coreScreenSavedStateHandle,
+                                    SnackbarEvent(alarm.toScheduleString(context))
+                                )
+                                navHostController.popBackStack()
+                            }
+                        }
+                    ) {
                         Icon(imageVector = Icons.Default.Save, contentDescription = null)
                     }
                 },
@@ -501,7 +517,7 @@ fun SnoozeSettings(
 @Composable
 private fun AlarmCreateEditScreen12HourPreview() {
     val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
-    val snackbarChannelFlow = snackbarChannel.receiveAsFlow()
+    val snackbarFlow = snackbarChannel.receiveAsFlow()
 
     AlarmScratchTheme {
         AlarmCreateEditScreen(
@@ -520,7 +536,8 @@ private fun AlarmCreateEditScreen12HourPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Success(),
-            snackbarChannelFlow = snackbarChannelFlow
+            snackbarFlow = snackbarFlow,
+            sendSnackbarToPreviousScreen = { _, _ -> }
         )
     }
 }
@@ -529,7 +546,7 @@ private fun AlarmCreateEditScreen12HourPreview() {
 @Composable
 private fun AlarmCreateEditScreen24HourPreview() {
     val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
-    val snackbarChannelFlow = snackbarChannel.receiveAsFlow()
+    val snackbarFlow = snackbarChannel.receiveAsFlow()
 
     AlarmScratchTheme {
         AlarmCreateEditScreen(
@@ -548,7 +565,8 @@ private fun AlarmCreateEditScreen24HourPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Success(),
-            snackbarChannelFlow = snackbarChannelFlow
+            snackbarFlow = snackbarFlow,
+            sendSnackbarToPreviousScreen = { _, _ -> }
         )
     }
 }
@@ -557,7 +575,7 @@ private fun AlarmCreateEditScreen24HourPreview() {
 @Composable
 private fun AlarmCreateEditScreenErrorIllegalCharacterPreview() {
     val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
-    val snackbarChannelFlow = snackbarChannel.receiveAsFlow()
+    val snackbarFlow = snackbarChannel.receiveAsFlow()
 
     AlarmScratchTheme {
         AlarmCreateEditScreen(
@@ -576,7 +594,8 @@ private fun AlarmCreateEditScreenErrorIllegalCharacterPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Error(AlarmValidator.NameError.ILLEGAL_CHARACTER),
-            snackbarChannelFlow = snackbarChannelFlow
+            snackbarFlow = snackbarFlow,
+            sendSnackbarToPreviousScreen = { _, _ -> }
         )
     }
 }
@@ -585,7 +604,7 @@ private fun AlarmCreateEditScreenErrorIllegalCharacterPreview() {
 @Composable
 private fun AlarmCreateEditScreenErrorOnlyWhitespacePreview() {
     val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
-    val snackbarChannelFlow = snackbarChannel.receiveAsFlow()
+    val snackbarFlow = snackbarChannel.receiveAsFlow()
 
     AlarmScratchTheme {
         AlarmCreateEditScreen(
@@ -604,7 +623,8 @@ private fun AlarmCreateEditScreenErrorOnlyWhitespacePreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Error(AlarmValidator.NameError.ONLY_WHITESPACE),
-            snackbarChannelFlow = snackbarChannelFlow
+            snackbarFlow = snackbarFlow,
+            sendSnackbarToPreviousScreen = { _, _ -> }
         )
     }
 }

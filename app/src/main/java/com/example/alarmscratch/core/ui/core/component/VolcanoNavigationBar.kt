@@ -7,7 +7,6 @@ import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -56,22 +55,18 @@ fun VolcanoNavigationBar(
         indicatorColor = NavIndicator
     )
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+    NavigationBar(
+        containerColor = DarkVolcanicRock,
         modifier = modifier
     ) {
-        VolcanoWithLava()
-
-        NavigationBar(containerColor = DarkVolcanicRock) {
-            NavComponent.entries.forEach { navComponent ->
-                NavigationBarItem(
-                    selected = selectedNavComponentDest == navComponent.destination,
-                    onClick = { onDestinationChange(navComponent.destination) },
-                    icon = { Icon(imageVector = navComponent.navIcon, contentDescription = null) },
-                    label = { Text(text = stringResource(id = navComponent.navNameRes)) },
-                    colors = navColors
-                )
-            }
+        NavComponent.entries.forEach { navComponent ->
+            NavigationBarItem(
+                selected = selectedNavComponentDest == navComponent.destination,
+                onClick = { onDestinationChange(navComponent.destination) },
+                icon = { Icon(imageVector = navComponent.navIcon, contentDescription = null) },
+                label = { Text(text = stringResource(id = navComponent.navNameRes)) },
+                colors = navColors
+            )
         }
     }
 }
