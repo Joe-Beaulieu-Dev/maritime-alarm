@@ -66,7 +66,7 @@ class AlarmEditViewModel(
 
     // Snackbar
     private val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
-    val snackbarChannelFlow = snackbarChannel.receiveAsFlow()
+    val snackbarFlow = snackbarChannel.receiveAsFlow()
 
     // Validation
     private val _isNameValid: MutableStateFlow<ValidationResult<AlarmValidator.NameError>> =
@@ -106,7 +106,7 @@ class AlarmEditViewModel(
      * Save and Schedule
      */
 
-    fun saveAndScheduleAlarm(context: Context, onSuccess: suspend () -> Unit) {
+    fun saveAndScheduleAlarm(context: Context, onSuccess: () -> Unit) {
         if (_modifiedAlarm.value is AlarmState.Success) {
             viewModelScope.launch {
                 if (validateAlarm()) {

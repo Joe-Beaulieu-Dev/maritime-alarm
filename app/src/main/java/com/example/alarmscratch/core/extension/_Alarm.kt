@@ -94,11 +94,11 @@ fun Alarm.toCountdownString(context: Context): String =
     AlarmStringFormatter.Countdown.format(context, this)
 
 /**
- * Returns a String in the following format: Alarm in Xd, Yh, Zm from now
+ * Returns a String in the following format: Alarm scheduled for Xd, Yh, Zm from now
  *
  * @param context Context used to get String Resources
  *
- * @return a String in the following format: Alarm in Xd, Yh, Zm from now
+ * @return a String in the following format: Alarm scheduled for Xd, Yh, Zm from now
  */
 fun Alarm.toScheduleString(context: Context): String =
     AlarmStringFormatter.ScheduleConfirmation.format(context, this)

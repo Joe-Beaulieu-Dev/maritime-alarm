@@ -41,7 +41,7 @@ fun AlarmCreationScreen(
     val isNameValid by alarmCreationViewModel.isNameValid.collectAsState()
 
     // Flow
-    val snackbarChannelFlow = alarmCreationViewModel.snackbarChannelFlow
+    val snackbarFlow = alarmCreationViewModel.snackbarFlow
 
     if (alarmState is AlarmState.Success && generalSettingsState is GeneralSettingsState.Success) {
         // Fetch updated Ringtone URI from this back stack entry's SavedStateHandle.
@@ -51,11 +51,11 @@ fun AlarmCreationScreen(
             navHostController.getStringFromBackStack(RingtoneData.KEY_FULL_RINGTONE_URI_STRING)
         )
 
-        val localContext = LocalContext.current
+        val context = LocalContext.current
         val alarm = (alarmState as AlarmState.Success).alarm
         // This was extracted for previews, since previews can't actually "get a Ringtone"
         // from anywhere, therefore they can't get a name to display in the preview.
-        val alarmRingtoneName = alarm.getRingtone(localContext).getTitle(localContext)
+        val alarmRingtoneName = alarm.getRingtone(context).getTitle(context)
         val generalSettings = (generalSettingsState as GeneralSettingsState.Success).generalSettings
 
         AlarmCreateEditScreen(
@@ -65,7 +65,7 @@ fun AlarmCreationScreen(
             alarm = alarm,
             alarmRingtoneName = alarmRingtoneName,
             timeDisplay = generalSettings.timeDisplay,
-            saveAndScheduleAlarm = { context, onSuccess -> alarmCreationViewModel.saveAndScheduleAlarm(context, onSuccess) },
+            saveAndScheduleAlarm = alarmCreationViewModel::saveAndScheduleAlarm,
             updateName = alarmCreationViewModel::updateName,
             updateDate = alarmCreationViewModel::updateDateAndResetWeeklyRepeater,
             updateTime = alarmCreationViewModel::updateTime,
@@ -74,7 +74,7 @@ fun AlarmCreationScreen(
             toggleVibration = alarmCreationViewModel::toggleVibration,
             updateSnoozeDuration = alarmCreationViewModel::updateSnoozeDuration,
             isNameValid = isNameValid,
-            snackbarChannelFlow = snackbarChannelFlow,
+            snackbarFlow = snackbarFlow,
             sendSnackbarToPreviousScreen = alarmCreationViewModel::sendSnackbarToPreviousScreen,
             modifier = modifier
         )
@@ -89,7 +89,7 @@ fun AlarmCreationScreen(
 @Composable
 private fun AlarmCreationScreenPreview() {
     val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
-    val snackbarChannelFlow = snackbarChannel.receiveAsFlow()
+    val snackbarFlow = snackbarChannel.receiveAsFlow()
 
     AlarmScratchTheme {
         AlarmCreateEditScreen(
@@ -114,7 +114,7 @@ private fun AlarmCreationScreenPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Success(),
-            snackbarChannelFlow = snackbarChannelFlow,
+            snackbarFlow = snackbarFlow,
             sendSnackbarToPreviousScreen = { _, _ -> }
         )
     }

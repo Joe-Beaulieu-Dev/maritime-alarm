@@ -16,7 +16,7 @@ fun NavHostController.getStringFromBackStack(key: String): String? =
 
 fun NavHostController.getAndRemoveStringFromBackStack(key: String): String? =
     try {
-        // Remove returns the previous value
+        // remove() returns the previous value
         currentBackStackEntry?.savedStateHandle?.remove(key)
     } catch (e: Exception) {
         null

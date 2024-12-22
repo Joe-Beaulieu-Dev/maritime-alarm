@@ -25,11 +25,11 @@ sealed interface AlarmStringFormatter {
     data object ScheduleConfirmation : AlarmStringFormatter {
 
         /**
-         * Returns a String in the following format: Alarm in Xd, Yh, Zm from now
+         * Returns a String in the following format: Alarm scheduled for Xd, Yh, Zm from now
          *
          * @param context Context used to get String Resources
          *
-         * @return a String in the following format: Alarm in Xd, Yh, Zm from now
+         * @return a String in the following format: Alarm scheduled for Xd, Yh, Zm from now
          */
         override fun format(context: Context, alarm: Alarm): String =
             context.getString(
@@ -125,14 +125,14 @@ private class DaysHoursMinutes(
         // Adding spaces between sections can get a bit messy since you won't always have every
         // section present. Create the String without spaces first, then add the spaces afterwards.
         val stringBuilder = StringBuilder().apply {
-            if (days >= 1) append("${days}${context.getString(R.string.day_abbreviation)}")
-            if (hours >= 1) append("${hours}${context.getString(R.string.hour_abbreviation)}")
+            if (days >= 1) append("$days${context.getString(R.string.day_abbreviation)}")
+            if (hours >= 1) append("$hours${context.getString(R.string.hour_abbreviation)}")
             if (minutes >= 1) {
                 // Add "<" if there's only one minute left
                 if (minutes == 1 && hours == 0 && days == 0) {
                     append("${context.getString(R.string.less_than_symbol)} ")
                 }
-                append("${minutes}${context.getString(R.string.minute_abbreviation)}")
+                append("$minutes${context.getString(R.string.minute_abbreviation)}")
             }
         }
 
