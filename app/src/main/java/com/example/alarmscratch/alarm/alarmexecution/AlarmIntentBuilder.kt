@@ -63,7 +63,6 @@ object AlarmIntentBuilder {
             action = AlarmActionReceiver.ACTION_DISMISS_ALARM
             // Extras
             putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmExecutionData.id)
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME, alarmExecutionData.executionDateTime.toString())
             putExtra(AlarmActionReceiver.EXTRA_REPEATING_DAYS, alarmExecutionData.encodedRepeatingDays)
         }
 }

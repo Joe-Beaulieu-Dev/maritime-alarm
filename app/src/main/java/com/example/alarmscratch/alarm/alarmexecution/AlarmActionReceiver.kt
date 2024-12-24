@@ -12,6 +12,7 @@ import com.example.alarmscratch.alarm.util.AlarmUtil
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.alarmApplication
 import com.example.alarmscratch.core.extension.doAsync
+import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
 import kotlinx.coroutines.Dispatchers
 
@@ -112,10 +113,13 @@ class AlarmActionReceiver : BroadcastReceiver() {
                     // passed in the Intent just represents when the Alarm was supposed to execute,
                     // which may be a snoozed time that was modified from the original.
                     // Here we need the original, unmodified LocalDateTime for rescheduling.
-                    val originalDateTime = alarmRepo.getAlarm(id).dateTime
-                    alarmRepo.dismissAndRescheduleRepeating(
-                        id,
-                        AlarmUtil.nextRepeatingDateTime(originalDateTime, WeeklyRepeater(encodedRepeatingDays))
+                    val alarm = alarmRepo.getAlarm(id)
+                    val nextDateTime = AlarmUtil.nextRepeatingDateTime(alarm.dateTime, WeeklyRepeater(encodedRepeatingDays))
+                    alarmRepo.dismissAndRescheduleRepeating(id, nextDateTime)
+                    // Reschedule Alarm
+                    AlarmScheduler.scheduleAlarm(
+                        context.applicationContext,
+                        alarm.toAlarmExecutionData().copy(executionDateTime = nextDateTime)
                     )
                 } else {
                     alarmRepo.dismissAlarm(id)
