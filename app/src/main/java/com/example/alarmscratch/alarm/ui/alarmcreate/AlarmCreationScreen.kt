@@ -75,7 +75,6 @@ fun AlarmCreationScreen(
             updateSnoozeDuration = alarmCreationViewModel::updateSnoozeDuration,
             isNameValid = isNameValid,
             snackbarFlow = snackbarFlow,
-            sendSnackbarToPreviousScreen = alarmCreationViewModel::sendSnackbarToPreviousScreen,
             modifier = modifier
         )
     }
@@ -114,8 +113,7 @@ private fun AlarmCreationScreenPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Success(),
-            snackbarFlow = snackbarFlow,
-            sendSnackbarToPreviousScreen = { _, _ -> }
+            snackbarFlow = snackbarFlow
         )
     }
 }
