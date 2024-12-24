@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.navigation.NavHostController
 import androidx.navigation.toRoute
 import com.example.alarmscratch.alarm.alarmexecution.AlarmScheduler
 import com.example.alarmscratch.alarm.data.model.Alarm
@@ -21,6 +22,7 @@ import com.example.alarmscratch.alarm.validation.ValidationResult
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.isRepeating
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
+import com.example.alarmscratch.core.extension.toScheduleString
 import com.example.alarmscratch.core.extension.withFuturizedDateTime
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.ui.snackbar.SnackbarEvent
@@ -106,7 +108,7 @@ class AlarmEditViewModel(
      * Save and Schedule
      */
 
-    fun saveAndScheduleAlarm(context: Context, onSuccess: () -> Unit) {
+    fun saveAndScheduleAlarm(context: Context, navHostController: NavHostController) {
         if (_modifiedAlarm.value is AlarmState.Success) {
             viewModelScope.launch {
                 if (validateAlarm()) {
@@ -115,8 +117,9 @@ class AlarmEditViewModel(
                     val newAlarm = getAlarm(alarmId)
                     scheduleAlarm(context.applicationContext, newAlarm)
 
-                    // Perform supplied success action
-                    onSuccess()
+                    // Send Snackbar to previous screen and navigate back
+                    sendSnackbarToPreviousScreen(navHostController, SnackbarEvent(newAlarm.toScheduleString(context)))
+                    navHostController.popBackStack()
                 } else {
                     pushTriagedErrorToSnackbar()
                 }
@@ -223,8 +226,9 @@ class AlarmEditViewModel(
      * Snackbar
      */
 
-    fun sendSnackbarToPreviousScreen(savedStateHandle: SavedStateHandle?, snackbarEvent: SnackbarEvent) {
-        savedStateHandle?.set(SnackbarEvent.KEY_SNACKBAR_EVENT_MESSAGE, snackbarEvent.message)
+    private fun sendSnackbarToPreviousScreen(navHostController: NavHostController, snackbarEvent: SnackbarEvent) {
+        navHostController.previousBackStackEntry?.savedStateHandle
+            ?.set(SnackbarEvent.KEY_SNACKBAR_EVENT_MESSAGE, snackbarEvent.message)
     }
 
     private suspend fun pushTriagedErrorToSnackbar() {
