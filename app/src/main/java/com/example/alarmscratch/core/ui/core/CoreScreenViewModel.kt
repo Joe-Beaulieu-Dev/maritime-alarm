@@ -13,8 +13,8 @@ import kotlinx.coroutines.launch
 class CoreScreenViewModel : ViewModel() {
 
     // Snackbar
-    private val snackbarChannel = Channel<SnackbarEvent>()
-    val snackbarFlow = snackbarChannel.receiveAsFlow()
+    private val localSnackbarChannel = Channel<SnackbarEvent>()
+    val localSnackbarFlow = localSnackbarChannel.receiveAsFlow()
 
     companion object {
 
@@ -25,11 +25,11 @@ class CoreScreenViewModel : ViewModel() {
         }
     }
 
-    fun updateSnackbar(message: String?) {
+    fun retrieveSnackbarFromPrevious(message: String?) {
         if (message != null) {
             viewModelScope.launch {
                 try {
-                    snackbarChannel.send(SnackbarEvent(message))
+                    localSnackbarChannel.send(SnackbarEvent(message))
                 } catch (e: Exception) {
                     // SendChannel.send() can theoretically throw any type of Exception
                     // if called on a Channel that is already closed.
