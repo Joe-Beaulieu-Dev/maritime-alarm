@@ -87,9 +87,6 @@ fun AlarmCreationScreen(
 @Preview
 @Composable
 private fun AlarmCreationScreenPreview() {
-    val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
-    val snackbarFlow = snackbarChannel.receiveAsFlow()
-
     AlarmScratchTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
@@ -113,7 +110,7 @@ private fun AlarmCreationScreenPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Success(),
-            snackbarFlow = snackbarFlow
+            snackbarFlow = Channel<ValidationResult.Error<ValidationError>>().receiveAsFlow()
         )
     }
 }

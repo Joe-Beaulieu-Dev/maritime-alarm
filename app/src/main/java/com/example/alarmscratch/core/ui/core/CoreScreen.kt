@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -63,6 +64,7 @@ import com.example.alarmscratch.core.ui.core.component.SkylineHeaderContent
 import com.example.alarmscratch.core.ui.core.component.VolcanoNavigationBar
 import com.example.alarmscratch.core.ui.core.component.VolcanoWithLava
 import com.example.alarmscratch.core.ui.snackbar.SnackbarEvent
+import com.example.alarmscratch.core.ui.snackbar.global.GlobalSnackbarController
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.BottomOceanBlue
@@ -75,6 +77,7 @@ import com.example.alarmscratch.settings.data.model.TimeDisplay
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 
 @Composable
 fun CoreScreen(
@@ -106,9 +109,9 @@ fun CoreScreen(
                 modifier = Modifier.fillMaxWidth()
             )
         },
-        snackbarFlow = coreScreenViewModel.snackbarFlow,
-        updateSnackbar = {
-            coreScreenViewModel.updateSnackbar(
+        localSnackbarFlow = coreScreenViewModel.localSnackbarFlow,
+        retrieveSnackbarFromPrevious = {
+            coreScreenViewModel.retrieveSnackbarFromPrevious(
                 rootNavHostController.getAndRemoveStringFromBackStack(SnackbarEvent.KEY_SNACKBAR_EVENT_MESSAGE)
             )
         }
@@ -129,8 +132,8 @@ fun CoreScreenContent(
     header: @Composable () -> Unit,
     onFabClicked: () -> Unit,
     navigationBar: @Composable () -> Unit,
-    snackbarFlow: Flow<SnackbarEvent>,
-    updateSnackbar: () -> Unit,
+    localSnackbarFlow: Flow<SnackbarEvent>,
+    retrieveSnackbarFromPrevious: () -> Unit,
     internalScreen: @Composable () -> Unit
 ) {
     // LavaFloatingActionButton specs
@@ -139,14 +142,25 @@ fun CoreScreenContent(
     val fabAnimationHeight = with(LocalDensity.current) { (fabHeight + volcanoSpacerHeight).toPx().toInt() }
 
     // Snackbar
-    // Update the ViewModel with the Snackbar message from the previous screen (Alarm Create/Edit)
-    LaunchedEffect(key1 = Unit) {
-        updateSnackbar()
-    }
-    // Observe the Snackbar Flow and display a Snackbar every time a SnackbarEvent is emitted
+    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    ObserveAsEvent(flow = snackbarFlow) { event ->
-        snackbarHostState.showSnackbar(message = event.message)
+    // Snackbar from previous screen
+    LaunchedEffect(key1 = Unit) {
+        // Update the ViewModel with the Snackbar message from the previous screen (Alarm Create/Edit)
+        retrieveSnackbarFromPrevious()
+    }
+    ObserveAsEvent(flow = localSnackbarFlow) { event ->
+        scope.launch {
+            snackbarHostState.currentSnackbarData?.dismiss()
+            snackbarHostState.showSnackbar(message = event.message)
+        }
+    }
+    // Snackbar from nested screen
+    ObserveAsEvent(flow = GlobalSnackbarController.snackbarFlow) { event ->
+        scope.launch {
+            snackbarHostState.currentSnackbarData?.dismiss()
+            snackbarHostState.showSnackbar(message = event.message)
+        }
     }
 
     Scaffold(
@@ -217,8 +231,6 @@ fun CoreScreenContent(
 private fun CoreScreenAlarmListPreview() {
     val selectedNavComponentDest = Destination.AlarmListScreen
     val alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds)
-    val snackbarChannel = Channel<SnackbarEvent>()
-    val snackbarFlow = snackbarChannel.receiveAsFlow()
 
     AlarmScratchTheme {
         CoreScreenContent(
@@ -247,8 +259,8 @@ private fun CoreScreenAlarmListPreview() {
                     modifier = Modifier.fillMaxWidth()
                 )
             },
-            snackbarFlow = snackbarFlow,
-            updateSnackbar = {}
+            localSnackbarFlow = Channel<SnackbarEvent>().receiveAsFlow(),
+            retrieveSnackbarFromPrevious = {}
         ) {
             AlarmListScreenContent(
                 alarmList = alarmListState.alarmList,
@@ -266,8 +278,6 @@ private fun CoreScreenAlarmListPreview() {
 @Composable
 private fun CoreScreenAlarmListNoAlarmsPreview() {
     val selectedNavComponentDest = Destination.AlarmListScreen
-    val snackbarChannel = Channel<SnackbarEvent>()
-    val snackbarFlow = snackbarChannel.receiveAsFlow()
 
     AlarmScratchTheme {
         CoreScreenContent(
@@ -296,8 +306,8 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
                     modifier = Modifier.fillMaxWidth()
                 )
             },
-            snackbarFlow = snackbarFlow,
-            updateSnackbar = {}
+            localSnackbarFlow = Channel<SnackbarEvent>().receiveAsFlow(),
+            retrieveSnackbarFromPrevious = {}
         ) {
             AlarmListScreenContent(
                 alarmList = emptyList(),
@@ -315,8 +325,6 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
 @Composable
 private fun CoreScreenSettingsPreview() {
     val selectedNavComponentDest = Destination.SettingsScreen
-    val snackbarChannel = Channel<SnackbarEvent>()
-    val snackbarFlow = snackbarChannel.receiveAsFlow()
 
     AlarmScratchTheme {
         CoreScreenContent(
@@ -345,8 +353,8 @@ private fun CoreScreenSettingsPreview() {
                     modifier = Modifier.fillMaxWidth()
                 )
             },
-            snackbarFlow = snackbarFlow,
-            updateSnackbar = {}
+            localSnackbarFlow = Channel<SnackbarEvent>().receiveAsFlow(),
+            retrieveSnackbarFromPrevious = {}
         ) {
             SettingsScreen(
                 navigateToGeneralSettingsScreen = {},

@@ -11,7 +11,10 @@ import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
+import com.example.alarmscratch.core.extension.toScheduleString
 import com.example.alarmscratch.core.extension.withFuturizedDateTime
+import com.example.alarmscratch.core.ui.snackbar.SnackbarEvent
+import com.example.alarmscratch.core.ui.snackbar.global.GlobalSnackbarController
 import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsRepository
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
@@ -65,6 +68,10 @@ class AlarmListViewModel(
         }
     }
 
+    /*
+     * Modify
+     */
+
     fun toggleAlarm(context: Context, alarm: Alarm) {
         viewModelScope.launch {
             val modifiedAlarm = alarm
@@ -75,6 +82,7 @@ class AlarmListViewModel(
 
             if (modifiedAlarm.enabled) {
                 scheduleAlarm(context, modifiedAlarm)
+                showSnackbar(SnackbarEvent(modifiedAlarm.toScheduleString(context)))
             } else {
                 cancelAndResetAlarm(context, modifiedAlarm)
             }
@@ -95,5 +103,13 @@ class AlarmListViewModel(
             AlarmScheduler.cancelAlarm(context, alarm.toAlarmExecutionData())
             alarmRepository.deleteAlarm(alarm)
         }
+    }
+
+    /*
+     * Snackbar
+     */
+
+    private suspend fun showSnackbar(snackbarEvent: SnackbarEvent) {
+        GlobalSnackbarController.sendEvent(snackbarEvent)
     }
 }
