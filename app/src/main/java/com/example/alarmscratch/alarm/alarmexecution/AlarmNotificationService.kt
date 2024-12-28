@@ -1,13 +1,20 @@
 package com.example.alarmscratch.alarm.alarmexecution
 
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import com.example.alarmscratch.R
+import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
+import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
+import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmActivity
 import com.example.alarmscratch.alarm.ui.notification.AlarmNotification
+import com.example.alarmscratch.alarm.util.AlarmUtil
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
+import com.example.alarmscratch.core.extension.isRepeating
+import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.core.ringtone.RingtonePlayerManager
 import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
@@ -78,6 +85,11 @@ class AlarmNotificationService : Service() {
 
         // Get General Settings, Launch Notification, Play Ringtone, Vibrate
         coroutineScope.launch(Dispatchers.Main) {
+            // If there is already an Alarm Notification up, dismiss the Alarm associated with it.
+            // The call to startForeground() below will take care of cancelling the Notification
+            // even if the ID is different.
+            dismissPreviousAlarmIfActive()
+
             // Get General Settings
             val generalSettingsRepository = GeneralSettingsRepository(applicationContext.generalSettingsDataStore)
             val generalSettings = try {
@@ -105,6 +117,41 @@ class AlarmNotificationService : Service() {
             // Start Vibration
             if (isVibrationEnabled) {
                 VibrationController.startVibration(applicationContext)
+            }
+        }
+    }
+
+    private suspend fun dismissPreviousAlarmIfActive() {
+        // Get all Notifications
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        val allNotifications = notificationManager.activeNotifications
+        // Get all Alarms
+        val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(this).alarmDao())
+        val allAlarms = alarmRepo.getAllAlarms()
+
+        // Get Alarm that currently has a Notification
+        val notificationAlarm: Alarm? = allAlarms.firstOrNull { alarm ->
+            allNotifications.firstOrNull { notification -> notification.id == alarm.id } != null
+        }
+
+        // Dismiss Notification Alarm if there is one
+        if (notificationAlarm != null) {
+            if (notificationAlarm.isRepeating()) {
+                // Calculate the next time the repeating Alarm should execute
+                val nextDateTime = AlarmUtil.nextRepeatingDateTime(
+                    notificationAlarm.dateTime,
+                    notificationAlarm.weeklyRepeater
+                )
+                // Dismiss Alarm and update with nextDateTime
+                alarmRepo.dismissAndRescheduleRepeating(notificationAlarm.id, nextDateTime)
+                // Reschedule Alarm with nextDateTime
+                AlarmScheduler.scheduleAlarm(
+                    applicationContext,
+                    notificationAlarm.toAlarmExecutionData().copy(executionDateTime = nextDateTime)
+                )
+            } else {
+                // Dismiss non-repeating Alarm
+                alarmRepo.dismissAlarm(notificationAlarm.id)
             }
         }
     }
