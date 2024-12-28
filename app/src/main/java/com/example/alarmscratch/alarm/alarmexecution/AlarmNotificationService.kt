@@ -134,8 +134,12 @@ class AlarmNotificationService : Service() {
             allNotifications.firstOrNull { notification -> notification.id == alarm.id } != null
         }
 
-        // Dismiss Notification Alarm if there is one
+        // If there's an Active Alarm, dismiss the Full Screen Notification and dismiss/reschedule the Alarm
         if (notificationAlarm != null) {
+            // Dismiss Full Screen Notification
+            finishFullScreenAlarmActivity()
+
+            // Dismiss/reschedule Alarm
             if (notificationAlarm.isRepeating()) {
                 // Calculate the next time the repeating Alarm should execute
                 val nextDateTime = AlarmUtil.nextRepeatingDateTime(
@@ -157,14 +161,8 @@ class AlarmNotificationService : Service() {
     }
 
     private fun dismissAlarmNotification() {
-        // Finish FullScreenAlarmActivity
-        val dismissFullScreenAlertIntent = Intent().apply {
-            action = FullScreenAlarmActivity.ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY
-            // On devices running API 34+, it is required to call setPackage() on implicit Intents
-            // that are not exported, and are to be used by an application's internal components.
-            setPackage(this@AlarmNotificationService.packageName)
-        }
-        applicationContext.sendBroadcast(dismissFullScreenAlertIntent)
+        // Dismiss Full Screen Notification
+        finishFullScreenAlarmActivity()
 
         // Stop Ringtone
         RingtonePlayerManager.stopAlarmSound()
@@ -175,8 +173,18 @@ class AlarmNotificationService : Service() {
         // Release WakeLock
         WakeLockManager.releaseWakeLock()
 
-        // Stop Service, which dismisses the Notification
+        // Stop Service, which dismisses the StatusBar Notification
         stopSelf()
+    }
+
+    private fun finishFullScreenAlarmActivity() {
+        val dismissFullScreenAlertIntent = Intent().apply {
+            action = FullScreenAlarmActivity.ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY
+            // On devices running API 34+, it is required to call setPackage() on implicit Intents
+            // that are not exported, and are to be used by an application's internal components.
+            setPackage(this@AlarmNotificationService.packageName)
+        }
+        applicationContext.sendBroadcast(dismissFullScreenAlertIntent)
     }
 
     override fun onDestroy() {
