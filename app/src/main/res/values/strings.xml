@@ -1,6 +1,8 @@
 <resources>
     <!-- General -->
     <string name="app_name">AlarmScratch</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
 
     <!--
         ****************
@@ -47,8 +49,6 @@
     <string name="snooze_minutes">minutes</string>
     <!-- AlarmTimePickerDialog -->
     <string name="select_time">Select time</string>
-    <string name="cancel">Cancel</string>
-    <string name="ok">OK</string>
     <!-- AlarmCreationScreen -->
     <string name="alarm_creation_screen_title">Create Alarm</string>
     <!-- AlarmEditScreen -->
@@ -100,6 +100,17 @@
         **************************
     -->
     <string name="snooze_duration">Snooze Duration</string>
+
+    <!--
+        **************************
+        ** UnsavedChangesDialog **
+        **************************
+    -->
+    <string name="unsaved_changes_dialog_title">Unsaved Changes</string>
+    <string name="unsaved_changes_dialog_body">There are unsaved changes on this screen. If you
+        leave without saving, your changes will be lost. Do you want to leave without saving?</string>
+    <string name="unsaved_changes_dialog_leave">Leave</string>
+    <string name="unsaved_changes_dialog_stay">Stay</string>
 
     <!--
         ************************

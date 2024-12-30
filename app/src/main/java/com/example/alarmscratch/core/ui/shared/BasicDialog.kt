@@ -31,6 +31,8 @@ import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
 @Composable
 fun BasicDialog(
     @StringRes titleRes: Int,
+    @StringRes cancelTextRes: Int = R.string.cancel,
+    @StringRes confirmTextRes: Int = R.string.ok,
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
     body: @Composable () -> Unit
@@ -65,12 +67,12 @@ fun BasicDialog(
                 CompositionLocalProvider(value = LocalRippleConfiguration provides RippleConfiguration(color = BoatSails)) {
                     // Cancel Button
                     TextButton(onClick = onCancel) {
-                        Text(text = stringResource(id = R.string.cancel), color = BoatSails)
+                        Text(text = stringResource(id = cancelTextRes), color = BoatSails)
                     }
 
                     // OK Button
                     TextButton(onClick = onConfirm) {
-                        Text(text = stringResource(id = R.string.ok), color = BoatSails)
+                        Text(text = stringResource(id = confirmTextRes), color = BoatSails)
                     }
                 }
             }
