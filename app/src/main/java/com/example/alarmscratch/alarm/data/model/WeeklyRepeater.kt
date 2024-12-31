@@ -105,4 +105,33 @@ class WeeklyRepeater(encodedRepeatingDays: Int = 0) {
             .filter { it.value }
             .map { it.key.threeLetterShorthand }
             .joinToString(separator = ", ")
+
+    /*
+     * Compare
+     */
+
+    override fun equals(other: Any?): Boolean =
+        if (this === other) {
+            true
+        } else if (other as? WeeklyRepeater != null) {
+            this.toEncodedRepeatingDays() == other.toEncodedRepeatingDays()
+        } else {
+            false
+        }
+
+    /**
+     * Returns toEncodedRepeatingDays().hashCode() + 1.
+     * 1 is added to the result to prevent false positives when comparing the hash code
+     * of a WeeklyRepeater to the hash code of null. This false positive will occur when
+     * the WeeklyRepeater has no repeating days. This is because both 0.hashCode()
+     * and null.hashCode() equal 0.
+     *
+     * @return the hash code of this WeeklyRepeater
+     */
+    override fun hashCode(): Int =
+        // TODO: This is good enough for now when it comes to comparing 2 WeeklyRepeaters, or WeeklyRepeater and null.
+        //  However, this function breaks the hash code contract in certain situations.
+        //  Ex: WeeklyRepeater.equals(1) = false, however, WeeklyRepeater(0).hashCode() and 1.hashCode() both equal 1.
+        //  Come up with a unique way of calculating this.
+        this.toEncodedRepeatingDays().hashCode() + 1
 }
