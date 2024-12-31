@@ -52,6 +52,7 @@ class AlarmEditViewModel(
 
     // Alarm
     private val alarmId: Int = savedStateHandle.toRoute<Destination.AlarmEditScreen>().alarmId
+    private val referenceAlarm: MutableStateFlow<AlarmState> = MutableStateFlow(AlarmState.Loading)
     private val _modifiedAlarm: MutableStateFlow<AlarmState> = MutableStateFlow(AlarmState.Loading)
     val modifiedAlarm: StateFlow<AlarmState> = _modifiedAlarm.asStateFlow()
 
@@ -70,6 +71,10 @@ class AlarmEditViewModel(
     private val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
     val snackbarFlow = snackbarChannel.receiveAsFlow()
 
+    // Dialog
+    private val _showUnsavedChangesDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showUnsavedChangesDialog: StateFlow<Boolean> = _showUnsavedChangesDialog.asStateFlow()
+
     // Validation
     private val _isNameValid: MutableStateFlow<ValidationResult<AlarmValidator.NameError>> =
         MutableStateFlow(ValidationResult.Success())
@@ -82,7 +87,10 @@ class AlarmEditViewModel(
                 .getAlarmFlow(alarmId)
                 .map<Alarm, AlarmState> { alarm -> AlarmState.Success(alarm) }
                 .catch { throwable -> emit(AlarmState.Error(throwable)) }
-                .collect { alarmState -> _modifiedAlarm.value = alarmState }
+                .collect { alarmState ->
+                    referenceAlarm.value = alarmState
+                    _modifiedAlarm.value = alarmState
+                }
         }
     }
 
@@ -253,6 +261,51 @@ class AlarmEditViewModel(
     }
 
     /*
+     * Navigation
+     */
+
+    fun tryNavigateUp(navHostController: NavHostController) {
+        if (
+            referenceAlarm.value is AlarmState.Success &&
+            _modifiedAlarm.value is AlarmState.Success
+        ) {
+            if (hasUnsavedChanges()) {
+                _showUnsavedChangesDialog.value = true
+            } else {
+                navHostController.navigateUp()
+            }
+        }
+    }
+
+    fun tryNavigateBack(navHostController: NavHostController) {
+        if (
+            referenceAlarm.value is AlarmState.Success &&
+            _modifiedAlarm.value is AlarmState.Success
+        ) {
+            if (hasUnsavedChanges()) {
+                _showUnsavedChangesDialog.value = true
+            } else {
+                navHostController.popBackStack()
+            }
+        }
+    }
+
+    /*
+     * Dialog
+     */
+
+    fun unsavedChangesLeave(navHostController: NavHostController) {
+        _showUnsavedChangesDialog.value = false
+        // Doesn't code for navHostController.navigateUp(), but there's no
+        // third party deeplinking into this app so it's fine.
+        navHostController.popBackStack()
+    }
+
+    fun unsavedChangesStay() {
+        _showUnsavedChangesDialog.value = false
+    }
+
+    /*
      * Validation
      */
 
@@ -282,4 +335,16 @@ class AlarmEditViewModel(
             isDateTimeValid = alarmValidator.validateDateTime(alarm.dateTime)
         }
     }
+
+    private fun hasUnsavedChanges(): Boolean =
+        if (
+            referenceAlarm.value is AlarmState.Success &&
+            _modifiedAlarm.value is AlarmState.Success
+        ) {
+            val refAlarm = (referenceAlarm.value as AlarmState.Success).alarm
+            val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
+            refAlarm != alarm
+        } else {
+            false
+        }
 }

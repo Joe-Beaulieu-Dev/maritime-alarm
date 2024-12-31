@@ -13,15 +13,15 @@ import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 
 @Composable
 fun UnsavedChangesDialog(
-    onCancel: () -> Unit,
-    onConfirm: () -> Unit
+    onLeave: () -> Unit,
+    onStay: () -> Unit
 ) {
     BasicDialog(
         titleRes = R.string.unsaved_changes_dialog_title,
         cancelTextRes = R.string.unsaved_changes_dialog_leave,
         confirmTextRes = R.string.unsaved_changes_dialog_stay,
-        onCancel = onCancel,
-        onConfirm = onConfirm
+        onCancel = onLeave,
+        onConfirm = onStay
     ) {
         Row(modifier = Modifier.padding(start = 24.dp, top = 12.dp, end = 24.dp, bottom = 2.dp)) {
             Text(text = stringResource(id = R.string.unsaved_changes_dialog_body))
@@ -38,8 +38,8 @@ fun UnsavedChangesDialog(
 private fun UnsavedChangesDialogPreview() {
     AlarmScratchTheme {
         UnsavedChangesDialog(
-            onCancel = {},
-            onConfirm = {}
+            onLeave = {},
+            onStay = {}
         )
     }
 }

@@ -1,6 +1,7 @@
 package com.example.alarmscratch.alarm.ui.alarmcreateedit
 
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -79,6 +80,7 @@ import com.example.alarmscratch.core.extension.get24HourTime
 import com.example.alarmscratch.core.extension.getAmPm
 import com.example.alarmscratch.core.ui.shared.CustomTopAppBar
 import com.example.alarmscratch.core.ui.shared.RowSelectionItem
+import com.example.alarmscratch.core.ui.shared.UnsavedChangesDialog
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
@@ -116,6 +118,11 @@ fun AlarmCreateEditScreen(
     updateSnoozeDuration: (Int) -> Unit,
     isNameValid: ValidationResult<AlarmValidator.NameError>,
     snackbarFlow: Flow<ValidationResult.Error<ValidationError>>,
+    tryNavigateUp: () -> Unit,
+    tryNavigateBack: () -> Unit,
+    showUnsavedChangesDialog: Boolean,
+    unsavedChangesLeave: () -> Unit,
+    unsavedChangesStay: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Configure Status Bar
@@ -137,12 +144,17 @@ fun AlarmCreateEditScreen(
         }
     }
 
+    // Intercept back navigation via the system back button
+    BackHandler {
+        tryNavigateBack()
+    }
+
     Scaffold(
         topBar = {
             CustomTopAppBar(
                 titleRes = titleRes,
                 navigationButton = {
-                    IconButton(onClick = navHostController::navigateUp) {
+                    IconButton(onClick = tryNavigateUp) {
                         Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
                     }
                 },
@@ -236,6 +248,14 @@ fun AlarmCreateEditScreen(
                 modifier = Modifier.padding(top = 20.dp)
             )
         }
+    }
+
+    // Unsaved Changes Dialog
+    if (showUnsavedChangesDialog) {
+        UnsavedChangesDialog(
+            onLeave = unsavedChangesLeave,
+            onStay = unsavedChangesStay
+        )
     }
 }
 
@@ -520,6 +540,11 @@ private fun AlarmCreateEditScreen12HourPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Success(),
+            tryNavigateUp = {},
+            tryNavigateBack = {},
+            showUnsavedChangesDialog = false,
+            unsavedChangesLeave = {},
+            unsavedChangesStay = {},
             snackbarFlow = snackbarFlow
         )
     }
@@ -548,6 +573,11 @@ private fun AlarmCreateEditScreen24HourPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Success(),
+            tryNavigateUp = {},
+            tryNavigateBack = {},
+            showUnsavedChangesDialog = false,
+            unsavedChangesLeave = {},
+            unsavedChangesStay = {},
             snackbarFlow = snackbarFlow
         )
     }
@@ -576,6 +606,11 @@ private fun AlarmCreateEditScreenErrorIllegalCharacterPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Error(AlarmValidator.NameError.ILLEGAL_CHARACTER),
+            tryNavigateUp = {},
+            tryNavigateBack = {},
+            showUnsavedChangesDialog = false,
+            unsavedChangesLeave = {},
+            unsavedChangesStay = {},
             snackbarFlow = snackbarFlow
         )
     }
@@ -604,6 +639,11 @@ private fun AlarmCreateEditScreenErrorOnlyWhitespacePreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Error(AlarmValidator.NameError.ONLY_WHITESPACE),
+            tryNavigateUp = {},
+            tryNavigateBack = {},
+            showUnsavedChangesDialog = false,
+            unsavedChangesLeave = {},
+            unsavedChangesStay = {},
             snackbarFlow = snackbarFlow
         )
     }

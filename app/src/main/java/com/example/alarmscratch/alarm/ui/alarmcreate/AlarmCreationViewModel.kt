@@ -53,6 +53,7 @@ class AlarmCreationViewModel(
 ) : ViewModel() {
 
     // Alarm
+    private val referenceAlarm: MutableStateFlow<AlarmState> = MutableStateFlow(AlarmState.Loading)
     private val _newAlarm: MutableStateFlow<AlarmState> = MutableStateFlow(AlarmState.Loading)
     val newAlarm: StateFlow<AlarmState> = _newAlarm.asStateFlow()
 
@@ -72,6 +73,10 @@ class AlarmCreationViewModel(
     private val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
     val snackbarFlow = snackbarChannel.receiveAsFlow()
 
+    // Dialog
+    private val _showUnsavedChangesDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showUnsavedChangesDialog: StateFlow<Boolean> = _showUnsavedChangesDialog.asStateFlow()
+
     // Validation
     private val _isNameValid: MutableStateFlow<ValidationResult<AlarmValidator.NameError>> =
         MutableStateFlow(ValidationResult.Success())
@@ -90,7 +95,7 @@ class AlarmCreationViewModel(
                     // Create new Alarm with AlarmDefaults
                     if (alarmDefaults.value is AlarmDefaultsState.Success) {
                         val alarmDefaults = (alarmDefaults.value as AlarmDefaultsState.Success).alarmDefaults
-                        _newAlarm.value = AlarmState.Success(
+                        val alarmState = AlarmState.Success(
                             Alarm(
                                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
                                 ringtoneUriString = alarmDefaults.ringtoneUri,
@@ -98,6 +103,8 @@ class AlarmCreationViewModel(
                                 snoozeDuration = alarmDefaults.snoozeDuration
                             )
                         )
+                        referenceAlarm.value = alarmState
+                        _newAlarm.value = alarmState
                     }
                 }
         }
@@ -270,6 +277,51 @@ class AlarmCreationViewModel(
     }
 
     /*
+     * Navigation
+     */
+
+    fun tryNavigateUp(navHostController: NavHostController) {
+        if (
+            referenceAlarm.value is AlarmState.Success &&
+            _newAlarm.value is AlarmState.Success
+        ) {
+            if (hasUnsavedChanges()) {
+                _showUnsavedChangesDialog.value = true
+            } else {
+                navHostController.navigateUp()
+            }
+        }
+    }
+
+    fun tryNavigateBack(navHostController: NavHostController) {
+        if (
+            referenceAlarm.value is AlarmState.Success &&
+            _newAlarm.value is AlarmState.Success
+        ) {
+            if (hasUnsavedChanges()) {
+                _showUnsavedChangesDialog.value = true
+            } else {
+                navHostController.popBackStack()
+            }
+        }
+    }
+
+    /*
+     * Dialog
+     */
+
+    fun unsavedChangesLeave(navHostController: NavHostController) {
+        _showUnsavedChangesDialog.value = false
+        // Doesn't code for navHostController.navigateUp(), but there's no
+        // third party deeplinking into this app so it's fine.
+        navHostController.popBackStack()
+    }
+
+    fun unsavedChangesStay() {
+        _showUnsavedChangesDialog.value = false
+    }
+
+    /*
      * Validation
      */
 
@@ -299,4 +351,16 @@ class AlarmCreationViewModel(
             isDateTimeValid = alarmValidator.validateDateTime(alarm.dateTime)
         }
     }
+
+    private fun hasUnsavedChanges(): Boolean =
+        if (
+            referenceAlarm.value is AlarmState.Success &&
+            _newAlarm.value is AlarmState.Success
+        ) {
+            val refAlarm = (referenceAlarm.value as AlarmState.Success).alarm
+            val alarm = (_newAlarm.value as AlarmState.Success).alarm
+            refAlarm != alarm
+        } else {
+            false
+        }
 }
