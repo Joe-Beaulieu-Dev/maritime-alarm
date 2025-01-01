@@ -1,5 +1,6 @@
 package com.example.alarmscratch.settings.ui.generalsettings
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,6 +40,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
 import com.example.alarmscratch.core.ui.shared.CustomTopAppBar
 import com.example.alarmscratch.core.ui.shared.RowSelectionItem
+import com.example.alarmscratch.core.ui.shared.UnsavedChangesDialog
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.DarkerBoatSails
 import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
@@ -58,6 +60,7 @@ fun GeneralSettingsScreen(
 
     // State
     val generalSettingsState by generalSettingsViewModel.modifiedGeneralSettings.collectAsState()
+    val showUnsavedChangesDialog by generalSettingsViewModel.showUnsavedChangesDialog.collectAsState()
 
     if (generalSettingsState is GeneralSettingsState.Success) {
         val generalSettings = (generalSettingsState as GeneralSettingsState.Success).generalSettings
@@ -67,6 +70,11 @@ fun GeneralSettingsScreen(
             timeDisplay = generalSettings.timeDisplay,
             saveGeneralSettings = generalSettingsViewModel::saveGeneralSettings,
             updateTimeDisplay = { generalSettingsViewModel.updateTimeDisplay(it) },
+            tryNavigateUp = { generalSettingsViewModel.tryNavigateUp(navHostController) },
+            tryNavigateBack = { generalSettingsViewModel.tryNavigateBack(navHostController) },
+            showUnsavedChangesDialog = showUnsavedChangesDialog,
+            unsavedChangesLeave = { generalSettingsViewModel.unsavedChangesLeave(navHostController) },
+            unsavedChangesStay = generalSettingsViewModel::unsavedChangesStay,
             modifier = modifier
         )
     }
@@ -78,18 +86,28 @@ fun GeneralSettingsScreenContent(
     timeDisplay: TimeDisplay,
     saveGeneralSettings: () -> Unit,
     updateTimeDisplay: (TimeDisplay) -> Unit,
+    tryNavigateUp: () -> Unit,
+    tryNavigateBack: () -> Unit,
+    showUnsavedChangesDialog: Boolean,
+    unsavedChangesLeave: () -> Unit,
+    unsavedChangesStay: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // State
     var showTimeDisplayDialog by rememberSaveable { mutableStateOf(false) }
     val toggleTimeDisplayDialog: () -> Unit = { showTimeDisplayDialog = !showTimeDisplayDialog }
 
+    // Intercept back navigation via the system back button
+    BackHandler {
+        tryNavigateBack()
+    }
+
     Scaffold(
         topBar = {
             CustomTopAppBar(
                 titleRes = R.string.settings_general,
                 navigationButton = {
-                    IconButton(onClick = navHostController::navigateUp) {
+                    IconButton(onClick = tryNavigateUp) {
                         Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
                     }
                 },
@@ -152,6 +170,14 @@ fun GeneralSettingsScreenContent(
             )
         }
     }
+
+    // Unsaved Changes Dialog
+    if (showUnsavedChangesDialog) {
+        UnsavedChangesDialog(
+            onLeave = unsavedChangesLeave,
+            onStay = unsavedChangesStay
+        )
+    }
 }
 
 /*
@@ -166,7 +192,12 @@ private fun GeneralSettingsScreenPreview() {
             navHostController = rememberNavController(),
             timeDisplay = TimeDisplay.TwelveHour,
             saveGeneralSettings = {},
-            updateTimeDisplay = {}
+            updateTimeDisplay = {},
+            tryNavigateUp = {},
+            tryNavigateBack = {},
+            showUnsavedChangesDialog = false,
+            unsavedChangesLeave = {},
+            unsavedChangesStay = {}
         )
     }
 }

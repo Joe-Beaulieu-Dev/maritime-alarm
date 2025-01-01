@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.navigation.NavHostController
 import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.model.TimeDisplay
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsRepository
@@ -18,15 +19,24 @@ import kotlinx.coroutines.launch
 
 class GeneralSettingsViewModel(private val generalSettingsRepository: GeneralSettingsRepository) : ViewModel() {
 
+    // General Settings
+    private val referenceGeneralSettings: MutableStateFlow<GeneralSettingsState> = MutableStateFlow(GeneralSettingsState.Loading)
     private val _modifiedGeneralSettings: MutableStateFlow<GeneralSettingsState> = MutableStateFlow(GeneralSettingsState.Loading)
     val modifiedGeneralSettings: StateFlow<GeneralSettingsState> = _modifiedGeneralSettings.asStateFlow()
+
+    // Dialog
+    private val _showUnsavedChangesDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showUnsavedChangesDialog: StateFlow<Boolean> = _showUnsavedChangesDialog.asStateFlow()
 
     init {
         viewModelScope.launch {
             generalSettingsRepository.generalSettingsFlow
                 .map<GeneralSettings, GeneralSettingsState> { generalSettings -> GeneralSettingsState.Success(generalSettings) }
                 .catch { throwable -> emit(GeneralSettingsState.Error(throwable)) }
-                .collect { generalSettingsState -> _modifiedGeneralSettings.value = generalSettingsState }
+                .collect { generalSettingsState ->
+                    referenceGeneralSettings.value = generalSettingsState
+                    _modifiedGeneralSettings.value = generalSettingsState
+                }
         }
     }
 
@@ -45,6 +55,10 @@ class GeneralSettingsViewModel(private val generalSettingsRepository: GeneralSet
         }
     }
 
+    /*
+     * Save
+     */
+
     fun saveGeneralSettings() {
         if (_modifiedGeneralSettings.value is GeneralSettingsState.Success) {
             val generalSettings = (_modifiedGeneralSettings.value as GeneralSettingsState.Success).generalSettings
@@ -60,4 +74,65 @@ class GeneralSettingsViewModel(private val generalSettingsRepository: GeneralSet
             _modifiedGeneralSettings.value = GeneralSettingsState.Success(generalSettings.copy(timeDisplay = timeDisplay))
         }
     }
+
+    /*
+     * Navigation
+     */
+
+    fun tryNavigateUp(navHostController: NavHostController) {
+        if (
+            referenceGeneralSettings.value is GeneralSettingsState.Success &&
+            _modifiedGeneralSettings.value is GeneralSettingsState.Success
+        ) {
+            if (hasUnsavedChanges()) {
+                _showUnsavedChangesDialog.value = true
+            } else {
+                navHostController.navigateUp()
+            }
+        }
+    }
+
+    fun tryNavigateBack(navHostController: NavHostController) {
+        if (
+            referenceGeneralSettings.value is GeneralSettingsState.Success &&
+            _modifiedGeneralSettings.value is GeneralSettingsState.Success
+        ) {
+            if (hasUnsavedChanges()) {
+                _showUnsavedChangesDialog.value = true
+            } else {
+                navHostController.popBackStack()
+            }
+        }
+    }
+
+    /*
+     * Dialog
+     */
+
+    fun unsavedChangesLeave(navHostController: NavHostController) {
+        _showUnsavedChangesDialog.value = false
+        // Doesn't code for navHostController.navigateUp(), but there's no
+        // third party deeplinking into this app so it's fine.
+        navHostController.popBackStack()
+    }
+
+    fun unsavedChangesStay() {
+        _showUnsavedChangesDialog.value = false
+    }
+
+    /*
+     * Validation
+     */
+
+    private fun hasUnsavedChanges(): Boolean =
+        if (
+            referenceGeneralSettings.value is GeneralSettingsState.Success &&
+            _modifiedGeneralSettings.value is GeneralSettingsState.Success
+        ) {
+            val refGeneralSettings = (referenceGeneralSettings.value as GeneralSettingsState.Success).generalSettings
+            val generalSettings = (_modifiedGeneralSettings.value as GeneralSettingsState.Success).generalSettings
+            refGeneralSettings != generalSettings
+        } else {
+            false
+        }
 }
