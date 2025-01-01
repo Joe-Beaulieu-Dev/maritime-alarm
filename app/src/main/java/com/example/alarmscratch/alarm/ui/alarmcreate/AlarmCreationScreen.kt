@@ -116,12 +116,12 @@ private fun AlarmCreationScreenPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Success(),
+            snackbarFlow = Channel<ValidationResult.Error<ValidationError>>().receiveAsFlow(),
             tryNavigateUp = {},
             tryNavigateBack = {},
             showUnsavedChangesDialog = false,
             unsavedChangesLeave = {},
-            unsavedChangesStay = {},
-            snackbarFlow = Channel<ValidationResult.Error<ValidationError>>().receiveAsFlow()
+            unsavedChangesStay = {}
         )
     }
 }

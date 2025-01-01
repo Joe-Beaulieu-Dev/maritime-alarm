@@ -540,12 +540,12 @@ private fun AlarmCreateEditScreen12HourPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Success(),
+            snackbarFlow = snackbarFlow,
             tryNavigateUp = {},
             tryNavigateBack = {},
             showUnsavedChangesDialog = false,
             unsavedChangesLeave = {},
-            unsavedChangesStay = {},
-            snackbarFlow = snackbarFlow
+            unsavedChangesStay = {}
         )
     }
 }
@@ -573,12 +573,12 @@ private fun AlarmCreateEditScreen24HourPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Success(),
+            snackbarFlow = snackbarFlow,
             tryNavigateUp = {},
             tryNavigateBack = {},
             showUnsavedChangesDialog = false,
             unsavedChangesLeave = {},
-            unsavedChangesStay = {},
-            snackbarFlow = snackbarFlow
+            unsavedChangesStay = {}
         )
     }
 }
@@ -606,12 +606,12 @@ private fun AlarmCreateEditScreenErrorIllegalCharacterPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Error(AlarmValidator.NameError.ILLEGAL_CHARACTER),
+            snackbarFlow = snackbarFlow,
             tryNavigateUp = {},
             tryNavigateBack = {},
             showUnsavedChangesDialog = false,
             unsavedChangesLeave = {},
-            unsavedChangesStay = {},
-            snackbarFlow = snackbarFlow
+            unsavedChangesStay = {}
         )
     }
 }
@@ -639,12 +639,12 @@ private fun AlarmCreateEditScreenErrorOnlyWhitespacePreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Error(AlarmValidator.NameError.ONLY_WHITESPACE),
+            snackbarFlow = snackbarFlow,
             tryNavigateUp = {},
             tryNavigateBack = {},
             showUnsavedChangesDialog = false,
             unsavedChangesLeave = {},
-            unsavedChangesStay = {},
-            snackbarFlow = snackbarFlow
+            unsavedChangesStay = {}
         )
     }
 }
