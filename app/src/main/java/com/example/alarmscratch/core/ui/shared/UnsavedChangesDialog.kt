@@ -2,6 +2,8 @@ package com.example.alarmscratch.core.ui.shared
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,6 +19,7 @@ fun UnsavedChangesDialog(
     onStay: () -> Unit
 ) {
     BasicDialog(
+        icon = Icons.Default.Warning,
         titleRes = R.string.unsaved_changes_dialog_title,
         cancelTextRes = R.string.unsaved_changes_dialog_leave,
         confirmTextRes = R.string.unsaved_changes_dialog_stay,

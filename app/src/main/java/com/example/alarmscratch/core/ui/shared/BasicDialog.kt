@@ -5,16 +5,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.SportsMartialArts
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.RippleConfiguration
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,11 +30,13 @@ import com.example.alarmscratch.R
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
+import com.example.alarmscratch.core.ui.theme.DarkerBoatSails
 
 // ExperimentalMaterial3Api OptIn for LocalRippleConfiguration and RippleConfiguration
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BasicDialog(
+    icon: ImageVector? = null,
     @StringRes titleRes: Int,
     @StringRes cancelTextRes: Int = R.string.cancel,
     @StringRes confirmTextRes: Int = R.string.ok,
@@ -48,12 +55,27 @@ fun BasicDialog(
             colors = CardDefaults.cardColors(containerColor = DarkVolcanicRock),
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Title
-            Text(
-                text = stringResource(id = titleRes),
-                fontSize = 24.sp,
+            // Icon and Title
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(start = 14.dp, top = 14.dp, end = 14.dp)
-            )
+            ) {
+                // Icon
+                if (icon != null) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = DarkerBoatSails,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                }
+
+                // Title
+                Text(
+                    text = stringResource(id = titleRes),
+                    fontSize = 24.sp
+                )
+            }
 
             // Body
             body()
@@ -86,7 +108,25 @@ fun BasicDialog(
 
 @Preview
 @Composable
-private fun BasicDialogPreview() {
+private fun BasicDialogWithIconPreview() {
+    AlarmScratchTheme {
+        BasicDialog(
+            icon = Icons.Default.SportsMartialArts,
+            titleRes = R.string.general_settings_time_display,
+            onCancel = {},
+            onConfirm = {}
+        ) {
+            Text(
+                text = "Dialog body",
+                modifier = Modifier.padding(start = 24.dp, top = 24.dp, bottom = 24.dp)
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun BasicDialogWithoutIconPreview() {
     AlarmScratchTheme {
         BasicDialog(
             titleRes = R.string.general_settings_time_display,
