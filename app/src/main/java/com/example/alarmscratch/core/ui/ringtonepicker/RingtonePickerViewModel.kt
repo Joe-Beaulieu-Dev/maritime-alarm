@@ -24,12 +24,19 @@ class RingtonePickerViewModel(
     ringtoneRepository: RingtoneRepository
 ) : ViewModel(), DefaultLifecycleObserver {
 
+    // Ringtone
     val ringtoneDataList = ringtoneRepository.getAllRingtoneData()
     private val initialRingtoneUri: String = savedStateHandle.toRoute<Destination.RingtonePickerScreen>().ringtoneUriString
     private val _selectedRingtoneUri: MutableStateFlow<String> = MutableStateFlow(initialRingtoneUri)
     val selectedRingtoneUri: StateFlow<String> = _selectedRingtoneUri.asStateFlow()
+
+    // Playback
     private val _isRingtonePlaying: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isRingtonePlaying: StateFlow<Boolean> = _isRingtonePlaying.asStateFlow()
+
+    // Dialog
+    private val _showUnsavedChangesDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showUnsavedChangesDialog: StateFlow<Boolean> = _showUnsavedChangesDialog.asStateFlow()
 
     init {
         // Register this ViewModel to the Application's Lifecycle.
@@ -63,31 +70,9 @@ class RingtonePickerViewModel(
         }
     }
 
-    fun selectRingtone(context: Context, ringtoneUriString: String) {
-        // Play or Stop Ringtone
-        if (_isRingtonePlaying.value) {
-            if (ringtoneUriString == _selectedRingtoneUri.value) {
-                stopRingtone()
-            } else {
-                playRingtone(context, ringtoneUriString)
-            }
-        } else {
-            playRingtone(context, ringtoneUriString)
-        }
-
-        // Select Ringtone
-        _selectedRingtoneUri.value = ringtoneUriString
-    }
-
-    private fun playRingtone(context: Context, ringtoneUri: String) {
-        RingtonePlayerManager.startAlarmSound(context, ringtoneUri)
-        _isRingtonePlaying.value = true
-    }
-
-    private fun stopRingtone() {
-        RingtonePlayerManager.stopAlarmSound()
-        _isRingtonePlaying.value = false
-    }
+    /*
+     * Save and Select
+     */
 
     /**
      * Sends the selected Ringtone URI to the previous screen by saving it to the
@@ -104,6 +89,78 @@ class RingtonePickerViewModel(
         // Navigate back
         navHostController.popBackStack()
     }
+
+    fun selectRingtone(context: Context, ringtoneUriString: String) {
+        // Play or Stop Ringtone
+        if (_isRingtonePlaying.value) {
+            if (ringtoneUriString == _selectedRingtoneUri.value) {
+                stopRingtone()
+            } else {
+                playRingtone(context, ringtoneUriString)
+            }
+        } else {
+            playRingtone(context, ringtoneUriString)
+        }
+
+        // Select Ringtone
+        _selectedRingtoneUri.value = ringtoneUriString
+    }
+
+    /*
+     * Playback
+     */
+
+    private fun playRingtone(context: Context, ringtoneUri: String) {
+        RingtonePlayerManager.startAlarmSound(context, ringtoneUri)
+        _isRingtonePlaying.value = true
+    }
+
+    private fun stopRingtone() {
+        RingtonePlayerManager.stopAlarmSound()
+        _isRingtonePlaying.value = false
+    }
+
+    /*
+     * Navigation
+     */
+
+    fun tryNavigateUp(navHostController: NavHostController) {
+        if (hasUnsavedChanges()) {
+            _showUnsavedChangesDialog.value = true
+        } else {
+            navHostController.navigateUp()
+        }
+    }
+
+    fun tryNavigateBack(navHostController: NavHostController) {
+        if (hasUnsavedChanges()) {
+            _showUnsavedChangesDialog.value = true
+        } else {
+            navHostController.popBackStack()
+        }
+    }
+
+    /*
+     * Dialog
+     */
+
+    fun unsavedChangesLeave(navHostController: NavHostController) {
+        _showUnsavedChangesDialog.value = false
+        // Doesn't code for navHostController.navigateUp(), but there's no
+        // third party deeplinking into this app so it's fine.
+        navHostController.popBackStack()
+    }
+
+    fun unsavedChangesStay() {
+        _showUnsavedChangesDialog.value = false
+    }
+
+    /*
+     * Validation
+     */
+
+    private fun hasUnsavedChanges(): Boolean =
+        initialRingtoneUri != _selectedRingtoneUri.value
 
     /*
      ******************************

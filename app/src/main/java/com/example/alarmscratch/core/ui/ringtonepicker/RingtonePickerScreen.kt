@@ -1,6 +1,7 @@
 package com.example.alarmscratch.core.ui.ringtonepicker
 
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,12 +40,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.preview.ringtoneDataSampleList
 import com.example.alarmscratch.alarm.data.preview.sampleRingtoneData
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.ui.shared.CustomTopAppBar
+import com.example.alarmscratch.core.ui.shared.UnsavedChangesDialog
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
 import com.example.alarmscratch.core.ui.theme.DarkerBoatSails
@@ -66,33 +67,47 @@ fun RingtonePickerScreen(
     val ringtoneDataList = ringtonePickerViewModel.ringtoneDataList
     val selectedRingtoneUri by ringtonePickerViewModel.selectedRingtoneUri.collectAsState()
     val isRingtonePlaying by ringtonePickerViewModel.isRingtonePlaying.collectAsState()
+    val showUnsavedChangesDialog by ringtonePickerViewModel.showUnsavedChangesDialog.collectAsState()
     
     RingtonePickerScreenContent(
-        navHostController = navHostController,
         ringtoneDataList = ringtoneDataList,
         selectedRingtoneUri = selectedRingtoneUri,
         isRingtonePlaying = isRingtonePlaying,
-        selectRingtone = ringtonePickerViewModel::selectRingtone,
         saveRingtone = { ringtonePickerViewModel.saveRingtone(navHostController) },
+        selectRingtone = ringtonePickerViewModel::selectRingtone,
+        tryNavigateUp = { ringtonePickerViewModel.tryNavigateUp(navHostController) },
+        tryNavigateBack = { ringtonePickerViewModel.tryNavigateBack(navHostController) },
+        showUnsavedChangesDialog = showUnsavedChangesDialog,
+        unsavedChangesLeave = { ringtonePickerViewModel.unsavedChangesLeave(navHostController) },
+        unsavedChangesStay = ringtonePickerViewModel::unsavedChangesStay,
         modifier = modifier
     )
 }
 
 @Composable
 fun RingtonePickerScreenContent(
-    navHostController: NavHostController,
     ringtoneDataList: List<RingtoneData>,
     selectedRingtoneUri: String,
     isRingtonePlaying: Boolean,
-    selectRingtone: (Context, String) -> Unit,
     saveRingtone: () -> Unit,
-    modifier: Modifier
+    selectRingtone: (Context, String) -> Unit,
+    tryNavigateUp: () -> Unit,
+    tryNavigateBack: () -> Unit,
+    showUnsavedChangesDialog: Boolean,
+    unsavedChangesLeave: () -> Unit,
+    unsavedChangesStay: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     // State
     val context = LocalContext.current
     val isRowSelected: (String) -> Boolean = { it == selectedRingtoneUri }
     val isRowPlaying: (String) -> Boolean = { isRingtonePlaying && isRowSelected(it) }
     val rowColor: (String) -> Color = { if (isRowSelected(it)) VolcanicRock else DarkVolcanicRock }
+
+    // Intercept back navigation via the system back button
+    BackHandler {
+        tryNavigateBack()
+    }
 
     Surface(
         modifier = modifier
@@ -104,7 +119,7 @@ fun RingtonePickerScreenContent(
             CustomTopAppBar(
                 titleRes = R.string.ringtone_picker_screen_title,
                 navigationButton = {
-                    IconButton(onClick = navHostController::navigateUp) {
+                    IconButton(onClick = tryNavigateUp) {
                         Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
                     }
                 },
@@ -174,6 +189,14 @@ fun RingtonePickerScreenContent(
             }
         }
     }
+
+    // Unsaved Changes Dialog
+    if (showUnsavedChangesDialog) {
+        UnsavedChangesDialog(
+            onLeave = unsavedChangesLeave,
+            onStay = unsavedChangesStay
+        )
+    }
 }
 
 /*
@@ -185,12 +208,16 @@ fun RingtonePickerScreenContent(
 private fun RingtonePickerScreenPlayingPreview() {
     AlarmScratchTheme {
         RingtonePickerScreenContent(
-            navHostController = rememberNavController(),
             ringtoneDataList = ringtoneDataSampleList,
             selectedRingtoneUri = sampleRingtoneData.fullUriString,
             isRingtonePlaying = true,
-            selectRingtone = { _, _ -> },
             saveRingtone = {},
+            selectRingtone = { _, _ -> },
+            tryNavigateUp = {},
+            tryNavigateBack = {},
+            showUnsavedChangesDialog = false,
+            unsavedChangesLeave = {},
+            unsavedChangesStay = {},
             modifier = Modifier.fillMaxSize()
         )
     }
@@ -201,12 +228,16 @@ private fun RingtonePickerScreenPlayingPreview() {
 private fun RingtonePickerScreenNotPlayingPreview() {
     AlarmScratchTheme {
         RingtonePickerScreenContent(
-            navHostController = rememberNavController(),
             ringtoneDataList = ringtoneDataSampleList,
             selectedRingtoneUri = sampleRingtoneData.fullUriString,
             isRingtonePlaying = false,
-            selectRingtone = { _, _ -> },
             saveRingtone = {},
+            selectRingtone = { _, _ -> },
+            tryNavigateUp = {},
+            tryNavigateBack = {},
+            showUnsavedChangesDialog = false,
+            unsavedChangesLeave = {},
+            unsavedChangesStay = {},
             modifier = Modifier.fillMaxSize()
         )
     }
