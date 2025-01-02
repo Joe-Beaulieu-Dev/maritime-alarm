@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.navigation.NavHostController
 import androidx.navigation.toRoute
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.data.repository.RingtoneRepository
@@ -89,13 +90,19 @@ class RingtonePickerViewModel(
     }
 
     /**
-     * Saves the selected Ringtone's URI String to the given SavedStateHandle.
-     * Use this to pass the URI String back to the previous screen via its NavBackStackEntry.
+     * Sends the selected Ringtone URI to the previous screen by saving it to the
+     * SavedStateHandle associated with its NavBackStackEntry, then navigates back
+     * by calling NavHostController.popBackStack().
      *
-     * @param savedStateHandle the previous screen's SavedStateHandle
+     * @param navHostController used to pass the Ringtone URI to the previous screen and navigate back
      */
-    fun saveRingtone(savedStateHandle: SavedStateHandle?) {
-        savedStateHandle?.set(RingtoneData.KEY_FULL_RINGTONE_URI_STRING, _selectedRingtoneUri.value)
+    fun saveRingtone(navHostController: NavHostController) {
+        // Send Ringtone URI to previous screen
+        navHostController.previousBackStackEntry?.savedStateHandle
+            ?.set(RingtoneData.KEY_FULL_RINGTONE_URI_STRING, _selectedRingtoneUri.value)
+
+        // Navigate back
+        navHostController.popBackStack()
     }
 
     /*

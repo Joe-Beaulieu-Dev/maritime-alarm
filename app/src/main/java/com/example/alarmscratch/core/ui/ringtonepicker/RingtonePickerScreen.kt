@@ -37,7 +37,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -67,12 +66,6 @@ fun RingtonePickerScreen(
     val ringtoneDataList = ringtonePickerViewModel.ringtoneDataList
     val selectedRingtoneUri by ringtonePickerViewModel.selectedRingtoneUri.collectAsState()
     val isRingtonePlaying by ringtonePickerViewModel.isRingtonePlaying.collectAsState()
-
-    // Actions
-    val saveRingtone: () -> Unit = {
-        val alarmEditScreenSavedStateHandle: SavedStateHandle? = navHostController.previousBackStackEntry?.savedStateHandle
-        ringtonePickerViewModel.saveRingtone(alarmEditScreenSavedStateHandle)
-    }
     
     RingtonePickerScreenContent(
         navHostController = navHostController,
@@ -80,7 +73,7 @@ fun RingtonePickerScreen(
         selectedRingtoneUri = selectedRingtoneUri,
         isRingtonePlaying = isRingtonePlaying,
         selectRingtone = ringtonePickerViewModel::selectRingtone,
-        saveRingtone = saveRingtone,
+        saveRingtone = { ringtonePickerViewModel.saveRingtone(navHostController) },
         modifier = modifier
     )
 }
@@ -116,12 +109,7 @@ fun RingtonePickerScreenContent(
                     }
                 },
                 actionButton = {
-                    IconButton(
-                        onClick = {
-                            saveRingtone()
-                            navHostController.popBackStack()
-                        }
-                    ) {
+                    IconButton(onClick = saveRingtone) {
                         Icon(imageVector = Icons.Default.Save, contentDescription = null)
                     }
                 },
