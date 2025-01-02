@@ -39,6 +39,7 @@ fun AlarmCreationScreen(
     val alarmState by alarmCreationViewModel.newAlarm.collectAsState()
     val generalSettingsState by alarmCreationViewModel.generalSettings.collectAsState()
     val isNameValid by alarmCreationViewModel.isNameValid.collectAsState()
+    val showUnsavedChangesDialog by alarmCreationViewModel.showUnsavedChangesDialog.collectAsState()
 
     // Flow
     val snackbarFlow = alarmCreationViewModel.snackbarFlow
@@ -75,6 +76,11 @@ fun AlarmCreationScreen(
             updateSnoozeDuration = alarmCreationViewModel::updateSnoozeDuration,
             isNameValid = isNameValid,
             snackbarFlow = snackbarFlow,
+            tryNavigateUp = { alarmCreationViewModel.tryNavigateUp(navHostController) },
+            tryNavigateBack = { alarmCreationViewModel.tryNavigateBack(navHostController) },
+            showUnsavedChangesDialog = showUnsavedChangesDialog,
+            unsavedChangesLeave = { alarmCreationViewModel.unsavedChangesLeave(navHostController) },
+            unsavedChangesStay = alarmCreationViewModel::unsavedChangesStay,
             modifier = modifier
         )
     }
@@ -110,7 +116,12 @@ private fun AlarmCreationScreenPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Success(),
-            snackbarFlow = Channel<ValidationResult.Error<ValidationError>>().receiveAsFlow()
+            snackbarFlow = Channel<ValidationResult.Error<ValidationError>>().receiveAsFlow(),
+            tryNavigateUp = {},
+            tryNavigateBack = {},
+            showUnsavedChangesDialog = false,
+            unsavedChangesLeave = {},
+            unsavedChangesStay = {}
         )
     }
 }

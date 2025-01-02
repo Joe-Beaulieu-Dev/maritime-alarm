@@ -39,6 +39,7 @@ fun AlarmEditScreen(
     val alarmState by alarmEditViewModel.modifiedAlarm.collectAsState()
     val generalSettingsState by alarmEditViewModel.generalSettings.collectAsState()
     val isNameValid by alarmEditViewModel.isNameValid.collectAsState()
+    val showUnsavedChangesDialog by alarmEditViewModel.showUnsavedChangesDialog.collectAsState()
 
     // Flow
     val snackbarFlow = alarmEditViewModel.snackbarFlow
@@ -75,6 +76,11 @@ fun AlarmEditScreen(
             updateSnoozeDuration = alarmEditViewModel::updateSnoozeDuration,
             isNameValid = isNameValid,
             snackbarFlow = snackbarFlow,
+            tryNavigateUp = { alarmEditViewModel.tryNavigateUp(navHostController) },
+            tryNavigateBack = { alarmEditViewModel.tryNavigateBack(navHostController) },
+            showUnsavedChangesDialog = showUnsavedChangesDialog,
+            unsavedChangesLeave = { alarmEditViewModel.unsavedChangesLeave(navHostController) },
+            unsavedChangesStay = alarmEditViewModel::unsavedChangesStay,
             modifier = modifier
         )
     }
@@ -111,7 +117,12 @@ private fun AlarmEditScreenPreview() {
             toggleVibration = {},
             updateSnoozeDuration = {},
             isNameValid = ValidationResult.Success(),
-            snackbarFlow = Channel<ValidationResult.Error<ValidationError>>().receiveAsFlow()
+            snackbarFlow = Channel<ValidationResult.Error<ValidationError>>().receiveAsFlow(),
+            tryNavigateUp = {},
+            tryNavigateBack = {},
+            showUnsavedChangesDialog = false,
+            unsavedChangesLeave = {},
+            unsavedChangesStay = {}
         )
     }
 }

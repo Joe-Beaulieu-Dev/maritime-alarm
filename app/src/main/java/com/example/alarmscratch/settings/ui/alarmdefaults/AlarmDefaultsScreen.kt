@@ -1,5 +1,6 @@
 package com.example.alarmscratch.settings.ui.alarmdefaults
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -53,6 +54,7 @@ import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.getStringFromBackStack
 import com.example.alarmscratch.core.ui.shared.CustomTopAppBar
 import com.example.alarmscratch.core.ui.shared.RowSelectionItem
+import com.example.alarmscratch.core.ui.shared.UnsavedChangesDialog
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
@@ -77,6 +79,7 @@ fun AlarmDefaultsScreen(
 
     // State
     val alarmDefaultsState by alarmDefaultsViewModel.modifiedAlarmDefaults.collectAsState()
+    val showUnsavedChangesDialog by alarmDefaultsViewModel.showUnsavedChangesDialog.collectAsState()
 
     if (alarmDefaultsState is AlarmDefaultsState.Success) {
         // Fetch updated Ringtone URI from this back stack entry's SavedStateHandle.
@@ -102,6 +105,11 @@ fun AlarmDefaultsScreen(
             saveAlarmDefaults = alarmDefaultsViewModel::saveAlarmDefaults,
             toggleVibration = alarmDefaultsViewModel::toggleVibration,
             updateSnoozeDuration = alarmDefaultsViewModel::updateSnoozeDuration,
+            tryNavigateUp = { alarmDefaultsViewModel.tryNavigateUp(navHostController) },
+            tryNavigateBack = { alarmDefaultsViewModel.tryNavigateBack(navHostController) },
+            showUnsavedChangesDialog = showUnsavedChangesDialog,
+            unsavedChangesLeave = { alarmDefaultsViewModel.unsavedChangesLeave(navHostController) },
+            unsavedChangesStay = alarmDefaultsViewModel::unsavedChangesStay,
             modifier = modifier
         )
     }
@@ -118,14 +126,24 @@ fun AlarmDefaultsScreenContent(
     saveAlarmDefaults: () -> Unit,
     toggleVibration: () -> Unit,
     updateSnoozeDuration: (Int) -> Unit,
+    tryNavigateUp: () -> Unit,
+    tryNavigateBack: () -> Unit,
+    showUnsavedChangesDialog: Boolean,
+    unsavedChangesLeave: () -> Unit,
+    unsavedChangesStay: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Intercept back navigation via the system back button
+    BackHandler {
+        tryNavigateBack()
+    }
+
     Scaffold(
         topBar = {
             CustomTopAppBar(
                 titleRes = R.string.settings_alarm_defaults,
                 navigationButton = {
-                    IconButton(onClick = navHostController::navigateUp) {
+                    IconButton(onClick = tryNavigateUp) {
                         Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
                     }
                 },
@@ -206,6 +224,14 @@ fun AlarmDefaultsScreenContent(
                 modifier = Modifier.padding(top = 20.dp)
             )
         }
+    }
+
+    // Unsaved Changes Dialog
+    if (showUnsavedChangesDialog) {
+        UnsavedChangesDialog(
+            onLeave = unsavedChangesLeave,
+            onStay = unsavedChangesStay
+        )
     }
 }
 
@@ -324,7 +350,12 @@ private fun AlarmDefaultsScreenPreview() {
             snoozeDuration = 10,
             saveAlarmDefaults = {},
             toggleVibration = {},
-            updateSnoozeDuration = {}
+            updateSnoozeDuration = {},
+            tryNavigateUp = {},
+            tryNavigateBack = {},
+            showUnsavedChangesDialog = false,
+            unsavedChangesLeave = {},
+            unsavedChangesStay = {}
         )
     }
 }
