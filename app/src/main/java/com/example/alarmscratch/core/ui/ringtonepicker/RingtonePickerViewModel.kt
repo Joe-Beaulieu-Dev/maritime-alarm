@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.navigation.NavHostController
 import androidx.navigation.toRoute
 import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.data.repository.RingtoneRepository
@@ -23,12 +24,19 @@ class RingtonePickerViewModel(
     ringtoneRepository: RingtoneRepository
 ) : ViewModel(), DefaultLifecycleObserver {
 
+    // Ringtone
     val ringtoneDataList = ringtoneRepository.getAllRingtoneData()
     private val initialRingtoneUri: String = savedStateHandle.toRoute<Destination.RingtonePickerScreen>().ringtoneUriString
     private val _selectedRingtoneUri: MutableStateFlow<String> = MutableStateFlow(initialRingtoneUri)
     val selectedRingtoneUri: StateFlow<String> = _selectedRingtoneUri.asStateFlow()
+
+    // Playback
     private val _isRingtonePlaying: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isRingtonePlaying: StateFlow<Boolean> = _isRingtonePlaying.asStateFlow()
+
+    // Dialog
+    private val _showUnsavedChangesDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showUnsavedChangesDialog: StateFlow<Boolean> = _showUnsavedChangesDialog.asStateFlow()
 
     init {
         // Register this ViewModel to the Application's Lifecycle.
@@ -62,6 +70,26 @@ class RingtonePickerViewModel(
         }
     }
 
+    /*
+     * Save and Select
+     */
+
+    /**
+     * Sends the selected Ringtone URI to the previous screen by saving it to the
+     * SavedStateHandle associated with its NavBackStackEntry, then navigates back
+     * by calling NavHostController.popBackStack().
+     *
+     * @param navHostController used to pass the Ringtone URI to the previous screen and navigate back
+     */
+    fun saveRingtone(navHostController: NavHostController) {
+        // Send Ringtone URI to previous screen
+        navHostController.previousBackStackEntry?.savedStateHandle
+            ?.set(RingtoneData.KEY_FULL_RINGTONE_URI_STRING, _selectedRingtoneUri.value)
+
+        // Navigate back
+        navHostController.popBackStack()
+    }
+
     fun selectRingtone(context: Context, ringtoneUriString: String) {
         // Play or Stop Ringtone
         if (_isRingtonePlaying.value) {
@@ -78,6 +106,10 @@ class RingtonePickerViewModel(
         _selectedRingtoneUri.value = ringtoneUriString
     }
 
+    /*
+     * Playback
+     */
+
     private fun playRingtone(context: Context, ringtoneUri: String) {
         RingtonePlayerManager.startAlarmSound(context, ringtoneUri)
         _isRingtonePlaying.value = true
@@ -88,15 +120,47 @@ class RingtonePickerViewModel(
         _isRingtonePlaying.value = false
     }
 
-    /**
-     * Saves the selected Ringtone's URI String to the given SavedStateHandle.
-     * Use this to pass the URI String back to the previous screen via its NavBackStackEntry.
-     *
-     * @param savedStateHandle the previous screen's SavedStateHandle
+    /*
+     * Navigation
      */
-    fun saveRingtone(savedStateHandle: SavedStateHandle?) {
-        savedStateHandle?.set(RingtoneData.KEY_FULL_RINGTONE_URI_STRING, _selectedRingtoneUri.value)
+
+    fun tryNavigateUp(navHostController: NavHostController) {
+        if (hasUnsavedChanges()) {
+            _showUnsavedChangesDialog.value = true
+        } else {
+            navHostController.navigateUp()
+        }
     }
+
+    fun tryNavigateBack(navHostController: NavHostController) {
+        if (hasUnsavedChanges()) {
+            _showUnsavedChangesDialog.value = true
+        } else {
+            navHostController.popBackStack()
+        }
+    }
+
+    /*
+     * Dialog
+     */
+
+    fun unsavedChangesLeave(navHostController: NavHostController) {
+        _showUnsavedChangesDialog.value = false
+        // Doesn't code for navHostController.navigateUp(), but there's no
+        // third party deeplinking into this app so it's fine.
+        navHostController.popBackStack()
+    }
+
+    fun unsavedChangesStay() {
+        _showUnsavedChangesDialog.value = false
+    }
+
+    /*
+     * Validation
+     */
+
+    private fun hasUnsavedChanges(): Boolean =
+        initialRingtoneUri != _selectedRingtoneUri.value
 
     /*
      ******************************

@@ -97,7 +97,7 @@ fun GeneralSettingsScreenContent(
     var showTimeDisplayDialog by rememberSaveable { mutableStateOf(false) }
     val toggleTimeDisplayDialog: () -> Unit = { showTimeDisplayDialog = !showTimeDisplayDialog }
 
-    // Intercept back navigation via the system back button
+    // Intercept system back navigation
     BackHandler {
         tryNavigateBack()
     }

@@ -144,7 +144,7 @@ fun AlarmCreateEditScreen(
         }
     }
 
-    // Intercept back navigation via the system back button
+    // Intercept system back navigation
     BackHandler {
         tryNavigateBack()
     }

@@ -133,7 +133,7 @@ fun AlarmDefaultsScreenContent(
     unsavedChangesStay: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Intercept back navigation via the system back button
+    // Intercept system back navigation
     BackHandler {
         tryNavigateBack()
     }
