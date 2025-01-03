@@ -104,7 +104,7 @@ fun RingtonePickerScreenContent(
     val isRowPlaying: (String) -> Boolean = { isRingtonePlaying && isRowSelected(it) }
     val rowColor: (String) -> Color = { if (isRowSelected(it)) VolcanicRock else DarkVolcanicRock }
 
-    // Intercept back navigation via the system back button
+    // Intercept system back navigation
     BackHandler {
         tryNavigateBack()
     }
