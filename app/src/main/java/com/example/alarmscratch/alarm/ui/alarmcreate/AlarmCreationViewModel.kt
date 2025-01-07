@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.navigation.NavHostController
-import com.example.alarmscratch.alarm.alarmexecution.AlarmActionReceiver
 import com.example.alarmscratch.alarm.alarmexecution.AlarmScheduler
 import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
@@ -135,10 +134,14 @@ class AlarmCreationViewModel(
     fun saveAndScheduleAlarm(context: Context, navHostController: NavHostController) {
         if (_newAlarm.value is AlarmState.Success) {
             viewModelScope.launch {
-                if (validateAlarm()) {
+                // Fix edge cases before validation
+                val autoCorrectAlarm = preValidationAutoCorrect((_newAlarm.value as AlarmState.Success).alarm)
+
+                // Validate, save, schedule, Snackbar, navigate back
+                if (validateAlarm(autoCorrectAlarm)) {
                     // Save and schedule Alarm
-                    val newAlarmId = saveAlarm()
-                    val newAlarm = getAlarm(newAlarmId.toInt())
+                    val newAlarmId = alarmRepository.insertAlarm(autoCorrectAlarm)
+                    val newAlarm = alarmRepository.getAlarm(newAlarmId.toInt())
                     scheduleAlarm(context.applicationContext, newAlarm)
 
                     // Send Snackbar to previous screen and navigate back
@@ -151,22 +154,40 @@ class AlarmCreationViewModel(
         }
     }
 
-    private suspend fun saveAlarm(): Long =
-        if (_newAlarm.value is AlarmState.Success) {
-            val alarm = (_newAlarm.value as AlarmState.Success).alarm
-            if (alarm.isRepeating()) {
-                alarmRepository.insertAlarm(
-                    alarm.copy(dateTime = AlarmUtil.nextRepeatingDateTime(alarm.dateTime, alarm.weeklyRepeater))
-                )
+    /**
+     * Perform auto-correction that should happen to an Alarm before validation.
+     *
+     * This function is an edge case fixer for repeating Alarms since they should never
+     * fail LocalDateTime validation. Since they repeat, rather than failing validation
+     * they should just be corrected to execute on the next possible repeating day.
+     * This is because a repeating Alarm that displays "Every: Mon, Tue, Wed" failing
+     * validation and telling the User to set their Alarm to a time in the future is confusing.
+     * The User would reasonably expect the app to just set the Alarm for the next possible
+     * repeating date.
+     *
+     * Non-repeating Alarms should never receive this auto-correction. Instead, the User should
+     * be informed that they're trying to set an Alarm for a time in the past.
+     *
+     * The following is a summary of the corrections that may be applied:
+     *
+     * Repeating Alarms
+     * 1) If the Alarm is set for a time in the past, bump the date to the next repeating date
+     * that's in the future.
+     *
+     * Non-Repeating Alarms: No correction is performed and the Alarm is returned unmodified
+     *
+     * @param alarm auto-correct candidate
+     *
+     * @return Alarm that may or may not have been modified according to the above criteria
+     */
+    private fun preValidationAutoCorrect(alarm: Alarm): Alarm =
+        alarm.run {
+            if (isRepeating()) {
+                copy(dateTime = AlarmUtil.nextRepeatingDateTime(dateTime, weeklyRepeater))
             } else {
-                alarmRepository.insertAlarm(alarm)
+                this
             }
-        } else {
-            AlarmActionReceiver.ALARM_NO_ID.toLong()
         }
-
-    private suspend fun getAlarm(alarmId: Int): Alarm =
-        alarmRepository.getAlarm(alarmId)
 
     private fun scheduleAlarm(context: Context, alarm: Alarm) {
         AlarmScheduler.scheduleAlarm(context, alarm.toAlarmExecutionData())
@@ -178,11 +199,11 @@ class AlarmCreationViewModel(
 
     fun updateName(name: String) {
         if (_newAlarm.value is AlarmState.Success) {
-            val alarm = (_newAlarm.value as AlarmState.Success).alarm
-            _newAlarm.value = AlarmState.Success(alarm.copy(name = name))
+            val updatedAlarm = (_newAlarm.value as AlarmState.Success).alarm.copy(name = name)
+            _newAlarm.value = AlarmState.Success(updatedAlarm)
 
             // Update validation state for TextField
-            validateName()
+            validateName(updatedAlarm)
         }
     }
 
@@ -325,31 +346,22 @@ class AlarmCreationViewModel(
      * Validation
      */
 
-    private fun validateAlarm(): Boolean =
-        if (_newAlarm.value is AlarmState.Success) {
-            // Validate
-            validateName()
-            validateDateTime()
+    private fun validateAlarm(alarm: Alarm): Boolean {
+        // Validate
+        validateName(alarm)
+        validateDateTime(alarm)
 
-            // Check validation results
-            !(_isNameValid.value is ValidationResult.Error ||
-                    isDateTimeValid is ValidationResult.Error)
-        } else {
-            false
-        }
-
-    private fun validateName() {
-        if (_newAlarm.value is AlarmState.Success) {
-            val alarm = (_newAlarm.value as AlarmState.Success).alarm
-            _isNameValid.value = alarmValidator.validateName(alarm.name)
-        }
+        // Check validation results
+        return !(_isNameValid.value is ValidationResult.Error ||
+                isDateTimeValid is ValidationResult.Error)
     }
 
-    private fun validateDateTime() {
-        if (_newAlarm.value is AlarmState.Success) {
-            val alarm = (_newAlarm.value as AlarmState.Success).alarm
-            isDateTimeValid = alarmValidator.validateDateTime(alarm.dateTime)
-        }
+    private fun validateName(alarm: Alarm) {
+        _isNameValid.value = alarmValidator.validateName(alarm.name)
+    }
+
+    private fun validateDateTime(alarm: Alarm) {
+        isDateTimeValid = alarmValidator.validateDateTime(alarm.dateTime)
     }
 
     private fun hasUnsavedChanges(): Boolean =
