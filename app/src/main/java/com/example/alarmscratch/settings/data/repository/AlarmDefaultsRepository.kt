@@ -12,9 +12,11 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.alarmscratch.core.data.model.RingtoneData
+import com.example.alarmscratch.core.data.repository.RingtoneRepository
 import com.example.alarmscratch.settings.data.model.AlarmDefaults
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 val Context.alarmDefaultsDataStore by preferencesDataStore(
@@ -34,24 +36,46 @@ class AlarmDefaultsRepository(private val dataStore: DataStore<Preferences>) {
         private val KEY_SNOOZE_DURATION = intPreferencesKey("snooze_duration")
 
         // Default values
-        private val DEFAULT_RINGTONE_URI =
+        private val SYSTEM_DEFAULT_RINGTONE_URI =
             RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)?.toString() ?: RingtoneData.NO_RINGTONE_URI
         private const val DEFAULT_IS_VIBRATION_ENABLED = false
         const val DEFAULT_SNOOZE_DURATION = 10
     }
+
+    /*
+     * Read
+     */
 
     val alarmDefaultsFlow: Flow<AlarmDefaults> = dataStore.data
         .catch { emit(emptyPreferences()) }
         .map { preferences ->
             // TODO: Exception handling
             // Get Preferences
-            val ringtoneUri = preferences[KEY_RINGTONE_URI] ?: DEFAULT_RINGTONE_URI
+            val ringtoneUri = preferences[KEY_RINGTONE_URI] ?: SYSTEM_DEFAULT_RINGTONE_URI
             val isVibrationEnabled = preferences[KEY_IS_VIBRATION_ENABLED] ?: DEFAULT_IS_VIBRATION_ENABLED
             val snoozeDuration = preferences[KEY_SNOOZE_DURATION] ?: DEFAULT_SNOOZE_DURATION
 
             // Return AlarmDefaults
             AlarmDefaults(ringtoneUri, isVibrationEnabled, snoozeDuration)
         }
+
+    suspend fun getAlarmDefaults(context: Context): AlarmDefaults =
+        dataStore.data
+            .catch { emit(emptyPreferences()) }
+            .map { preferences ->
+                // Get Preferences
+                val ringtoneUri = preferences[KEY_RINGTONE_URI]
+                    ?: RingtoneRepository(context).tryGetNonGenericSystemDefaultUri()
+                val isVibrationEnabled = preferences[KEY_IS_VIBRATION_ENABLED] ?: DEFAULT_IS_VIBRATION_ENABLED
+                val snoozeDuration = preferences[KEY_SNOOZE_DURATION] ?: DEFAULT_SNOOZE_DURATION
+
+                // Return AlarmDefaults
+                AlarmDefaults(ringtoneUri, isVibrationEnabled, snoozeDuration)
+            }.first()
+
+    /*
+     * Write
+     */
 
     suspend fun updateAlarmDefaults(alarmDefaults: AlarmDefaults) {
         // TODO: Exception handling

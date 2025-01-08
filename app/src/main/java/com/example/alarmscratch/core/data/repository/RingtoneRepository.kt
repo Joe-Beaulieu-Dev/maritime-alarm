@@ -10,6 +10,11 @@ import com.example.alarmscratch.core.data.model.RingtoneData
 
 class RingtoneRepository(private val context: Context) {
 
+    companion object {
+        private const val SYSTEM_DEFAULT_RINGTONE_TITLE_PREFIX = "Default ("
+        private const val SYSTEM_DEFAULT_RINGTONE_TITLE_SUFFIX = ")"
+    }
+
     fun getRingtone(uriString: String): Ringtone {
         val ringtoneUri = Uri.parse(uriString)
         var ringtone = RingtoneManager.getRingtone(context.applicationContext, ringtoneUri)
@@ -56,5 +61,25 @@ class RingtoneRepository(private val context: Context) {
         ringtoneCursor.close()
 
         return ringtoneList
+    }
+
+    fun tryGetNonGenericSystemDefaultUri(): String {
+        val genericSystemDefaultUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+        val genericSystemDefaultRingtone: Ringtone? = RingtoneManager.getRingtone(context, genericSystemDefaultUri)
+
+        return if (genericSystemDefaultRingtone != null) {
+            // Remove the System Default Ringtone prefix and suffix and try to find a match on the cleaned name.
+            // This could be improved with a Regex check, but for now this just needs to get done.
+            val ringtoneList = getAllRingtoneData()
+            val cleanRingtoneName = genericSystemDefaultRingtone
+                .getTitle(context)
+                .removePrefix(SYSTEM_DEFAULT_RINGTONE_TITLE_PREFIX)
+                .removeSuffix(SYSTEM_DEFAULT_RINGTONE_TITLE_SUFFIX)
+            val match: RingtoneData? = ringtoneList.firstOrNull { it.name == cleanRingtoneName }
+
+            match?.fullUriString ?: genericSystemDefaultUri.toString()
+        } else {
+            genericSystemDefaultUri.toString()
+        }
     }
 }
