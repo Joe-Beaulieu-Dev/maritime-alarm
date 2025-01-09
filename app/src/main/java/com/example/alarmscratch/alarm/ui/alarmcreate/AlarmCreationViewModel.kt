@@ -102,6 +102,7 @@ class AlarmCreationViewModel(
                                 snoozeDuration = alarmDefaults.snoozeDuration
                             )
                         )
+                        // Update state
                         referenceAlarm.value = alarmState
                         _newAlarm.value = alarmState
                     }
@@ -119,7 +120,7 @@ class AlarmCreationViewModel(
 
                 return AlarmCreationViewModel(
                     alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(application).alarmDao()),
-                    alarmDefaultsRepository = AlarmDefaultsRepository(application.alarmDefaultsDataStore),
+                    alarmDefaultsRepository = AlarmDefaultsRepository(application, application.alarmDefaultsDataStore),
                     generalSettingsRepository = GeneralSettingsRepository(application.generalSettingsDataStore),
                     alarmValidator = AlarmValidator()
                 ) as T

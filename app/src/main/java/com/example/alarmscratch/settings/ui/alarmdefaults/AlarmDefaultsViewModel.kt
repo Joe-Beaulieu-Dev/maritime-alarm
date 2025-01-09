@@ -49,7 +49,7 @@ class AlarmDefaultsViewModel(private val alarmDefaultsRepository: AlarmDefaultsR
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
 
                 return AlarmDefaultsViewModel(
-                    alarmDefaultsRepository = AlarmDefaultsRepository(application.alarmDefaultsDataStore)
+                    alarmDefaultsRepository = AlarmDefaultsRepository(application, application.alarmDefaultsDataStore)
                 ) as T
             }
         }
