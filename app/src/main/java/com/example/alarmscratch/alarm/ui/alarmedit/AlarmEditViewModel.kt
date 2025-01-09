@@ -88,6 +88,7 @@ class AlarmEditViewModel(
                 .map<Alarm, AlarmState> { alarm -> AlarmState.Success(alarm) }
                 .catch { throwable -> emit(AlarmState.Error(throwable)) }
                 .collect { alarmState ->
+                    // Update state
                     referenceAlarm.value = alarmState
                     _modifiedAlarm.value = alarmState
                 }

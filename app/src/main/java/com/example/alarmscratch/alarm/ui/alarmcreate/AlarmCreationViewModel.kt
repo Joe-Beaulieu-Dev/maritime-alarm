@@ -1,6 +1,5 @@
 package com.example.alarmscratch.alarm.ui.alarmcreate
 
-import android.app.Application
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -24,8 +23,10 @@ import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.core.extension.toScheduleString
 import com.example.alarmscratch.core.extension.withFuturizedDateTime
 import com.example.alarmscratch.core.ui.snackbar.SnackbarEvent
+import com.example.alarmscratch.settings.data.model.AlarmDefaults
 import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
+import com.example.alarmscratch.settings.data.repository.AlarmDefaultsState
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsRepository
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
 import com.example.alarmscratch.settings.data.repository.alarmDefaultsDataStore
@@ -44,7 +45,6 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class AlarmCreationViewModel(
-    application: Application,
     private val alarmRepository: AlarmRepository,
     private val alarmDefaultsRepository: AlarmDefaultsRepository,
     private val generalSettingsRepository: GeneralSettingsRepository,
@@ -57,6 +57,7 @@ class AlarmCreationViewModel(
     val newAlarm: StateFlow<AlarmState> = _newAlarm.asStateFlow()
 
     // Settings
+    private val alarmDefaults: MutableStateFlow<AlarmDefaultsState> = MutableStateFlow(AlarmDefaultsState.Loading)
     val generalSettings: StateFlow<GeneralSettingsState> =
         generalSettingsRepository.generalSettingsFlow
             .map<GeneralSettings, GeneralSettingsState> { generalSettings -> GeneralSettingsState.Success(generalSettings) }
@@ -83,20 +84,29 @@ class AlarmCreationViewModel(
 
     init {
         viewModelScope.launch {
-            // Create initial Alarm
-            val alarmDefaults = alarmDefaultsRepository.getAlarmDefaults(application)
-            val alarmState = AlarmState.Success(
-                Alarm(
-                    dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
-                    ringtoneUriString = alarmDefaults.ringtoneUri,
-                    isVibrationEnabled = alarmDefaults.isVibrationEnabled,
-                    snoozeDuration = alarmDefaults.snoozeDuration
-                )
-            )
+            alarmDefaultsRepository.alarmDefaultsFlow
+                .map<AlarmDefaults, AlarmDefaultsState> { alarmDefaults -> AlarmDefaultsState.Success(alarmDefaults) }
+                .catch { throwable -> emit(AlarmDefaultsState.Error(throwable)) }
+                .collect { alarmDefaultsState ->
+                    // Get AlarmDefaultsState
+                    alarmDefaults.value = alarmDefaultsState
 
-            // Update state
-            referenceAlarm.value = alarmState
-            _newAlarm.value = alarmState
+                    // Create new Alarm with AlarmDefaults
+                    if (alarmDefaults.value is AlarmDefaultsState.Success) {
+                        val alarmDefaults = (alarmDefaults.value as AlarmDefaultsState.Success).alarmDefaults
+                        val alarmState = AlarmState.Success(
+                            Alarm(
+                                dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
+                                ringtoneUriString = alarmDefaults.ringtoneUri,
+                                isVibrationEnabled = alarmDefaults.isVibrationEnabled,
+                                snoozeDuration = alarmDefaults.snoozeDuration
+                            )
+                        )
+                        // Update state
+                        referenceAlarm.value = alarmState
+                        _newAlarm.value = alarmState
+                    }
+                }
         }
     }
 
@@ -109,9 +119,8 @@ class AlarmCreationViewModel(
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
 
                 return AlarmCreationViewModel(
-                    application = application,
                     alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(application).alarmDao()),
-                    alarmDefaultsRepository = AlarmDefaultsRepository(application.alarmDefaultsDataStore),
+                    alarmDefaultsRepository = AlarmDefaultsRepository(application, application.alarmDefaultsDataStore),
                     generalSettingsRepository = GeneralSettingsRepository(application.generalSettingsDataStore),
                     alarmValidator = AlarmValidator()
                 ) as T
