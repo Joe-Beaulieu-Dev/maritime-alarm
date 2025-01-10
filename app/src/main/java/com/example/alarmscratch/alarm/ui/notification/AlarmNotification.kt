@@ -80,6 +80,7 @@ object AlarmNotification {
         alarmExecutionData: AlarmExecutionData,
         timeDisplay: TimeDisplay
     ): PendingIntent {
+        val name = alarmExecutionData.name.ifBlank { context.getString(R.string.default_alarm_name) }
         val is24Hour = when (timeDisplay) {
             TimeDisplay.TwelveHour ->
                 false
@@ -90,7 +91,7 @@ object AlarmNotification {
         val fullScreenAlertIntent = Intent(context, FullScreenAlarmActivity::class.java).apply {
             // Extras
             putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmExecutionData.id)
-            putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, alarmExecutionData.name)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_NAME, name)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_EXECUTION_DATE_TIME, alarmExecutionData.executionDateTime.toString())
             putExtra(AlarmActionReceiver.EXTRA_REPEATING_DAYS, alarmExecutionData.encodedRepeatingDays)
             putExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI, alarmExecutionData.ringtoneUri)
