@@ -140,4 +140,11 @@
     -->
     <string name="permission_channel_alarm_name">Alarm</string>
     <string name="permission_channel_alarm_desc">Used for Alarm notifications</string>
+    <string name="permission_required">Permission Required</string>
+    <string name="permission_missing_notification">Notification permissions are required to use
+        Alarms. Please request Notification permissions by pressing the Request button below,
+        and then selecting \"Allow\" on the following popup.\n\nIf you do not grant Notification
+        permissions then you will not be able to create or edit Alarms, and any Alarms that you
+        previously created *will not go off*.</string>
+    <string name="permission_request">Request</string>
 </resources>

@@ -1,6 +1,9 @@
 package com.example.alarmscratch.alarm.ui.alarmlist
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -19,6 +22,7 @@ import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsRepository
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
 import com.example.alarmscratch.settings.data.repository.generalSettingsDataStore
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -41,6 +45,7 @@ class AlarmListViewModel(
                 SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
                 AlarmListState.Loading
             )
+
     // Settings
     val generalSettings: StateFlow<GeneralSettingsState> =
         generalSettingsRepository.generalSettingsFlow
@@ -51,6 +56,10 @@ class AlarmListViewModel(
                 SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
                 GeneralSettingsState.Loading
             )
+
+    // Permissions
+    private val _hasNotificationPermission: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val hasNotificationPermission: StateFlow<Boolean> = _hasNotificationPermission
 
     companion object {
 
@@ -111,5 +120,24 @@ class AlarmListViewModel(
 
     private suspend fun showSnackbar(snackbarEvent: SnackbarEvent) {
         GlobalSnackbarController.sendEvent(snackbarEvent)
+    }
+
+    /*
+     * Permissions
+     */
+
+    fun checkNotificationPermission(context: Context) {
+        // TODO: API level check on Notification Permission
+        when (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)) {
+            PackageManager.PERMISSION_GRANTED ->
+                _hasNotificationPermission.value = true
+            PackageManager.PERMISSION_DENIED ->
+                _hasNotificationPermission.value = false
+            else ->
+                // checkSelfPermission() can only return either PackageManager.PERMISSION_GRANTED
+                // or PackageManager.PERMISSION_DENIED. However, these values are ints, so there
+                // needs to be an else here. This should never execute.
+                _hasNotificationPermission.value = false
+        }
     }
 }
