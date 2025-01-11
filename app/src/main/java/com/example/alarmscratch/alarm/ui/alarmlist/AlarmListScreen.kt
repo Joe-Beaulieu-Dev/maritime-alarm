@@ -8,7 +8,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -67,10 +66,7 @@ fun AlarmListScreen(
     alarmListViewModel.checkNotificationPermission(localContext)
 
     if (!hasNotificationPermission) {
-        NotificationPermissionOff(
-            promptPermission = notificationPermissionLauncher,
-            modifier = Modifier.fillMaxSize()
-        )
+        NotificationPermissionOff(promptPermission = notificationPermissionLauncher)
     } else {
         if (alarmListState is AlarmListState.Success && generalSettingsState is GeneralSettingsState.Success) {
             val alarmList = (alarmListState as AlarmListState.Success).alarmList
