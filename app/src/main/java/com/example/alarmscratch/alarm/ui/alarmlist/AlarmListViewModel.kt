@@ -1,7 +1,6 @@
 package com.example.alarmscratch.alarm.ui.alarmlist
 
 import android.content.Context
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -20,10 +19,8 @@ import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsRepository
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
 import com.example.alarmscratch.settings.data.repository.generalSettingsDataStore
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -55,11 +52,6 @@ class AlarmListViewModel(
                 SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
                 GeneralSettingsState.Loading
             )
-
-    // Permissions
-    private val _attemptedToAskForPermission: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val attemptedToAskForPermission: StateFlow<Boolean> = _attemptedToAskForPermission.asStateFlow()
-    val deniedPermissionList = mutableStateListOf<String>()
 
     companion object {
 
@@ -120,20 +112,5 @@ class AlarmListViewModel(
 
     private suspend fun showSnackbar(snackbarEvent: SnackbarEvent) {
         GlobalSnackbarController.sendEvent(snackbarEvent)
-    }
-
-    /*
-     * Permissions
-     */
-
-    fun onPermissionResult(permission: String, isGranted: Boolean) {
-        _attemptedToAskForPermission.value = true
-
-        if (!isGranted) {
-            deniedPermissionList.add(permission)
-        } else if (deniedPermissionList.isNotEmpty()) {
-            // List can contain duplicates, remove all instances
-            deniedPermissionList.removeAll { it == permission }
-        }
     }
 }
