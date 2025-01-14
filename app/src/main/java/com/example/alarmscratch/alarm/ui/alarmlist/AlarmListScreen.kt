@@ -123,9 +123,9 @@ fun PromptAcceptPermissionSystemDialog(
 ) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        modifier = modifier
+        modifier = modifier.verticalScroll(rememberScrollState())
     ) {
-        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+        Column {
             // Icon and Title
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -172,9 +172,9 @@ fun PromptAcceptPermissionSystemSettings(
 ) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        modifier = modifier
+        modifier = modifier.verticalScroll(rememberScrollState())
     ) {
-        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+        Column {
             // Icon and Title
             Row(
                 verticalAlignment = Alignment.CenterVertically,
