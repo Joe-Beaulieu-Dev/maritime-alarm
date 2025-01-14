@@ -128,14 +128,12 @@ class AlarmListViewModel(
 
     fun onPermissionResult(permission: String, isGranted: Boolean) {
         _attemptedToAskForPermission.value = true
-        val permissionPreviouslyDeclined = deniedPermissionList.contains(permission)
 
-        if (!isGranted && !permissionPreviouslyDeclined) {
+        if (!isGranted) {
             deniedPermissionList.add(permission)
-        } else if (!isGranted && permissionPreviouslyDeclined) {
-            deniedPermissionList.add(permission)
-        } else if (isGranted && permissionPreviouslyDeclined) {
-            deniedPermissionList.remove(permission)
+        } else if (deniedPermissionList.isNotEmpty()) {
+            // List can contain duplicates, remove all instances
+            deniedPermissionList.removeAll { it == permission }
         }
     }
 }
