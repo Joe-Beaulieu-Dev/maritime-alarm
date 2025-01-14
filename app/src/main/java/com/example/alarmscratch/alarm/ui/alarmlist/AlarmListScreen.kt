@@ -1,13 +1,14 @@
 package com.example.alarmscratch.alarm.ui.alarmlist
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -52,41 +54,71 @@ fun AlarmListScreen(
     // State
     val alarmListState by alarmListViewModel.alarmList.collectAsState()
     val generalSettingsState by alarmListViewModel.generalSettings.collectAsState()
+    val attemptedToAskForPermission by alarmListViewModel.attemptedToAskForPermission.collectAsState()
+    val deniedPermissionList = alarmListViewModel.deniedPermissionList
 
-    // Permissions
-    val localContext = LocalContext.current
-    val hasNotificationPermission by alarmListViewModel.hasNotificationPermission.collectAsState()
+    // Permission logic
+    val shouldShowRequestPermissionRationale = (LocalContext.current as? Activity)
+        ?.shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
+        ?: false
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
-    ) {
-        alarmListViewModel.checkNotificationPermission(localContext)
+    ) { isGranted ->
+        alarmListViewModel.onPermissionResult(Manifest.permission.POST_NOTIFICATIONS, isGranted)
     }
 
-    // Check for Notification Permission
-    alarmListViewModel.checkNotificationPermission(localContext)
+    // Must auto-call because of the nature of permissions on Android
+    LaunchedEffect(key1 = attemptedToAskForPermission) {
+        if (!attemptedToAskForPermission) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
 
-    if (!hasNotificationPermission) {
-        NotificationPermissionOff(promptPermission = notificationPermissionLauncher)
-    } else {
-        if (alarmListState is AlarmListState.Success && generalSettingsState is GeneralSettingsState.Success) {
-            val alarmList = (alarmListState as AlarmListState.Success).alarmList
-            val generalSettings = (generalSettingsState as GeneralSettingsState.Success).generalSettings
+    // Don't show anything until we know we've asked the User for the required permissions at least one time
+    if (attemptedToAskForPermission) {
+        // Permission Denied
+        if (deniedPermissionList.contains(Manifest.permission.POST_NOTIFICATIONS)) {
+            // The User denied the permission only once, therefore we can still display
+            // the Permission Request System Dialog
+            if (shouldShowRequestPermissionRationale) {
+                PromptAcceptPermissionSystemDialog(
+                    requestPermission = { notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else {
+                // The User denied the permission twice. Therefore the System will never show
+                // the Permission Request System Dialog again. Therefore we must give the User an option
+                // to manually grant the permission, since at this point the System will never show the
+                // Permission Request System Dialog ever again. Explain why the permission is needed, inform
+                // the User that they can manually accept the permission in the System Settings, and display
+                // a Button that leads to the System Settings, which they can decide if they want to press.
+                PromptAcceptPermissionSystemSettings(
+                    openSystemSettings = {},
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        } else {
+            // Permission Granted, show AlarmListScreenContent
+            if (alarmListState is AlarmListState.Success && generalSettingsState is GeneralSettingsState.Success) {
+                val alarmList = (alarmListState as AlarmListState.Success).alarmList
+                val generalSettings = (generalSettingsState as GeneralSettingsState.Success).generalSettings
 
-            AlarmListScreenContent(
-                alarmList = alarmList,
-                timeDisplay = generalSettings.timeDisplay,
-                onAlarmToggled = { context, alarm -> alarmListViewModel.toggleAlarm(context, alarm) },
-                onAlarmDeleted = { context, alarm -> alarmListViewModel.cancelAndDeleteAlarm(context, alarm) },
-                navigateToAlarmEditScreen = navigateToAlarmEditScreen,
-                modifier = modifier
-            )
+                AlarmListScreenContent(
+                    alarmList = alarmList,
+                    timeDisplay = generalSettings.timeDisplay,
+                    onAlarmToggled = { context, alarm -> alarmListViewModel.toggleAlarm(context, alarm) },
+                    onAlarmDeleted = { context, alarm -> alarmListViewModel.cancelAndDeleteAlarm(context, alarm) },
+                    navigateToAlarmEditScreen = navigateToAlarmEditScreen,
+                    modifier = modifier
+                )
+            }
         }
     }
 }
 
 @Composable
-fun NotificationPermissionOff(
-    promptPermission: ManagedActivityResultLauncher<String, Boolean>,
+fun PromptAcceptPermissionSystemDialog(
+    requestPermission: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -122,13 +154,61 @@ fun NotificationPermissionOff(
 
             // Request Button
             Button(
-                // TODO: API level check on Notification Permission
-                onClick = { promptPermission.launch(Manifest.permission.POST_NOTIFICATIONS) },
+                onClick = requestPermission,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(vertical = 10.dp)
             ) {
                 Text(text = stringResource(id = R.string.permission_request))
+            }
+        }
+    }
+}
+
+@Composable
+fun PromptAcceptPermissionSystemSettings(
+    openSystemSettings: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        modifier = modifier
+    ) {
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            // Icon and Title
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(start = 14.dp, top = 14.dp, end = 14.dp)
+            ) {
+                // Icon
+                Icon(
+                    imageVector = Icons.Default.Warning,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+
+                // Title
+                Text(
+                    text = stringResource(id = R.string.permission_required),
+                    fontSize = 24.sp
+                )
+            }
+
+            // Body
+            Text(
+                text = "Accept Permission via System Settings",
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(start = 24.dp, top = 12.dp, end = 24.dp)
+            )
+
+            // Request Button
+            Button(
+                onClick = openSystemSettings,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = 10.dp)
+            ) {
+                Text(text = "Open System Settings")
             }
         }
     }
@@ -208,12 +288,22 @@ private fun AlarmListScreenNoAlarmsPreview() {
 
 @Preview
 @Composable
-private fun NotificationPermissionOffPreview() {
-    val notificationPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = {}
-    )
+private fun PromptAcceptPermissionSystemDialogPreview() {
     AlarmScratchTheme {
-        NotificationPermissionOff(promptPermission = notificationPermissionLauncher)
+        PromptAcceptPermissionSystemDialog(
+            requestPermission = {},
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PromptAcceptPermissionSystemSettingsPreview() {
+    AlarmScratchTheme {
+        PromptAcceptPermissionSystemSettings(
+            openSystemSettings = {},
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }

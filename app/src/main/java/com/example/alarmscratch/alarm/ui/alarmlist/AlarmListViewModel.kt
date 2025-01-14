@@ -1,9 +1,7 @@
 package com.example.alarmscratch.alarm.ui.alarmlist
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
-import androidx.core.content.ContextCompat
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -25,6 +23,7 @@ import com.example.alarmscratch.settings.data.repository.generalSettingsDataStor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -58,8 +57,9 @@ class AlarmListViewModel(
             )
 
     // Permissions
-    private val _hasNotificationPermission: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val hasNotificationPermission: StateFlow<Boolean> = _hasNotificationPermission
+    private val _attemptedToAskForPermission: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val attemptedToAskForPermission: StateFlow<Boolean> = _attemptedToAskForPermission.asStateFlow()
+    val deniedPermissionList = mutableStateListOf<String>()
 
     companion object {
 
@@ -126,18 +126,16 @@ class AlarmListViewModel(
      * Permissions
      */
 
-    fun checkNotificationPermission(context: Context) {
-        // TODO: API level check on Notification Permission
-        when (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)) {
-            PackageManager.PERMISSION_GRANTED ->
-                _hasNotificationPermission.value = true
-            PackageManager.PERMISSION_DENIED ->
-                _hasNotificationPermission.value = false
-            else ->
-                // checkSelfPermission() can only return either PackageManager.PERMISSION_GRANTED
-                // or PackageManager.PERMISSION_DENIED. However, these values are ints, so there
-                // needs to be an else here. This should never execute.
-                _hasNotificationPermission.value = false
+    fun onPermissionResult(permission: String, isGranted: Boolean) {
+        _attemptedToAskForPermission.value = true
+        val permissionPreviouslyDeclined = deniedPermissionList.contains(permission)
+
+        if (!isGranted && !permissionPreviouslyDeclined) {
+            deniedPermissionList.add(permission)
+        } else if (!isGranted && permissionPreviouslyDeclined) {
+            deniedPermissionList.add(permission)
+        } else if (isGranted && permissionPreviouslyDeclined) {
+            deniedPermissionList.remove(permission)
         }
     }
 }
