@@ -1,6 +1,9 @@
 package com.example.alarmscratch.core.ui.permission
 
 import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
@@ -46,13 +49,19 @@ fun PermissionGateScreen(
     val deniedPermissionList = permissionGateViewModel.deniedPermissionList
 
     // Permission logic
-    val shouldShowRequestPermissionRationale = (LocalContext.current as? Activity)
+    val context = LocalContext.current
+    val shouldShowRequestPermissionRationale = (context as? Activity)
         ?.shouldShowRequestPermissionRationale(permission.permissionString)
         ?: false
     val permissionRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         permissionGateViewModel.onPermissionResult(permission.permissionString, isGranted)
+    }
+    val systemSettingsLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) {
+        permissionGateViewModel.onReturnFromSystemSettings(context, permission.permissionString)
     }
 
     // Must auto-call because of the nature of permissions on Android
@@ -85,7 +94,14 @@ fun PermissionGateScreen(
                 PermissionGateScreenContent(
                     bodyTextRes = permission.systemSettingsBodyRes,
                     requestButtonTextRes = permission.systemSettingsButtonRes,
-                    onRequest = {},
+                    onRequest = {
+                        systemSettingsLauncher.launch(
+                            Intent(
+                                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                Uri.fromParts(UriScheme.PACKAGE, context.packageName, null)
+                            )
+                        )
+                    },
                     modifier = modifier
                 )
             }

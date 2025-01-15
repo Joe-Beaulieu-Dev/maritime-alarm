@@ -1,6 +1,9 @@
 package com.example.alarmscratch.core.ui.permission
 
+import android.content.Context
+import android.content.pm.PackageManager
 import androidx.compose.runtime.mutableStateListOf
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
@@ -34,6 +37,16 @@ class PermissionGateViewModel : ViewModel() {
         if (!isGranted) {
             deniedPermissionList.add(permission)
         } else if (deniedPermissionList.isNotEmpty()) {
+            // List can contain duplicates, remove all instances
+            deniedPermissionList.removeAll { it == permission }
+        }
+    }
+
+    fun onReturnFromSystemSettings(context: Context, permission: String) {
+        _attemptedToAskForPermission.value = true
+
+        val isGranted = ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+        if (isGranted && deniedPermissionList.isNotEmpty()) {
             // List can contain duplicates, remove all instances
             deniedPermissionList.removeAll { it == permission }
         }
