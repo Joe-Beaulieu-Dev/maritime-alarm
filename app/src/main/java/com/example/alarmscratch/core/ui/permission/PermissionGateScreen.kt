@@ -36,7 +36,7 @@ import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 
 @Composable
 fun PermissionGateScreen(
-    permission: String,
+    permission: Permission,
     gatedScreen: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     permissionGateViewModel: PermissionGateViewModel = viewModel(factory = PermissionGateViewModel.Factory)
@@ -47,32 +47,32 @@ fun PermissionGateScreen(
 
     // Permission logic
     val shouldShowRequestPermissionRationale = (LocalContext.current as? Activity)
-        ?.shouldShowRequestPermissionRationale(permission)
+        ?.shouldShowRequestPermissionRationale(permission.permissionString)
         ?: false
     val permissionRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        permissionGateViewModel.onPermissionResult(permission, isGranted)
+        permissionGateViewModel.onPermissionResult(permission.permissionString, isGranted)
     }
 
     // Must auto-call because of the nature of permissions on Android
     LaunchedEffect(key1 = attemptedToAskForPermission) {
         if (!attemptedToAskForPermission) {
-            permissionRequestLauncher.launch(permission)
+            permissionRequestLauncher.launch(permission.permissionString)
         }
     }
 
     // Don't show anything until we know we've asked the User for the required permissions at least one time
     if (attemptedToAskForPermission) {
-        // Permission Denied
-        if (deniedPermissionList.contains(permission)) {
+        // Permission denied
+        if (deniedPermissionList.contains(permission.permissionString)) {
             // The User denied the permission only once, therefore we can still display
             // the Permission Request System Dialog
             if (shouldShowRequestPermissionRationale) {
                 PermissionGateScreenContent(
-                    bodyTextRes = R.string.permission_missing_system_dialog,
-                    requestButtonTextRes = R.string.permission_request,
-                    onRequest = { permissionRequestLauncher.launch(permission) },
+                    bodyTextRes = permission.systemDialogBodyRes,
+                    requestButtonTextRes = permission.systemDialogButtonRes,
+                    onRequest = { permissionRequestLauncher.launch(permission.permissionString) },
                     modifier = modifier
                 )
             } else {
@@ -83,8 +83,8 @@ fun PermissionGateScreen(
                 // the User that they can manually accept the permission in the System Settings, and display
                 // a Button that leads to the System Settings, which they can decide if they want to press.
                 PermissionGateScreenContent(
-                    bodyTextRes = R.string.permission_missing_system_settings,
-                    requestButtonTextRes = R.string.permission_open_system_settings,
+                    bodyTextRes = permission.systemSettingsBodyRes,
+                    requestButtonTextRes = permission.systemSettingsButtonRes,
                     onRequest = {},
                     modifier = modifier
                 )
