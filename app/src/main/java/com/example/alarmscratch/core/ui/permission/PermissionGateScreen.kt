@@ -3,6 +3,7 @@ package com.example.alarmscratch.core.ui.permission
 import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -68,8 +69,10 @@ fun PermissionGateScreen(
             // The User denied the permission only once, therefore we can still display
             // the Permission Request System Dialog
             if (shouldShowRequestPermissionRationale) {
-                PromptAcceptPermissionSystemDialog(
-                    showSystemDialog = { permissionRequestLauncher.launch(permission) },
+                PermissionGateScreenContent(
+                    bodyTextRes = R.string.permission_missing_system_dialog,
+                    requestButtonTextRes = R.string.permission_request,
+                    onRequest = { permissionRequestLauncher.launch(permission) },
                     modifier = modifier
                 )
             } else {
@@ -79,8 +82,10 @@ fun PermissionGateScreen(
                 // Permission Request System Dialog ever again. Explain why the permission is needed, inform
                 // the User that they can manually accept the permission in the System Settings, and display
                 // a Button that leads to the System Settings, which they can decide if they want to press.
-                PromptAcceptPermissionSystemSettings(
-                    openSystemSettings = {},
+                PermissionGateScreenContent(
+                    bodyTextRes = R.string.permission_missing_system_settings,
+                    requestButtonTextRes = R.string.permission_open_system_settings,
+                    onRequest = {},
                     modifier = modifier
                 )
             }
@@ -92,8 +97,10 @@ fun PermissionGateScreen(
 }
 
 @Composable
-fun PromptAcceptPermissionSystemDialog(
-    showSystemDialog: () -> Unit,
+fun PermissionGateScreenContent(
+    @StringRes bodyTextRes: Int,
+    @StringRes requestButtonTextRes: Int,
+    onRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -122,68 +129,19 @@ fun PromptAcceptPermissionSystemDialog(
 
             // Body
             Text(
-                text = stringResource(id = R.string.permission_missing_system_dialog),
+                text = stringResource(id = bodyTextRes),
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(start = 24.dp, top = 12.dp, end = 24.dp)
             )
 
             // Request Button
             Button(
-                onClick = showSystemDialog,
+                onClick = onRequest,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(vertical = 10.dp)
             ) {
-                Text(text = stringResource(id = R.string.permission_request))
-            }
-        }
-    }
-}
-
-@Composable
-fun PromptAcceptPermissionSystemSettings(
-    openSystemSettings: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        modifier = modifier.verticalScroll(rememberScrollState())
-    ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            // Icon and Title
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(start = 14.dp, top = 14.dp, end = 14.dp)
-            ) {
-                // Icon
-                Icon(
-                    imageVector = Icons.Default.Warning,
-                    contentDescription = null,
-                    modifier = Modifier.padding(end = 8.dp)
-                )
-
-                // Title
-                Text(
-                    text = stringResource(id = R.string.permission_required),
-                    fontSize = 24.sp
-                )
-            }
-
-            // Body
-            Text(
-                text = stringResource(id = R.string.permission_missing_system_settings),
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(start = 24.dp, top = 12.dp, end = 24.dp)
-            )
-
-            // Request Button
-            Button(
-                onClick = openSystemSettings,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(vertical = 10.dp)
-            ) {
-                Text(text = stringResource(id = R.string.permission_open_system_settings))
+                Text(text = stringResource(id = requestButtonTextRes))
             }
         }
     }
@@ -195,10 +153,12 @@ fun PromptAcceptPermissionSystemSettings(
 
 @Preview
 @Composable
-private fun PromptAcceptPermissionSystemDialogPreview() {
+private fun PermissionGateScreenContentSystemDialogPreview() {
     AlarmScratchTheme {
-        PromptAcceptPermissionSystemDialog(
-            showSystemDialog = {},
+        PermissionGateScreenContent(
+            bodyTextRes = R.string.permission_missing_system_dialog,
+            requestButtonTextRes = R.string.permission_request,
+            onRequest = {},
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -206,10 +166,12 @@ private fun PromptAcceptPermissionSystemDialogPreview() {
 
 @Preview
 @Composable
-private fun PromptAcceptPermissionSystemSettingsPreview() {
+private fun PermissionGateScreenContentSystemSettingsPreview() {
     AlarmScratchTheme {
-        PromptAcceptPermissionSystemSettings(
-            openSystemSettings = {},
+        PermissionGateScreenContent(
+            bodyTextRes = R.string.permission_missing_system_settings,
+            requestButtonTextRes = R.string.permission_open_system_settings,
+            onRequest = {},
             modifier = Modifier.fillMaxWidth()
         )
     }
