@@ -122,7 +122,7 @@ fun PromptAcceptPermissionSystemDialog(
 
             // Body
             Text(
-                text = stringResource(id = R.string.permission_missing_notification),
+                text = stringResource(id = R.string.permission_missing_system_dialog),
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(start = 24.dp, top = 12.dp, end = 24.dp)
             )
@@ -171,7 +171,7 @@ fun PromptAcceptPermissionSystemSettings(
 
             // Body
             Text(
-                text = "Accept Permission via System Settings",
+                text = stringResource(id = R.string.permission_missing_system_settings),
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(start = 24.dp, top = 12.dp, end = 24.dp)
             )
@@ -183,7 +183,7 @@ fun PromptAcceptPermissionSystemSettings(
                     .align(Alignment.CenterHorizontally)
                     .padding(vertical = 10.dp)
             ) {
-                Text(text = "Open System Settings")
+                Text(text = stringResource(id = R.string.permission_open_system_settings))
             }
         }
     }
