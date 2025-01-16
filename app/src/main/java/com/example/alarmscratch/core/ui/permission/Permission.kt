@@ -9,9 +9,7 @@ import com.example.alarmscratch.R
 sealed class Permission(
     val permissionString: String,
     @StringRes val systemDialogBodyRes: Int,
-    @StringRes val systemSettingsBodyRes: Int,
-    @StringRes val systemDialogButtonRes: Int = R.string.permission_request,
-    @StringRes val systemSettingsButtonRes: Int = R.string.permission_open_system_settings
+    @StringRes val systemSettingsBodyRes: Int
 ) {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     data object PostNotifications : Permission(

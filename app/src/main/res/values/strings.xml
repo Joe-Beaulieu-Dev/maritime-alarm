@@ -147,7 +147,7 @@
         required to use Alarms. Without it you will not be able to create or edit Alarms,
         &lt;i&gt;&lt;u&gt;and any Alarms that you previously created will not go off&lt;/u&gt;&lt;/i&gt;.
         &lt;br&gt;&lt;br&gt;
-        Please request the Notification Permission by pressing the Request button below,
+        Please request the Notification Permission by pressing the \"Request\" button below,
         and then selecting \"Allow\" on the following popup.</string>
     <string name="permission_missing_notifications_system_settings">The Notification Permission is
         required to use Alarms. Without it you will not be able to create or edit Alarms,

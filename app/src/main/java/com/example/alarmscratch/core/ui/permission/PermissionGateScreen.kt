@@ -92,7 +92,7 @@ fun PermissionGateScreen(
             if (shouldShowRequestPermissionRationale) {
                 PermissionGateScreenContent(
                     bodyText = systemDialogBodyText,
-                    requestButtonTextRes = permission.systemDialogButtonRes,
+                    requestButtonTextRes = R.string.permission_request,
                     onRequest = { permissionRequestLauncher.launch(permission.permissionString) },
                     modifier = modifier
                 )
@@ -105,7 +105,7 @@ fun PermissionGateScreen(
                 // a Button that leads to the System Settings, which they can decide if they want to press.
                 PermissionGateScreenContent(
                     bodyText = systemSettingsBodyText,
-                    requestButtonTextRes = permission.systemSettingsButtonRes,
+                    requestButtonTextRes = R.string.permission_open_system_settings,
                     onRequest = {
                         systemSettingsLauncher.launch(
                             Intent(
