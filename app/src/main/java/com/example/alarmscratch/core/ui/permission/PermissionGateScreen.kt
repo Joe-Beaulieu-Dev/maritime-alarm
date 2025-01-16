@@ -29,7 +29,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -75,11 +78,20 @@ fun PermissionGateScreen(
     if (attemptedToAskForPermission) {
         // Permission denied
         if (deniedPermissionList.contains(permission.permissionString)) {
+            // TODO: The below 2 properties are a work around for an Android Studio bug where fromHtml() does not work with previews.
+            //  The bug mentions TextDefaults.fromHtml() instead of AnnotatedString.fromHtml(), but for reasons I'm not going to get
+            //  into for brevity, I believe it's the same thing. This will hopefully go away after updating Android Studio to Koala
+            //  or above. Since this only affects previews, just create the AnnotatedString up here and pass it to the previewed composable.
+            //  https://issuetracker.google.com/issues/139326648#comment18
+            //  https://issuetracker.google.com/issues/336161238
+            val systemDialogBodyText = AnnotatedString.fromHtml(stringResource(id = permission.systemDialogBodyRes))
+            val systemSettingsBodyText = AnnotatedString.fromHtml(stringResource(id = permission.systemSettingsBodyRes))
+
             // The User denied the permission only once, therefore we can still display
             // the Permission Request System Dialog
             if (shouldShowRequestPermissionRationale) {
                 PermissionGateScreenContent(
-                    bodyTextRes = permission.systemDialogBodyRes,
+                    bodyText = systemDialogBodyText,
                     requestButtonTextRes = permission.systemDialogButtonRes,
                     onRequest = { permissionRequestLauncher.launch(permission.permissionString) },
                     modifier = modifier
@@ -92,7 +104,7 @@ fun PermissionGateScreen(
                 // the User that they can manually accept the permission in the System Settings, and display
                 // a Button that leads to the System Settings, which they can decide if they want to press.
                 PermissionGateScreenContent(
-                    bodyTextRes = permission.systemSettingsBodyRes,
+                    bodyText = systemSettingsBodyText,
                     requestButtonTextRes = permission.systemSettingsButtonRes,
                     onRequest = {
                         systemSettingsLauncher.launch(
@@ -114,7 +126,7 @@ fun PermissionGateScreen(
 
 @Composable
 fun PermissionGateScreenContent(
-    @StringRes bodyTextRes: Int,
+    bodyText: AnnotatedString,
     @StringRes requestButtonTextRes: Int,
     onRequest: () -> Unit,
     modifier: Modifier = Modifier
@@ -145,7 +157,7 @@ fun PermissionGateScreenContent(
 
             // Body
             Text(
-                text = stringResource(id = bodyTextRes),
+                text = bodyText,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(start = 24.dp, top = 12.dp, end = 24.dp)
             )
@@ -172,7 +184,9 @@ fun PermissionGateScreenContent(
 private fun PermissionGateScreenContentSystemDialogPreview() {
     AlarmScratchTheme {
         PermissionGateScreenContent(
-            bodyTextRes = R.string.permission_missing_system_dialog,
+            bodyText = buildAnnotatedString {
+                append(stringResource(id = R.string.permission_missing_notifications_system_dialog))
+            },
             requestButtonTextRes = R.string.permission_request,
             onRequest = {},
             modifier = Modifier.fillMaxWidth()
@@ -185,7 +199,9 @@ private fun PermissionGateScreenContentSystemDialogPreview() {
 private fun PermissionGateScreenContentSystemSettingsPreview() {
     AlarmScratchTheme {
         PermissionGateScreenContent(
-            bodyTextRes = R.string.permission_missing_system_settings,
+            bodyText = buildAnnotatedString {
+                append(stringResource(id = R.string.permission_missing_notifications_system_settings))
+            },
             requestButtonTextRes = R.string.permission_open_system_settings,
             onRequest = {},
             modifier = Modifier.fillMaxWidth()
