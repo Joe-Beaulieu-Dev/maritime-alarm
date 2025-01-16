@@ -43,8 +43,6 @@ class PermissionGateViewModel : ViewModel() {
     }
 
     fun onReturnFromSystemSettings(context: Context, permission: String) {
-        _attemptedToAskForPermission.value = true
-
         val isGranted = ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
         if (isGranted && deniedPermissionList.isNotEmpty()) {
             // List can contain duplicates, remove all instances
