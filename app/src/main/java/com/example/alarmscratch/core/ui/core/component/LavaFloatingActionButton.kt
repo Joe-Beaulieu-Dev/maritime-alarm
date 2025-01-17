@@ -1,5 +1,11 @@
 package com.example.alarmscratch.core.ui.core.component
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
@@ -20,16 +26,50 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.AncientLavaOrange
 import com.example.alarmscratch.core.ui.theme.MaxBrightLavaOrange
 
+@Composable
+fun LavaFloatingActionButton(
+    selectedNavComponentDest: Destination,
+    onFabClicked: () -> Unit,
+    volcanoSpacerHeight: Dp,
+    modifier: Modifier = Modifier
+) {
+    // LavaFloatingActionButton specs
+    val fabHeight = 70.dp
+    val fabAnimationHeight = with(LocalDensity.current) { (fabHeight + volcanoSpacerHeight).toPx().toInt() }
+
+    // LavaFloatingActionButton with Slide In/Out Animation
+    AnimatedVisibility(
+        visible = selectedNavComponentDest == Destination.AlarmListScreen,
+        enter = slideInVertically(
+            animationSpec = tween(durationMillis = 150, easing = LinearOutSlowInEasing),
+            initialOffsetY = { fabAnimationHeight }
+        ),
+        exit = slideOutVertically(
+            animationSpec = tween(durationMillis = 250, easing = FastOutLinearInEasing),
+            targetOffsetY = { fabAnimationHeight }
+        )
+    ) {
+        LavaFloatingActionButtonContent(
+            enabled = selectedNavComponentDest == Destination.AlarmListScreen,
+            onFabClicked = onFabClicked,
+            modifier = modifier
+        )
+    }
+}
+
 // ExperimentalMaterial3Api OptIn for LocalRippleConfiguration and RippleConfiguration
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LavaFloatingActionButton(
+fun LavaFloatingActionButtonContent(
     enabled: Boolean,
     onFabClicked: () -> Unit,
     modifier: Modifier = Modifier
@@ -115,7 +155,7 @@ fun LavaFloatingActionButton(
 @Composable
 private fun LavaFloatingActionButtonPreview() {
     AlarmScratchTheme {
-        LavaFloatingActionButton(
+        LavaFloatingActionButtonContent(
             enabled = true,
             onFabClicked = {},
             modifier = Modifier.padding(20.dp)
