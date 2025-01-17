@@ -41,6 +41,7 @@ class AlarmListViewModel(
                 SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
                 AlarmListState.Loading
             )
+
     // Settings
     val generalSettings: StateFlow<GeneralSettingsState> =
         generalSettingsRepository.generalSettingsFlow
