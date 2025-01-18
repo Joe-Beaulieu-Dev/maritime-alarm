@@ -1,5 +1,6 @@
 package com.example.alarmscratch.core.ui.core.component
 
+import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -31,6 +32,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.alarmscratch.core.navigation.Destination
+import com.example.alarmscratch.core.ui.permission.Permission
+import com.example.alarmscratch.core.ui.permission.SimplePermissionGate
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.AncientLavaOrange
 import com.example.alarmscratch.core.ui.theme.MaxBrightLavaOrange
@@ -46,23 +49,38 @@ fun LavaFloatingActionButton(
     val fabHeight = 70.dp
     val fabAnimationHeight = with(LocalDensity.current) { (fabHeight + volcanoSpacerHeight).toPx().toInt() }
 
-    // LavaFloatingActionButton with Slide In/Out Animation
-    AnimatedVisibility(
-        visible = selectedNavComponentDest == Destination.AlarmListScreen,
-        enter = slideInVertically(
-            animationSpec = tween(durationMillis = 150, easing = LinearOutSlowInEasing),
-            initialOffsetY = { fabAnimationHeight }
-        ),
-        exit = slideOutVertically(
-            animationSpec = tween(durationMillis = 250, easing = FastOutLinearInEasing),
-            targetOffsetY = { fabAnimationHeight }
+    val floatingActionButtonContent: @Composable () -> Unit = {
+        AnimatedVisibility(
+            visible = selectedNavComponentDest == Destination.AlarmListScreen,
+            enter = slideInVertically(
+                animationSpec = tween(durationMillis = 150, easing = LinearOutSlowInEasing),
+                initialOffsetY = { fabAnimationHeight }
+            ),
+            exit = slideOutVertically(
+                animationSpec = tween(durationMillis = 250, easing = FastOutLinearInEasing),
+                targetOffsetY = { fabAnimationHeight }
+            )
+        ) {
+            LavaFloatingActionButtonContent(
+                enabled = selectedNavComponentDest == Destination.AlarmListScreen,
+                onFabClicked = onFabClicked,
+                modifier = modifier
+            )
+        }
+    }
+
+    // POST_NOTIFICATIONS permission requires API 33 (TIRAMISU)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        // TODO: We should also check to see if the Alarm Notification Channel is enabled because the User could
+        //  have accepted the General Notification Permission, and have the Alarm specific channel disabled.
+        //  Do the permission check first, then check the Alarm channel second.
+        SimplePermissionGate(
+            permission = Permission.PostNotifications,
+            gatedComposable = floatingActionButtonContent
         )
-    ) {
-        LavaFloatingActionButtonContent(
-            enabled = selectedNavComponentDest == Destination.AlarmListScreen,
-            onFabClicked = onFabClicked,
-            modifier = modifier
-        )
+    } else {
+        // TODO: Gate this with a check to see if the Alarm Notification Channel is enabled
+        floatingActionButtonContent()
     }
 }
 
