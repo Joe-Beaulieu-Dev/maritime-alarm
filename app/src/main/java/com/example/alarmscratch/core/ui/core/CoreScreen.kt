@@ -3,12 +3,6 @@ package com.example.alarmscratch.core.ui.core
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -136,10 +129,8 @@ fun CoreScreenContent(
     retrieveSnackbarFromPrevious: () -> Unit,
     internalScreen: @Composable () -> Unit
 ) {
-    // LavaFloatingActionButton specs
-    val fabHeight = 70.dp
+    // Specs
     val volcanoSpacerHeight = 6.dp
-    val fabAnimationHeight = with(LocalDensity.current) { (fabHeight + volcanoSpacerHeight).toPx().toInt() }
 
     // Snackbar
     val scope = rememberCoroutineScope()
@@ -198,22 +189,11 @@ fun CoreScreenContent(
             }
 
             // LavaFloatingActionButton with Slide In/Out Animation
-            AnimatedVisibility(
-                visible = selectedNavComponentDest == Destination.AlarmListScreen,
-                enter = slideInVertically(
-                    animationSpec = tween(durationMillis = 150, easing = LinearOutSlowInEasing),
-                    initialOffsetY = { fabAnimationHeight }
-                ),
-                exit = slideOutVertically(
-                    animationSpec = tween(durationMillis = 250, easing = FastOutLinearInEasing),
-                    targetOffsetY = { fabAnimationHeight }
-                )
-            ) {
-                LavaFloatingActionButton(
-                    enabled = selectedNavComponentDest == Destination.AlarmListScreen,
-                    onFabClicked = onFabClicked
-                )
-            }
+            LavaFloatingActionButton(
+                selectedNavComponentDest = selectedNavComponentDest,
+                onFabClicked = onFabClicked,
+                volcanoSpacerHeight = volcanoSpacerHeight
+            )
             Spacer(modifier = Modifier.height(volcanoSpacerHeight))
 
             // Volcano
