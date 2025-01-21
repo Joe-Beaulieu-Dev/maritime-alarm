@@ -1,5 +1,12 @@
 package com.example.alarmscratch.alarm.ui.alarmedit
 
+import android.os.Build
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,7 +29,10 @@ import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.getRingtone
 import com.example.alarmscratch.core.extension.getStringFromBackStack
+import com.example.alarmscratch.core.ui.permission.Permission
+import com.example.alarmscratch.core.ui.permission.PermissionGateScreen
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
+import com.example.alarmscratch.core.util.StatusBarUtil
 import com.example.alarmscratch.settings.data.model.TimeDisplay
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsState
 import kotlinx.coroutines.channels.Channel
@@ -44,45 +54,67 @@ fun AlarmEditScreen(
     // Flow
     val snackbarFlow = alarmEditViewModel.snackbarFlow
 
-    if (alarmState is AlarmState.Success && generalSettingsState is GeneralSettingsState.Success) {
-        // Fetch updated Ringtone URI from this back stack entry's SavedStateHandle.
-        // If the User navigated to the RingtonePickerScreen and selected a new Ringtone,
-        // then the new Ringtone's URI will be saved here.
-        alarmEditViewModel.updateRingtone(
-            navHostController.getStringFromBackStack(RingtoneData.KEY_FULL_RINGTONE_URI_STRING)
-        )
+    val alarmCreateEditScreen: @Composable () -> Unit = {
+        if (alarmState is AlarmState.Success && generalSettingsState is GeneralSettingsState.Success) {
+            // Fetch updated Ringtone URI from this back stack entry's SavedStateHandle.
+            // If the User navigated to the RingtonePickerScreen and selected a new Ringtone,
+            // then the new Ringtone's URI will be saved here.
+            alarmEditViewModel.updateRingtone(
+                navHostController.getStringFromBackStack(RingtoneData.KEY_FULL_RINGTONE_URI_STRING)
+            )
 
-        val context = LocalContext.current
-        val alarm = (alarmState as AlarmState.Success).alarm
-        // This was extracted for previews, since previews can't actually "get a Ringtone"
-        // from anywhere, therefore they can't get a name to display in the preview.
-        val alarmRingtoneName = alarm.getRingtone(context).getTitle(context)
-        val generalSettings = (generalSettingsState as GeneralSettingsState.Success).generalSettings
+            val context = LocalContext.current
+            val alarm = (alarmState as AlarmState.Success).alarm
+            // This was extracted for previews, since previews can't actually "get a Ringtone"
+            // from anywhere, therefore they can't get a name to display in the preview.
+            val alarmRingtoneName = alarm.getRingtone(context).getTitle(context)
+            val generalSettings = (generalSettingsState as GeneralSettingsState.Success).generalSettings
 
-        AlarmCreateEditScreen(
-            navHostController = navHostController,
-            navigateToRingtonePickerScreen = navigateToRingtonePickerScreen,
-            titleRes = R.string.alarm_edit_screen_title,
-            alarm = alarm,
-            alarmRingtoneName = alarmRingtoneName,
-            timeDisplay = generalSettings.timeDisplay,
-            saveAndScheduleAlarm = alarmEditViewModel::saveAndScheduleAlarm,
-            updateName = alarmEditViewModel::updateName,
-            updateDate = alarmEditViewModel::updateDateAndResetWeeklyRepeater,
-            updateTime = alarmEditViewModel::updateTime,
-            addDay = alarmEditViewModel::addDay,
-            removeDay = alarmEditViewModel::removeDay,
-            toggleVibration = alarmEditViewModel::toggleVibration,
-            updateSnoozeDuration = alarmEditViewModel::updateSnoozeDuration,
-            isNameValid = isNameValid,
-            snackbarFlow = snackbarFlow,
-            tryNavigateUp = { alarmEditViewModel.tryNavigateUp(navHostController) },
-            tryNavigateBack = { alarmEditViewModel.tryNavigateBack(navHostController) },
-            showUnsavedChangesDialog = showUnsavedChangesDialog,
-            unsavedChangesLeave = { alarmEditViewModel.unsavedChangesLeave(navHostController) },
-            unsavedChangesStay = alarmEditViewModel::unsavedChangesStay,
-            modifier = modifier
-        )
+            AlarmCreateEditScreen(
+                navHostController = navHostController,
+                navigateToRingtonePickerScreen = navigateToRingtonePickerScreen,
+                titleRes = R.string.alarm_edit_screen_title,
+                alarm = alarm,
+                alarmRingtoneName = alarmRingtoneName,
+                timeDisplay = generalSettings.timeDisplay,
+                saveAndScheduleAlarm = alarmEditViewModel::saveAndScheduleAlarm,
+                updateName = alarmEditViewModel::updateName,
+                updateDate = alarmEditViewModel::updateDateAndResetWeeklyRepeater,
+                updateTime = alarmEditViewModel::updateTime,
+                addDay = alarmEditViewModel::addDay,
+                removeDay = alarmEditViewModel::removeDay,
+                toggleVibration = alarmEditViewModel::toggleVibration,
+                updateSnoozeDuration = alarmEditViewModel::updateSnoozeDuration,
+                isNameValid = isNameValid,
+                snackbarFlow = snackbarFlow,
+                tryNavigateUp = { alarmEditViewModel.tryNavigateUp(navHostController) },
+                tryNavigateBack = { alarmEditViewModel.tryNavigateBack(navHostController) },
+                showUnsavedChangesDialog = showUnsavedChangesDialog,
+                unsavedChangesLeave = { alarmEditViewModel.unsavedChangesLeave(navHostController) },
+                unsavedChangesStay = alarmEditViewModel::unsavedChangesStay,
+                modifier = modifier
+            )
+        }
+    }
+
+    // TODO: This permission gate is a stopgap. In the future I want to pop a Dialog when the save button
+    //  is pressed if a permission is missing, rather than replacing the entire screen like below.
+    // POST_NOTIFICATIONS permission requires API 33 (TIRAMISU)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        // Configure Status Bar
+        StatusBarUtil.setDarkStatusBar()
+
+        Surface(color = MaterialTheme.colorScheme.surfaceVariant) {
+            PermissionGateScreen(
+                permission = Permission.PostNotifications,
+                gatedScreen = alarmCreateEditScreen,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .windowInsetsPadding(WindowInsets.systemBars)
+            )
+        }
+    } else {
+        alarmCreateEditScreen()
     }
 }
 
