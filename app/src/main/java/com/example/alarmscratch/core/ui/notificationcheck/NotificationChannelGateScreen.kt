@@ -54,7 +54,7 @@ fun NotificationChannelGateScreen(
     }
 
     LaunchedEffect(key1 = context, key2 = lifecycleOwner.lifecycle) {
-        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             withContext(Dispatchers.Main.immediate) {
                 checkNotificationChannelStatus()
             }
