@@ -19,8 +19,8 @@ import com.example.alarmscratch.alarm.data.preview.alarmSampleDataHardCodedIds
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.alarm.ui.alarmlist.component.AlarmCard
 import com.example.alarmscratch.alarm.ui.alarmlist.component.NoAlarmsCard
-import com.example.alarmscratch.core.ui.notificationcheck.AppNotificationChannel
 import com.example.alarmscratch.core.ui.notificationcheck.NotificationChannelGateScreen
+import com.example.alarmscratch.core.ui.notificationcheck.NotificationPermission
 import com.example.alarmscratch.core.ui.permission.Permission
 import com.example.alarmscratch.core.ui.permission.PermissionGateScreen
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
@@ -40,7 +40,7 @@ fun AlarmListScreen(
     val notificationGatedAlarmList: @Composable () -> Unit = {
         // Gate Alarm List Screen behind Alarm Notification Channel
         NotificationChannelGateScreen(
-            appNotificationChannel = AppNotificationChannel.Alarm,
+            notificationPermission = NotificationPermission.Alarm,
             gatedScreen = {
                 if (alarmListState is AlarmListState.Success && generalSettingsState is GeneralSettingsState.Success) {
                     val alarmList = (alarmListState as AlarmListState.Success).alarmList
