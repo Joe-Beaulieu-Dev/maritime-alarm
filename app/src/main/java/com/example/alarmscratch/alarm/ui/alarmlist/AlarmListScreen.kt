@@ -19,6 +19,8 @@ import com.example.alarmscratch.alarm.data.preview.alarmSampleDataHardCodedIds
 import com.example.alarmscratch.alarm.data.repository.AlarmListState
 import com.example.alarmscratch.alarm.ui.alarmlist.component.AlarmCard
 import com.example.alarmscratch.alarm.ui.alarmlist.component.NoAlarmsCard
+import com.example.alarmscratch.core.ui.notificationcheck.AppNotificationChannel
+import com.example.alarmscratch.core.ui.notificationcheck.NotificationChannelGateScreen
 import com.example.alarmscratch.core.ui.permission.Permission
 import com.example.alarmscratch.core.ui.permission.PermissionGateScreen
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
@@ -35,31 +37,37 @@ fun AlarmListScreen(
     val alarmListState by alarmListViewModel.alarmList.collectAsState()
     val generalSettingsState by alarmListViewModel.generalSettings.collectAsState()
 
-    val alarmListScreenContent: @Composable () -> Unit = {
-        if (alarmListState is AlarmListState.Success && generalSettingsState is GeneralSettingsState.Success) {
-            val alarmList = (alarmListState as AlarmListState.Success).alarmList
-            val generalSettings = (generalSettingsState as GeneralSettingsState.Success).generalSettings
+    val notificationGatedAlarmList: @Composable () -> Unit = {
+        // Gate Alarm List Screen behind Alarm Notification Channel
+        NotificationChannelGateScreen(
+            appNotificationChannel = AppNotificationChannel.Alarm,
+            gatedScreen = {
+                if (alarmListState is AlarmListState.Success && generalSettingsState is GeneralSettingsState.Success) {
+                    val alarmList = (alarmListState as AlarmListState.Success).alarmList
+                    val generalSettings = (generalSettingsState as GeneralSettingsState.Success).generalSettings
 
-            AlarmListScreenContent(
-                alarmList = alarmList,
-                timeDisplay = generalSettings.timeDisplay,
-                onAlarmToggled = { context, alarm -> alarmListViewModel.toggleAlarm(context, alarm) },
-                onAlarmDeleted = { context, alarm -> alarmListViewModel.cancelAndDeleteAlarm(context, alarm) },
-                navigateToAlarmEditScreen = navigateToAlarmEditScreen,
-                modifier = modifier
-            )
-        }
+                    AlarmListScreenContent(
+                        alarmList = alarmList,
+                        timeDisplay = generalSettings.timeDisplay,
+                        onAlarmToggled = { context, alarm -> alarmListViewModel.toggleAlarm(context, alarm) },
+                        onAlarmDeleted = { context, alarm -> alarmListViewModel.cancelAndDeleteAlarm(context, alarm) },
+                        navigateToAlarmEditScreen = navigateToAlarmEditScreen,
+                        modifier = modifier
+                    )
+                }
+            }
+        )
     }
 
     // POST_NOTIFICATIONS permission requires API 33 (TIRAMISU)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         PermissionGateScreen(
             permission = Permission.PostNotifications,
-            gatedScreen = alarmListScreenContent,
+            gatedScreen = notificationGatedAlarmList,
             modifier = Modifier.fillMaxWidth()
         )
     } else {
-        alarmListScreenContent()
+        notificationGatedAlarmList()
     }
 }
 
