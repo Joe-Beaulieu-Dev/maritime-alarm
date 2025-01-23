@@ -29,6 +29,8 @@ import com.example.alarmscratch.core.data.model.RingtoneData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.getRingtone
 import com.example.alarmscratch.core.extension.getStringFromBackStack
+import com.example.alarmscratch.core.ui.notificationcheck.NotificationChannelGateScreen
+import com.example.alarmscratch.core.ui.notificationcheck.NotificationPermission
 import com.example.alarmscratch.core.ui.permission.Permission
 import com.example.alarmscratch.core.ui.permission.PermissionGateScreen
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
@@ -97,6 +99,17 @@ fun AlarmCreationScreen(
         }
     }
 
+    // Gate Alarm List Screen behind Alarm Notification Channel
+    val notificationGatedAlarmCreation: @Composable () -> Unit = {
+        NotificationChannelGateScreen(
+            notificationPermission = NotificationPermission.Alarm,
+            gatedScreen = alarmCreateEditScreen,
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.systemBars)
+        )
+    }
+
     // TODO: This permission gate is a stopgap. In the future I want to pop a Dialog when the save button
     //  is pressed if a permission is missing, rather than replacing the entire screen like below.
     // POST_NOTIFICATIONS permission requires API 33 (TIRAMISU)
@@ -107,14 +120,14 @@ fun AlarmCreationScreen(
         Surface(color = MaterialTheme.colorScheme.surfaceVariant) {
             PermissionGateScreen(
                 permission = Permission.PostNotifications,
-                gatedScreen = alarmCreateEditScreen,
+                gatedScreen = notificationGatedAlarmCreation,
                 modifier = Modifier
                     .fillMaxSize()
                     .windowInsetsPadding(WindowInsets.systemBars)
             )
         }
     } else {
-        alarmCreateEditScreen()
+        notificationGatedAlarmCreation()
     }
 }
 
