@@ -142,7 +142,7 @@
     <string name="permission_channel_alarm_desc">Used for Alarm notifications</string>
     <string name="permission_required">Permission Required</string>
     <string name="permission_request">Request</string>
-    <string name="permission_open_system_settings">Open System Settings</string>
+    <string name="permission_open_system_settings">System Settings</string>
     <string name="permission_missing_notifications_system_dialog">The Notification Permission is
         required to use Alarms. Without it you will not be able to create or edit Alarms,
         &lt;i&gt;&lt;u&gt;and any Alarms that you previously created will not go off&lt;/u&gt;&lt;/i&gt;.
@@ -154,7 +154,22 @@
         &lt;i&gt;&lt;u&gt;and any Alarms that you previously created will not go off&lt;/u&gt;&lt;/i&gt;.
         &lt;br&gt;&lt;br&gt;
         To use Alarms, you must manually accept the Permission in the System Settings.
-        To do so, press the \"Open System Settings\" button below, then navigate to \"Permissions\"
+        To do so, press the \"System Settings\" button below, then navigate to \"Permissions\"
         &gt; \"Notifications\" and enable \"All AlarmApp Notifications\". Then on the same screen,
         ensure that the \"Alarm\" Notification is also enabled.</string>
+
+    <!--
+        ***************************
+        ** Notification Settings **
+        ***************************
+    -->
+    <string name="notification_required">Notifications Required</string>
+    <string name="notification_open_notification_settings">Notification Settings</string>
+    <string name="notification_missing_alarm_system_settings">Alarm Notifications are required to
+        use Alarms. Without enabling them you will not be able to create or edit Alarms,
+        &lt;i&gt;&lt;u&gt;and any Alarms that you previously created will not go off&lt;/u&gt;&lt;/i&gt;.
+        &lt;br&gt;&lt;br&gt;
+        To use Alarms, you must manually enable Alarm Notifications in the System Settings.
+        To do so, press the \"Notification Settings\" button below, then toggle \"Alarm\"
+        Notifications on.</string>
 </resources>
