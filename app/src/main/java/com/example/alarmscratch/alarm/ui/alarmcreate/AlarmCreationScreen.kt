@@ -99,7 +99,7 @@ fun AlarmCreationScreen(
         }
     }
 
-    // Gate Alarm List Screen behind Alarm Notification Channel
+    // Gate AlarmCreateEditScreen behind Alarm Notification Channel
     val notificationGatedAlarmCreation: @Composable () -> Unit = {
         NotificationChannelGateScreen(
             notificationPermission = NotificationPermission.Alarm,
