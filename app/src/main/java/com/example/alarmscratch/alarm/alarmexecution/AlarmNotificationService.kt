@@ -3,6 +3,7 @@ package com.example.alarmscratch.alarm.alarmexecution
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
+import android.os.Build
 import android.os.IBinder
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.model.Alarm
@@ -16,6 +17,8 @@ import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.isRepeating
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.core.ringtone.RingtonePlayerManager
+import com.example.alarmscratch.core.ui.permission.Permission
+import com.example.alarmscratch.core.util.PermissionUtil
 import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
 import com.example.alarmscratch.settings.data.repository.GeneralSettingsRepository
@@ -90,34 +93,51 @@ class AlarmNotificationService : Service() {
             // even if the ID is different.
             dismissPreviousAlarmIfActive()
 
-            // Get General Settings
-            val generalSettingsRepository = GeneralSettingsRepository(applicationContext.generalSettingsDataStore)
-            val generalSettings = try {
-                generalSettingsRepository.generalSettingsFlow.first()
-            } catch (e: NoSuchElementException) {
-                // Flow was empty. Return GeneralSettings with defaults.
-                GeneralSettings(GeneralSettingsRepository.DEFAULT_TIME_DISPLAY)
+            // POST_NOTIFICATIONS permission requires API 33 (TIRAMISU)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (PermissionUtil.isPermissionGranted(this@AlarmNotificationService, Permission.PostNotifications)) {
+                    // TODO: Gate with Notification status check
+                    launchNotification(alarmExecutionData)
+                } else {
+                    val alarmRepository = AlarmRepository(
+                        AlarmDatabase.getDatabase(this@AlarmNotificationService).alarmDao()
+                    )
+                    val alarm = alarmRepository.getAlarm(alarmExecutionData.id)
+                    disableOrRescheduleAlarm(alarmRepository, alarm)
+                }
+            } else {
+                // TODO: Gate with Notification status check
+                launchNotification(alarmExecutionData)
             }
+        }
+    }
 
-            // Create Notification
-            val fullScreenNotification = AlarmNotification.fullScreenNotification(
-                applicationContext,
-                alarmExecutionData,
-                generalSettings.timeDisplay
-            )
+    private suspend fun launchNotification(alarmExecutionData: AlarmExecutionData) {
+        // Get General Settings
+        val generalSettingsRepository = GeneralSettingsRepository(applicationContext.generalSettingsDataStore)
+        val generalSettings = try {
+            generalSettingsRepository.generalSettingsFlow.first()
+        } catch (e: NoSuchElementException) {
+            // Flow was empty. Return GeneralSettings with defaults.
+            GeneralSettings(GeneralSettingsRepository.DEFAULT_TIME_DISPLAY)
+        }
 
-            // Push Service to foreground and display Notification
-            startForeground(id, fullScreenNotification)
+        // Create Notification
+        val fullScreenNotification = AlarmNotification.fullScreenNotification(
+            applicationContext,
+            alarmExecutionData,
+            generalSettings.timeDisplay
+        )
 
-            // TODO: Check notification permission before sounding Alarm. If you don't,
-            //  then the ringtone will sound without the notification.
-            // Play Ringtone
-            RingtonePlayerManager.startAlarmSound(applicationContext, ringtoneUri)
+        // Push Service to foreground and display Notification
+        startForeground(alarmExecutionData.id, fullScreenNotification)
 
-            // Start Vibration
-            if (isVibrationEnabled) {
-                VibrationController.startVibration(applicationContext)
-            }
+        // Play Ringtone
+        RingtonePlayerManager.startAlarmSound(applicationContext, alarmExecutionData.ringtoneUri)
+
+        // Start Vibration
+        if (alarmExecutionData.isVibrationEnabled) {
+            VibrationController.startVibration(applicationContext)
         }
     }
 
@@ -157,6 +177,27 @@ class AlarmNotificationService : Service() {
                 // Dismiss non-repeating Alarm
                 alarmRepo.dismissAlarm(notificationAlarm.id)
             }
+        }
+    }
+
+    private suspend fun disableOrRescheduleAlarm(alarmRepository: AlarmRepository, alarm: Alarm) {
+        // Dismiss/reschedule Alarm
+        if (alarm.isRepeating()) {
+            // Calculate the next time the repeating Alarm should execute
+            val nextDateTime = AlarmUtil.nextRepeatingDateTime(
+                alarm.dateTime,
+                alarm.weeklyRepeater
+            )
+            // Dismiss Alarm and update with nextDateTime
+            alarmRepository.dismissAndRescheduleRepeating(alarm.id, nextDateTime)
+            // Reschedule Alarm with nextDateTime
+            AlarmScheduler.scheduleAlarm(
+                applicationContext,
+                alarm.toAlarmExecutionData().copy(executionDateTime = nextDateTime)
+            )
+        } else {
+            // Dismiss non-repeating Alarm
+            alarmRepository.dismissAlarm(alarm.id)
         }
     }
 
