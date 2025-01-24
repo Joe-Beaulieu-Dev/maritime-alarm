@@ -154,29 +154,12 @@ class AlarmNotificationService : Service() {
             allNotifications.firstOrNull { notification -> notification.id == alarm.id } != null
         }
 
-        // If there's an Active Alarm, dismiss the Full Screen Notification and dismiss/reschedule the Alarm
+        // If there's an Active Alarm, dismiss the Full Screen Notification and disable/reschedule the Alarm
         if (notificationAlarm != null) {
             // Dismiss Full Screen Notification
             finishFullScreenAlarmActivity()
-
-            // Dismiss/reschedule Alarm
-            if (notificationAlarm.isRepeating()) {
-                // Calculate the next time the repeating Alarm should execute
-                val nextDateTime = AlarmUtil.nextRepeatingDateTime(
-                    notificationAlarm.dateTime,
-                    notificationAlarm.weeklyRepeater
-                )
-                // Dismiss Alarm and update with nextDateTime
-                alarmRepo.dismissAndRescheduleRepeating(notificationAlarm.id, nextDateTime)
-                // Reschedule Alarm with nextDateTime
-                AlarmScheduler.scheduleAlarm(
-                    applicationContext,
-                    notificationAlarm.toAlarmExecutionData().copy(executionDateTime = nextDateTime)
-                )
-            } else {
-                // Dismiss non-repeating Alarm
-                alarmRepo.dismissAlarm(notificationAlarm.id)
-            }
+            // Disable/reschedule Alarm
+            disableOrRescheduleAlarm(alarmRepo, notificationAlarm)
         }
     }
 
