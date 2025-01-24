@@ -32,6 +32,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.alarmscratch.core.navigation.Destination
+import com.example.alarmscratch.core.ui.notificationcheck.AppNotificationChannel
+import com.example.alarmscratch.core.ui.notificationcheck.SimpleNotificationGate
 import com.example.alarmscratch.core.ui.permission.Permission
 import com.example.alarmscratch.core.ui.permission.SimplePermissionGate
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
@@ -69,18 +71,21 @@ fun LavaFloatingActionButton(
         }
     }
 
-    // POST_NOTIFICATIONS permission requires API 33 (TIRAMISU)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        // TODO: We should also check to see if the Alarm Notification Channel is enabled because the User could
-        //  have accepted the General Notification Permission, and have the Alarm specific channel disabled.
-        //  Do the permission check first, then check the Alarm channel second.
-        SimplePermissionGate(
-            permission = Permission.PostNotifications,
+    val notificationGatedFab: @Composable () -> Unit = {
+        SimpleNotificationGate(
+            appNotificationChannel = AppNotificationChannel.Alarm,
             gatedComposable = floatingActionButtonContent
         )
+    }
+
+    // POST_NOTIFICATIONS permission requires API 33 (TIRAMISU)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        SimplePermissionGate(
+            permission = Permission.PostNotifications,
+            gatedComposable = notificationGatedFab
+        )
     } else {
-        // TODO: Gate this with a check to see if the Alarm Notification Channel is enabled
-        floatingActionButtonContent()
+        notificationGatedFab()
     }
 }
 
