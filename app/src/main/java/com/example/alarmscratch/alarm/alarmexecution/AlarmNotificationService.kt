@@ -17,7 +17,9 @@ import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.isRepeating
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.core.ringtone.RingtonePlayerManager
+import com.example.alarmscratch.core.ui.notificationcheck.AppNotificationChannel
 import com.example.alarmscratch.core.ui.permission.Permission
+import com.example.alarmscratch.core.util.NotificationChannelUtil
 import com.example.alarmscratch.core.util.PermissionUtil
 import com.example.alarmscratch.settings.data.model.GeneralSettings
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
@@ -93,22 +95,33 @@ class AlarmNotificationService : Service() {
             // even if the ID is different.
             dismissPreviousAlarmIfActive()
 
+            val isAlarmNotificationEnabled =
+                NotificationChannelUtil.isNotificationChannelEnabled(this@AlarmNotificationService, AppNotificationChannel.Alarm)
+
             // POST_NOTIFICATIONS permission requires API 33 (TIRAMISU)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                if (PermissionUtil.isPermissionGranted(this@AlarmNotificationService, Permission.PostNotifications)) {
-                    // TODO: Gate with Notification status check
-                    launchNotification(alarmExecutionData)
-                } else {
-                    val alarmRepository = AlarmRepository(
-                        AlarmDatabase.getDatabase(this@AlarmNotificationService).alarmDao()
-                    )
-                    val alarm = alarmRepository.getAlarm(alarmExecutionData.id)
-                    disableOrRescheduleAlarm(alarmRepository, alarm)
-                }
+                val isNotificationPermissionGranted =
+                    PermissionUtil.isPermissionGranted(this@AlarmNotificationService, Permission.PostNotifications)
+
+                logicGateNotificationLaunch(
+                    { isNotificationPermissionGranted && isAlarmNotificationEnabled },
+                    alarmExecutionData
+                )
             } else {
-                // TODO: Gate with Notification status check
-                launchNotification(alarmExecutionData)
+                logicGateNotificationLaunch({ isAlarmNotificationEnabled }, alarmExecutionData)
             }
+        }
+    }
+
+    private suspend fun logicGateNotificationLaunch(gateLogic: () -> Boolean, alarmExecutionData: AlarmExecutionData) {
+        // This function seems a bit over the top to have, but the version-based
+        // permission/notification logic got a bit ugly and this makes it look a little nicer.
+        if (gateLogic()) {
+            launchNotification(alarmExecutionData)
+        } else {
+            val alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(this).alarmDao())
+            val alarm = alarmRepository.getAlarm(alarmExecutionData.id)
+            disableOrRescheduleAlarm(alarmRepository, alarm)
         }
     }
 
