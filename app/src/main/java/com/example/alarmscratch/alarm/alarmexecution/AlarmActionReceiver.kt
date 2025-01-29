@@ -15,6 +15,7 @@ import com.example.alarmscratch.core.extension.doAsync
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
 import kotlinx.coroutines.Dispatchers
+import java.time.LocalDateTime
 
 class AlarmActionReceiver : BroadcastReceiver() {
 
@@ -56,15 +57,32 @@ class AlarmActionReceiver : BroadcastReceiver() {
     }
 
     private fun executeAlarm(context: Context, intent: Intent) {
-        WakeLockManager.acquireWakeLock(context)
+        val executionDateTime: LocalDateTime? = try {
+            LocalDateTime.parse(intent.getStringExtra(EXTRA_ALARM_EXECUTION_DATE_TIME))
+        } catch (e: Exception) {
+            null
+        }
 
-        // Display Alarm Notification
-        intent.extras?.let { extrasBundle ->
-            val displayNotificationIntent = Intent(context.applicationContext, AlarmNotificationService::class.java).apply {
-                action = AlarmNotificationService.DISPLAY_ALARM_NOTIFICATION
-                putExtras(extrasBundle)
+        // Account for the edge case where the Device's date/time changes due to User intervention, time zone change, etc.
+        // which results in the System time being in the future, beyond the time the Alarm is set to go off.
+        // In this scenario, the AlarmManager will still execute the scheduled Alarm even though it's technically "missed".
+        // You can create a BroadcastReceiver to listen for these date/time changes and attempt to cancel the Alarm
+        // if needed, but you would be racing the AlarmManager because it will not know that you have this BroadcastReceiver
+        // set up to do this. This will lead to very inconsistent behavior where the Alarm may or may not get cancelled
+        // in time before the AlarmManager auto-executes it. Therefore, we check here instead to determine whether the
+        // Alarm should go off. That said, we still have a TimeChangeReceiver that performs cleanup of Alarms in the database
+        // after a date/time change when needed (see TimeChangeReceiver).
+        if (executionDateTime?.isBefore(LocalDateTimeUtil.nowTruncated()) == false) {
+            WakeLockManager.acquireWakeLock(context)
+
+            // Display Alarm Notification
+            intent.extras?.let { extrasBundle ->
+                val displayNotificationIntent = Intent(context.applicationContext, AlarmNotificationService::class.java).apply {
+                    action = AlarmNotificationService.DISPLAY_ALARM_NOTIFICATION
+                    putExtras(extrasBundle)
+                }
+                context.applicationContext.startService(displayNotificationIntent)
             }
-            context.applicationContext.startService(displayNotificationIntent)
         }
     }
 
