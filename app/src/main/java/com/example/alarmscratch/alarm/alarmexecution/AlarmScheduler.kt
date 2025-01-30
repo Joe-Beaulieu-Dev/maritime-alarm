@@ -5,6 +5,9 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
+import com.example.alarmscratch.alarm.data.repository.AlarmRepository
+import com.example.alarmscratch.alarm.util.AlarmUtil
+import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.core.extension.zonedEpochMillis
 
 object AlarmScheduler {
@@ -45,6 +48,32 @@ object AlarmScheduler {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         )
+    }
+
+    suspend fun refreshAlarms(context: Context, alarmRepository: AlarmRepository) {
+        // Get all enabled Alarms
+        val enabledAlarms = alarmRepository.getAllEnabledAlarms()
+
+        // Clean Alarms
+        enabledAlarms.forEach { AlarmUtil.cleanAlarm(it, alarmRepository) }
+
+        // Get all enabled Alarms post cleaning, as AlarmExecutionData
+        val cleanAlarmExecutionData = alarmRepository.getAllEnabledAlarms().map { it.toAlarmExecutionData() }
+
+        // Reschedule Alarms
+        val alarmManager = getAlarmManager(context)
+        cleanAlarmExecutionData.forEach { alarm ->
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                alarm.executionDateTime.zonedEpochMillis(),
+                PendingIntent.getBroadcast(
+                    context,
+                    alarm.id,
+                    AlarmIntentBuilder.executeAlarmIntent(context, alarm),
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+            )
+        }
     }
 
     private fun getAlarmManager(context: Context): AlarmManager =
