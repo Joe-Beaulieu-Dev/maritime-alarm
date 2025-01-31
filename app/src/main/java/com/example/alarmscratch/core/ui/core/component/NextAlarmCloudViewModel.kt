@@ -36,10 +36,14 @@ class NextAlarmCloudViewModel(
     // Time Change BroadcastReceiver
     val timeChangeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (context != null && intent?.action == Intent.ACTION_TIME_TICK) {
-                // Refresh the Alarm Countdown every minute, on the minute,
-                // in sync with the system clock.
-                refreshAlarmCountdownState()
+            if (context != null && intent != null) {
+                when (intent.action) {
+                    Intent.ACTION_TIME_TICK,
+                    Intent.ACTION_TIME_CHANGED,
+                    Intent.ACTION_DATE_CHANGED,
+                    Intent.ACTION_TIMEZONE_CHANGED ->
+                        refreshAlarmCountdownState()
+                }
             }
         }
     }
