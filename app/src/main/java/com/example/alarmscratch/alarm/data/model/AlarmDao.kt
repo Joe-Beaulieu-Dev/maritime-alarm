@@ -55,6 +55,9 @@ interface AlarmDao {
     /*
      * One-shot Read/Write
      */
+    @Query("SELECT * FROM alarms WHERE enabled = 1")
+    suspend fun getAllEnabledAlarms(): List<Alarm>
+
     @Query("UPDATE alarms SET snoozeDateTime = :snoozeDateTime WHERE id = :id")
     suspend fun updateSnooze(id: Int, snoozeDateTime: LocalDateTime)
 

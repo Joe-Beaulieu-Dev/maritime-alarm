@@ -42,6 +42,8 @@ class AlarmRepository(private val alarmDao: AlarmDao) {
     /*
      * One-shot Read/Write
      */
+    suspend fun getAllEnabledAlarms(): List<Alarm> = alarmDao.getAllEnabledAlarms()
+
     suspend fun updateSnooze(id: Int, snoozeDateTime: LocalDateTime) =
         alarmDao.updateSnooze(id = id, snoozeDateTime = snoozeDateTime)
 

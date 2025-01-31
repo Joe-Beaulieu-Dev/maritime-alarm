@@ -1,12 +1,20 @@
 package com.example.alarmscratch.alarm.util
 
+import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
+import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.dayNumber
+import com.example.alarmscratch.core.extension.isDirty
+import com.example.alarmscratch.core.extension.isRepeating
 import java.time.DayOfWeek
 import java.time.LocalDateTime
 
 object AlarmUtil {
+
+    /*
+     * Utility
+     */
 
     /**
      * Returns a LocalDateTime with the next day the Alarm is set to go off, if and only if the Alarm is set to repeat.
@@ -94,4 +102,39 @@ object AlarmUtil {
         repeatingDays
             .filter { it.dayNumber() >= today.dayNumber() }
             .plus(repeatingDays.filter { it.dayNumber() < today.dayNumber() })
+
+    /*
+     * Maintenance
+     */
+
+    /**
+     * Cleans dirty Alarms as determined by Alarm.isDirty().
+     * Alarms that are already clean are a no-op.
+     *
+     * To clean an Alarm is to:
+     * - Reset snooze
+     * - If Alarm is repeating -> set to next repeating date/time
+     * - If Alarm is not repeating -> disable Alarm
+     *
+     * @param alarm Alarm candidate for cleaning
+     * @param alarmRepository repository in which cleaned Alarms are updated
+     */
+    suspend fun cleanAlarm(alarm: Alarm, alarmRepository: AlarmRepository) {
+        if (alarm.isDirty()) {
+            // Clean Alarm
+            val cleanAlarm = alarm.run {
+                if (isRepeating()) {
+                    copy(
+                        dateTime = nextRepeatingDateTime(alarm.dateTime, alarm.weeklyRepeater),
+                        snoozeDateTime = null
+                    )
+                } else {
+                    copy(enabled = false, snoozeDateTime = null)
+                }
+            }
+
+            // Update database
+            alarmRepository.updateAlarm(cleanAlarm)
+        }
+    }
 }
