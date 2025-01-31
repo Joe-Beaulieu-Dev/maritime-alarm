@@ -79,10 +79,16 @@ fun NextAlarmCloudContent(
     DisposableEffect(key1 = localContext, key2 = selectedNavComponentDest) {
         // Register BroadcastReceiver
         if (selectedNavComponentDest is Destination.AlarmListScreen) {
+            val intentFilter = IntentFilter().apply {
+                addAction(Intent.ACTION_TIME_TICK)
+                addAction(Intent.ACTION_TIME_CHANGED)
+                addAction(Intent.ACTION_DATE_CHANGED)
+                addAction(Intent.ACTION_TIMEZONE_CHANGED)
+            }
             ContextCompat.registerReceiver(
                 localContext,
                 timeChangeReceiver,
-                IntentFilter(Intent.ACTION_TIME_TICK),
+                intentFilter,
                 ContextCompat.RECEIVER_NOT_EXPORTED
             )
         }
