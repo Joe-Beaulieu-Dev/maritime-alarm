@@ -15,7 +15,9 @@ class TimeChangeReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context != null && intent != null) {
             when (intent.action) {
-                Intent.ACTION_TIME_CHANGED ->
+                Intent.ACTION_TIME_CHANGED,
+                Intent.ACTION_DATE_CHANGED,
+                Intent.ACTION_TIMEZONE_CHANGED ->
                     onTimeChanged(context)
             }
         }
