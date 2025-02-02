@@ -43,6 +43,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class AlarmCreationViewModel(
     private val alarmRepository: AlarmRepository,
@@ -96,7 +97,7 @@ class AlarmCreationViewModel(
                         val alarmDefaults = (alarmDefaults.value as AlarmDefaultsState.Success).alarmDefaults
                         val alarmState = AlarmState.Success(
                             Alarm(
-                                dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
+                                dateTime = getInitialAlarmDateTime(),
                                 ringtoneUriString = alarmDefaults.ringtoneUri,
                                 isVibrationEnabled = alarmDefaults.isVibrationEnabled,
                                 snoozeDuration = alarmDefaults.snoozeDuration
@@ -124,6 +125,30 @@ class AlarmCreationViewModel(
                     generalSettingsRepository = GeneralSettingsRepository(application.generalSettingsDataStore),
                     alarmValidator = AlarmValidator()
                 ) as T
+            }
+        }
+    }
+
+    /*
+     * Initialization
+     */
+
+    private fun getInitialAlarmDateTime(): LocalDateTime {
+        val now = LocalDateTimeUtil.nowTruncated()
+        val nowMinutes = now.minute
+
+        // Return a LocalDateTime that is rounded up based on the current time
+        return LocalDateTimeUtil.nowTruncated().run {
+            when (nowMinutes) {
+                in 0..20 ->
+                    // Round to next half hour
+                    withMinute(30)
+                in 21..50 ->
+                    // Round to next hour
+                    plusHours(1).withMinute(0)
+                else ->
+                    // Round to next hour and a half
+                    plusHours(1).withMinute(30)
             }
         }
     }
