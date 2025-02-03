@@ -1,18 +1,31 @@
 package com.example.alarmscratch.alarm.alarmexecution
 
 import android.app.AlarmManager
+import android.app.AlarmManager.AlarmClockInfo
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.alarm.util.AlarmUtil
+import com.example.alarmscratch.core.MainActivity
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.core.extension.zonedEpochMillis
 
 object AlarmScheduler {
 
     fun scheduleAlarm(context: Context, alarmExecutionData: AlarmExecutionData) {
+        // Create AlarmClockInfo that launches the application
+        val alarmClockInfo = AlarmClockInfo(
+            alarmExecutionData.executionDateTime.zonedEpochMillis(),
+            PendingIntent.getActivity(
+                context,
+                0,
+                Intent(context, MainActivity::class.java),
+                PendingIntent.FLAG_IMMUTABLE
+            )
+        )
+
         // Create PendingIntent to execute Alarm
         val alarmPendingIntent = PendingIntent.getBroadcast(
             context,
@@ -22,9 +35,8 @@ object AlarmScheduler {
         )
 
         // Schedule Alarm
-        getAlarmManager(context).setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            alarmExecutionData.executionDateTime.zonedEpochMillis(),
+        getAlarmManager(context).setAlarmClock(
+            alarmClockInfo,
             alarmPendingIntent
         )
     }
@@ -63,15 +75,26 @@ object AlarmScheduler {
         // Reschedule Alarms
         val alarmManager = getAlarmManager(context)
         cleanAlarmExecutionData.forEach { alarm ->
-            alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                alarm.executionDateTime.zonedEpochMillis(),
-                PendingIntent.getBroadcast(
-                    context,
-                    alarm.id,
-                    AlarmIntentBuilder.executeAlarmIntent(context, alarm),
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
+            // Create PendingIntent to execute Alarm
+            val alarmPendingIntent = PendingIntent.getBroadcast(
+                context,
+                alarm.id,
+                AlarmIntentBuilder.executeAlarmIntent(context, alarm),
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+            // Schedule Alarm
+            alarmManager.setAlarmClock(
+                AlarmClockInfo(
+                    alarm.executionDateTime.zonedEpochMillis(),
+                    PendingIntent.getActivity(
+                        context,
+                        0,
+                        Intent(context, MainActivity::class.java),
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
+                ),
+                alarmPendingIntent
             )
         }
     }
