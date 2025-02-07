@@ -14,13 +14,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
+import com.example.alarmscratch.core.ui.theme.StarfishBasePink
+import com.example.alarmscratch.core.ui.theme.StarfishDotWhite
 import com.example.alarmscratch.core.util.GraphUtil
 
 @Composable
 fun StarfishDotStar(
     starfishSizeDp: Dp,
     adjustedOriginPx: PointF,
-    starfishCoordinates: StarfishCoordinates
+    starfishCoordinates: StarfishCoordinates,
+    starfishDotColor: Color
 ) {
     // General
     val starfishSizePx = with(LocalDensity.current) { starfishSizeDp.toPx() }
@@ -73,34 +76,34 @@ fun StarfishDotStar(
             .height(starfishSizeDp)
             .drawBehind {
                 // Right Arm Dots
-                drawCircle(color = Color.White, radius = dotLargeRadius, center = Offset(x = rightArmDot1.x, rightArmDot1.y))
-                drawCircle(color = Color.White, radius = dotMediumRadius, center = Offset(x = rightArmDot2.x, rightArmDot2.y))
-                drawCircle(color = Color.White, radius = dotSmallRadius, center = Offset(x = rightArmDot3.x, rightArmDot3.y))
-                drawCircle(color = Color.White, radius = dotExtraSmallRadius, center = Offset(x = rightArmDot4.x, rightArmDot4.y))
+                drawCircle(color = starfishDotColor, radius = dotLargeRadius, center = Offset(x = rightArmDot1.x, rightArmDot1.y))
+                drawCircle(color = starfishDotColor, radius = dotMediumRadius, center = Offset(x = rightArmDot2.x, rightArmDot2.y))
+                drawCircle(color = starfishDotColor, radius = dotSmallRadius, center = Offset(x = rightArmDot3.x, rightArmDot3.y))
+                drawCircle(color = starfishDotColor, radius = dotExtraSmallRadius, center = Offset(x = rightArmDot4.x, rightArmDot4.y))
 
                 // Head Dots
-                drawCircle(color = Color.White, radius = dotLargeRadius, center = Offset(x = headDot1.x, headDot1.y))
-                drawCircle(color = Color.White, radius = dotMediumRadius, center = Offset(x = headDot2.x, headDot2.y))
-                drawCircle(color = Color.White, radius = dotSmallRadius, center = Offset(x = headDot3.x, headDot3.y))
-                drawCircle(color = Color.White, radius = dotExtraSmallRadius, center = Offset(x = headDot4.x, headDot4.y))
+                drawCircle(color = starfishDotColor, radius = dotLargeRadius, center = Offset(x = headDot1.x, headDot1.y))
+                drawCircle(color = starfishDotColor, radius = dotMediumRadius, center = Offset(x = headDot2.x, headDot2.y))
+                drawCircle(color = starfishDotColor, radius = dotSmallRadius, center = Offset(x = headDot3.x, headDot3.y))
+                drawCircle(color = starfishDotColor, radius = dotExtraSmallRadius, center = Offset(x = headDot4.x, headDot4.y))
 
                 // Left Arm Dots
-                drawCircle(color = Color.White, radius = dotLargeRadius, center = Offset(x = leftArmDot1.x, leftArmDot1.y))
-                drawCircle(color = Color.White, radius = dotMediumRadius, center = Offset(x = leftArmDot2.x, leftArmDot2.y))
-                drawCircle(color = Color.White, radius = dotSmallRadius, center = Offset(x = leftArmDot3.x, leftArmDot3.y))
-                drawCircle(color = Color.White, radius = dotExtraSmallRadius, center = Offset(x = leftArmDot4.x, leftArmDot4.y))
+                drawCircle(color = starfishDotColor, radius = dotLargeRadius, center = Offset(x = leftArmDot1.x, leftArmDot1.y))
+                drawCircle(color = starfishDotColor, radius = dotMediumRadius, center = Offset(x = leftArmDot2.x, leftArmDot2.y))
+                drawCircle(color = starfishDotColor, radius = dotSmallRadius, center = Offset(x = leftArmDot3.x, leftArmDot3.y))
+                drawCircle(color = starfishDotColor, radius = dotExtraSmallRadius, center = Offset(x = leftArmDot4.x, leftArmDot4.y))
 
                 // Left Leg Dots
-                drawCircle(color = Color.White, radius = dotLargeRadius, center = Offset(x = leftLegDot1.x, leftLegDot1.y))
-                drawCircle(color = Color.White, radius = dotMediumRadius, center = Offset(x = leftLegDot2.x, leftLegDot2.y))
-                drawCircle(color = Color.White, radius = dotSmallRadius, center = Offset(x = leftLegDot3.x, leftLegDot3.y))
-                drawCircle(color = Color.White, radius = dotExtraSmallRadius, center = Offset(x = leftLegDot4.x, leftLegDot4.y))
+                drawCircle(color = starfishDotColor, radius = dotLargeRadius, center = Offset(x = leftLegDot1.x, leftLegDot1.y))
+                drawCircle(color = starfishDotColor, radius = dotMediumRadius, center = Offset(x = leftLegDot2.x, leftLegDot2.y))
+                drawCircle(color = starfishDotColor, radius = dotSmallRadius, center = Offset(x = leftLegDot3.x, leftLegDot3.y))
+                drawCircle(color = starfishDotColor, radius = dotExtraSmallRadius, center = Offset(x = leftLegDot4.x, leftLegDot4.y))
 
                 // Right Leg Dots
-                drawCircle(color = Color.White, radius = dotLargeRadius, center = Offset(x = rightLegDot1.x, rightLegDot1.y))
-                drawCircle(color = Color.White, radius = dotMediumRadius, center = Offset(x = rightLegDot2.x, rightLegDot2.y))
-                drawCircle(color = Color.White, radius = dotSmallRadius, center = Offset(x = rightLegDot3.x, rightLegDot3.y))
-                drawCircle(color = Color.White, radius = dotExtraSmallRadius, center = Offset(x = rightLegDot4.x, rightLegDot4.y))
+                drawCircle(color = starfishDotColor, radius = dotLargeRadius, center = Offset(x = rightLegDot1.x, rightLegDot1.y))
+                drawCircle(color = starfishDotColor, radius = dotMediumRadius, center = Offset(x = rightLegDot2.x, rightLegDot2.y))
+                drawCircle(color = starfishDotColor, radius = dotSmallRadius, center = Offset(x = rightLegDot3.x, rightLegDot3.y))
+                drawCircle(color = starfishDotColor, radius = dotExtraSmallRadius, center = Offset(x = rightLegDot4.x, rightLegDot4.y))
             }
     )
 }
@@ -123,7 +126,8 @@ private fun StarfishDotStarPreview() {
         StarfishDotStar(
             starfishSizeDp = starfishSizeDp,
             adjustedOriginPx = adjustedOriginPx,
-            starfishCoordinates = StarfishCoordinates(outerCircleRadiusPx)
+            starfishCoordinates = StarfishCoordinates(outerCircleRadiusPx),
+            starfishDotColor = StarfishDotWhite
         )
     }
 }
@@ -144,14 +148,16 @@ private fun StarfishDotStarOnStarfishPreview() {
             // Starfish Base
             StarfishBase(
                 starfishSizeDp = starfishSizeDp,
-                starfishCoordinates = StarfishCoordinates(outerCircleRadiusPx)
+                starfishCoordinates = StarfishCoordinates(outerCircleRadiusPx),
+                starfishBaseColor = StarfishBasePink
             )
 
             // Starfish Dot Star
             StarfishDotStar(
                 starfishSizeDp = starfishSizeDp,
                 adjustedOriginPx = adjustedOriginPx,
-                starfishCoordinates = StarfishCoordinates(outerCircleRadiusPx)
+                starfishCoordinates = StarfishCoordinates(outerCircleRadiusPx),
+                starfishDotColor = StarfishDotWhite
             )
         }
     }

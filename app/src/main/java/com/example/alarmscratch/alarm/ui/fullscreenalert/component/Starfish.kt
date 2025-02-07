@@ -4,15 +4,20 @@ import android.graphics.PointF
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
+import com.example.alarmscratch.core.ui.theme.StarfishBasePink
+import com.example.alarmscratch.core.ui.theme.StarfishDotWhite
 
 @Composable
 fun Starfish(
     starfishSize: Dp,
+    starfishBaseColor: Color,
+    starfishDotColor: Color,
     modifier: Modifier = Modifier
 ) {
     // Graph data
@@ -25,14 +30,16 @@ fun Starfish(
         // Starfish Base
         StarfishBase(
             starfishSizeDp = starfishSize,
-            starfishCoordinates = starfishCoordinates
+            starfishCoordinates = starfishCoordinates,
+            starfishBaseColor = starfishBaseColor
         )
 
         // Starfish Dot Star
         StarfishDotStar(
             starfishSizeDp = starfishSize,
             adjustedOriginPx = adjustedOrigin,
-            starfishCoordinates = starfishCoordinates
+            starfishCoordinates = starfishCoordinates,
+            starfishDotColor = starfishDotColor
         )
     }
 }
@@ -48,7 +55,11 @@ fun Starfish(
 @Composable
 private fun StarfishPreview() {
     AlarmScratchTheme {
-        Starfish(300.dp)
+        Starfish(
+            starfishSize = 300.dp,
+            starfishBaseColor = StarfishBasePink,
+            starfishDotColor = StarfishDotWhite
+        )
     }
 }
 
@@ -59,6 +70,10 @@ private fun StarfishPreview() {
 @Composable
 private fun StarfishOnWetSandPreview() {
     AlarmScratchTheme {
-        Starfish(300.dp)
+        Starfish(
+            starfishSize = 300.dp,
+            starfishBaseColor = StarfishBasePink,
+            starfishDotColor = StarfishDotWhite
+        )
     }
 }

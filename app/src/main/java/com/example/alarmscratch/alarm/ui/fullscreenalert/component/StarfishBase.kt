@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,7 +19,8 @@ import com.example.alarmscratch.core.util.GraphUtil
 @Composable
 fun StarfishBase(
     starfishSizeDp: Dp,
-    starfishCoordinates: StarfishCoordinates
+    starfishCoordinates: StarfishCoordinates,
+    starfishBaseColor: Color
 ) {
     Box(
         modifier = Modifier
@@ -183,7 +185,7 @@ fun StarfishBase(
                     // Close for good measure
                     close()
                 }
-                drawPath(path = starfishPath, color = StarfishBasePink)
+                drawPath(path = starfishPath, color = starfishBaseColor)
             }
     )
 }
@@ -205,7 +207,8 @@ private fun StarfishBasePreview() {
     AlarmScratchTheme {
         StarfishBase(
             starfishSizeDp = starfishSizeDp,
-            starfishCoordinates = starfishCoordinates
+            starfishCoordinates = starfishCoordinates,
+            starfishBaseColor = StarfishBasePink
         )
     }
 }
