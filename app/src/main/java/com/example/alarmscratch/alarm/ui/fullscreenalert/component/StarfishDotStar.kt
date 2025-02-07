@@ -21,7 +21,7 @@ import com.example.alarmscratch.core.util.GraphUtil
 @Composable
 fun StarfishDotStar(
     starfishSizeDp: Dp,
-    adjustedOriginPx: PointF,
+    centeredOriginPx: PointF,
     starfishCoordinates: StarfishCoordinates,
     starfishDotColor: Color
 ) {
@@ -45,30 +45,30 @@ fun StarfishDotStar(
      */
 
     // Right Arm
-    val rightArmDot1 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.rightArmOuterPoint, dotLargeGap)
-    val rightArmDot2 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.rightArmOuterPoint, dotMediumGap)
-    val rightArmDot3 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.rightArmOuterPoint, dotSmallGap)
-    val rightArmDot4 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.rightArmOuterPoint, dotExtraSmallGap)
+    val rightArmDot1 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.rightArmOuterPoint, dotLargeGap)
+    val rightArmDot2 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.rightArmOuterPoint, dotMediumGap)
+    val rightArmDot3 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.rightArmOuterPoint, dotSmallGap)
+    val rightArmDot4 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.rightArmOuterPoint, dotExtraSmallGap)
     // Head
-    val headDot1 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.headOuterPoint, dotLargeGap)
-    val headDot2 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.headOuterPoint, dotMediumGap)
-    val headDot3 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.headOuterPoint, dotSmallGap)
-    val headDot4 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.headOuterPoint, dotExtraSmallGap)
+    val headDot1 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.headOuterPoint, dotLargeGap)
+    val headDot2 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.headOuterPoint, dotMediumGap)
+    val headDot3 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.headOuterPoint, dotSmallGap)
+    val headDot4 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.headOuterPoint, dotExtraSmallGap)
     // Left Arm
-    val leftArmDot1 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.leftArmOuterPoint, dotLargeGap)
-    val leftArmDot2 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.leftArmOuterPoint, dotMediumGap)
-    val leftArmDot3 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.leftArmOuterPoint, dotSmallGap)
-    val leftArmDot4 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.leftArmOuterPoint, dotExtraSmallGap)
+    val leftArmDot1 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.leftArmOuterPoint, dotLargeGap)
+    val leftArmDot2 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.leftArmOuterPoint, dotMediumGap)
+    val leftArmDot3 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.leftArmOuterPoint, dotSmallGap)
+    val leftArmDot4 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.leftArmOuterPoint, dotExtraSmallGap)
     // Left Leg
-    val leftLegDot1 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.leftLegOuterPoint, dotLargeGap)
-    val leftLegDot2 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.leftLegOuterPoint, dotMediumGap)
-    val leftLegDot3 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.leftLegOuterPoint, dotSmallGap)
-    val leftLegDot4 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.leftLegOuterPoint, dotExtraSmallGap)
+    val leftLegDot1 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.leftLegOuterPoint, dotLargeGap)
+    val leftLegDot2 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.leftLegOuterPoint, dotMediumGap)
+    val leftLegDot3 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.leftLegOuterPoint, dotSmallGap)
+    val leftLegDot4 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.leftLegOuterPoint, dotExtraSmallGap)
     // Right Leg
-    val rightLegDot1 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.rightLegOuterPoint, dotLargeGap)
-    val rightLegDot2 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.rightLegOuterPoint, dotMediumGap)
-    val rightLegDot3 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.rightLegOuterPoint, dotSmallGap)
-    val rightLegDot4 = GraphUtil.calculateNewPoint(adjustedOriginPx, starfishCoordinates.rightLegOuterPoint, dotExtraSmallGap)
+    val rightLegDot1 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.rightLegOuterPoint, dotLargeGap)
+    val rightLegDot2 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.rightLegOuterPoint, dotMediumGap)
+    val rightLegDot3 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.rightLegOuterPoint, dotSmallGap)
+    val rightLegDot4 = GraphUtil.findPointAcrossLine(centeredOriginPx, starfishCoordinates.rightLegOuterPoint, dotExtraSmallGap)
 
     Box(
         modifier = Modifier
@@ -120,12 +120,12 @@ fun StarfishDotStar(
 private fun StarfishDotStarPreview() {
     val starfishSizeDp = 300.dp
     val outerCircleRadiusPx = with(LocalDensity.current) { (starfishSizeDp / 2).toPx() }
-    val adjustedOriginPx = PointF(outerCircleRadiusPx, outerCircleRadiusPx)
+    val centeredOriginPx = PointF(outerCircleRadiusPx, outerCircleRadiusPx)
 
     AlarmScratchTheme {
         StarfishDotStar(
             starfishSizeDp = starfishSizeDp,
-            adjustedOriginPx = adjustedOriginPx,
+            centeredOriginPx = centeredOriginPx,
             starfishCoordinates = StarfishCoordinates(outerCircleRadiusPx),
             starfishDotColor = StarfishDotWhite
         )
@@ -140,7 +140,7 @@ private fun StarfishDotStarPreview() {
 private fun StarfishDotStarOnStarfishPreview() {
     val starfishSizeDp = 300.dp
     val outerCircleRadiusPx = with(LocalDensity.current) { (starfishSizeDp / 2).toPx() }
-    val adjustedOriginPx = PointF(outerCircleRadiusPx, outerCircleRadiusPx)
+    val centeredOriginPx = PointF(outerCircleRadiusPx, outerCircleRadiusPx)
 
     AlarmScratchTheme {
         // Starfish Base with Dots
@@ -155,7 +155,7 @@ private fun StarfishDotStarOnStarfishPreview() {
             // Starfish Dot Star
             StarfishDotStar(
                 starfishSizeDp = starfishSizeDp,
-                adjustedOriginPx = adjustedOriginPx,
+                centeredOriginPx = centeredOriginPx,
                 starfishCoordinates = StarfishCoordinates(outerCircleRadiusPx),
                 starfishDotColor = StarfishDotWhite
             )

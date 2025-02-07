@@ -21,9 +21,9 @@ fun Starfish(
     modifier: Modifier = Modifier
 ) {
     // Graph data
-    val radius = with(LocalDensity.current) { (starfishSize / 2).toPx() }
-    val adjustedOrigin = PointF(radius, radius)
-    val starfishCoordinates = StarfishCoordinates(radius)
+    val outerCircleRadiusPx = with(LocalDensity.current) { (starfishSize / 2).toPx() }
+    val centeredOriginPx = PointF(outerCircleRadiusPx, outerCircleRadiusPx)
+    val starfishCoordinates = StarfishCoordinates(outerCircleRadiusPx)
 
     // Starfish Base with Dots
     Box(modifier = modifier) {
@@ -37,7 +37,7 @@ fun Starfish(
         // Starfish Dot Star
         StarfishDotStar(
             starfishSizeDp = starfishSize,
-            adjustedOriginPx = adjustedOrigin,
+            centeredOriginPx = centeredOriginPx,
             starfishCoordinates = starfishCoordinates,
             starfishDotColor = starfishDotColor
         )

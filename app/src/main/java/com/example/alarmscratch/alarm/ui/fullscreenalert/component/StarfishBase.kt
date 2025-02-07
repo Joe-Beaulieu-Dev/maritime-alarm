@@ -39,7 +39,7 @@ fun StarfishBase(
                     moveTo(starfishCoordinates.rightArmOuterPoint.x, starfishCoordinates.rightArmOuterPoint.y)
 
                     // Move: Right Arm Outer Point -> Right Neck Inner Point
-                    val rightArmToRightNeckMidpoint = GraphUtil.calculateMidpoint(
+                    val rightArmToRightNeckMidpoint = GraphUtil.findMidpoint(
                         starfishCoordinates.rightArmOuterPoint,
                         starfishCoordinates.rightNeckInnerPoint
                     )
@@ -53,7 +53,7 @@ fun StarfishBase(
                     )
 
                     // Move: Right Neck Inner Point -> Head Outer Point
-                    val rightNeckToHeadMidpoint = GraphUtil.calculateMidpoint(
+                    val rightNeckToHeadMidpoint = GraphUtil.findMidpoint(
                         starfishCoordinates.rightNeckInnerPoint,
                         starfishCoordinates.headOuterPoint
                     )
@@ -67,7 +67,7 @@ fun StarfishBase(
                     )
 
                     // Move: Head Outer Point -> Left Neck Inner Point
-                    val headToLeftNeckMidpoint = GraphUtil.calculateMidpoint(
+                    val headToLeftNeckMidpoint = GraphUtil.findMidpoint(
                         starfishCoordinates.headOuterPoint,
                         starfishCoordinates.leftNeckInnerPoint
                     )
@@ -81,7 +81,7 @@ fun StarfishBase(
                     )
 
                     // Move: Left Neck Inner Point -> Left Arm Outer Point
-                    val leftNeckToLeftArmMidpoint = GraphUtil.calculateMidpoint(
+                    val leftNeckToLeftArmMidpoint = GraphUtil.findMidpoint(
                         starfishCoordinates.leftNeckInnerPoint,
                         starfishCoordinates.leftArmOuterPoint
                     )
@@ -99,7 +99,7 @@ fun StarfishBase(
                      */
 
                     // Move: Left Arm Outer Point -> Left Armpit Inner Point
-                    val leftArmToLeftArmpitMidpoint = GraphUtil.calculateMidpoint(
+                    val leftArmToLeftArmpitMidpoint = GraphUtil.findMidpoint(
                         starfishCoordinates.leftArmOuterPoint,
                         starfishCoordinates.leftArmpitInnerPoint
                     )
@@ -113,7 +113,7 @@ fun StarfishBase(
                     )
 
                     // Move: Left Armpit Inner Point -> Left Leg Outer Point
-                    val leftArmpitToLeftLegMidpoint = GraphUtil.calculateMidpoint(
+                    val leftArmpitToLeftLegMidpoint = GraphUtil.findMidpoint(
                         starfishCoordinates.leftArmpitInnerPoint,
                         starfishCoordinates.leftLegOuterPoint
                     )
@@ -127,7 +127,7 @@ fun StarfishBase(
                     )
 
                     // Move: Left Leg Outer Point -> Bottom Inner Point
-                    val leftLegToBottomMidpoint = GraphUtil.calculateMidpoint(
+                    val leftLegToBottomMidpoint = GraphUtil.findMidpoint(
                         starfishCoordinates.leftLegOuterPoint,
                         starfishCoordinates.bottomInnerPoint
                     )
@@ -141,7 +141,7 @@ fun StarfishBase(
                     )
 
                     // Move: Bottom Inner Point -> Right Leg Outer Point
-                    val bottomToRightLegMidpoint = GraphUtil.calculateMidpoint(
+                    val bottomToRightLegMidpoint = GraphUtil.findMidpoint(
                         starfishCoordinates.bottomInnerPoint,
                         starfishCoordinates.rightLegOuterPoint
                     )
@@ -155,7 +155,7 @@ fun StarfishBase(
                     )
 
                     // Move: Right Leg Outer Point -> Right Armpit Inner Point
-                    val rightLegToRightArmpitMidpoint = GraphUtil.calculateMidpoint(
+                    val rightLegToRightArmpitMidpoint = GraphUtil.findMidpoint(
                         starfishCoordinates.rightLegOuterPoint,
                         starfishCoordinates.rightArmpitInnerPoint
                     )
@@ -169,7 +169,7 @@ fun StarfishBase(
                     )
 
                     // Move: Right Armpit Inner Point -> Right Arm Outer Point
-                    val rightArmpitToRightArmMidpoint = GraphUtil.calculateMidpoint(
+                    val rightArmpitToRightArmMidpoint = GraphUtil.findMidpoint(
                         starfishCoordinates.rightArmpitInnerPoint,
                         starfishCoordinates.rightArmOuterPoint
                     )

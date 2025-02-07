@@ -23,25 +23,25 @@ class StarfishCoordinates(outerCircleRadiusPx: Float) {
     val bottomInnerPoint = calculateInnerPoint(innerCircleRadiusPx, 3, outerCircleRadiusPx)
     val rightArmpitInnerPoint = calculateInnerPoint(innerCircleRadiusPx, 4, outerCircleRadiusPx)
 
-    private fun calculateOuterPoint(radiusPixels: Float, multiplier: Int, offset: Float): PointF {
+    private fun calculateOuterPoint(radiusPx: Float, multiplier: Int, offset: Float): PointF {
         val initRadians = GraphUtil.degreesToRadians(18f)
         val adjustedRadians = initRadians + (multiplier * GraphUtil.degreesToRadians(72f))
 
         // Offset accounts for the origin point being the top left corner on Android
         return PointF(
-            (radiusPixels * cos(adjustedRadians)) + offset,
-            (radiusPixels * sin(adjustedRadians)) + offset
+            (radiusPx * cos(adjustedRadians)) + offset,
+            (radiusPx * sin(adjustedRadians)) + offset
         )
     }
 
-    private fun calculateInnerPoint(radiusPixels: Float, multiplier: Int, offset: Float): PointF {
+    private fun calculateInnerPoint(radiusPx: Float, multiplier: Int, offset: Float): PointF {
         val initRadians = GraphUtil.degreesToRadians(54f)
         val adjustedRadians = initRadians + (multiplier * GraphUtil.degreesToRadians(72f))
 
         // Offset accounts for the origin point being the top left corner on Android
         return PointF(
-            (radiusPixels * cos(adjustedRadians)) + offset,
-            (radiusPixels * sin(adjustedRadians)) + offset
+            (radiusPx * cos(adjustedRadians)) + offset,
+            (radiusPx * sin(adjustedRadians)) + offset
         )
     }
 }
