@@ -2,8 +2,6 @@ package com.example.alarmscratch.alarm.ui.fullscreenalert.component
 
 import android.graphics.PointF
 import com.example.alarmscratch.core.util.GraphUtil
-import kotlin.math.cos
-import kotlin.math.sin
 
 class StarfishCoordinates(outerCircleRadiusPx: Float) {
     // General
@@ -23,25 +21,17 @@ class StarfishCoordinates(outerCircleRadiusPx: Float) {
     val bottomInnerPoint = calculateInnerPoint(innerCircleRadiusPx, 3, outerCircleRadiusPx)
     val rightArmpitInnerPoint = calculateInnerPoint(innerCircleRadiusPx, 4, outerCircleRadiusPx)
 
-    private fun calculateOuterPoint(radiusPx: Float, multiplier: Int, offset: Float): PointF {
+    private fun calculateOuterPoint(radiusPx: Float, stepMultiplier: Int, offsetPx: Float): PointF {
         val initRadians = GraphUtil.degreesToRadians(18f)
-        val adjustedRadians = initRadians + (multiplier * GraphUtil.degreesToRadians(72f))
+        val adjustedRadians = initRadians + (stepMultiplier * GraphUtil.degreesToRadians(72f))
 
-        // Offset accounts for the origin point being the top left corner on Android
-        return PointF(
-            (radiusPx * cos(adjustedRadians)) + offset,
-            (radiusPx * sin(adjustedRadians)) + offset
-        )
+        return GraphUtil.findPointOnCircumference(radiusPx, adjustedRadians, offsetPx)
     }
 
-    private fun calculateInnerPoint(radiusPx: Float, multiplier: Int, offset: Float): PointF {
+    private fun calculateInnerPoint(radiusPx: Float, stepMultiplier: Int, offsetPx: Float): PointF {
         val initRadians = GraphUtil.degreesToRadians(54f)
-        val adjustedRadians = initRadians + (multiplier * GraphUtil.degreesToRadians(72f))
+        val adjustedRadians = initRadians + (stepMultiplier * GraphUtil.degreesToRadians(72f))
 
-        // Offset accounts for the origin point being the top left corner on Android
-        return PointF(
-            (radiusPx * cos(adjustedRadians)) + offset,
-            (radiusPx * sin(adjustedRadians)) + offset
-        )
+        return GraphUtil.findPointOnCircumference(radiusPx, adjustedRadians, offsetPx)
     }
 }

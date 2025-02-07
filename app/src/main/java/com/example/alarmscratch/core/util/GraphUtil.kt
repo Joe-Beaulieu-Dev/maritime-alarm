@@ -2,6 +2,8 @@ package com.example.alarmscratch.core.util
 
 import android.graphics.PointF
 import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 object GraphUtil {
 
@@ -46,6 +48,30 @@ object GraphUtil {
         PointF(
             startPoint.x + ((finishPoint.x - startPoint.x) * percentageAcross),
             startPoint.y + ((finishPoint.y - startPoint.y) * percentageAcross)
+        )
+
+    /**
+     * Finds a point on the circumference of a circle given the radius, radians for arc length, and an offset.
+     *
+     * The offset is used to modify the returned point's x and y values. These values must be
+     * modified because on Android the origin point of a plane is the top left corner,
+     * rather than the center. This offset modifies the coordinates so they are relative to
+     * a radius that extends from a centered origin point.
+     *
+     * @param radiusPx the radius of the circle
+     * @param radians radians used to calculate the distance across the circumference of the circle
+     * @param offsetPx how much to offset the returned point's x and y values
+     *
+     * @return a point along the circumference of a circle
+     */
+    fun findPointOnCircumference(
+        radiusPx: Float,
+        radians: Float,
+        offsetPx: Float
+    ): PointF =
+        PointF(
+            (radiusPx * cos(radians)) + offsetPx,
+            (radiusPx * sin(radians)) + offsetPx
         )
 
     /*
