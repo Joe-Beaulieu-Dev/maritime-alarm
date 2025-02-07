@@ -24,6 +24,7 @@ val TransparentBlack = Color(0x10000000)
 
 // Starfish
 val StarfishBasePink = Color(0xFFba7999)
+val StarfishBasePurple = Color(0xFF89689d)
 val StarfishDotWhite = Color(0xFFffffff)
 
 // Volcanic Rock
