@@ -7,16 +7,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BeachOcean
 import com.example.alarmscratch.core.ui.theme.DrySand
+import com.example.alarmscratch.core.ui.theme.StarfishBasePink
+import com.example.alarmscratch.core.ui.theme.StarfishBasePurple
+import com.example.alarmscratch.core.ui.theme.StarfishDotWhite
 import com.example.alarmscratch.core.ui.theme.TopOceanBlue
 import com.example.alarmscratch.core.ui.theme.WetSand
 
@@ -41,15 +46,49 @@ fun BeachBackdrop(modifier: Modifier = Modifier) {
                 .fillMaxSize()
                 .background(color = DrySand)
         )
-        // Wet Sand
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = wetSandOffset)
-                .height(waterHeight)
-                .clip(WetSandLineShape())
-                .background(color = WetSand)
-        )
+
+        // Wet Sand with Starfish
+        Box {
+            // Wet Sand
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = wetSandOffset)
+                    .height(waterHeight)
+                    .clip(WetSandLineShape())
+                    .background(color = WetSand)
+            )
+
+            // Pink Starfish
+            Starfish(
+                starfishSize = 50.dp,
+                starfishBaseColor = StarfishBasePink,
+                starfishDotColor = StarfishDotWhite,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 50.dp, bottom = 5.dp)
+                    .graphicsLayer {
+                        rotationX = 40f
+                        rotationY = -10f
+                        rotationZ = 15f
+                    }
+            )
+
+            // Purple Starfish
+            Starfish(
+                starfishSize = 35.dp,
+                starfishBaseColor = StarfishBasePurple,
+                starfishDotColor = StarfishDotWhite,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 95.dp, bottom = 5.dp)
+                    .graphicsLayer {
+                        rotationX = 40f
+                        rotationY = -10f
+                        rotationZ = -10f
+                    }
+            )
+        }
 
         // Sea Foam, Water, and Skyline
         // Sea Foam

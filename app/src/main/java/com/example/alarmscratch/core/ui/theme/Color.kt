@@ -22,6 +22,11 @@ val WetSand = Color(0xFFffe3a0)
 val DrySand = Color(0xFFfff5be)
 val TransparentBlack = Color(0x10000000)
 
+// Starfish
+val StarfishBasePink = Color(0xFFba7999)
+val StarfishBasePurple = Color(0xFF89689d)
+val StarfishDotWhite = Color(0xFFffffff)
+
 // Volcanic Rock
 val LightVolcanicRock = Color(0xFF6a6a68) // 25% Lighter VolcanicRock
 val VolcanicRock = Color(0xFF373736)
