@@ -51,7 +51,6 @@ import java.time.LocalDateTime
 
 @Composable
 fun FullScreenAlarmScreen(fullScreenAlarmViewModel: FullScreenAlarmViewModel) {
-    // TODO: The Status Bar has a grey tint to it on the Lock Screen. Fix this.
     // Configure Status Bar
     StatusBarUtil.setLightStatusBar()
 
