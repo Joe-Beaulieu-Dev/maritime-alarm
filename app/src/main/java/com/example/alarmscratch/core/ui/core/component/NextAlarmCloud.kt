@@ -47,7 +47,7 @@ import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.toCountdownString
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
-import com.example.alarmscratch.core.ui.theme.InCloudBlack
+import com.example.alarmscratch.core.ui.theme.DarkGrey
 
 @Composable
 fun NextAlarmCloud(
@@ -73,10 +73,10 @@ fun NextAlarmCloudContent(
     timeChangeReceiver: BroadcastReceiver,
     modifier: Modifier = Modifier
 ) {
-    val localContext = LocalContext.current
+    val context = LocalContext.current
 
     // Manage the BroadcastReceiver for keeping the Alarm Countdown Text up to date
-    DisposableEffect(key1 = localContext, key2 = selectedNavComponentDest) {
+    DisposableEffect(key1 = context, key2 = selectedNavComponentDest) {
         // Register BroadcastReceiver
         if (selectedNavComponentDest is Destination.AlarmListScreen) {
             val intentFilter = IntentFilter().apply {
@@ -86,7 +86,7 @@ fun NextAlarmCloudContent(
                 addAction(Intent.ACTION_TIMEZONE_CHANGED)
             }
             ContextCompat.registerReceiver(
-                localContext,
+                context,
                 timeChangeReceiver,
                 intentFilter,
                 ContextCompat.RECEIVER_NOT_EXPORTED
@@ -96,7 +96,7 @@ fun NextAlarmCloudContent(
         // Unregister BroadcastReceiver
         onDispose {
             try {
-                localContext.unregisterReceiver(timeChangeReceiver)
+                context.unregisterReceiver(timeChangeReceiver)
             } catch (e: Exception) {
                 // Receiver was never registered in the first place. Nothing to do here. Just don't crash.
             }
@@ -126,14 +126,14 @@ fun NextAlarmCloudContent(
                 Icon(
                     imageVector = (alarmCountdownState as AlarmCountdownState.Success).icon,
                     contentDescription = null,
-                    tint = InCloudBlack,
+                    tint = DarkGrey,
                     modifier = Modifier.padding(end = 4.dp, bottom = 2.dp)
                 )
 
                 // Countdown Text
                 Text(
                     text = alarmCountdownState.countdownText,
-                    color = InCloudBlack,
+                    color = DarkGrey,
                     fontSize = getCountdownTextFontSize(alarmCountdownState.countdownText),
                     fontWeight = FontWeight.SemiBold,
                     lineHeight = getCountdownTextLineHeight(alarmCountdownState.countdownText)

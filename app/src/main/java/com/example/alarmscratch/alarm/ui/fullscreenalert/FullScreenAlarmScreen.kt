@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -14,9 +15,14 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalRippleConfiguration
+import androidx.compose.material3.RippleConfiguration
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,9 +40,12 @@ import com.example.alarmscratch.core.extension.get24HourTime
 import com.example.alarmscratch.core.extension.getAmPm
 import com.example.alarmscratch.core.extension.getDayFull
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
-import com.example.alarmscratch.core.ui.theme.InCloudBlack
+import com.example.alarmscratch.core.ui.theme.BoatHull
+import com.example.alarmscratch.core.ui.theme.DarkGrey
+import com.example.alarmscratch.core.ui.theme.Grey
 import com.example.alarmscratch.core.ui.theme.SkyBlue
 import com.example.alarmscratch.core.ui.theme.TransparentBlack
+import com.example.alarmscratch.core.ui.theme.TransparentWetSand
 import com.example.alarmscratch.core.util.StatusBarUtil
 import java.time.LocalDateTime
 
@@ -55,6 +64,8 @@ fun FullScreenAlarmScreen(fullScreenAlarmViewModel: FullScreenAlarmViewModel) {
     )
 }
 
+// ExperimentalMaterial3Api OptIn for LocalRippleConfiguration and RippleConfiguration
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FullScreenAlarmScreenContent(
     alarmName: String,
@@ -92,7 +103,7 @@ fun FullScreenAlarmScreenContent(
                     // Name
                     Text(
                         text = alarmName,
-                        color = InCloudBlack,
+                        color = DarkGrey,
                         fontSize = 42.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -100,7 +111,7 @@ fun FullScreenAlarmScreenContent(
                     // Day
                     Text(
                         text = alarmExecutionDateTime.getDayFull(),
-                        color = InCloudBlack,
+                        color = DarkGrey,
                         fontSize = 32.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -114,7 +125,7 @@ fun FullScreenAlarmScreenContent(
                             } else {
                                 alarmExecutionDateTime.get12HourTime()
                             },
-                            color = InCloudBlack,
+                            color = DarkGrey,
                             fontSize = 64.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.alignByBaseline()
@@ -124,7 +135,7 @@ fun FullScreenAlarmScreenContent(
                         if (!is24Hour) {
                             Text(
                                 text = alarmExecutionDateTime.getAmPm(context),
-                                color = InCloudBlack,
+                                color = DarkGrey,
                                 fontSize = 42.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 modifier = Modifier.alignByBaseline()
@@ -140,17 +151,42 @@ fun FullScreenAlarmScreenContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.weight(0.75f)
             ) {
-                // Snooze Button
-                Button(onClick = { snoozeAlarm(context) }) {
-                    Text(text = stringResource(id = R.string.snooze_alarm), fontSize = 42.sp)
-                }
-                Spacer(modifier = Modifier.height(48.dp))
+                // Replace default Ripple
+                CompositionLocalProvider(value = LocalRippleConfiguration provides RippleConfiguration(color = Grey)) {
+                    // Snooze Button
+                    Button(
+                        onClick = { snoozeAlarm(context) },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = TransparentWetSand,
+                            contentColor = Grey
+                        ),
+                        contentPadding = PaddingValues(start = 28.dp, top = 10.dp, end = 28.dp, bottom = 10.dp)
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.snooze_alarm),
+                            fontSize = 48.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(32.dp))
 
-                // Dismiss Button
-                Button(onClick = { dismissAlarm(context) }) {
-                    Text(text = stringResource(id = R.string.dismiss_alarm), fontSize = 42.sp)
+                    // Dismiss Button
+                    Button(
+                        onClick = { dismissAlarm(context) },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = TransparentWetSand,
+                            contentColor = BoatHull
+                        ),
+                        contentPadding = PaddingValues(start = 28.dp, top = 10.dp, end = 28.dp, bottom = 10.dp)
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.dismiss_alarm),
+                            fontSize = 48.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(48.dp))
                 }
-                Spacer(modifier = Modifier.height(48.dp))
             }
         }
     }

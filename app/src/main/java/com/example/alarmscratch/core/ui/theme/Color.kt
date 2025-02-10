@@ -3,7 +3,6 @@ package com.example.alarmscratch.core.ui.theme
 import androidx.compose.ui.graphics.Color
 
 // SkylineHeader
-val InCloudBlack = Color(0xFF404040)// 25% Lighter Black
 val SkyBlue = Color(0xFFc2e0ff) // 80% Lighter TopOceanBlue
 
 // Sail Boat
@@ -21,6 +20,7 @@ val BeachOcean = Color(0xFF66b2ff)
 val WetSand = Color(0xFFffe3a0)
 val DrySand = Color(0xFFfff5be)
 val TransparentBlack = Color(0x10000000)
+val TransparentWetSand = Color(0x80ffe3a0)
 
 // Starfish
 val StarfishBasePink = Color(0xFFba7999)
@@ -42,6 +42,8 @@ val MediumLavaRed = Color(0xFFa60d1a) // 20% Darker BrightLavaRed
 val DarkLavaRed = Color(0xFF660f00) // 60% Darker #ff2500
 
 // General
+val Grey = Color(0xFF595959) // 35% Lighter Black
+val DarkGrey = Color(0xFF404040) // 25% Lighter Black
 val SelectedGreen = Color(0xFF00b300)
 
 // Navigation
