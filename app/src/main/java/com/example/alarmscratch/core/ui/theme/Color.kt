@@ -43,6 +43,7 @@ val DarkLavaRed = Color(0xFF660f00) // 60% Darker #ff2500
 
 // General
 val Grey = Color(0xFF595959) // 35% Lighter Black
+val MediumGrey = Color(0xFF4d4d4d) // 30% Lighter Black
 val DarkGrey = Color(0xFF404040) // 25% Lighter Black
 val SelectedGreen = Color(0xFF00b300)
 

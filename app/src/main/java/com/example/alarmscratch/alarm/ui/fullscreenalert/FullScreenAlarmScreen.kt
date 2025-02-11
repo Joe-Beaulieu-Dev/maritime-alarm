@@ -23,6 +23,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,10 +43,12 @@ import com.example.alarmscratch.core.extension.get12HourTime
 import com.example.alarmscratch.core.extension.get24HourTime
 import com.example.alarmscratch.core.extension.getAmPm
 import com.example.alarmscratch.core.extension.getDayFull
+import com.example.alarmscratch.core.ui.shared.LongPressButton
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.BoatHull
 import com.example.alarmscratch.core.ui.theme.DarkGrey
 import com.example.alarmscratch.core.ui.theme.Grey
+import com.example.alarmscratch.core.ui.theme.MediumGrey
 import com.example.alarmscratch.core.ui.theme.SkyBlue
 import com.example.alarmscratch.core.ui.theme.TransparentBlack
 import com.example.alarmscratch.core.ui.theme.TransparentWetSand
@@ -73,7 +79,10 @@ fun FullScreenAlarmScreenContent(
     snoozeAlarm: (Context) -> Unit,
     dismissAlarm: (Context) -> Unit
 ) {
+    // State
     val context = LocalContext.current
+    var showHoldButtonText by remember { mutableStateOf(false) }
+    val toggleHoldButtonText: () -> Unit = { showHoldButtonText = !showHoldButtonText }
 
     Surface(
         modifier = Modifier
@@ -150,10 +159,21 @@ fun FullScreenAlarmScreenContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.weight(0.75f)
             ) {
+                // Hold Button Text
+                if (showHoldButtonText) {
+                    Text(
+                        text = "Hold to dismiss",
+                        color = MediumGrey,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(bottom = 18.dp)
+                    )
+                }
+
                 // Replace default Ripple
                 CompositionLocalProvider(value = LocalRippleConfiguration provides RippleConfiguration(color = Grey)) {
                     // Snooze Button
-                    Button(
+                    LongPressButton(
                         onClick = { snoozeAlarm(context) },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = TransparentWetSand,
