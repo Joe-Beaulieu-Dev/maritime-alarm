@@ -119,6 +119,8 @@
     -->
     <string name="snooze_alarm">Snooze</string>
     <string name="dismiss_alarm">Dismiss</string>
+    <string name="hold_to_snooze">Hold to Snooze</string>
+    <string name="hold_to_dismiss">Hold to Dismiss</string>
     <string name="default_alarm_name">Alarm</string>
     <string name="default_alarm_date">Today</string>
     <string name="default_alarm_time">Now</string>

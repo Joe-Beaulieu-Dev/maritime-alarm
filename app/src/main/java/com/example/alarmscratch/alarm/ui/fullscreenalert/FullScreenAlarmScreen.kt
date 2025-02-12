@@ -1,35 +1,46 @@
 package com.example.alarmscratch.alarm.ui.fullscreenalert
 
 import android.content.Context
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.RippleConfiguration
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -79,10 +90,48 @@ fun FullScreenAlarmScreenContent(
     snoozeAlarm: (Context) -> Unit,
     dismissAlarm: (Context) -> Unit
 ) {
-    // State
+    // Hold text state
     val context = LocalContext.current
-    var showHoldButtonText by remember { mutableStateOf(false) }
-    val toggleHoldButtonText: () -> Unit = { showHoldButtonText = !showHoldButtonText }
+    var holdText by remember { mutableStateOf("") }
+    var showHoldIndicator by remember { mutableStateOf(false) }
+    val holdToSnoozeText = stringResource(id = R.string.hold_to_snooze)
+    val holdToDismissText = stringResource(id = R.string.hold_to_dismiss)
+
+    // Progress state
+    val longPressThreshold = 1500
+    var start by remember { mutableStateOf(false) }
+    var currentProgress by remember { mutableFloatStateOf(0f) }
+    val currentPercentage by animateFloatAsState(
+        targetValue = currentProgress,
+        animationSpec = tween(durationMillis = longPressThreshold, easing = LinearEasing),
+        label = "progress",
+        finishedListener = { endProgress ->
+            if (endProgress == 1f) {
+                start = false
+            } else {
+                showHoldIndicator = false
+            }
+        }
+    )
+
+    // Progress functions
+    val onPressStart: () -> Unit = {
+        // Start progress animation and show hold text
+        start = true
+        showHoldIndicator = true
+    }
+    val onShortPress: () -> Unit = {
+        start = false
+        // Reset progress animation
+        currentProgress = 0f
+    }
+
+    // Start progress animation
+    if (start) {
+        LaunchedEffect(key1 = Unit) {
+            currentProgress = 1f
+        }
+    }
 
     Surface(
         modifier = Modifier
@@ -153,28 +202,53 @@ fun FullScreenAlarmScreenContent(
                 }
             }
 
-            // Snooze and Dismiss Buttons
+            // Snooze and Dismiss Buttons, and Hold Indicator
             Column(
                 verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.weight(0.75f)
             ) {
-                // Hold Button Text
-                if (showHoldButtonText) {
-                    Text(
-                        text = "Hold to dismiss",
-                        color = MediumGrey,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(bottom = 18.dp)
-                    )
+                // Hold Indicator
+                if (showHoldIndicator) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .width(IntrinsicSize.Min)
+                            .height(IntrinsicSize.Min)
+                            .padding(bottom = 14.dp)
+                    ) {
+                        Text(
+                            text = holdText,
+                            color = MediumGrey,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+                        )
+
+                        LinearProgressIndicator(
+                            progress = { currentPercentage },
+                            color = TransparentBlack,
+                            trackColor = Color.Transparent,
+                            drawStopIndicator = {},
+                            modifier = Modifier
+                                .fillMaxWidth(fraction = 0.65f)
+                                .fillMaxHeight()
+                                .clip(RoundedCornerShape(12.dp))
+                        )
+                    }
                 }
 
                 // Replace default Ripple
                 CompositionLocalProvider(value = LocalRippleConfiguration provides RippleConfiguration(color = Grey)) {
                     // Snooze Button
                     LongPressButton(
-                        onClick = { snoozeAlarm(context) },
+                        longPressThreshold = longPressThreshold,
+                        onPressStart = {
+                            holdText = holdToSnoozeText
+                            onPressStart()
+                        },
+                        onLongPress = { snoozeAlarm(context) },
+                        onShortPress = onShortPress,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = TransparentWetSand,
                             contentColor = Grey
@@ -190,8 +264,14 @@ fun FullScreenAlarmScreenContent(
                     Spacer(modifier = Modifier.height(32.dp))
 
                     // Dismiss Button
-                    Button(
-                        onClick = { dismissAlarm(context) },
+                    LongPressButton(
+                        longPressThreshold = longPressThreshold,
+                        onPressStart = {
+                            holdText = holdToDismissText
+                            onPressStart()
+                        },
+                        onLongPress = { dismissAlarm(context) },
+                        onShortPress = onShortPress,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = TransparentWetSand,
                             contentColor = BoatHull
