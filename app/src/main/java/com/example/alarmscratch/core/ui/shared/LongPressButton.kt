@@ -28,7 +28,7 @@ import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 
 @Composable
 fun LongPressButton(
-    longPressThreshold: Long,
+    longPressTimeout: Long,
     onPressStart: () -> Unit,
     onShortPress: () -> Unit,
     onLongPress: () -> Unit,
@@ -51,7 +51,7 @@ fun LongPressButton(
             .pointerInput(enabled) {
                 if (enabled) {
                     detectSingleTapGestures(
-                        longPressTimeout = longPressThreshold,
+                        longPressTimeout = longPressTimeout,
                         onPressStart = onPressStart,
                         onShortPress = onShortPress,
                         onLongPress = onLongPress
@@ -91,7 +91,7 @@ private fun LongPressButtonPreview() {
                 .height(200.dp)
         ) {
             LongPressButton(
-                longPressThreshold = 3000,
+                longPressTimeout = 3000,
                 onPressStart = {},
                 onShortPress = {},
                 onLongPress = {}

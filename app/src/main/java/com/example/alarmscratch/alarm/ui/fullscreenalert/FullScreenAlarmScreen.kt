@@ -3,6 +3,7 @@ package com.example.alarmscratch.alarm.ui.fullscreenalert
 import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -32,7 +33,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -199,55 +199,84 @@ fun SnoozeAndDismissButtons(
     dismissAlarm: (Context) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Hold indicator text state
+    // Snooze and Dismiss button state
     val context = LocalContext.current
+    var enabledButton by remember { mutableStateOf(FullScreenAlarmButton.BOTH) }
+    val isButtonEnabled: (FullScreenAlarmButton) -> Boolean = { button ->
+        button == enabledButton || enabledButton == FullScreenAlarmButton.BOTH
+    }
+
+    // Hold Indicator text state
     var showHoldIndicator by remember { mutableStateOf(false) }
     var holdIndicatorTextRes by remember { mutableIntStateOf(FullScreenAlarmButton.BOTH.stringRes) }
 
-    // Hold indicator progress state
+    // Hold Indicator progress state
     val longPressTimeout = 1500
-    var startProgressAnimation by remember { mutableStateOf(false) }
-    var currentProgress by remember { mutableFloatStateOf(0f) }
-    val currentPercentage by animateFloatAsState(
-        targetValue = currentProgress,
-        animationSpec = tween(durationMillis = longPressTimeout, easing = LinearEasing),
-        label = "progress",
+    var targetProgress by remember { mutableFloatStateOf(0f) }
+    var animationSpec: TweenSpec<Float> by remember {
+        mutableStateOf(tween(durationMillis = longPressTimeout, easing = LinearEasing))
+    }
+    val currentProgress by animateFloatAsState(
+        targetValue = targetProgress,
+        animationSpec = animationSpec,
+        label = "hold_indicator_progress",
         finishedListener = { endProgress ->
-            if (endProgress == 1f) {
-                startProgressAnimation = false
-            } else {
-                showHoldIndicator = false
+            if (endProgress < 1f) {
+                if (enabledButton == FullScreenAlarmButton.BOTH) {
+                    // Progress reached 0f naturally after a short press. Hide the hold indicator.
+                    showHoldIndicator = false
+                } else {
+                    // Progress was hard reset by hardResetHoldIndicatorProgress().
+                    // Therefore, the User is currently holding a button. Start animating up towards 1f.
+                    animationSpec = tween(durationMillis = longPressTimeout, easing = LinearEasing)
+                    targetProgress = 1f
+                }
             }
         }
     )
-
-    // Snooze and Dismiss button state
-    var enabledButton by remember { mutableStateOf(FullScreenAlarmButton.BOTH) }
-    val isButtonEnabled: (FullScreenAlarmButton) -> Boolean = { it == enabledButton || enabledButton == FullScreenAlarmButton.BOTH }
+    val hardResetHoldIndicatorProgress: () -> Unit = {
+        // Set initial progress to 0.01f instantly with a 0 durationMillis animationSpec.
+        // Progress should always reset on a new button press since the longPressTimeout is always
+        // the same, and the Hold Indicator should always reach the end at the same time as a long press.
+        //
+        // Resetting the progress like this will cause currentProgress's animator to invoke its finishedListener,
+        // which will immediately start animating the currentProgress up to 1f with a durationMillis of longPressTimeout.
+        //
+        // targetProgress MUST be "reset" here to 0.01f instead of 0f. This is because targetProgress's INITIAL value
+        // (and also END value after a short press) is 0f, so if we "reset" it here to 0f, then currentProgress will
+        // NEVER animate for ANY button presses. This is because no animation is necessary to go from 0f to 0f, and upward
+        // animation towards 1f ONLY occurs as a result of the currentProgress animator's finishedListener being
+        // invoked by modifying the targetProgress here in hardResetHoldIndicatorProgress().
+        //
+        // Setting it here to 0.01f will invoke a NEW animation of currentProgress, which will result in its finishedListener
+        // being invoke at the end. If the finishedListener was invoked as a result of hardResetHoldIndicatorProgress() then
+        // it will begin animating up towards 1f, as desired.
+        //
+        // The only reason why any of this logic exists is to ensure that the Hold Indicator is reset at the beginning of every
+        // button press, so that it always finishes filling up at the same time that the long press completes.
+        animationSpec = tween(durationMillis = 0, easing = LinearEasing)
+        targetProgress = 0.01f
+    }
 
     // Snooze and Dismiss button functions
     val onPressStart: (FullScreenAlarmButton) -> Unit = { button ->
-        // Disable inactive button and configure hold progress indicator
+        // Set button as enabled
         enabledButton = button
+        // Configure and show Hold Indicator
         holdIndicatorTextRes = button.stringRes
-
-        // Show hold progress indicator and start animation
+        hardResetHoldIndicatorProgress()
         showHoldIndicator = true
-        startProgressAnimation = true
     }
+
     val onShortPress: () -> Unit = {
-        // Enable both buttons
+        // Reset buttons and animate progress down towards 0f
         enabledButton = FullScreenAlarmButton.BOTH
-
-        startProgressAnimation = false
-        // Animate progress towards 0
-        currentProgress = 0f
+        targetProgress = 0f
     }
-    val onLongPress: (FullScreenAlarmButton) -> Unit = { button ->
-        // Enable both buttons
-        enabledButton = FullScreenAlarmButton.BOTH
 
-        // Perform appropriate long press action given the button pressed
+    val onLongPress: (FullScreenAlarmButton) -> Unit = { button ->
+        // Reset buttons and perform long press action
+        enabledButton = FullScreenAlarmButton.BOTH
         when (button) {
             FullScreenAlarmButton.SNOOZE ->
                 snoozeAlarm(context)
@@ -255,13 +284,6 @@ fun SnoozeAndDismissButtons(
                 dismissAlarm(context)
             FullScreenAlarmButton.BOTH ->
                 Unit
-        }
-    }
-
-    // Start progress animation
-    if (startProgressAnimation) {
-        LaunchedEffect(key1 = Unit) {
-            currentProgress = 1f
         }
     }
 
@@ -289,9 +311,9 @@ fun SnoozeAndDismissButtons(
                     modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
                 )
 
-                // Hold Progress Indicator
+                // Progress Indicator
                 LinearProgressIndicator(
-                    progress = { currentPercentage },
+                    progress = { currentProgress },
                     color = TransparentBlack,
                     trackColor = Color.Transparent,
                     drawStopIndicator = {},
@@ -308,7 +330,7 @@ fun SnoozeAndDismissButtons(
         CompositionLocalProvider(value = LocalRippleConfiguration provides RippleConfiguration(color = Grey)) {
             // Snooze Button
             LongPressButton(
-                longPressThreshold = longPressTimeout.toLong(),
+                longPressTimeout = longPressTimeout.toLong(),
                 onPressStart = { onPressStart(FullScreenAlarmButton.SNOOZE) },
                 onShortPress = onShortPress,
                 onLongPress = { onLongPress(FullScreenAlarmButton.SNOOZE) },
@@ -329,7 +351,7 @@ fun SnoozeAndDismissButtons(
 
             // Dismiss Button
             LongPressButton(
-                longPressThreshold = longPressTimeout.toLong(),
+                longPressTimeout = longPressTimeout.toLong(),
                 onPressStart = { onPressStart(FullScreenAlarmButton.DISMISS) },
                 onShortPress = onShortPress,
                 onLongPress = { onLongPress(FullScreenAlarmButton.DISMISS) },
