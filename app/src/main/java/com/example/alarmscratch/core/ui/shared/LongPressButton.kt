@@ -34,9 +34,10 @@ import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 @Composable
 fun LongPressButton(
     longPressTimeout: Long,
-    onPressStart: () -> Unit,
-    onShortPress: () -> Unit,
+    onPressStart: (() -> Unit)? = null,
+    onShortPress: (() -> Unit)? = null,
     onLongPress: () -> Unit,
+    onLongPressRelease: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     shape: Shape = ButtonDefaults.shape,
@@ -44,9 +45,9 @@ fun LongPressButton(
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     val containerColor = if (enabled) colors.containerColor else colors.disabledContainerColor
     val contentColor = if (enabled) colors.contentColor else colors.disabledContentColor
-    val interactionSource = remember { MutableInteractionSource() }
 
     Surface(
         color = containerColor,
@@ -61,6 +62,7 @@ fun LongPressButton(
                         onPressStart = onPressStart,
                         onShortPress = onShortPress,
                         onLongPress = onLongPress,
+                        onLongPressRelease = onLongPressRelease,
                         interactionSource = interactionSource
                     )
                 }

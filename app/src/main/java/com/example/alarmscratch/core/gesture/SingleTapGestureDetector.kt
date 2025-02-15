@@ -33,24 +33,28 @@ import kotlinx.coroutines.launch
  * @param onPressStart invoked immediately after the first down event
  * @param onShortPress invoked after the first up event if the duration of the press did not exceed [longPressTimeout]
  * @param onLongPress invoked immediately once the duration of the press exceeds [longPressTimeout]
+ * @param onLongPressRelease invoked immediately after the User actually releases a long press,
+ *   which will be an arbitrary amount of time after [onLongPress] is invoked
  */
 suspend fun PointerInputScope.detectSingleTapGestures(
     longPressTimeout: Long,
     onPressStart: (() -> Unit)? = null,
     onShortPress: (() -> Unit)? = null,
     onLongPress: (() -> Unit)? = null,
+    onLongPressRelease: (() -> Unit)? = null,
     interactionSource: MutableInteractionSource
 ) = coroutineScope {
     awaitEachGesture {
         // Consume the initial down event and invoke onPressStart()
-        val down = awaitFirstDown()
-        down.consume()
+        val downPress = awaitFirstDown()
+        downPress.consume()
         onPressStart?.invoke()
 
-        // Start Ripple from the down event position
-        val ripplePress = PressInteraction.Press(down.position)
+        // Create a PressInteraction for the down press and emit it via the
+        // given MutableInteractionSource. This is typically used to initiate Ripple effects.
+        val downPressInteraction = PressInteraction.Press(downPress.position)
         launch {
-            interactionSource.emit(ripplePress)
+            interactionSource.emit(downPressInteraction)
         }
 
         // Wait for the next up event and consume it. If it takes longer than longPressTimeout
@@ -73,6 +77,9 @@ suspend fun PointerInputScope.detectSingleTapGestures(
             // this window of press events is to be interpreted as a single User intention.
             onLongPress?.invoke()
             consumeUntilUp()
+
+            // The User has released their press. Invoke onLongPressRelease().
+            onLongPressRelease?.invoke()
         }
 
         // The up event was successful and not cancelled, and the
@@ -81,9 +88,10 @@ suspend fun PointerInputScope.detectSingleTapGestures(
             onShortPress?.invoke()
         }
 
-        // Release Ripple
+        // Emit a Release or Cancel PressInteraction via the given
+        // MutableInteractionSource. This is typically used to end Ripple effects.
         launch {
-            releaseOrCancel(interactionSource, ripplePress, upOrCancel)
+            releaseOrCancelPressInteraction(interactionSource, downPressInteraction, upOrCancel)
         }
     }
 }
@@ -107,7 +115,7 @@ private suspend fun AwaitPointerEventScope.consumeUntilUp() {
  * @param downPress the source Press interaction that is being either released or cancelled
  * @param upOrCancel PointerInputChange being used to determine if the Press is being released or cancelled
  */
-private suspend fun releaseOrCancel(
+private suspend fun releaseOrCancelPressInteraction(
     interactionSource: MutableInteractionSource,
     downPress: PressInteraction.Press,
     upOrCancel: PointerInputChange?

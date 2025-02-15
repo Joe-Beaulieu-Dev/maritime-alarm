@@ -226,8 +226,8 @@ fun SnoozeAndDismissButtons(
                     // Progress reached 0f naturally after a short press. Hide the hold indicator.
                     showHoldIndicator = false
                 } else {
-                    // Progress was hard reset by hardResetHoldIndicatorProgress().
-                    // Therefore, the User is currently holding a button. Start animating up towards 1f.
+                    // Progress was hard reset by hardResetHoldIndicatorProgress(), which is only called inside
+                    // of onPressStart(). Therefore, the User is currently holding a button. Start animating up towards 1f.
                     animationSpec = tween(durationMillis = longPressTimeout, easing = LinearEasing)
                     targetProgress = 1f
                 }
@@ -237,7 +237,7 @@ fun SnoozeAndDismissButtons(
     val hardResetHoldIndicatorProgress: () -> Unit = {
         // Set initial progress to 0.01f instantly with a 0 durationMillis animationSpec.
         // Progress should always reset on a new button press since the longPressTimeout is always
-        // the same, and the Hold Indicator should always reach the end at the same time as a long press.
+        // the same, and the Hold Indicator should always reach the end at the same time that onLongPress() is invoked.
         //
         // Resetting the progress like this will cause currentProgress's animator to invoke its finishedListener,
         // which will immediately start animating the currentProgress up to 1f with a durationMillis of longPressTimeout.
@@ -253,7 +253,7 @@ fun SnoozeAndDismissButtons(
         // it will begin animating up towards 1f, as desired.
         //
         // The only reason why any of this logic exists is to ensure that the Hold Indicator is reset at the beginning of every
-        // button press, so that it always finishes filling up at the same time that the long press completes.
+        // button press, so that it always finishes filling up at the same time that onLongPress() is invoked.
         animationSpec = tween(durationMillis = 0, easing = LinearEasing)
         targetProgress = 0.01f
     }
@@ -275,8 +275,7 @@ fun SnoozeAndDismissButtons(
     }
 
     val onLongPress: (FullScreenAlarmButton) -> Unit = { button ->
-        // Reset buttons and perform long press action
-        enabledButton = FullScreenAlarmButton.BOTH
+        // Perform long press action
         when (button) {
             FullScreenAlarmButton.SNOOZE ->
                 snoozeAlarm(context)
@@ -285,6 +284,11 @@ fun SnoozeAndDismissButtons(
             FullScreenAlarmButton.BOTH ->
                 Unit
         }
+    }
+
+    val onLongPressRelease: () -> Unit = {
+        // Reset buttons
+        enabledButton = FullScreenAlarmButton.BOTH
     }
 
     // Snooze and Dismiss Buttons with Hold Indicator
@@ -334,6 +338,7 @@ fun SnoozeAndDismissButtons(
                 onPressStart = { onPressStart(FullScreenAlarmButton.SNOOZE) },
                 onShortPress = onShortPress,
                 onLongPress = { onLongPress(FullScreenAlarmButton.SNOOZE) },
+                onLongPressRelease = onLongPressRelease,
                 enabled = isButtonEnabled(FullScreenAlarmButton.SNOOZE),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = TransparentWetSand,
@@ -355,6 +360,7 @@ fun SnoozeAndDismissButtons(
                 onPressStart = { onPressStart(FullScreenAlarmButton.DISMISS) },
                 onShortPress = onShortPress,
                 onLongPress = { onLongPress(FullScreenAlarmButton.DISMISS) },
+                onLongPressRelease = onLongPressRelease,
                 enabled = isButtonEnabled(FullScreenAlarmButton.DISMISS),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = TransparentWetSand,
