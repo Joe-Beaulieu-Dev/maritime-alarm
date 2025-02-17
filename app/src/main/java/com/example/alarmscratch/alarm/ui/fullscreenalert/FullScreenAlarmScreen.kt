@@ -324,7 +324,6 @@ fun SnoozeAndDismissButtons(
                     modifier = Modifier
                         .fillMaxWidth(fraction = 0.65f)
                         .fillMaxHeight()
-                        .clip(RoundedCornerShape(12.dp))
                 )
             }
         }
@@ -342,7 +341,9 @@ fun SnoozeAndDismissButtons(
                 enabled = isButtonEnabled(FullScreenAlarmButton.SNOOZE),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = TransparentWetSand,
-                    contentColor = Grey
+                    contentColor = Grey,
+                    disabledContainerColor = TransparentWetSand,
+                    disabledContentColor = Grey
                 ),
                 contentPadding = PaddingValues(start = 28.dp, top = 10.dp, end = 28.dp, bottom = 10.dp)
             ) {
@@ -364,7 +365,9 @@ fun SnoozeAndDismissButtons(
                 enabled = isButtonEnabled(FullScreenAlarmButton.DISMISS),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = TransparentWetSand,
-                    contentColor = BoatHull
+                    contentColor = BoatHull,
+                    disabledContainerColor = TransparentWetSand,
+                    disabledContentColor = BoatHull
                 ),
                 contentPadding = PaddingValues(start = 28.dp, top = 10.dp, end = 28.dp, bottom = 10.dp)
             ) {
