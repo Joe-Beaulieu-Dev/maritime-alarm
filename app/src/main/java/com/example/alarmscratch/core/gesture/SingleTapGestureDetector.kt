@@ -15,26 +15,29 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 /**
- * Detect and react to single tap gestures. Gestures include: [onPressStart], [onShortPress], and [onLongPress].
- * [onPressStart] is immediately invoked after the first down event, and either [onShortPress] or [onLongPress]
- * are subsequently invoked depending on if the [longPressTimeout] was exceeded before the first up event was received.
- *
- * Although [onLongPress] is invoked immediately after [longPressTimeout] has been exceeded, all press events
- * continue to be consumed until the first up event is received.
+ * Detect and react to single tap gestures. Gestures include: [onPressStart], [onShortPress], [onLongPress],
+ * and [onLongPressRelease]. [onPressStart] is invoked immediately after the first down event, and then
+ * either [onShortPress] or [onLongPress] are subsequently invoked depending on if the [longPressTimeout]
+ * was exceeded before the first up event was received. In the event of a long press, [onLongPress] is
+ * invoked immediately after [longPressTimeout] has been exceeded, and all press events will continue to be
+ * consumed until the first up event is received, at which point [onLongPressRelease] is invoked.
  *
  * Ex: [longPressTimeout] is set to 1.5 seconds. The User holds the Button down for 2 seconds. [onLongPress] will be
- * invoked at the 1.5 second mark, but we will still continue to consume the last 0.5 seconds of the "hold" since the
- * entire 2 seconds of the User's press in considered to be a single intention.
+ * invoked at the 1.5 second mark, but this function will still continue to consume the last 0.5 seconds of the "hold"
+ * since the entire 2 seconds of the User's press is considered to be a single intention.
  *
  * This function does not perform any special behavior specific to double taps. A double tap will simply result in
  * 2 calls to [onPressStart] and [onShortPress].
  *
  * @param longPressTimeout how long to wait after a down event for the press to be considered a long press
- * @param onPressStart invoked immediately after the first down event
+ * @param onPressStart invoked after the first down event
  * @param onShortPress invoked after the first up event if the duration of the press did not exceed [longPressTimeout]
- * @param onLongPress invoked immediately once the duration of the press exceeds [longPressTimeout]
- * @param onLongPressRelease invoked immediately after the User actually releases a long press,
- *   which will be an arbitrary amount of time after [onLongPress] is invoked
+ * @param onLongPress invoked once the duration of the press exceeds [longPressTimeout]
+ * @param onLongPressRelease invoked after the User actually releases a long press, which will be an arbitrary
+ *   amount of time after [onLongPress] is invoked
+ * @param interactionSource an optional MutableInteractionSource used to emit press Interactions related to this function.
+ *   This is typically used for things like adding a Ripple effect to a composable. This is not required for any of
+ *   the other callbacks passed to this function to work. It is separate and optional.
  */
 suspend fun PointerInputScope.detectSingleTapGestures(
     longPressTimeout: Long,
@@ -51,7 +54,7 @@ suspend fun PointerInputScope.detectSingleTapGestures(
         onPressStart?.invoke()
 
         // Create a PressInteraction for the down press and emit it via the
-        // given MutableInteractionSource. This is typically used to initiate Ripple effects.
+        // given MutableInteractionSource. This is typically used to initiate a Ripple effect.
         val downPressInteraction = PressInteraction.Press(downPress.position)
         launch {
             interactionSource.emit(downPressInteraction)
@@ -59,7 +62,8 @@ suspend fun PointerInputScope.detectSingleTapGestures(
 
         // Wait for the next up event and consume it. If it takes longer than longPressTimeout
         // then a PointerEventTimeoutCancellationException is thrown and caught, onLongPress() is immediately
-        // invoked, and all subsequent press events are consumed until the first up event is received.
+        // invoked, and all subsequent press events are consumed until the first up event is received,
+        // at which time onLongPressReleased() is invoked.
         var upOrCancel: PointerInputChange? = null
         try {
             // Wait for up event or cancellation. If the pointer is held down longer than
@@ -89,7 +93,7 @@ suspend fun PointerInputScope.detectSingleTapGestures(
         }
 
         // Emit a Release or Cancel PressInteraction via the given
-        // MutableInteractionSource. This is typically used to end Ripple effects.
+        // MutableInteractionSource. This is typically used to end a Ripple effect.
         launch {
             releaseOrCancelPressInteraction(interactionSource, downPressInteraction, upOrCancel)
         }
