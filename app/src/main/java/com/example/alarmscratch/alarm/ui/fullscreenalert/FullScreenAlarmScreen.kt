@@ -1,7 +1,6 @@
 package com.example.alarmscratch.alarm.ui.fullscreenalert
 
 import android.content.Context
-import androidx.annotation.StringRes
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateFloatAsState
@@ -67,12 +66,6 @@ import com.example.alarmscratch.core.ui.theme.TransparentBlack
 import com.example.alarmscratch.core.ui.theme.TransparentWetSand
 import com.example.alarmscratch.core.util.StatusBarUtil
 import java.time.LocalDateTime
-
-enum class FullScreenAlarmButton(@StringRes val stringRes: Int){
-    SNOOZE(R.string.hold_to_snooze),
-    DISMISS(R.string.hold_to_dismiss),
-    BOTH(R.string.hold_to_dismiss)
-}
 
 @Composable
 fun FullScreenAlarmScreen(fullScreenAlarmViewModel: FullScreenAlarmViewModel) {
@@ -208,7 +201,7 @@ fun SnoozeAndDismissButtons(
 
     // Hold Indicator text state
     var showHoldIndicator by remember { mutableStateOf(false) }
-    var holdIndicatorTextRes by remember { mutableIntStateOf(FullScreenAlarmButton.BOTH.stringRes) }
+    var holdIndicatorTextRes by remember { mutableIntStateOf(FullScreenAlarmButton.BOTH.fullScreenStringRes) }
 
     // Hold Indicator progress state
     val longPressTimeout = 1500
@@ -263,7 +256,7 @@ fun SnoozeAndDismissButtons(
         // Set button as enabled
         enabledButton = button
         // Configure and show Hold Indicator
-        holdIndicatorTextRes = button.stringRes
+        holdIndicatorTextRes = button.fullScreenStringRes
         hardResetHoldIndicatorProgress()
         showHoldIndicator = true
     }

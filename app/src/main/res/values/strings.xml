@@ -126,6 +126,15 @@
     <string name="default_alarm_time">Now</string>
 
     <!--
+        *****************************
+        ** Post Alarm Confirmation **
+        *****************************
+    -->
+    <string name="post_alarm_confirmation_snooze">Alarm Snoozed</string>
+    <string name="post_alarm_confirmation_dismiss">Alarm Dismissed</string>
+    <string name="post_alarm_confirmation_min">min</string>
+
+    <!--
         **********************
         ** DaysHoursMinutes **
         **********************
