@@ -11,6 +11,7 @@ import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmActivity
+import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmButton
 import com.example.alarmscratch.alarm.ui.notification.AlarmNotification
 import com.example.alarmscratch.alarm.util.AlarmUtil
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
@@ -51,7 +52,7 @@ class AlarmNotificationService : Service() {
             DISPLAY_ALARM_NOTIFICATION ->
                 displayAlarmNotification(intent)
             DISMISS_ALARM_NOTIFICATION ->
-                dismissAlarmNotification()
+                dismissAlarmNotification(intent)
         }
 
         return START_NOT_STICKY
@@ -170,7 +171,7 @@ class AlarmNotificationService : Service() {
         // If there's an Active Alarm, dismiss the Full Screen Notification and disable/reschedule the Alarm
         if (notificationAlarm != null) {
             // Dismiss Full Screen Notification
-            finishFullScreenAlarmActivity()
+            finishFullScreenAlarmActivityNoConfirm()
             // Disable/reschedule Alarm
             disableOrRescheduleAlarm(alarmRepo, notificationAlarm)
         }
@@ -197,9 +198,9 @@ class AlarmNotificationService : Service() {
         }
     }
 
-    private fun dismissAlarmNotification() {
+    private fun dismissAlarmNotification(intent: Intent) {
         // Dismiss Full Screen Notification
-        finishFullScreenAlarmActivity()
+        finishFullScreenAlarmActivityNatural(intent)
 
         // Stop Ringtone
         RingtonePlayerManager.stopAlarmSound()
@@ -214,9 +215,40 @@ class AlarmNotificationService : Service() {
         stopSelf()
     }
 
-    private fun finishFullScreenAlarmActivity() {
+    private fun finishFullScreenAlarmActivityNatural(intent: Intent) {
+        // TODO: Come up with a better default than just FullScreenAlarmButton.BOTH
+        // Post Alarm confirmation data
+        val fullScreenAlarmButton = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getSerializableExtra(
+                AlarmActionReceiver.EXTRA_FULL_SCREEN_ALARM_BUTTON,
+                FullScreenAlarmButton::class.java
+            )
+        } else {
+            intent.getSerializableExtra(AlarmActionReceiver.EXTRA_FULL_SCREEN_ALARM_BUTTON) as? FullScreenAlarmButton
+        } ?: FullScreenAlarmButton.BOTH
+        val snoozeDuration = intent.getIntExtra(
+            AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION,
+            AlarmDefaultsRepository.DEFAULT_SNOOZE_DURATION
+        )
+
+        // Create Intent and send Broadcast
         val dismissFullScreenAlertIntent = Intent().apply {
-            action = FullScreenAlarmActivity.ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY
+            // Action
+            action = FullScreenAlarmActivity.ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY_NATURAL
+            // Extras
+            putExtra(AlarmActionReceiver.EXTRA_FULL_SCREEN_ALARM_BUTTON, fullScreenAlarmButton)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION, snoozeDuration)
+
+            // On devices running API 34+, it is required to call setPackage() on implicit Intents
+            // that are not exported, and are to be used by an application's internal components.
+            setPackage(this@AlarmNotificationService.packageName)
+        }
+        applicationContext.sendBroadcast(dismissFullScreenAlertIntent)
+    }
+
+    private fun finishFullScreenAlarmActivityNoConfirm() {
+        val dismissFullScreenAlertIntent = Intent().apply {
+            action = FullScreenAlarmActivity.ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY_NO_CONFIRM
             // On devices running API 34+, it is required to call setPackage() on implicit Intents
             // that are not exported, and are to be used by an application's internal components.
             setPackage(this@AlarmNotificationService.packageName)

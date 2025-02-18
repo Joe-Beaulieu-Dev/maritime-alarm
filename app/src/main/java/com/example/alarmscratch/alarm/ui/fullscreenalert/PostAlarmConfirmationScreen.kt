@@ -1,5 +1,6 @@
 package com.example.alarmscratch.alarm.ui.fullscreenalert
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.alarmscratch.R
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
+import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
+import com.example.alarmscratch.core.util.StatusBarUtil
 
 @Composable
 fun PostAlarmConfirmationScreen(
@@ -28,9 +31,13 @@ fun PostAlarmConfirmationScreen(
     snoozeDuration: Int,
     modifier: Modifier = Modifier
 ) {
+    // Configure Status Bar
+    StatusBarUtil.setDarkStatusBar()
+
     Surface(
         modifier = modifier
             .fillMaxSize()
+            .background(color = DarkVolcanicRock)
             .windowInsetsPadding(WindowInsets.systemBars)
     ) {
         Column(
