@@ -15,6 +15,7 @@ import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmButton
 import com.example.alarmscratch.alarm.ui.notification.AlarmNotification
 import com.example.alarmscratch.alarm.util.AlarmUtil
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
+import com.example.alarmscratch.core.extension.getSerializableExtraSafe
 import com.example.alarmscratch.core.extension.isRepeating
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.core.ringtone.RingtonePlayerManager
@@ -57,6 +58,10 @@ class AlarmNotificationService : Service() {
 
         return START_NOT_STICKY
     }
+
+    /*
+     * Display
+     */
 
     private fun displayAlarmNotification(intent: Intent) {
         // Alarm data
@@ -198,9 +203,23 @@ class AlarmNotificationService : Service() {
         }
     }
 
+    /*
+     * Dismiss
+     */
+
     private fun dismissAlarmNotification(intent: Intent) {
+        // TODO: Come up with a better default than just AlarmActionOrigin.NOTIFICATION
+        val alarmActionOrigin = intent.getSerializableExtraSafe(
+            AlarmActionReceiver.EXTRA_ALARM_ACTION_ORIGIN,
+            AlarmActionOrigin::class.java
+        ) ?: AlarmActionOrigin.NOTIFICATION
+
         // Dismiss Full Screen Notification
-        finishFullScreenAlarmActivityNatural(intent)
+        if (alarmActionOrigin == AlarmActionOrigin.NOTIFICATION) {
+            finishFullScreenAlarmActivityNoConfirm()
+        } else {
+            finishFullScreenAlarmActivityNatural(intent)
+        }
 
         // Stop Ringtone
         RingtonePlayerManager.stopAlarmSound()
@@ -218,14 +237,10 @@ class AlarmNotificationService : Service() {
     private fun finishFullScreenAlarmActivityNatural(intent: Intent) {
         // TODO: Come up with a better default than just FullScreenAlarmButton.BOTH
         // Post Alarm confirmation data
-        val fullScreenAlarmButton = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getSerializableExtra(
-                AlarmActionReceiver.EXTRA_FULL_SCREEN_ALARM_BUTTON,
-                FullScreenAlarmButton::class.java
-            )
-        } else {
-            intent.getSerializableExtra(AlarmActionReceiver.EXTRA_FULL_SCREEN_ALARM_BUTTON) as? FullScreenAlarmButton
-        } ?: FullScreenAlarmButton.BOTH
+        val fullScreenAlarmButton = intent.getSerializableExtraSafe(
+            AlarmActionReceiver.EXTRA_FULL_SCREEN_ALARM_BUTTON,
+            FullScreenAlarmButton::class.java
+        ) ?: FullScreenAlarmButton.BOTH
         val snoozeDuration = intent.getIntExtra(
             AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION,
             AlarmDefaultsRepository.DEFAULT_SNOOZE_DURATION

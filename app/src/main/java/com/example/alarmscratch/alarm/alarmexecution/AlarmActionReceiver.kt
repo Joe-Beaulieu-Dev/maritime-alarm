@@ -13,6 +13,7 @@ import com.example.alarmscratch.alarm.util.AlarmUtil
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.alarmApplication
 import com.example.alarmscratch.core.extension.doAsync
+import com.example.alarmscratch.core.extension.getSerializableExtraSafe
 import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +36,7 @@ class AlarmActionReceiver : BroadcastReceiver() {
         const val EXTRA_IS_VIBRATION_ENABLED = "extra_is_vibration_enabled"
         const val EXTRA_ALARM_SNOOZE_DURATION = "extra_alarm_snooze_duration"
         const val EXTRA_IS_24_HOUR = "extra_is_24_hour"
+        const val EXTRA_ALARM_ACTION_ORIGIN = "extra_alarm_action_origin"
         const val EXTRA_FULL_SCREEN_ALARM_BUTTON = "extra_full_screen_alarm_button"
 
         // Other
@@ -89,10 +91,15 @@ class AlarmActionReceiver : BroadcastReceiver() {
     }
 
     private fun snoozeAndRescheduleAlarm(context: Context, intent: Intent) {
+        // TODO: Come up with a better default than just AlarmActionOrigin.NOTIFICATION
         // Dismiss Alarm Notification
         // Grab snooze duration up here for PostAlarmConfirmationScreen downstream
+        val alarmActionOrigin = intent.getSerializableExtraSafe(
+            EXTRA_ALARM_ACTION_ORIGIN,
+            AlarmActionOrigin::class.java
+        ) ?: AlarmActionOrigin.NOTIFICATION
         val snoozeDuration = intent.getIntExtra(EXTRA_ALARM_SNOOZE_DURATION, AlarmDefaultsRepository.DEFAULT_SNOOZE_DURATION)
-        dismissAlarmNotification(context, FullScreenAlarmButton.SNOOZE, snoozeDuration)
+        dismissAlarmNotification(context, alarmActionOrigin, FullScreenAlarmButton.SNOOZE, snoozeDuration)
 
         // Alarm data
         val id = intent.getIntExtra(EXTRA_ALARM_ID, ALARM_NO_ID)
@@ -118,8 +125,13 @@ class AlarmActionReceiver : BroadcastReceiver() {
     }
 
     private fun dismissAlarm(context: Context, intent: Intent) {
+        // TODO: Come up with a better default than just AlarmActionOrigin.NOTIFICATION
         // Dismiss Alarm Notification
-        dismissAlarmNotification(context, FullScreenAlarmButton.DISMISS)
+        val alarmActionOrigin = intent.getSerializableExtraSafe(
+            EXTRA_ALARM_ACTION_ORIGIN,
+            AlarmActionOrigin::class.java
+        ) ?: AlarmActionOrigin.NOTIFICATION
+        dismissAlarmNotification(context, alarmActionOrigin, FullScreenAlarmButton.DISMISS)
 
         // Alarm data
         val id = intent.getIntExtra(EXTRA_ALARM_ID, ALARM_NO_ID)
@@ -157,6 +169,7 @@ class AlarmActionReceiver : BroadcastReceiver() {
 
     private fun dismissAlarmNotification(
         context: Context,
+        alarmActionOrigin: AlarmActionOrigin,
         fullScreenAlarmButton: FullScreenAlarmButton,
         snoozeDuration: Int? = null
     ) {
@@ -165,6 +178,7 @@ class AlarmActionReceiver : BroadcastReceiver() {
             // Action
             action = AlarmNotificationService.DISMISS_ALARM_NOTIFICATION
             // Extras
+            putExtra(EXTRA_ALARM_ACTION_ORIGIN, alarmActionOrigin)
             putExtra(EXTRA_FULL_SCREEN_ALARM_BUTTON, fullScreenAlarmButton)
             putExtra(EXTRA_ALARM_SNOOZE_DURATION, snoozeDuration)
         }

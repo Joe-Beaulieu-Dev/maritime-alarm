@@ -32,15 +32,26 @@ object AlarmIntentBuilder {
         }
     }
 
+    fun snoozeAlarmFromNotification(context: Context, alarmExecutionData: AlarmExecutionData): Intent =
+        snoozeAlarmIntent(context, AlarmActionOrigin.NOTIFICATION, alarmExecutionData)
+
+    fun snoozeAlarmFromFullScreen(context: Context, alarmExecutionData: AlarmExecutionData): Intent =
+        snoozeAlarmIntent(context, AlarmActionOrigin.FULL_SCREEN, alarmExecutionData)
+
     /**
      * Creates an Intent for snoozing Alarms. This Intent does not contain all the properties of AlarmExecutionData.
      *
      * @param context used for Intent creation
+     * @param alarmActionOrigin the origin of the snooze action (ex: Notification, Full Screen Alarm)
      * @param alarmExecutionData execution data for the Alarm
      *
      * @return Intent for snoozing Alarms
      */
-    fun snoozeAlarmIntent(context: Context, alarmExecutionData: AlarmExecutionData): Intent {
+    private fun snoozeAlarmIntent(
+        context: Context,
+        alarmActionOrigin: AlarmActionOrigin,
+        alarmExecutionData: AlarmExecutionData
+    ): Intent {
         val name = alarmExecutionData.name.ifBlank { context.getString(R.string.default_alarm_name) }
 
         return Intent(context, AlarmActionReceiver::class.java).apply {
@@ -53,23 +64,36 @@ object AlarmIntentBuilder {
             putExtra(AlarmActionReceiver.EXTRA_RINGTONE_URI, alarmExecutionData.ringtoneUri)
             putExtra(AlarmActionReceiver.EXTRA_IS_VIBRATION_ENABLED, alarmExecutionData.isVibrationEnabled)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION, alarmExecutionData.snoozeDuration)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_ACTION_ORIGIN, alarmActionOrigin)
         }
     }
+
+    fun dismissAlarmFromNotification(context: Context, alarmExecutionData: AlarmExecutionData): Intent =
+        dismissAlarmIntent(context, AlarmActionOrigin.NOTIFICATION, alarmExecutionData)
+
+    fun dismissAlarmFromFullScreen(context: Context, alarmExecutionData: AlarmExecutionData): Intent =
+        dismissAlarmIntent(context, AlarmActionOrigin.FULL_SCREEN, alarmExecutionData)
 
     /**
      * Creates an Intent for dismissing Alarms. This Intent does not contain all the properties of AlarmExecutionData.
      *
      * @param context used for Intent creation
+     * @param alarmActionOrigin the origin of the dismiss action (ex: Notification, Full Screen Alarm)
      * @param alarmExecutionData execution data for the Alarm
      *
      * @return Intent for dismissing Alarms
      */
-    fun dismissAlarmIntent(context: Context, alarmExecutionData: AlarmExecutionData): Intent =
+    private fun dismissAlarmIntent(
+        context: Context,
+        alarmActionOrigin: AlarmActionOrigin,
+        alarmExecutionData: AlarmExecutionData
+    ): Intent =
         Intent(context, AlarmActionReceiver::class.java).apply {
             // Action
             action = AlarmActionReceiver.ACTION_DISMISS_ALARM
             // Extras
             putExtra(AlarmActionReceiver.EXTRA_ALARM_ID, alarmExecutionData.id)
             putExtra(AlarmActionReceiver.EXTRA_REPEATING_DAYS, alarmExecutionData.encodedRepeatingDays)
+            putExtra(AlarmActionReceiver.EXTRA_ALARM_ACTION_ORIGIN, alarmActionOrigin)
         }
 }

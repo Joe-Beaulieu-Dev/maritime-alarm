@@ -26,13 +26,13 @@ class FullScreenAlarmViewModel(
 
     fun snoozeAlarm(context: Context) {
         context.sendBroadcast(
-            AlarmIntentBuilder.snoozeAlarmIntent(context.applicationContext, alarmExecutionData)
+            AlarmIntentBuilder.snoozeAlarmFromFullScreen(context.applicationContext, alarmExecutionData)
         )
     }
 
     fun dismissAlarm(context: Context) {
         context.sendBroadcast(
-            AlarmIntentBuilder.dismissAlarmIntent(context.applicationContext, alarmExecutionData)
+            AlarmIntentBuilder.dismissAlarmFromFullScreen(context.applicationContext, alarmExecutionData)
         )
     }
 }

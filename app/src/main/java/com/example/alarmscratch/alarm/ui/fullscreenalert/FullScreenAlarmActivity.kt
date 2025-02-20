@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
@@ -21,6 +20,7 @@ import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.alarmexecution.AlarmActionReceiver
 import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
+import com.example.alarmscratch.core.extension.getSerializableExtraSafe
 import com.example.alarmscratch.core.extension.navigateSingleTop
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.navigation.FullScreenAlarmNavHost
@@ -52,14 +52,10 @@ class FullScreenAlarmActivity : ComponentActivity() {
             private fun navigateToConfirmationScreen(intent: Intent) {
                 // TODO: Come up with a better default than just FullScreenAlarmButton.BOTH
                 // Post Alarm confirmation data
-                val fullScreenAlarmButton = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    intent.getSerializableExtra(
-                        AlarmActionReceiver.EXTRA_FULL_SCREEN_ALARM_BUTTON,
-                        FullScreenAlarmButton::class.java
-                    )
-                } else {
-                    intent.getSerializableExtra(AlarmActionReceiver.EXTRA_FULL_SCREEN_ALARM_BUTTON) as? FullScreenAlarmButton
-                } ?: FullScreenAlarmButton.BOTH
+                val fullScreenAlarmButton = intent.getSerializableExtraSafe(
+                    AlarmActionReceiver.EXTRA_FULL_SCREEN_ALARM_BUTTON,
+                    FullScreenAlarmButton::class.java
+                ) ?: FullScreenAlarmButton.BOTH
                 val snoozeDuration = intent.getIntExtra(
                     AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION,
                     AlarmDefaultsRepository.DEFAULT_SNOOZE_DURATION
@@ -140,7 +136,10 @@ class FullScreenAlarmActivity : ComponentActivity() {
 
         // Register BroadcastReceiver
         if (!receiverRegistered) {
-            val intentFilter = IntentFilter(ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY_NATURAL)
+            val intentFilter = IntentFilter().apply {
+                addAction(ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY_NATURAL)
+                addAction(ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY_NO_CONFIRM)
+            }
             ContextCompat.registerReceiver(this, fullScreenAlarmReceiver, intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED)
             receiverRegistered = true
         }
