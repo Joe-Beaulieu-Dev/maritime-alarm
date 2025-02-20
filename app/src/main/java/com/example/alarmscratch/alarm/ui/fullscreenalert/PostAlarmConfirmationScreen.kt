@@ -13,26 +13,41 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.alarmscratch.R
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
 import com.example.alarmscratch.core.util.StatusBarUtil
+import kotlinx.coroutines.delay
 
 @Composable
 fun PostAlarmConfirmationScreen(
     fullScreenAlarmButton: FullScreenAlarmButton,
     snoozeDuration: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    postAlarmConfirmationViewModel: PostAlarmConfirmationViewModel = viewModel(factory = PostAlarmConfirmationViewModel.Factory)
 ) {
     // Configure Status Bar
     StatusBarUtil.setDarkStatusBar()
+
+    // Countdown timer to finish the Alarm execution flow
+    val context = LocalContext.current
+    BasicCountdown(timeSeconds = 2) {
+        postAlarmConfirmationViewModel.finishAlarmExecutionFlow(context)
+    }
 
     Surface(
         modifier = modifier
@@ -75,6 +90,23 @@ fun PostAlarmConfirmationScreen(
                     modifier = Modifier.size(90.dp)
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun BasicCountdown(
+    timeSeconds: Int,
+    onCountdownFinished: () -> Unit,
+) {
+    var timeLeft by rememberSaveable { mutableIntStateOf(timeSeconds) }
+
+    LaunchedEffect(key1 = timeLeft) {
+        if (timeLeft > 0) {
+            delay(1000L)
+            timeLeft--
+        } else {
+            onCountdownFinished()
         }
     }
 }
