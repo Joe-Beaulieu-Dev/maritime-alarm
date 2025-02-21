@@ -40,9 +40,9 @@ class FullScreenAlarmActivity : ComponentActivity() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 if (context != null && intent != null) {
                     when (intent.action) {
-                        ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY_NATURAL ->
+                        ACTION_SHOW_POST_ALARM_CONFIRMATION ->
                             navigateToConfirmationScreen(intent)
-                        ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY_NO_CONFIRM ->
+                        ACTION_FINISH_FULL_SCREEN_ALARM_FLOW ->
                             finishActivity()
                     }
                 }
@@ -72,8 +72,8 @@ class FullScreenAlarmActivity : ComponentActivity() {
 
     companion object {
         // BroadcastReceiver constants
-        const val ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY_NATURAL = "action_finish_full_screen_alarm_activity_natural"
-        const val ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY_NO_CONFIRM = "action_finish_full_screen_alarm_activity_no_confirm"
+        const val ACTION_SHOW_POST_ALARM_CONFIRMATION = "action_show_post_alarm_confirmation"
+        const val ACTION_FINISH_FULL_SCREEN_ALARM_FLOW = "action_finish_full_screen_alarm_flow"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -136,8 +136,8 @@ class FullScreenAlarmActivity : ComponentActivity() {
         // Register BroadcastReceiver
         if (!receiverRegistered) {
             val intentFilter = IntentFilter().apply {
-                addAction(ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY_NATURAL)
-                addAction(ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY_NO_CONFIRM)
+                addAction(ACTION_SHOW_POST_ALARM_CONFIRMATION)
+                addAction(ACTION_FINISH_FULL_SCREEN_ALARM_FLOW)
             }
             ContextCompat.registerReceiver(this, fullScreenAlarmReceiver, intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED)
             receiverRegistered = true

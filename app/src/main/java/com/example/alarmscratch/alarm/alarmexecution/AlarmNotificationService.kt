@@ -176,7 +176,7 @@ class AlarmNotificationService : Service() {
         // If there's an Active Alarm, dismiss the Full Screen Notification and disable/reschedule the Alarm
         if (notificationAlarm != null) {
             // Dismiss Full Screen Notification
-            finishFullScreenAlarmActivityNoConfirm()
+            finishFullScreenAlarmFlow()
             // Disable/reschedule Alarm
             disableOrRescheduleAlarm(alarmRepo, notificationAlarm)
         }
@@ -216,9 +216,9 @@ class AlarmNotificationService : Service() {
 
         // Dismiss Full Screen Notification
         if (alarmActionOrigin == AlarmActionOrigin.NOTIFICATION) {
-            finishFullScreenAlarmActivityNoConfirm()
+            finishFullScreenAlarmFlow()
         } else {
-            finishFullScreenAlarmActivityNatural(intent)
+            showPostAlarmConfirmation(intent)
         }
 
         // Stop Ringtone
@@ -234,7 +234,7 @@ class AlarmNotificationService : Service() {
         stopSelf()
     }
 
-    private fun finishFullScreenAlarmActivityNatural(intent: Intent) {
+    private fun showPostAlarmConfirmation(intent: Intent) {
         // TODO: Come up with a better default than just FullScreenAlarmButton.BOTH
         // Post Alarm confirmation data
         val fullScreenAlarmButton = intent.getSerializableExtraSafe(
@@ -249,7 +249,7 @@ class AlarmNotificationService : Service() {
         // Create Intent and send Broadcast
         val dismissFullScreenAlertIntent = Intent().apply {
             // Action
-            action = FullScreenAlarmActivity.ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY_NATURAL
+            action = FullScreenAlarmActivity.ACTION_SHOW_POST_ALARM_CONFIRMATION
             // Extras
             putExtra(AlarmActionReceiver.EXTRA_FULL_SCREEN_ALARM_BUTTON, fullScreenAlarmButton)
             putExtra(AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION, snoozeDuration)
@@ -261,9 +261,9 @@ class AlarmNotificationService : Service() {
         applicationContext.sendBroadcast(dismissFullScreenAlertIntent)
     }
 
-    private fun finishFullScreenAlarmActivityNoConfirm() {
+    private fun finishFullScreenAlarmFlow() {
         val dismissFullScreenAlertIntent = Intent().apply {
-            action = FullScreenAlarmActivity.ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY_NO_CONFIRM
+            action = FullScreenAlarmActivity.ACTION_FINISH_FULL_SCREEN_ALARM_FLOW
             // On devices running API 34+, it is required to call setPackage() on implicit Intents
             // that are not exported, and are to be used by an application's internal components.
             setPackage(this@AlarmNotificationService.packageName)

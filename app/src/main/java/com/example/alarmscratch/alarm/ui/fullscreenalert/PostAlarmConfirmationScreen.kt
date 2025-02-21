@@ -46,7 +46,7 @@ fun PostAlarmConfirmationScreen(
     // Countdown timer to finish the Alarm execution flow
     val context = LocalContext.current
     BasicCountdown(timeSeconds = 2) {
-        postAlarmConfirmationViewModel.finishAlarmExecutionFlow(context)
+        postAlarmConfirmationViewModel.finishFullScreenAlarmFlow(context)
     }
 
     Surface(

@@ -7,6 +7,10 @@ import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
 
 object AlarmIntentBuilder {
 
+    /*
+     * Execute
+     */
+
     /**
      * Creates an Intent for executing Alarms. This Intent contains all the properties of AlarmExecutionData.
      *
@@ -32,20 +36,43 @@ object AlarmIntentBuilder {
         }
     }
 
+    /*
+     * Snooze
+     */
+
+    /**
+     * Creates an Intent for snoozing Alarms via the Alarm Notification.
+     * This Intent does not contain all the properties of AlarmExecutionData.
+     *
+     * @param context used for Intent creation
+     * @param alarmExecutionData execution data for the Alarm
+     *
+     * @return Intent for snoozing Alarms via the Alarm Notification
+     */
     fun snoozeAlarmFromNotification(context: Context, alarmExecutionData: AlarmExecutionData): Intent =
         snoozeAlarmIntent(context, AlarmActionOrigin.NOTIFICATION, alarmExecutionData)
 
+    /**
+     * Creates an Intent for snoozing Alarms via the Full Screen Alarm.
+     * This Intent does not contain all the properties of AlarmExecutionData.
+     *
+     * @param context used for Intent creation
+     * @param alarmExecutionData execution data for the Alarm
+     *
+     * @return Intent for snoozing Alarms via the Full Screen Alarm
+     */
     fun snoozeAlarmFromFullScreen(context: Context, alarmExecutionData: AlarmExecutionData): Intent =
         snoozeAlarmIntent(context, AlarmActionOrigin.FULL_SCREEN, alarmExecutionData)
 
     /**
-     * Creates an Intent for snoozing Alarms. This Intent does not contain all the properties of AlarmExecutionData.
+     * Creates an Intent for snoozing Alarms from either the Alarm Notification or the Full Screen Alarm,
+     * depending on the [alarmActionOrigin]. This Intent does not contain all the properties of AlarmExecutionData.
      *
      * @param context used for Intent creation
      * @param alarmActionOrigin the origin of the snooze action (ex: Notification, Full Screen Alarm)
      * @param alarmExecutionData execution data for the Alarm
      *
-     * @return Intent for snoozing Alarms
+     * @return Intent for snoozing Alarms from either the Alarm Notification or the Full Screen Alarm
      */
     private fun snoozeAlarmIntent(
         context: Context,
@@ -68,20 +95,43 @@ object AlarmIntentBuilder {
         }
     }
 
+    /*
+     * Dismiss
+     */
+
+    /**
+     * Creates an Intent for dismissing Alarms via the Alarm Notification.
+     * This Intent does not contain all the properties of AlarmExecutionData.
+     *
+     * @param context used for Intent creation
+     * @param alarmExecutionData execution data for the Alarm
+     *
+     * @return Intent for dismissing Alarms via the Alarm Notification
+     */
     fun dismissAlarmFromNotification(context: Context, alarmExecutionData: AlarmExecutionData): Intent =
         dismissAlarmIntent(context, AlarmActionOrigin.NOTIFICATION, alarmExecutionData)
 
+    /**
+     * Creates an Intent for dismissing Alarms via the Full Screen Alarm.
+     * This Intent does not contain all the properties of AlarmExecutionData.
+     *
+     * @param context used for Intent creation
+     * @param alarmExecutionData execution data for the Alarm
+     *
+     * @return Intent for dismissing Alarms via the Full Screen Alarm
+     */
     fun dismissAlarmFromFullScreen(context: Context, alarmExecutionData: AlarmExecutionData): Intent =
         dismissAlarmIntent(context, AlarmActionOrigin.FULL_SCREEN, alarmExecutionData)
 
     /**
-     * Creates an Intent for dismissing Alarms. This Intent does not contain all the properties of AlarmExecutionData.
+     * Creates an Intent for dismissing Alarms from either the Alarm Notification or the Full Screen Alarm,
+     * depending on the [alarmActionOrigin]. This Intent does not contain all the properties of AlarmExecutionData.
      *
      * @param context used for Intent creation
      * @param alarmActionOrigin the origin of the dismiss action (ex: Notification, Full Screen Alarm)
      * @param alarmExecutionData execution data for the Alarm
      *
-     * @return Intent for dismissing Alarms
+     * @return Intent for dismissing Alarms from either the Alarm Notification or the Full Screen Alarm
      */
     private fun dismissAlarmIntent(
         context: Context,

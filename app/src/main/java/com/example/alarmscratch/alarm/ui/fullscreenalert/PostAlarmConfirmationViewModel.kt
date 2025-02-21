@@ -17,10 +17,10 @@ class PostAlarmConfirmationViewModel : ViewModel() {
         }
     }
 
-    fun finishAlarmExecutionFlow(context: Context) {
+    fun finishFullScreenAlarmFlow(context: Context) {
         context.sendBroadcast(
             Intent().apply {
-                action = FullScreenAlarmActivity.ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY_NO_CONFIRM
+                action = FullScreenAlarmActivity.ACTION_FINISH_FULL_SCREEN_ALARM_FLOW
                 // On devices running API 34+, it is required to call setPackage() on implicit Intents
                 // that are not exported, and are to be used by an application's internal components.
                 setPackage(context.packageName)
