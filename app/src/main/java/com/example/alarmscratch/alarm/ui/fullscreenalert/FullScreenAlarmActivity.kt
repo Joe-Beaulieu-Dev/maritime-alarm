@@ -14,6 +14,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
@@ -21,7 +22,6 @@ import com.example.alarmscratch.alarm.alarmexecution.AlarmActionReceiver
 import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.getSerializableExtraSafe
-import com.example.alarmscratch.core.extension.navigateSingleTop
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.AndroidDefaultDarkScrim
@@ -60,9 +60,15 @@ class FullScreenAlarmActivity : ComponentActivity() {
                     AlarmDefaultsRepository.DEFAULT_SNOOZE_DURATION
                 )
 
-                // TODO: Do navigation that disables back press
                 // Navigate to PostAlarmConfirmationScreen
-                navHostController.navigateSingleTop(Destination.PostAlarmConfirmationScreen(fullScreenAlarmButton, snoozeDuration))
+                // Do so in such a way that the User cannot navigate back to the FullScreenAlarmScreen
+                // Navigating back will simply exit the full screen Alarm flow
+                navHostController.navigate(Destination.PostAlarmConfirmationScreen(fullScreenAlarmButton, snoozeDuration)) {
+                    popUpTo(navHostController.graph.findStartDestination().id) {
+                        saveState = false
+                        inclusive = true
+                    }
+                }
             }
 
             private fun finishActivity() {
