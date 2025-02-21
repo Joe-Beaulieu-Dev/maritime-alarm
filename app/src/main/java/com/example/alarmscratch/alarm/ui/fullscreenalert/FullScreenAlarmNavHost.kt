@@ -1,13 +1,14 @@
-package com.example.alarmscratch.core.navigation
+package com.example.alarmscratch.alarm.ui.fullscreenalert
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmScreen
-import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmViewModel
-import com.example.alarmscratch.alarm.ui.fullscreenalert.PostAlarmConfirmationScreen
+import com.example.alarmscratch.core.navigation.Destination
 
 @Composable
 fun FullScreenAlarmNavHost(
@@ -16,7 +17,13 @@ fun FullScreenAlarmNavHost(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = Destination.FullScreenAlarmScreen
+        startDestination = Destination.FullScreenAlarmScreen,
+        enterTransition = {
+            fadeIn(animationSpec = tween(durationMillis = 300))
+        },
+        exitTransition = {
+            fadeOut(animationSpec = tween(durationMillis = 300))
+        }
     ) {
         // Full Screen Alarm Screen
         composable<Destination.FullScreenAlarmScreen> {

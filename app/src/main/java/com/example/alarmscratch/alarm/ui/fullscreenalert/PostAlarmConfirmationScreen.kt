@@ -69,7 +69,7 @@ fun PostAlarmConfirmationScreen(
                 Text(
                     text = stringResource(id = fullScreenAlarmButton.confirmationStringRes),
                     fontSize = 42.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Bold,
                     lineHeight = 44.sp
                 )
 
@@ -77,7 +77,8 @@ fun PostAlarmConfirmationScreen(
                 if (fullScreenAlarmButton == FullScreenAlarmButton.SNOOZE) {
                     Text(
                         text = "${snoozeDuration}${stringResource(id = R.string.post_alarm_confirmation_min)}",
-                        fontSize = 54.sp
+                        fontSize = 54.sp,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
             }

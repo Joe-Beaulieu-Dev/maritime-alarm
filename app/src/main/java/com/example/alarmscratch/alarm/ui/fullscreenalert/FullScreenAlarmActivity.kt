@@ -23,7 +23,6 @@ import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.getSerializableExtraSafe
 import com.example.alarmscratch.core.extension.navigateSingleTop
 import com.example.alarmscratch.core.navigation.Destination
-import com.example.alarmscratch.core.navigation.FullScreenAlarmNavHost
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.AndroidDefaultDarkScrim
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
