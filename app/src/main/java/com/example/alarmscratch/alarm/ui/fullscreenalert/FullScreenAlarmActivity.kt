@@ -64,10 +64,7 @@ class FullScreenAlarmActivity : ComponentActivity() {
                 // Do so in such a way that the User cannot navigate back to the FullScreenAlarmScreen
                 // Navigating back will simply exit the full screen Alarm flow
                 navHostController.navigate(Destination.PostAlarmConfirmationScreen(fullScreenAlarmButton, snoozeDuration)) {
-                    popUpTo(navHostController.graph.findStartDestination().id) {
-                        saveState = false
-                        inclusive = true
-                    }
+                    popUpTo(navHostController.graph.findStartDestination().id) { inclusive = true }
                 }
             }
 

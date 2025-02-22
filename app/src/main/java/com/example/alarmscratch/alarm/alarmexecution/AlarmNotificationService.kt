@@ -247,7 +247,7 @@ class AlarmNotificationService : Service() {
         )
 
         // Create Intent and send Broadcast
-        val dismissFullScreenAlertIntent = Intent().apply {
+        val showPostAlarmConfirmationIntent = Intent().apply {
             // Action
             action = FullScreenAlarmActivity.ACTION_SHOW_POST_ALARM_CONFIRMATION
             // Extras
@@ -258,17 +258,17 @@ class AlarmNotificationService : Service() {
             // that are not exported, and are to be used by an application's internal components.
             setPackage(this@AlarmNotificationService.packageName)
         }
-        applicationContext.sendBroadcast(dismissFullScreenAlertIntent)
+        applicationContext.sendBroadcast(showPostAlarmConfirmationIntent)
     }
 
     private fun finishFullScreenAlarmFlow() {
-        val dismissFullScreenAlertIntent = Intent().apply {
+        val finishFullScreenAlarmFlowIntent = Intent().apply {
             action = FullScreenAlarmActivity.ACTION_FINISH_FULL_SCREEN_ALARM_FLOW
             // On devices running API 34+, it is required to call setPackage() on implicit Intents
             // that are not exported, and are to be used by an application's internal components.
             setPackage(this@AlarmNotificationService.packageName)
         }
-        applicationContext.sendBroadcast(dismissFullScreenAlertIntent)
+        applicationContext.sendBroadcast(finishFullScreenAlarmFlowIntent)
     }
 
     override fun onDestroy() {
