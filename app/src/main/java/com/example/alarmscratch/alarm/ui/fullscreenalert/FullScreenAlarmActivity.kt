@@ -14,10 +14,15 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.alarmexecution.AlarmActionReceiver
 import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
+import com.example.alarmscratch.core.extension.getSerializableExtraSafe
+import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.AndroidDefaultDarkScrim
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
@@ -25,18 +30,53 @@ import java.time.LocalDateTime
 
 class FullScreenAlarmActivity : ComponentActivity() {
 
+    // Navigation State
+    private lateinit var navHostController: NavHostController
+
+    // BroadcastReceiver
     private var receiverRegistered = false
     private val fullScreenAlarmReceiver: BroadcastReceiver =
         object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                if (context != null && intent?.action == ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY) {
-                    finish()
+                if (context != null && intent != null) {
+                    when (intent.action) {
+                        ACTION_SHOW_POST_ALARM_CONFIRMATION ->
+                            navigateToConfirmationScreen(intent)
+                        ACTION_FINISH_FULL_SCREEN_ALARM_FLOW ->
+                            finishActivity()
+                    }
                 }
+            }
+
+            private fun navigateToConfirmationScreen(intent: Intent) {
+                // TODO: Come up with a better default than just FullScreenAlarmButton.BOTH
+                // Post Alarm confirmation data
+                val fullScreenAlarmButton = intent.getSerializableExtraSafe(
+                    AlarmActionReceiver.EXTRA_FULL_SCREEN_ALARM_BUTTON,
+                    FullScreenAlarmButton::class.java
+                ) ?: FullScreenAlarmButton.BOTH
+                val snoozeDuration = intent.getIntExtra(
+                    AlarmActionReceiver.EXTRA_ALARM_SNOOZE_DURATION,
+                    AlarmDefaultsRepository.DEFAULT_SNOOZE_DURATION
+                )
+
+                // Navigate to PostAlarmConfirmationScreen
+                // Do so in such a way that the User cannot navigate back to the FullScreenAlarmScreen
+                // Navigating back will simply exit the full screen Alarm flow
+                navHostController.navigate(Destination.PostAlarmConfirmationScreen(fullScreenAlarmButton, snoozeDuration)) {
+                    popUpTo(navHostController.graph.findStartDestination().id) { inclusive = true }
+                }
+            }
+
+            private fun finishActivity() {
+                finish()
             }
         }
 
     companion object {
-        const val ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY = "action_finish_full_screen_alarm_activity"
+        // BroadcastReceiver constants
+        const val ACTION_SHOW_POST_ALARM_CONFIRMATION = "action_show_post_alarm_confirmation"
+        const val ACTION_FINISH_FULL_SCREEN_ALARM_FLOW = "action_finish_full_screen_alarm_flow"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,7 +122,11 @@ class FullScreenAlarmActivity : ComponentActivity() {
 
         setContent {
             AlarmScratchTheme {
-                FullScreenAlarmScreen(fullScreenAlarmViewModel = fullScreenAlarmViewModel)
+                navHostController = rememberNavController()
+                FullScreenAlarmNavHost(
+                    navHostController = navHostController,
+                    fullScreenAlarmViewModel = fullScreenAlarmViewModel
+                )
             }
         }
 
@@ -94,7 +138,10 @@ class FullScreenAlarmActivity : ComponentActivity() {
 
         // Register BroadcastReceiver
         if (!receiverRegistered) {
-            val intentFilter = IntentFilter(ACTION_FINISH_FULL_SCREEN_ALARM_ACTIVITY)
+            val intentFilter = IntentFilter().apply {
+                addAction(ACTION_SHOW_POST_ALARM_CONFIRMATION)
+                addAction(ACTION_FINISH_FULL_SCREEN_ALARM_FLOW)
+            }
             ContextCompat.registerReceiver(this, fullScreenAlarmReceiver, intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED)
             receiverRegistered = true
         }

@@ -49,7 +49,7 @@ object AlarmNotification {
         val snoozeAlarmPendingIntent = PendingIntent.getBroadcast(
             context,
             alarmExecutionData.id,
-            AlarmIntentBuilder.snoozeAlarmIntent(context, alarmExecutionData),
+            AlarmIntentBuilder.snoozeAlarmFromNotification(context, alarmExecutionData),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -71,7 +71,7 @@ object AlarmNotification {
         PendingIntent.getBroadcast(
             context,
             alarmExecutionData.id,
-            AlarmIntentBuilder.dismissAlarmIntent(context, alarmExecutionData),
+            AlarmIntentBuilder.dismissAlarmFromNotification(context, alarmExecutionData),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
