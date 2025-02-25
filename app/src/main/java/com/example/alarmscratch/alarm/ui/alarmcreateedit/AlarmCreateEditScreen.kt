@@ -57,6 +57,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -78,6 +79,7 @@ import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.TimeSelection
 import com.example.alarmscratch.alarm.validation.AlarmValidator
 import com.example.alarmscratch.alarm.validation.ValidationError
 import com.example.alarmscratch.alarm.validation.ValidationResult
+import com.example.alarmscratch.core.extension.charLimitExceededStyle
 import com.example.alarmscratch.core.extension.get12HourTime
 import com.example.alarmscratch.core.extension.get24HourTime
 import com.example.alarmscratch.core.extension.getAmPm
@@ -85,6 +87,7 @@ import com.example.alarmscratch.core.ui.shared.CustomTopAppBar
 import com.example.alarmscratch.core.ui.shared.RowSelectionItem
 import com.example.alarmscratch.core.ui.shared.UnsavedChangesDialog
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
+import com.example.alarmscratch.core.ui.theme.BoatHull
 import com.example.alarmscratch.core.ui.theme.BoatSails
 import com.example.alarmscratch.core.ui.theme.DarkVolcanicRock
 import com.example.alarmscratch.core.ui.theme.DarkerBoatSails
@@ -279,11 +282,25 @@ fun AlarmName(
     isNameContentValid: ValidationResult<AlarmValidator.NameError>,
     modifier: Modifier = Modifier
 ) {
+    // State
     val isError = isNameLengthValid is ValidationResult.Error || isNameContentValid is ValidationResult.Error
+    var stylizedAlarmName by remember {
+        mutableStateOf(TextFieldValue(alarm.name.charLimitExceededStyle(nameCharacterLimit, BoatHull)))
+    }
 
     OutlinedTextField(
-        value = alarm.name,
-        onValueChange = { updateName(it) },
+        value = stylizedAlarmName,
+        onValueChange = {
+            stylizedAlarmName = it.copy(
+                annotatedString = it.annotatedString.text.charLimitExceededStyle(nameCharacterLimit, BoatHull)
+            )
+            // Since we're passing a TextFieldValue to the OutlinedTextField, onValueChange will be invoked when any
+            // property of the TextFieldValue is changed, including the cursor position (TextFieldValue.selection).
+            // Prevent unnecessary code execution by only updating the ViewModel when the text of the TextFieldValue changes.
+            if (alarm.name != stylizedAlarmName.text) {
+                updateName(stylizedAlarmName.text)
+            }
+        },
         placeholder = { Text(text = stringResource(id = R.string.alarm_name_placeholder), color = LightVolcanicRock) },
         trailingIcon = if (isError) {
             { Icon(imageVector = Icons.Default.Error, contentDescription = null) }
@@ -309,8 +326,8 @@ fun AlarmName(
 
                 // Character Counter
                 Text(
-                    text = if (alarm.name.isNotEmpty()) {
-                        "${alarm.name.length}/$nameCharacterLimit"
+                    text = if (isNameLengthValid is ValidationResult.Error) {
+                        "${nameCharacterLimit - alarm.name.length}"
                     } else {
                         ""
                     }
