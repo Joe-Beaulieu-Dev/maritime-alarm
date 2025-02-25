@@ -6,6 +6,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -51,6 +52,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -134,6 +137,9 @@ fun AlarmCreateEditScreen(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val snackbarHostState = remember { SnackbarHostState() }
+    val scaffoldFocusRequester = remember { FocusRequester() }
+    val upNavigationFocusRequester = remember { FocusRequester() }
+    val saveFocusRequester = remember { FocusRequester() }
 
     // Show Snackbar
     LaunchedEffect(key1 = context, key2 = lifecycleOwner.lifecycle, key3 = snackbarFlow) {
@@ -156,12 +162,28 @@ fun AlarmCreateEditScreen(
             CustomTopAppBar(
                 titleRes = titleRes,
                 navigationButton = {
-                    IconButton(onClick = tryNavigateUp) {
+                    IconButton(
+                        onClick = {
+                            upNavigationFocusRequester.requestFocus()
+                            tryNavigateUp()
+                        },
+                        modifier = Modifier
+                            .focusRequester(upNavigationFocusRequester)
+                            .focusable()
+                    ) {
                         Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
                     }
                 },
                 actionButton = {
-                    IconButton(onClick = { saveAndScheduleAlarm(context, navHostController) }) {
+                    IconButton(
+                        onClick = {
+                            saveFocusRequester.requestFocus()
+                            saveAndScheduleAlarm(context, navHostController)
+                        },
+                        modifier = Modifier
+                            .focusRequester(saveFocusRequester)
+                            .focusable()
+                    ) {
                         Icon(imageVector = Icons.Default.Save, contentDescription = null)
                     }
                 },
@@ -181,6 +203,9 @@ fun AlarmCreateEditScreen(
         modifier = modifier
             .background(color = MediumVolcanicRock)
             .windowInsetsPadding(WindowInsets.systemBars)
+            .clickable(interactionSource = null, indication = null) { scaffoldFocusRequester.requestFocus() }
+            .focusRequester(scaffoldFocusRequester)
+            .focusable()
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -311,6 +336,7 @@ fun DateTimeSettings(
     // State
     var showDateSelectionDialog by rememberSaveable { mutableStateOf(false) }
     val toggleDateSelectionDialog: () -> Unit = { showDateSelectionDialog = !showDateSelectionDialog }
+    val focusRequester = remember { FocusRequester() }
 
     Column {
         // Time
@@ -324,7 +350,15 @@ fun DateTimeSettings(
         // Calendar Button and Alarm execution config
         Row(verticalAlignment = Alignment.CenterVertically) {
             // Calendar Button
-            IconButton(onClick = toggleDateSelectionDialog) {
+            IconButton(
+                onClick = {
+                    focusRequester.requestFocus()
+                    toggleDateSelectionDialog()
+                },
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .focusable()
+            ) {
                 Icon(imageVector = Icons.Default.CalendarMonth, contentDescription = null)
             }
 
@@ -369,12 +403,20 @@ fun AlarmTime(
         TimeDisplay.TwentyFourHour ->
             dateTime.get24HourTime()
     }
+    val focusRequester = remember { FocusRequester() }
 
     // Time and AM/PM
     Row(
         modifier = modifier
             .background(color = DarkVolcanicRock)
-            .clickable(onClick = toggleTimePickerDialog)
+            .clickable(
+                onClick = {
+                    focusRequester.requestFocus()
+                    toggleTimePickerDialog()
+                }
+            )
+            .focusRequester(focusRequester)
+            .focusable()
     ) {
         // Time
         Text(
@@ -443,13 +485,20 @@ fun DayOfWeekButton(
     val textColor = if (selected) BoatSails else LightVolcanicRock
     val borderColor = if (selected) BoatSails else LightVolcanicRock
     val border = BorderStroke(width = 1.dp, color = borderColor)
+    val focusRequester = remember { FocusRequester() }
 
     OutlinedButton(
-        onClick = { if (selected) removeDay() else addDay() },
+        onClick = {
+            focusRequester.requestFocus()
+            if (selected) removeDay() else addDay()
+        },
         colors = ButtonDefaults.outlinedButtonColors(contentColor = textColor),
         border = border,
         contentPadding = PaddingValues(0.dp),
-        modifier = modifier.defaultMinSize(minWidth = 40.dp, minHeight = 40.dp)
+        modifier = modifier
+            .defaultMinSize(minWidth = 40.dp, minHeight = 40.dp)
+            .focusRequester(focusRequester)
+            .focusable()
     ) {
         Text(text = dayText)
     }
@@ -463,6 +512,9 @@ fun AlertSettings(
     toggleVibration: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val ringtoneFocusRequester = remember { FocusRequester() }
+    val vibrationFocusRequester = remember { FocusRequester() }
+
     Column(modifier = modifier) {
         // Alert Icon and Text
         Row(modifier = Modifier.padding(start = 20.dp)) {
@@ -482,25 +534,43 @@ fun AlertSettings(
 
         // Sound/Ringtone selection
         RowSelectionItem(
-            rowOnClick = navigateToRingtonePickerScreen,
+            rowOnClick = {
+                ringtoneFocusRequester.requestFocus()
+                navigateToRingtonePickerScreen()
+            },
             rowLabelResId = R.string.alarm_create_edit_alarm_sound_label,
-            choiceComponent = { Text(text = selectedRingtone) }
+            choiceComponent = { Text(text = selectedRingtone) },
+            modifier = Modifier
+                .focusRequester(ringtoneFocusRequester)
+                .focusable()
         )
 
         // Vibration toggle
         RowSelectionItem(
-            rowOnClick = toggleVibration,
+            rowOnClick = {
+                vibrationFocusRequester.requestFocus()
+                toggleVibration()
+            },
             rowLabelResId = R.string.alarm_create_edit_alarm_vibration_label,
             choiceComponent = {
                 Switch(
                     checked = isVibrationEnabled,
-                    onCheckedChange = { toggleVibration() },
+                    onCheckedChange = {
+                        vibrationFocusRequester.requestFocus()
+                        toggleVibration()
+                    },
                     colors = SwitchDefaults.colors(
                         checkedTrackColor = WayDarkerBoatSails,
                         uncheckedTrackColor = DarkVolcanicRock
-                    )
+                    ),
+                    modifier = Modifier
+                        .focusRequester(vibrationFocusRequester)
+                        .focusable()
                 )
-            }
+            },
+            modifier = Modifier
+                .focusRequester(vibrationFocusRequester)
+                .focusable()
         )
     }
 }
@@ -514,6 +584,7 @@ fun SnoozeSettings(
     // State
     var showSnoozeDurationDialog by rememberSaveable { mutableStateOf(false) }
     val toggleSnoozeDurationDialog: () -> Unit = { showSnoozeDurationDialog = !showSnoozeDurationDialog }
+    val focusRequester = remember { FocusRequester() }
 
     Column(modifier = modifier) {
         // Snooze Icon and Text
@@ -534,9 +605,15 @@ fun SnoozeSettings(
 
         // Snooze Duration
         RowSelectionItem(
-            rowOnClick = toggleSnoozeDurationDialog,
+            rowOnClick = {
+                focusRequester.requestFocus()
+                toggleSnoozeDurationDialog()
+            },
             rowLabelResId = R.string.alarm_create_edit_alarm_snooze_duration,
-            choiceComponent = { Text(text = "$snoozeDuration ${stringResource(id = R.string.snooze_minutes)}") }
+            choiceComponent = { Text(text = "$snoozeDuration ${stringResource(id = R.string.snooze_minutes)}") },
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .focusable()
         )
     }
 
