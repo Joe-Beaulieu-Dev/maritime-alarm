@@ -513,7 +513,8 @@ fun AlertSettings(
     modifier: Modifier = Modifier
 ) {
     val ringtoneFocusRequester = remember { FocusRequester() }
-    val vibrationFocusRequester = remember { FocusRequester() }
+    val vibrationRowFocusRequester = remember { FocusRequester() }
+    val vibrationSwitchFocusRequester = remember { FocusRequester() }
 
     Column(modifier = modifier) {
         // Alert Icon and Text
@@ -548,7 +549,7 @@ fun AlertSettings(
         // Vibration toggle
         RowSelectionItem(
             rowOnClick = {
-                vibrationFocusRequester.requestFocus()
+                vibrationRowFocusRequester.requestFocus()
                 toggleVibration()
             },
             rowLabelResId = R.string.alarm_create_edit_alarm_vibration_label,
@@ -556,7 +557,7 @@ fun AlertSettings(
                 Switch(
                     checked = isVibrationEnabled,
                     onCheckedChange = {
-                        vibrationFocusRequester.requestFocus()
+                        vibrationSwitchFocusRequester.requestFocus()
                         toggleVibration()
                     },
                     colors = SwitchDefaults.colors(
@@ -564,12 +565,12 @@ fun AlertSettings(
                         uncheckedTrackColor = DarkVolcanicRock
                     ),
                     modifier = Modifier
-                        .focusRequester(vibrationFocusRequester)
+                        .focusRequester(vibrationSwitchFocusRequester)
                         .focusable()
                 )
             },
             modifier = Modifier
-                .focusRequester(vibrationFocusRequester)
+                .focusRequester(vibrationRowFocusRequester)
                 .focusable()
         )
     }
