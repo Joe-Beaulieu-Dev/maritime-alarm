@@ -76,9 +76,12 @@ class AlarmEditViewModel(
     val showUnsavedChangesDialog: StateFlow<Boolean> = _showUnsavedChangesDialog.asStateFlow()
 
     // Validation
-    private val _isNameValid: MutableStateFlow<ValidationResult<AlarmValidator.NameError>> =
+    private val _isNameLengthValid: MutableStateFlow<ValidationResult<AlarmValidator.NameError>> =
         MutableStateFlow(ValidationResult.Success())
-    val isNameValid: StateFlow<ValidationResult<AlarmValidator.NameError>> = _isNameValid.asStateFlow()
+    val isNameLengthValid: StateFlow<ValidationResult<AlarmValidator.NameError>> = _isNameLengthValid.asStateFlow()
+    private val _isNameContentValid: MutableStateFlow<ValidationResult<AlarmValidator.NameError>> =
+        MutableStateFlow(ValidationResult.Success())
+    val isNameContentValid: StateFlow<ValidationResult<AlarmValidator.NameError>> = _isNameContentValid.asStateFlow()
     private var isDateTimeValid: ValidationResult<AlarmValidator.DateTimeError> = ValidationResult.Success()
 
     init {
@@ -266,7 +269,8 @@ class AlarmEditViewModel(
     private suspend fun pushTriagedErrorToSnackbar() {
         val snackbarError: ValidationResult.Error<ValidationError>? =
             isDateTimeValid as? ValidationResult.Error
-                ?: _isNameValid.value as? ValidationResult.Error
+                ?: _isNameContentValid.value as? ValidationResult.Error
+                ?: _isNameLengthValid.value as? ValidationResult.Error
 
         if (snackbarError != null) {
             try {
@@ -339,12 +343,14 @@ class AlarmEditViewModel(
         validateDateTime(alarm)
 
         // Check validation results
-        return !(_isNameValid.value is ValidationResult.Error ||
+        return !(_isNameLengthValid.value is ValidationResult.Error ||
+                _isNameContentValid.value is ValidationResult.Error ||
                 isDateTimeValid is ValidationResult.Error)
     }
 
     private fun validateName(alarm: Alarm) {
-        _isNameValid.value = alarmValidator.validateName(alarm.name)
+        _isNameLengthValid.value = alarmValidator.validateNameLength(alarm.name)
+        _isNameContentValid.value = alarmValidator.validateNameContent(alarm.name)
     }
 
     private fun validateDateTime(alarm: Alarm) {

@@ -116,7 +116,9 @@ fun AlarmCreateEditScreen(
     removeDay: (WeeklyRepeater.Day) -> Unit,
     toggleVibration: () -> Unit,
     updateSnoozeDuration: (Int) -> Unit,
-    isNameValid: ValidationResult<AlarmValidator.NameError>,
+    nameCharacterLimit: Int,
+    isNameLengthValid: ValidationResult<AlarmValidator.NameError>,
+    isNameContentValid: ValidationResult<AlarmValidator.NameError>,
     snackbarFlow: Flow<ValidationResult.Error<ValidationError>>,
     tryNavigateUp: () -> Unit,
     tryNavigateBack: () -> Unit,
@@ -193,28 +195,12 @@ fun AlarmCreateEditScreen(
                     .fillMaxWidth()
             ) {
                 // Alarm Name
-                OutlinedTextField(
-                    value = alarm.name,
-                    onValueChange = { updateName(it) },
-                    placeholder = { Text(text = stringResource(id = R.string.alarm_name_placeholder), color = LightVolcanicRock) },
-                    trailingIcon = if (isNameValid is ValidationResult.Error) {
-                        { Icon(imageVector = Icons.Default.Error, contentDescription = null) }
-                    } else {
-                        null
-                    },
-                    supportingText = {
-                        Text(
-                            text = if (isNameValid is ValidationResult.Error) {
-                                isNameValid.error.toInlineString(context)
-                            } else {
-                                "" // Empty String prevents Error text from shifting UI
-                            }
-                        )
-                    },
-                    isError = isNameValid is ValidationResult.Error,
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = DarkerBoatSails),
-                    modifier = Modifier.padding(0.dp)
+                AlarmName(
+                    alarm = alarm,
+                    updateName = updateName,
+                    nameCharacterLimit = nameCharacterLimit,
+                    isNameLengthValid = isNameLengthValid,
+                    isNameContentValid = isNameContentValid
                 )
 
                 // Date/Time Settings
@@ -257,6 +243,60 @@ fun AlarmCreateEditScreen(
             onStay = unsavedChangesStay
         )
     }
+}
+
+@Composable
+fun AlarmName(
+    alarm: Alarm,
+    updateName: (String) -> Unit,
+    nameCharacterLimit: Int,
+    isNameLengthValid: ValidationResult<AlarmValidator.NameError>,
+    isNameContentValid: ValidationResult<AlarmValidator.NameError>,
+    modifier: Modifier = Modifier
+) {
+    val isError = isNameLengthValid is ValidationResult.Error || isNameContentValid is ValidationResult.Error
+
+    OutlinedTextField(
+        value = alarm.name,
+        onValueChange = { updateName(it) },
+        placeholder = { Text(text = stringResource(id = R.string.alarm_name_placeholder), color = LightVolcanicRock) },
+        trailingIcon = if (isError) {
+            { Icon(imageVector = Icons.Default.Error, contentDescription = null) }
+        } else {
+            null
+        },
+        supportingText = {
+            // Error Text and Character Counter
+            Row {
+                // Error Text
+                Text(
+                    text = if (isNameContentValid is ValidationResult.Error) {
+                        isNameContentValid.error.toInlineString(LocalContext.current)
+                    } else {
+                        "" // Empty String prevents Error text from shifting UI
+                    },
+                    // Weight modifier not only determines width, but also ensures the Error Text
+                    // gets measured after the Character Counter. Without it the Character Counter
+                    // would get bumped off the screen if the Error Text grew too large, due to
+                    // the Error Text getting measured first.
+                    modifier = Modifier.weight(1f)
+                )
+
+                // Character Counter
+                Text(
+                    text = if (alarm.name.isNotEmpty()) {
+                        "${alarm.name.length}/$nameCharacterLimit"
+                    } else {
+                        ""
+                    }
+                )
+            }
+        },
+        isError = isError,
+        singleLine = true,
+        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = DarkerBoatSails),
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -539,7 +579,9 @@ private fun AlarmCreateEditScreen12HourPreview() {
             removeDay = {},
             toggleVibration = {},
             updateSnoozeDuration = {},
-            isNameValid = ValidationResult.Success(),
+            nameCharacterLimit = AlarmValidator.NAME_CHARACTER_LIMIT,
+            isNameLengthValid = ValidationResult.Success(),
+            isNameContentValid = ValidationResult.Success(),
             snackbarFlow = snackbarFlow,
             tryNavigateUp = {},
             tryNavigateBack = {},
@@ -572,7 +614,9 @@ private fun AlarmCreateEditScreen24HourPreview() {
             removeDay = {},
             toggleVibration = {},
             updateSnoozeDuration = {},
-            isNameValid = ValidationResult.Success(),
+            nameCharacterLimit = AlarmValidator.NAME_CHARACTER_LIMIT,
+            isNameLengthValid = ValidationResult.Success(),
+            isNameContentValid = ValidationResult.Success(),
             snackbarFlow = snackbarFlow,
             tryNavigateUp = {},
             tryNavigateBack = {},
@@ -605,7 +649,9 @@ private fun AlarmCreateEditScreenErrorIllegalCharacterPreview() {
             removeDay = {},
             toggleVibration = {},
             updateSnoozeDuration = {},
-            isNameValid = ValidationResult.Error(AlarmValidator.NameError.ILLEGAL_CHARACTER),
+            nameCharacterLimit = AlarmValidator.NAME_CHARACTER_LIMIT,
+            isNameLengthValid = ValidationResult.Success(),
+            isNameContentValid = ValidationResult.Error(AlarmValidator.NameError.ILLEGAL_CHARACTER),
             snackbarFlow = snackbarFlow,
             tryNavigateUp = {},
             tryNavigateBack = {},
@@ -638,7 +684,79 @@ private fun AlarmCreateEditScreenErrorOnlyWhitespacePreview() {
             removeDay = {},
             toggleVibration = {},
             updateSnoozeDuration = {},
-            isNameValid = ValidationResult.Error(AlarmValidator.NameError.ONLY_WHITESPACE),
+            nameCharacterLimit = AlarmValidator.NAME_CHARACTER_LIMIT,
+            isNameLengthValid = ValidationResult.Success(),
+            isNameContentValid = ValidationResult.Error(AlarmValidator.NameError.ONLY_WHITESPACE),
+            snackbarFlow = snackbarFlow,
+            tryNavigateUp = {},
+            tryNavigateBack = {},
+            showUnsavedChangesDialog = false,
+            unsavedChangesLeave = {},
+            unsavedChangesStay = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun AlarmCreateEditScreenErrorLengthPreview() {
+    val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
+    val snackbarFlow = snackbarChannel.receiveAsFlow()
+
+    AlarmScratchTheme {
+        AlarmCreateEditScreen(
+            navHostController = rememberNavController(),
+            navigateToRingtonePickerScreen = {},
+            titleRes = R.string.alarm_creation_screen_title,
+            alarm = repeatingAlarm.copy(name = "Very long alarm name wow so big"),
+            alarmRingtoneName = sampleRingtoneData.name,
+            timeDisplay = TimeDisplay.TwelveHour,
+            saveAndScheduleAlarm = { _, _ -> },
+            updateName = {},
+            updateDate = {},
+            updateTime = { _, _ -> },
+            addDay = {},
+            removeDay = {},
+            toggleVibration = {},
+            updateSnoozeDuration = {},
+            nameCharacterLimit = AlarmValidator.NAME_CHARACTER_LIMIT,
+            isNameLengthValid = ValidationResult.Error(AlarmValidator.NameError.CHARACTER_LIMIT),
+            isNameContentValid = ValidationResult.Success(),
+            snackbarFlow = snackbarFlow,
+            tryNavigateUp = {},
+            tryNavigateBack = {},
+            showUnsavedChangesDialog = false,
+            unsavedChangesLeave = {},
+            unsavedChangesStay = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun AlarmCreateEditScreenErrorLengthAndIllegalCharacterPreview() {
+    val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
+    val snackbarFlow = snackbarChannel.receiveAsFlow()
+
+    AlarmScratchTheme {
+        AlarmCreateEditScreen(
+            navHostController = rememberNavController(),
+            navigateToRingtonePickerScreen = {},
+            titleRes = R.string.alarm_creation_screen_title,
+            alarm = repeatingAlarm.copy(name = "***Very long alarm name wow so big"),
+            alarmRingtoneName = sampleRingtoneData.name,
+            timeDisplay = TimeDisplay.TwelveHour,
+            saveAndScheduleAlarm = { _, _ -> },
+            updateName = {},
+            updateDate = {},
+            updateTime = { _, _ -> },
+            addDay = {},
+            removeDay = {},
+            toggleVibration = {},
+            updateSnoozeDuration = {},
+            nameCharacterLimit = AlarmValidator.NAME_CHARACTER_LIMIT,
+            isNameLengthValid = ValidationResult.Error(AlarmValidator.NameError.CHARACTER_LIMIT),
+            isNameContentValid = ValidationResult.Error(AlarmValidator.NameError.ILLEGAL_CHARACTER),
             snackbarFlow = snackbarFlow,
             tryNavigateUp = {},
             tryNavigateBack = {},
