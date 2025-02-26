@@ -23,6 +23,7 @@ import com.example.alarmscratch.alarm.data.preview.sampleRingtoneData
 import com.example.alarmscratch.alarm.data.preview.tueWedThu
 import com.example.alarmscratch.alarm.data.repository.AlarmState
 import com.example.alarmscratch.alarm.ui.alarmcreateedit.AlarmCreateEditScreen
+import com.example.alarmscratch.alarm.validation.AlarmValidator
 import com.example.alarmscratch.alarm.validation.ValidationError
 import com.example.alarmscratch.alarm.validation.ValidationResult
 import com.example.alarmscratch.core.data.model.RingtoneData
@@ -50,7 +51,8 @@ fun AlarmCreationScreen(
     // State
     val alarmState by alarmCreationViewModel.newAlarm.collectAsState()
     val generalSettingsState by alarmCreationViewModel.generalSettings.collectAsState()
-    val isNameValid by alarmCreationViewModel.isNameValid.collectAsState()
+    val isNameLengthValid by alarmCreationViewModel.isNameLengthValid.collectAsState()
+    val isNameContentValid by alarmCreationViewModel.isNameContentValid.collectAsState()
     val showUnsavedChangesDialog by alarmCreationViewModel.showUnsavedChangesDialog.collectAsState()
 
     // Flow
@@ -87,7 +89,9 @@ fun AlarmCreationScreen(
                 removeDay = alarmCreationViewModel::removeDay,
                 toggleVibration = alarmCreationViewModel::toggleVibration,
                 updateSnoozeDuration = alarmCreationViewModel::updateSnoozeDuration,
-                isNameValid = isNameValid,
+                nameCharacterLimit = AlarmValidator.NAME_CHARACTER_LIMIT,
+                isNameLengthValid = isNameLengthValid,
+                isNameContentValid = isNameContentValid,
                 snackbarFlow = snackbarFlow,
                 tryNavigateUp = { alarmCreationViewModel.tryNavigateUp(navHostController) },
                 tryNavigateBack = { alarmCreationViewModel.tryNavigateBack(navHostController) },
@@ -160,7 +164,9 @@ private fun AlarmCreationScreenPreview() {
             removeDay = {},
             toggleVibration = {},
             updateSnoozeDuration = {},
-            isNameValid = ValidationResult.Success(),
+            nameCharacterLimit = AlarmValidator.NAME_CHARACTER_LIMIT,
+            isNameLengthValid = ValidationResult.Success(),
+            isNameContentValid = ValidationResult.Success(),
             snackbarFlow = Channel<ValidationResult.Error<ValidationError>>().receiveAsFlow(),
             tryNavigateUp = {},
             tryNavigateBack = {},

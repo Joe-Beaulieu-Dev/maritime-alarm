@@ -55,6 +55,7 @@
     <string name="alarm_edit_screen_title">Edit Alarm</string>
     <!-- Validation -->
     <string name="alarm_name_err_snackbar">Alarm name improperly formatted</string>
+    <string name="alarm_name_too_long_err_snackbar">Alarm name too long</string>
     <string name="alarm_datetime_in_past_err_snackbar">Alarms must be set in the future</string>
     <string name="alarm_name_illegal_character_err_inline">Only letters, numbers, spaces allowed</string>
     <string name="alarm_name_only_whitespace_err_inline">Cannot just be spaces</string>
