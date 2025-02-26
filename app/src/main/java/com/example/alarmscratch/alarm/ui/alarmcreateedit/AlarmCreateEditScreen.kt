@@ -79,7 +79,6 @@ import com.example.alarmscratch.alarm.ui.alarmcreateedit.component.TimeSelection
 import com.example.alarmscratch.alarm.validation.AlarmValidator
 import com.example.alarmscratch.alarm.validation.ValidationError
 import com.example.alarmscratch.alarm.validation.ValidationResult
-import com.example.alarmscratch.core.extension.charLimitExceededStyle
 import com.example.alarmscratch.core.extension.get12HourTime
 import com.example.alarmscratch.core.extension.get24HourTime
 import com.example.alarmscratch.core.extension.getAmPm
@@ -95,6 +94,7 @@ import com.example.alarmscratch.core.ui.theme.LightVolcanicRock
 import com.example.alarmscratch.core.ui.theme.MediumVolcanicRock
 import com.example.alarmscratch.core.ui.theme.VolcanicRock
 import com.example.alarmscratch.core.ui.theme.WayDarkerBoatSails
+import com.example.alarmscratch.core.ui.transform.CharLimitVisualTransformation
 import com.example.alarmscratch.core.util.StatusBarUtil
 import com.example.alarmscratch.settings.data.model.TimeDisplay
 import com.example.alarmscratch.settings.ui.alarmdefaults.component.SnoozeDurationDialog
@@ -283,17 +283,13 @@ fun AlarmName(
     modifier: Modifier = Modifier
 ) {
     // State
+    var stylizedAlarmName by remember { mutableStateOf(TextFieldValue(alarm.name)) }
     val isError = isNameLengthValid is ValidationResult.Error || isNameContentValid is ValidationResult.Error
-    var stylizedAlarmName by remember {
-        mutableStateOf(TextFieldValue(alarm.name.charLimitExceededStyle(nameCharacterLimit, BoatHull)))
-    }
 
     OutlinedTextField(
         value = stylizedAlarmName,
         onValueChange = {
-            stylizedAlarmName = it.copy(
-                annotatedString = it.annotatedString.text.charLimitExceededStyle(nameCharacterLimit, BoatHull)
-            )
+            stylizedAlarmName = it
             // Since we're passing a TextFieldValue to the OutlinedTextField, onValueChange will be invoked when any
             // property of the TextFieldValue is changed, including the cursor position (TextFieldValue.selection).
             // Prevent unnecessary code execution by only updating the ViewModel when the text of the TextFieldValue changes.
@@ -335,6 +331,7 @@ fun AlarmName(
             }
         },
         isError = isError,
+        visualTransformation = CharLimitVisualTransformation(nameCharacterLimit, BoatHull),
         singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = DarkerBoatSails),
         modifier = modifier
