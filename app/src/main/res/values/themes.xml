@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- General App Theme -->
     <style name="Theme.AlarmScratch" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- Splash Screen Theme -->
+    <style name="Theme.AlarmScratch.SplashScreen" parent="Theme.SplashScreen">
+        <!-- UI -->
+        <item name="windowSplashScreenBackground">@color/dark_volcanic_rock</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_screen</item>
+
+        <!-- Post Splash Screen theme switching -->
+        <item name="postSplashScreenTheme">@style/Theme.AlarmScratch</item>
+    </style>
+
 </resources>

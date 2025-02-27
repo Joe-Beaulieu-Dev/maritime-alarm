@@ -40,12 +40,12 @@
             ** Activities **
             ****************
         -->
-        <!-- Main Activity. Lands on the Alarm List Screen. -->
+        <!-- Main Activity. Initially displays a Splash Screen and then lands on the Alarm List Screen. -->
         <activity
             android:name=".core.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.AlarmScratch">
+            android:theme="@style/Theme.AlarmScratch.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -7,12 +7,16 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.alarmscratch.core.navigation.AlarmApp
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.AndroidDefaultDarkScrim
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Create and display Splash Screen and auto switch from
+        // Splash Screen theme to general app theme afterwards
+        installSplashScreen()
         super.onCreate(savedInstanceState)
 
         // Enable edge to edge for dynamic Status Bar coloring

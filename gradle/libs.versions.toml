@@ -13,6 +13,7 @@ activityCompose = "1.9.0"
 composeBom = "2024.09.02"
 materialIcons = "1.6.6"
 navigationCompose = "2.8.0-rc01"
+splashscreen = "1.0.1"
 serialization = "1.6.3"
 
 [libraries]
@@ -21,6 +22,7 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-preferences-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "preferencesDataStore" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "androidxLifecycle" }
 androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidxLifecycle" }
