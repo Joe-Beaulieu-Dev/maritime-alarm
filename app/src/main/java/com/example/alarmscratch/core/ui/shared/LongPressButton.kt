@@ -2,6 +2,7 @@ package com.example.alarmscratch.core.ui.shared
 
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,6 +18,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +40,7 @@ fun LongPressButton(
     onShortPress: (() -> Unit)? = null,
     onLongPress: () -> Unit,
     onLongPressRelease: (() -> Unit)? = null,
+    onPressCancelled: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     shape: Shape = ButtonDefaults.shape,
@@ -45,9 +48,19 @@ fun LongPressButton(
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit
 ) {
+    // State
     val interactionSource = remember { MutableInteractionSource() }
     val containerColor = if (enabled) colors.containerColor else colors.disabledContainerColor
     val contentColor = if (enabled) colors.contentColor else colors.disabledContentColor
+
+    // Listen for press cancellations
+    LaunchedEffect(key1 = interactionSource) {
+        interactionSource.interactions.collect { interaction ->
+            if (interaction is PressInteraction.Cancel) {
+                onPressCancelled?.invoke()
+            }
+        }
+    }
 
     Surface(
         color = containerColor,

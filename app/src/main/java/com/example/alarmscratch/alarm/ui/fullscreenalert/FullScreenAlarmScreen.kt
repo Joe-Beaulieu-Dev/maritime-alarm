@@ -284,6 +284,12 @@ fun SnoozeAndDismissButtons(
         enabledButton = FullScreenAlarmButton.BOTH
     }
 
+    val onPressCancelled: () -> Unit = {
+        // Reset buttons and animate progress down towards 0f
+        enabledButton = FullScreenAlarmButton.BOTH
+        targetProgress = 0f
+    }
+
     // Snooze and Dismiss Buttons with Hold Indicator
     Column(
         verticalArrangement = Arrangement.Bottom,
@@ -331,6 +337,7 @@ fun SnoozeAndDismissButtons(
                 onShortPress = onShortPress,
                 onLongPress = { onLongPress(FullScreenAlarmButton.SNOOZE) },
                 onLongPressRelease = onLongPressRelease,
+                onPressCancelled = onPressCancelled,
                 enabled = isButtonEnabled(FullScreenAlarmButton.SNOOZE),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = TransparentWetSand,
@@ -355,6 +362,7 @@ fun SnoozeAndDismissButtons(
                 onShortPress = onShortPress,
                 onLongPress = { onLongPress(FullScreenAlarmButton.DISMISS) },
                 onLongPressRelease = onLongPressRelease,
+                onPressCancelled = onPressCancelled,
                 enabled = isButtonEnabled(FullScreenAlarmButton.DISMISS),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = TransparentWetSand,
