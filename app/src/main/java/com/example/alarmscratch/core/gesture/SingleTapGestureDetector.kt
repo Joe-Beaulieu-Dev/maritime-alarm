@@ -64,21 +64,23 @@ suspend fun PointerInputScope.detectSingleTapGestures(
         // then a PointerEventTimeoutCancellationException is thrown and caught, onLongPress() is immediately
         // invoked, and all subsequent press events are consumed until the first up event is received,
         // at which time onLongPressReleased() is invoked.
-        var upOrCancel: PointerInputChange? = null
+        var shortPressUpOrCancel: PointerInputChange? = null
+        var longPressTimeoutExceeded = false
         try {
             // Wait for up event or cancellation. If the pointer is held down longer than
             // longPressTimeout then throw a PointerEventTimeoutCancellationException.
-            upOrCancel = withTimeout(longPressTimeout) {
+            shortPressUpOrCancel = withTimeout(longPressTimeout) {
                 waitForUpOrCancellation()
             }
 
             // The up event was not cancelled, so consume it
-            upOrCancel?.consume()
+            shortPressUpOrCancel?.consume()
         } catch (e: PointerEventTimeoutCancellationException) {
             // Invoke onLongPress() immediately. However, since the User could still be holding
             // the pointer down, we must consume all press events until the pointer is lifted,
             // even though we've already invoked onLongPress(). This is because the entirety of
             // this window of press events is to be interpreted as a single User intention.
+            longPressTimeoutExceeded = true
             onLongPress?.invoke()
             consumeUntilUp()
 
@@ -88,14 +90,24 @@ suspend fun PointerInputScope.detectSingleTapGestures(
 
         // The up event was successful and not cancelled, and the
         // longPressTimeout was not exceeded. Invoke onShortPress().
-        if (upOrCancel != null) {
+        if (shortPressUpOrCancel != null) {
             onShortPress?.invoke()
         }
+
+        val finalPressInteraction =
+            if (shortPressUpOrCancel != null || longPressTimeoutExceeded) {
+                // There was either a non-cancelled short press, or the longPressTimeout was exceeded.
+                // Whether or not the long press was cancelled AFTER the longPressTimeout was exceeded is irrelevant.
+                PressInteraction.Release(downPressInteraction)
+            } else {
+                // There was no non-cancelled short press, and the longPressTimeout was not exceeded
+                PressInteraction.Cancel(downPressInteraction)
+            }
 
         // Emit a Release or Cancel PressInteraction via the given
         // MutableInteractionSource. This is typically used to end a Ripple effect.
         launch {
-            releaseOrCancelPressInteraction(interactionSource, downPressInteraction, upOrCancel)
+            interactionSource.emit(finalPressInteraction)
         }
     }
 }
@@ -109,25 +121,4 @@ private suspend fun AwaitPointerEventScope.consumeUntilUp() {
         val event = awaitPointerEvent()
         event.changes.fastForEach { it.consume() }
     } while (event.changes.fastAny { it.pressed })
-}
-
-/**
- * Emit either PressInteraction.Cancel or PressInteraction.Release from the given [interactionSource]
- * based on whether [upOrCancel] is null or non-null, respectively.
- *
- * @param interactionSource MutableInteractionSource to emit the PressInteraction from
- * @param downPress the source Press interaction that is being either released or cancelled
- * @param upOrCancel PointerInputChange being used to determine if the Press is being released or cancelled
- */
-private suspend fun releaseOrCancelPressInteraction(
-    interactionSource: MutableInteractionSource,
-    downPress: PressInteraction.Press,
-    upOrCancel: PointerInputChange?
-) {
-    when (upOrCancel) {
-        null ->
-            interactionSource.emit(PressInteraction.Cancel(downPress))
-        else ->
-            interactionSource.emit(PressInteraction.Release(downPress))
-    }
 }
