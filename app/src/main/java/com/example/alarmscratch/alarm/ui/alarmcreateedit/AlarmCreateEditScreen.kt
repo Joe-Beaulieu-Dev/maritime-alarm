@@ -15,11 +15,13 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -52,6 +54,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
@@ -357,8 +360,7 @@ fun DateTimeSettings(
         AlarmTime(
             dateTime = alarm.dateTime,
             timeDisplay = timeDisplay,
-            updateTime = updateTime,
-            modifier = Modifier.padding(0.dp)
+            updateTime = updateTime
         )
 
         // Calendar Button and Alarm execution config
@@ -422,6 +424,8 @@ fun AlarmTime(
     // Time and AM/PM
     Row(
         modifier = modifier
+            .offset(x = (-10).dp)
+            .clip(RoundedCornerShape(12.dp))
             .background(color = DarkVolcanicRock)
             .clickable(
                 onClick = {
@@ -438,7 +442,9 @@ fun AlarmTime(
             color = DarkerBoatSails,
             fontSize = 64.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.alignByBaseline()
+            modifier = Modifier
+                .padding(start = 10.dp)
+                .alignByBaseline()
         )
 
         // AM/PM
@@ -451,6 +457,7 @@ fun AlarmTime(
                 modifier = Modifier.alignByBaseline()
             )
         }
+        Spacer(modifier = Modifier.width(10.dp))
     }
 
     // Time Selection Dialog
