@@ -14,6 +14,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -131,6 +132,25 @@ class FullScreenAlarmActivity : ComponentActivity() {
         }
 
         turnScreenOn()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        // If onStart() is called while we're currently on PostAlarmConfirmationScreen then
+        // that means the User has already Snoozed or Dismissed the Alarm, and they have already
+        // visited this screen before. This means that the PostAlarmConfirmationScreen was previously
+        // displayed, then navigated away from (screen turned off), then displayed a second time.
+        // PostAlarmConfirmationScreen should not be displayed a second time if the User turned the
+        // screen off the first time around, so just finish the Activity.
+        val onPostAlarmConfirmationScreen: Boolean? = if (::navHostController.isInitialized) {
+            navHostController.currentDestination?.hasRoute<Destination.PostAlarmConfirmationScreen>()
+        } else {
+            null
+        }
+        if (onPostAlarmConfirmationScreen == true) {
+            finish()
+        }
     }
 
     override fun onResume() {
