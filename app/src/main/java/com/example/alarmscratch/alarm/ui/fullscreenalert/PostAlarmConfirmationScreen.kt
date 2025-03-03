@@ -26,6 +26,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.alarmscratch.R
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
@@ -100,14 +103,17 @@ fun BasicCountdown(
     timeSeconds: Int,
     onCountdownFinished: () -> Unit,
 ) {
+    val lifecycleOwner = LocalLifecycleOwner.current
     var timeLeft by rememberSaveable { mutableIntStateOf(timeSeconds) }
 
-    LaunchedEffect(key1 = timeLeft) {
-        if (timeLeft > 0) {
-            delay(1000L)
-            timeLeft--
-        } else {
-            onCountdownFinished()
+    LaunchedEffect(key1 = lifecycleOwner.lifecycle, key2 = timeLeft) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            if (timeLeft > 0) {
+                delay(1000L)
+                timeLeft--
+            } else {
+                onCountdownFinished()
+            }
         }
     }
 }
