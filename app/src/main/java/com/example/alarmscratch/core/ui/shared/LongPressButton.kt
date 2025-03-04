@@ -24,7 +24,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -49,6 +51,7 @@ fun LongPressButton(
     content: @Composable RowScope.() -> Unit
 ) {
     // State
+    val haptics = LocalHapticFeedback.current
     val interactionSource = remember { MutableInteractionSource() }
     val containerColor = if (enabled) colors.containerColor else colors.disabledContainerColor
     val contentColor = if (enabled) colors.contentColor else colors.disabledContentColor
@@ -74,7 +77,10 @@ fun LongPressButton(
                         longPressTimeout = longPressTimeout,
                         onPressStart = onPressStart,
                         onShortPress = onShortPress,
-                        onLongPress = onLongPress,
+                        onLongPress = {
+                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            onLongPress()
+                        },
                         onLongPressRelease = onLongPressRelease,
                         interactionSource = interactionSource
                     )
