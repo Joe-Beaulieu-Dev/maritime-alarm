@@ -43,7 +43,7 @@ import com.example.alarmscratch.core.ui.theme.NavTextInactive
 
 @Composable
 fun VolcanoNavigationBar(
-    selectedNavComponentDest: Destination,
+    currentCoreDestination: Destination,
     onDestinationChange: (Destination) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -61,7 +61,7 @@ fun VolcanoNavigationBar(
     ) {
         NavComponent.entries.forEach { navComponent ->
             NavigationBarItem(
-                selected = selectedNavComponentDest == navComponent.destination,
+                selected = currentCoreDestination == navComponent.destination,
                 onClick = { onDestinationChange(navComponent.destination) },
                 icon = { Icon(imageVector = navComponent.navIcon, contentDescription = null) },
                 label = { Text(text = stringResource(id = navComponent.navNameRes)) },
@@ -291,7 +291,7 @@ fun Volcano(modifier: Modifier = Modifier) {
 private fun VolcanoNavigationBarPreview() {
     AlarmScratchTheme {
         VolcanoNavigationBar(
-            selectedNavComponentDest = Destination.AlarmListScreen,
+            currentCoreDestination = Destination.AlarmListScreen,
             onDestinationChange = {},
             modifier = Modifier.padding(top = 20.dp)
         )
