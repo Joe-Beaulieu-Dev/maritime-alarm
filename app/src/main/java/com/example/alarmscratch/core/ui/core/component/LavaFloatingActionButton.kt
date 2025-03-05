@@ -55,8 +55,8 @@ fun LavaFloatingActionButton(
     val fabAnimationHeight = with(LocalDensity.current) { (fabHeight + volcanoSpacerHeight).toPx().toInt() }
 
     // Visibility state
-    val onScreenWithFab = currentCoreDestination == Destination.AlarmListScreen
-    val comingFromScreenWithFab = previousCoreDestination == Destination.AlarmListScreen
+    val onScreenWithFab = currentCoreDestination is Destination.AlarmListScreen
+    val comingFromScreenWithFab = previousCoreDestination is Destination.AlarmListScreen
     val visibleState = remember(key1 = currentCoreDestination, key2 = previousCoreDestination) {
         // True == FAB up
         // False == FAB down
