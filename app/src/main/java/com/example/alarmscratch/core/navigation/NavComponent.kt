@@ -5,6 +5,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDestination.Companion.hasRoute
 import com.example.alarmscratch.R
 
 enum class NavComponent(
@@ -21,5 +23,13 @@ enum class NavComponent(
         navNameRes = R.string.nav_settings,
         navIcon = Icons.Default.Settings,
         destination = Destination.SettingsScreen
-    )
+    );
+
+    companion object {
+
+        fun fromNavBackStackEntry(navBackStackEntry: NavBackStackEntry?): Destination =
+            entries.find { navComponent ->
+                navBackStackEntry?.destination?.hasRoute(navComponent.destination::class) ?: false
+            }?.destination ?: ALARM_LIST.destination
+    }
 }

@@ -10,13 +10,13 @@ import com.example.alarmscratch.core.extension.navigateSingleTop
 import com.example.alarmscratch.settings.SettingsScreen
 
 @Composable
-fun AlarmNavHost(
-    localNavHostController: NavHostController,
-    rootNavHostController: NavHostController,
+fun CoreNavHost(
+    coreNavHostController: NavHostController,
+    secondaryNavHostController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     NavHost(
-        navController = localNavHostController,
+        navController = coreNavHostController,
         startDestination = Destination.AlarmListScreen,
         modifier = modifier
     ) {
@@ -24,7 +24,7 @@ fun AlarmNavHost(
         composable<Destination.AlarmListScreen> {
             AlarmListScreen(
                 navigateToAlarmEditScreen = { alarmId ->
-                    rootNavHostController.navigateSingleTop(Destination.AlarmEditScreen(alarmId = alarmId))
+                    secondaryNavHostController.navigateSingleTop(Destination.AlarmEditScreen(alarmId = alarmId))
                 }
             )
         }
@@ -32,8 +32,8 @@ fun AlarmNavHost(
         // Settings Screen
         composable<Destination.SettingsScreen> {
             SettingsScreen(
-                navigateToGeneralSettingsScreen = { rootNavHostController.navigateSingleTop(Destination.GeneralSettingsScreen) },
-                navigateToAlarmDefaultsScreen = { rootNavHostController.navigateSingleTop(Destination.AlarmDefaultsScreen) }
+                navigateToGeneralSettingsScreen = { secondaryNavHostController.navigateSingleTop(Destination.GeneralSettingsScreen) },
+                navigateToAlarmDefaultsScreen = { secondaryNavHostController.navigateSingleTop(Destination.AlarmDefaultsScreen) }
             )
         }
     }

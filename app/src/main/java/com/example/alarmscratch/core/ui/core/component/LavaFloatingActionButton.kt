@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -24,6 +25,7 @@ import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.RippleConfiguration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,7 +44,8 @@ import com.example.alarmscratch.core.ui.theme.MaxBrightLavaOrange
 
 @Composable
 fun LavaFloatingActionButton(
-    selectedNavComponentDest: Destination,
+    currentCoreDestination: Destination,
+    previousCoreDestination: Destination,
     onFabClicked: () -> Unit,
     volcanoSpacerHeight: Dp,
     modifier: Modifier = Modifier
@@ -51,9 +54,30 @@ fun LavaFloatingActionButton(
     val fabHeight = 70.dp
     val fabAnimationHeight = with(LocalDensity.current) { (fabHeight + volcanoSpacerHeight).toPx().toInt() }
 
+    // Visibility state
+    val onScreenWithFab = currentCoreDestination == Destination.AlarmListScreen
+    val comingFromScreenWithFab = previousCoreDestination == Destination.AlarmListScreen
+    val visibleState = remember(key1 = currentCoreDestination, key2 = previousCoreDestination) {
+        // True == FAB up
+        // False == FAB down
+        val initialState = when {
+            onScreenWithFab && comingFromScreenWithFab ->
+                true
+            onScreenWithFab && !comingFromScreenWithFab ->
+                false
+            !onScreenWithFab && comingFromScreenWithFab ->
+                true
+            else ->
+                // !onScreenWithFab && !comingFromScreenWithFab
+                false
+        }
+
+        MutableTransitionState(initialState = initialState).apply { targetState = onScreenWithFab }
+    }
+
     val floatingActionButtonContent: @Composable () -> Unit = {
         AnimatedVisibility(
-            visible = selectedNavComponentDest == Destination.AlarmListScreen,
+            visibleState = visibleState,
             enter = slideInVertically(
                 animationSpec = tween(durationMillis = 150, easing = LinearOutSlowInEasing),
                 initialOffsetY = { fabAnimationHeight }
@@ -64,7 +88,7 @@ fun LavaFloatingActionButton(
             )
         ) {
             LavaFloatingActionButtonContent(
-                enabled = selectedNavComponentDest == Destination.AlarmListScreen,
+                enabled = onScreenWithFab,
                 onFabClicked = onFabClicked,
                 modifier = modifier
             )
