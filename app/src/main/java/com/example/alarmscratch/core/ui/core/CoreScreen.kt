@@ -3,6 +3,7 @@ package com.example.alarmscratch.core.ui.core
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -104,7 +105,12 @@ fun CoreScreen(
         modifier = modifier,
         currentCoreDestination = currentCoreDestination,
         previousCoreDestination = previousCoreDestination,
-        header = { SkylineHeader(selectedNavComponentDest = currentCoreDestination) },
+        header = {
+            SkylineHeader(
+                currentCoreDestination = currentCoreDestination,
+                previousCoreDestination = previousCoreDestination
+            )
+        },
         onFabClicked = navigateToAlarmCreationScreen,
         navigationBar = {
             VolcanoNavigationBar(
@@ -236,11 +242,12 @@ private fun CoreScreenAlarmListPreview() {
                 SkylineHeaderContent(
                     nextAlarmIndicator = {
                         NextAlarmCloudContent(
-                            selectedNavComponentDest = currentCoreDestination,
+                            currentCoreDestination = currentCoreDestination,
                             alarmCountdownState = AlarmCountdownState.Success(
                                 icon = Icons.Default.Alarm,
                                 countdownText = alarmListState.alarmList.first().toCountdownString(LocalContext.current)
                             ),
+                            visibleState = MutableTransitionState(true),
                             timeChangeReceiver = object : BroadcastReceiver() {
                                 override fun onReceive(context: Context?, intent: Intent?) {}
                             }
@@ -284,11 +291,12 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
                 SkylineHeaderContent(
                     nextAlarmIndicator = {
                         NextAlarmCloudContent(
-                            selectedNavComponentDest = currentCoreDestination,
+                            currentCoreDestination = currentCoreDestination,
                             alarmCountdownState = AlarmCountdownState.Success(
                                 icon = Icons.Default.AlarmOff,
                                 countdownText = stringResource(id = R.string.no_active_alarms)
                             ),
+                            visibleState = MutableTransitionState(true),
                             timeChangeReceiver = object : BroadcastReceiver() {
                                 override fun onReceive(context: Context?, intent: Intent?) {}
                             }
@@ -332,11 +340,12 @@ private fun CoreScreenSettingsPreview() {
                 SkylineHeaderContent(
                     nextAlarmIndicator = {
                         NextAlarmCloudContent(
-                            selectedNavComponentDest = currentCoreDestination,
+                            currentCoreDestination = currentCoreDestination,
                             alarmCountdownState = AlarmCountdownState.Success(
                                 icon = Icons.Default.Alarm,
                                 countdownText = alarmSampleDataHardCodedIds.first().toCountdownString(LocalContext.current)
                             ),
+                            visibleState = MutableTransitionState(false),
                             timeChangeReceiver = object : BroadcastReceiver() {
                                 override fun onReceive(context: Context?, intent: Intent?) {}
                             }
