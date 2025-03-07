@@ -3,6 +3,7 @@ package com.example.alarmscratch.core.ui.core.component
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,11 +39,17 @@ import com.example.alarmscratch.core.ui.theme.SkyBlue
 
 @Composable
 fun SkylineHeader(
-    selectedNavComponentDest: Destination,
+    currentCoreDestination: Destination,
+    previousCoreDestination: Destination,
     modifier: Modifier = Modifier
 ) {
     SkylineHeaderContent(
-        nextAlarmIndicator = { NextAlarmCloud(selectedNavComponentDest = selectedNavComponentDest) },
+        nextAlarmIndicator = {
+            NextAlarmCloud(
+                currentCoreDestination = currentCoreDestination,
+                previousCoreDestination = previousCoreDestination
+            )
+        },
         modifier = modifier
     )
 }
@@ -149,11 +156,12 @@ private fun SkylineHeaderOneLineAlarmPreview() {
         SkylineHeaderContent(
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
-                    selectedNavComponentDest = Destination.AlarmListScreen,
+                    currentCoreDestination = Destination.AlarmListScreen,
                     alarmCountdownState = AlarmCountdownState.Success(
                         icon = Icons.Default.Alarm,
                         countdownText = consistentFutureAlarm.toCountdownString(LocalContext.current)
                     ),
+                    visibleState = MutableTransitionState(true),
                     timeChangeReceiver = object : BroadcastReceiver() {
                         override fun onReceive(context: Context?, intent: Intent?) {}
                     }
@@ -174,11 +182,12 @@ private fun SkylineHeaderTwoLineAlarmPreview() {
         SkylineHeaderContent(
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
-                    selectedNavComponentDest = Destination.AlarmListScreen,
+                    currentCoreDestination = Destination.AlarmListScreen,
                     alarmCountdownState = AlarmCountdownState.Success(
                         icon = Icons.Default.Alarm,
                         countdownText = alarm.toCountdownString(LocalContext.current)
                     ),
+                    visibleState = MutableTransitionState(true),
                     timeChangeReceiver = object : BroadcastReceiver() {
                         override fun onReceive(context: Context?, intent: Intent?) {}
                     }
@@ -195,11 +204,12 @@ private fun SkylineHeaderSnoozedAlarmPreview() {
         SkylineHeaderContent(
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
-                    selectedNavComponentDest = Destination.AlarmListScreen,
+                    currentCoreDestination = Destination.AlarmListScreen,
                     alarmCountdownState = AlarmCountdownState.Success(
                         icon = Icons.Default.Snooze,
                         countdownText = snoozedAlarm.toCountdownString(LocalContext.current)
                     ),
+                    visibleState = MutableTransitionState(true),
                     timeChangeReceiver = object : BroadcastReceiver() {
                         override fun onReceive(context: Context?, intent: Intent?) {}
                     }
@@ -216,11 +226,12 @@ private fun SkylineHeaderNoAlarmsPreview() {
         SkylineHeaderContent(
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
-                    selectedNavComponentDest = Destination.AlarmListScreen,
+                    currentCoreDestination = Destination.AlarmListScreen,
                     alarmCountdownState = AlarmCountdownState.Success(
                         icon = Icons.Default.AlarmOff,
                         countdownText = stringResource(id = R.string.no_active_alarms)
                     ),
+                    visibleState = MutableTransitionState(true),
                     timeChangeReceiver = object : BroadcastReceiver() {
                         override fun onReceive(context: Context?, intent: Intent?) {}
                     }
@@ -237,11 +248,12 @@ private fun SkylineHeaderSettingsScreenPreview() {
         SkylineHeaderContent(
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
-                    selectedNavComponentDest = Destination.SettingsScreen,
+                    currentCoreDestination = Destination.SettingsScreen,
                     alarmCountdownState = AlarmCountdownState.Success(
                         icon = Icons.Default.Alarm,
                         countdownText = consistentFutureAlarm.toCountdownString(LocalContext.current)
                     ),
+                    visibleState = MutableTransitionState(false),
                     timeChangeReceiver = object : BroadcastReceiver() {
                         override fun onReceive(context: Context?, intent: Intent?) {}
                     }

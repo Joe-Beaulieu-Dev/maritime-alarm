@@ -1,8 +1,13 @@
 package com.example.alarmscratch.core.ui.core
 
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import androidx.activity.OnBackPressedDispatcher
+import androidx.activity.addCallback
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +40,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -84,11 +90,35 @@ fun CoreScreen(
     StatusBarUtil.setLightStatusBar()
 
     // Navigation
+    // Current and previous destinations must be tracked in order to prevent LavaFloatingActionButton
+    // and NextAlarmCloud from unnecessarily reanimating on orientation change, etc. Part of achieving
+    // this requires tracking the previous Destination during CoreScreen (coreNavHostController)
+    // navigation. Simply observing coreNavHostController.previousBackStackEntry is not sufficient
+    // because once the User pops the entire back stack (is back at the original Destination),
+    // there will be no "previous Destination" in the back stack, even though there actually was
+    // a previous Destination in practice. Because of this, the previous Destination must be tracked manually.
     val coreNavHostController = rememberNavController()
     val currentCoreBackStackEntry by coreNavHostController.currentBackStackEntryAsState()
     val currentCoreDestination = NavComponent.fromNavBackStackEntry(currentCoreBackStackEntry)
     var previousCoreDestination by remember { mutableStateOf(currentCoreDestination) }
     val setPreviousCoreDestination: (Destination) -> Unit = { previousCoreDestination = it }
+
+    // Back press
+    val activity: Activity? = (LocalContext.current as? Activity)
+    val onBackPressedDispatcher: OnBackPressedDispatcher? = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+    if (activity != null && onBackPressedDispatcher != null) {
+        onBackPressedDispatcher.addCallback(owner = LocalLifecycleOwner.current) {
+            // set previousCoreDestination before navigating back
+            setPreviousCoreDestination(currentCoreDestination)
+            // Navigate back
+            // Popping the back stack will have no effect if it's empty.
+            // Standard back press functionality in this scenario is to finish the Activity.
+            val isBackStackEmpty = !coreNavHostController.popBackStack()
+            if (isBackStackEmpty) {
+                activity.finish()
+            }
+        }
+    }
 
     // Track that the User is leaving the Core Screen by
     // setting previousCoreDestination to currentCoreDestination
@@ -104,12 +134,18 @@ fun CoreScreen(
         modifier = modifier,
         currentCoreDestination = currentCoreDestination,
         previousCoreDestination = previousCoreDestination,
-        header = { SkylineHeader(selectedNavComponentDest = currentCoreDestination) },
+        header = {
+            SkylineHeader(
+                currentCoreDestination = currentCoreDestination,
+                previousCoreDestination = previousCoreDestination
+            )
+        },
         onFabClicked = navigateToAlarmCreationScreen,
         navigationBar = {
             VolcanoNavigationBar(
                 currentCoreDestination = currentCoreDestination,
                 onDestinationChange = { newDestination ->
+                    // previousCoreDestination needs to be updated on bottom navigation
                     setPreviousCoreDestination(currentCoreDestination)
                     coreNavHostController.navigateSingleTop(newDestination)
                 },
@@ -236,11 +272,12 @@ private fun CoreScreenAlarmListPreview() {
                 SkylineHeaderContent(
                     nextAlarmIndicator = {
                         NextAlarmCloudContent(
-                            selectedNavComponentDest = currentCoreDestination,
+                            currentCoreDestination = currentCoreDestination,
                             alarmCountdownState = AlarmCountdownState.Success(
                                 icon = Icons.Default.Alarm,
                                 countdownText = alarmListState.alarmList.first().toCountdownString(LocalContext.current)
                             ),
+                            visibleState = MutableTransitionState(true),
                             timeChangeReceiver = object : BroadcastReceiver() {
                                 override fun onReceive(context: Context?, intent: Intent?) {}
                             }
@@ -284,11 +321,12 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
                 SkylineHeaderContent(
                     nextAlarmIndicator = {
                         NextAlarmCloudContent(
-                            selectedNavComponentDest = currentCoreDestination,
+                            currentCoreDestination = currentCoreDestination,
                             alarmCountdownState = AlarmCountdownState.Success(
                                 icon = Icons.Default.AlarmOff,
                                 countdownText = stringResource(id = R.string.no_active_alarms)
                             ),
+                            visibleState = MutableTransitionState(true),
                             timeChangeReceiver = object : BroadcastReceiver() {
                                 override fun onReceive(context: Context?, intent: Intent?) {}
                             }
@@ -332,11 +370,12 @@ private fun CoreScreenSettingsPreview() {
                 SkylineHeaderContent(
                     nextAlarmIndicator = {
                         NextAlarmCloudContent(
-                            selectedNavComponentDest = currentCoreDestination,
+                            currentCoreDestination = currentCoreDestination,
                             alarmCountdownState = AlarmCountdownState.Success(
                                 icon = Icons.Default.Alarm,
                                 countdownText = alarmSampleDataHardCodedIds.first().toCountdownString(LocalContext.current)
                             ),
+                            visibleState = MutableTransitionState(false),
                             timeChangeReceiver = object : BroadcastReceiver() {
                                 override fun onReceive(context: Context?, intent: Intent?) {}
                             }
