@@ -128,9 +128,8 @@ class AlarmEditViewModel(
 
                 // Validate, save, schedule, Snackbar, navigate back
                 if (validateAlarm(autoCorrectAlarm)) {
-                    // Save and schedule Alarm
-                    // TODO: Clear snooze data
-                    alarmRepository.updateAlarm(autoCorrectAlarm.copy(enabled = true))
+                    // Save and schedule Alarm, and clear snoozeDateTime
+                    alarmRepository.updateAlarm(autoCorrectAlarm.copy(enabled = true, snoozeDateTime = null))
                     val newAlarm = alarmRepository.getAlarm(alarmId)
                     scheduleAlarm(context.applicationContext, newAlarm)
 
