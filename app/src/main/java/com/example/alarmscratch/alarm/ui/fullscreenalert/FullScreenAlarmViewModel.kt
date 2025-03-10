@@ -3,6 +3,8 @@ package com.example.alarmscratch.alarm.ui.fullscreenalert
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.alarmscratch.alarm.alarmexecution.AlarmIntentBuilder
 import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
 
@@ -17,10 +19,10 @@ class FullScreenAlarmViewModel(
             alarmExecutionData: AlarmExecutionData,
             is24Hour: Boolean
         ): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                    FullScreenAlarmViewModel(alarmExecutionData, is24Hour) as T
+            viewModelFactory {
+                initializer {
+                    FullScreenAlarmViewModel(alarmExecutionData, is24Hour)
+                }
             }
     }
 
