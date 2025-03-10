@@ -1,10 +1,12 @@
 package com.example.alarmscratch.alarm.ui.alarmcreate
 
+import android.app.Application
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import com.example.alarmscratch.alarm.alarmexecution.AlarmScheduler
 import com.example.alarmscratch.alarm.data.model.Alarm
@@ -116,18 +118,16 @@ class AlarmCreationViewModel(
 
     companion object {
 
-        val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-                // TODO: Do something about this
-                val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as Application)
 
-                return AlarmCreationViewModel(
+                AlarmCreationViewModel(
                     alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(application).alarmDao()),
                     alarmDefaultsRepository = AlarmDefaultsRepository(application, application.alarmDefaultsDataStore),
                     generalSettingsRepository = GeneralSettingsRepository(application.generalSettingsDataStore),
                     alarmValidator = AlarmValidator()
-                ) as T
+                )
             }
         }
     }
