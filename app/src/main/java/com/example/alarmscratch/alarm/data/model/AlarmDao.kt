@@ -31,19 +31,19 @@ interface AlarmDao {
     @Delete
     suspend fun delete(alarm: Alarm)
 
-    @Query("SELECT * FROM alarms WHERE id = :id")
+    @Query("SELECT * FROM alarm WHERE id = :id")
     suspend fun getAlarm(id: Int): Alarm
 
-    @Query("SELECT * FROM alarms")
+    @Query("SELECT * FROM alarm")
     suspend fun getAllAlarms(): List<Alarm>
 
     /*
      * Observable Read
      */
-    @Query("SELECT * FROM alarms WHERE id = :id")
+    @Query("SELECT * FROM alarm WHERE id = :id")
     fun getAlarmFlow(id: Int): Flow<Alarm>
 
-    @Query("SELECT * FROM alarms")
+    @Query("SELECT * FROM alarm")
     fun getAllAlarmsFlow(): Flow<List<Alarm>>
 
     /*
@@ -55,18 +55,18 @@ interface AlarmDao {
     /*
      * One-shot Read/Write
      */
-    @Query("SELECT * FROM alarms WHERE enabled = 1")
+    @Query("SELECT * FROM alarm WHERE enabled = 1")
     suspend fun getAllEnabledAlarms(): List<Alarm>
 
-    @Query("UPDATE alarms SET snoozeDateTime = :snoozeDateTime WHERE id = :id")
+    @Query("UPDATE alarm SET snooze_date_time = :snoozeDateTime WHERE id = :id")
     suspend fun updateSnooze(id: Int, snoozeDateTime: LocalDateTime)
 
-    @Query("UPDATE alarms SET snoozeDateTime = null WHERE id = :id")
+    @Query("UPDATE alarm SET snooze_date_time = null WHERE id = :id")
     suspend fun resetSnooze(id: Int)
 
-    @Query("UPDATE alarms SET enabled = 0, snoozeDateTime = null WHERE id = :id")
+    @Query("UPDATE alarm SET enabled = 0, snooze_date_time = null WHERE id = :id")
     suspend fun dismissAlarm(id: Int)
 
-    @Query("UPDATE alarms SET dateTime = :dateTime, snoozeDateTime = null WHERE id = :id")
+    @Query("UPDATE alarm SET date_time = :dateTime, snooze_date_time = null WHERE id = :id")
     suspend fun dismissAndRescheduleRepeating(id: Int, dateTime: LocalDateTime)
 }
