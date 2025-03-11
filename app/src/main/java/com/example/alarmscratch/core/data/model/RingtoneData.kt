@@ -1,6 +1,5 @@
 package com.example.alarmscratch.core.data.model
 
-// TODO: Make actual Uri
 class RingtoneData(
     id: Int,
     val name: String,
