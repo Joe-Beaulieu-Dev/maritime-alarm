@@ -6,8 +6,8 @@ object RingtonePlayerManager {
 
     private var ringtonePlayer = RingtonePlayer()
 
-    fun startAlarmSound(context: Context, ringtoneUriString: String) {
-        ringtonePlayer.playRingtone(context.applicationContext, ringtoneUriString)
+    fun startAlarmSound(context: Context, ringtoneUri: String) {
+        ringtonePlayer.playRingtone(context.applicationContext, ringtoneUri)
     }
 
     fun stopAlarmSound() {

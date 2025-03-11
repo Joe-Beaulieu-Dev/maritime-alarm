@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 
 const val tueWedThu: Int = 28
 const val everyDay: Int = 127
-private const val sampleRingtoneUriString = "content://settings/system/alarm_alert"
+private const val sampleRingtoneUri = "content://settings/system/alarm_alert"
 
 val repeatingAlarm =
     Alarm(
@@ -18,7 +18,7 @@ val repeatingAlarm =
         //  Alarm is going to go off based on the WeeklyRepeater
         dateTime = getTomorrowAtTime24Hr(hour = 8, minute = 30),
         weeklyRepeater = WeeklyRepeater(encodedRepeatingDays = tueWedThu),
-        ringtoneUriString = sampleRingtoneUriString,
+        ringtoneUri = sampleRingtoneUri,
         isVibrationEnabled = true,
         snoozeDuration = 5
     )
@@ -29,7 +29,7 @@ val todayAlarm =
         enabled = true,
         dateTime = getTodayAtTime24Hr(hour = 23, minute = 59),
         weeklyRepeater = WeeklyRepeater(),
-        ringtoneUriString = sampleRingtoneUriString,
+        ringtoneUri = sampleRingtoneUri,
         isVibrationEnabled = false,
         snoozeDuration = 10
     )
@@ -40,7 +40,7 @@ val tomorrowAlarm =
         enabled = false,
         dateTime = getTomorrowAtTime24Hr(hour = 14, minute = 0),
         weeklyRepeater = WeeklyRepeater(),
-        ringtoneUriString = sampleRingtoneUriString,
+        ringtoneUri = sampleRingtoneUri,
         isVibrationEnabled = true,
         snoozeDuration = 15
     )
@@ -51,7 +51,7 @@ val calendarAlarm =
         enabled = true,
         dateTime = getFutureTime(plusDays = 2),
         weeklyRepeater = WeeklyRepeater(),
-        ringtoneUriString = sampleRingtoneUriString,
+        ringtoneUri = sampleRingtoneUri,
         isVibrationEnabled = false,
         snoozeDuration = 20
     )
@@ -62,7 +62,7 @@ val consistentFutureAlarm =
         enabled = true,
         dateTime = getFutureTime(plusHours = 8, plusMinutes = 45),
         weeklyRepeater = WeeklyRepeater(),
-        ringtoneUriString = sampleRingtoneUriString,
+        ringtoneUri = sampleRingtoneUri,
         isVibrationEnabled = true,
         snoozeDuration = 25
     )
@@ -73,7 +73,7 @@ val snoozedAlarm =
         enabled = true,
         dateTime = LocalDateTimeUtil.nowTruncated(),
         weeklyRepeater = WeeklyRepeater(),
-        ringtoneUriString = sampleRingtoneUriString,
+        ringtoneUri = sampleRingtoneUri,
         isVibrationEnabled = true,
         snoozeDateTime = LocalDateTimeUtil.nowTruncated().plusMinutes(25),
         snoozeDuration = 25
@@ -87,7 +87,7 @@ val alarmSampleData: List<Alarm> = listOf(repeatingAlarm, todayAlarm, tomorrowAl
  */
 val alarmSampleDataHardCodedIds: List<Alarm> = alarmSampleData.mapIndexed { index, alarm -> alarm.copy(id = index) }
 
-val sampleRingtoneData = RingtoneData(id = 0, name = "Ringtone 1", baseUri = sampleRingtoneUriString)
+val sampleRingtoneData = RingtoneData(id = 0, name = "Ringtone 1", baseUri = sampleRingtoneUri)
 
 val ringtoneDataSampleList: List<RingtoneData> = listOf(
     sampleRingtoneData,

@@ -15,9 +15,9 @@ class RingtoneRepository(private val context: Context) {
         private const val SYSTEM_DEFAULT_RINGTONE_TITLE_SUFFIX = ")"
     }
 
-    fun getRingtone(uriString: String): Ringtone {
-        val ringtoneUri = Uri.parse(uriString)
-        var ringtone = RingtoneManager.getRingtone(context.applicationContext, ringtoneUri)
+    fun getRingtone(ringtoneUri: String): Ringtone {
+        val uri = Uri.parse(ringtoneUri)
+        var ringtone = RingtoneManager.getRingtone(context.applicationContext, uri)
 
         if (ringtone == null) {
             // TODO: This can return null, just check it out
@@ -77,7 +77,7 @@ class RingtoneRepository(private val context: Context) {
                 .removeSuffix(SYSTEM_DEFAULT_RINGTONE_TITLE_SUFFIX)
             val match: RingtoneData? = ringtoneList.firstOrNull { it.name == cleanRingtoneName }
 
-            match?.fullUriString ?: genericSystemDefaultUri.toString()
+            match?.fullUri ?: genericSystemDefaultUri.toString()
         } else {
             genericSystemDefaultUri.toString()
         }

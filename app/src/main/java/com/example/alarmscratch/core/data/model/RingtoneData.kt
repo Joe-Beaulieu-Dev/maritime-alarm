@@ -7,10 +7,10 @@ class RingtoneData(
     baseUri: String
 ) {
 
-    val fullUriString = "$baseUri/$id"
+    val fullUri = "$baseUri/$id"
 
     companion object {
-        const val KEY_FULL_RINGTONE_URI_STRING = "key_full_ringtone_uri_string"
+        const val KEY_FULL_RINGTONE_URI = "key_full_ringtone_uri"
         const val NO_RINGTONE_URI = ""
     }
 }

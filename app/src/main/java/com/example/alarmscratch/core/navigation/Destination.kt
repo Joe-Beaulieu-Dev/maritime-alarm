@@ -29,7 +29,7 @@ sealed interface Destination {
     data class AlarmEditScreen(val alarmId: Int) : Destination
 
     @Serializable
-    data class RingtonePickerScreen(val ringtoneUriString: String) : Destination
+    data class RingtonePickerScreen(val ringtoneUri: String) : Destination
 
     @Serializable
     data object GeneralSettingsScreen : Destination

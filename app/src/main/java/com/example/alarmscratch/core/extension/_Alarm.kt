@@ -19,7 +19,7 @@ fun Alarm.toAlarmExecutionData(): AlarmExecutionData =
         name = name,
         executionDateTime = snoozeDateTime ?: dateTime,
         encodedRepeatingDays = weeklyRepeater.toEncodedRepeatingDays(),
-        ringtoneUri = ringtoneUriString,
+        ringtoneUri = ringtoneUri,
         isVibrationEnabled = isVibrationEnabled,
         snoozeDuration = snoozeDuration
     )
@@ -77,7 +77,7 @@ fun Alarm.isDirty(): Boolean {
 }
 
 fun Alarm.getRingtone(context: Context): Ringtone =
-    RingtoneRepository(context).getRingtone(ringtoneUriString)
+    RingtoneRepository(context).getRingtone(ringtoneUri)
 
 /*
  * Formatting

@@ -251,7 +251,7 @@ fun AlarmCreateEditScreen(
 
             // Alert Settings
             AlertSettings(
-                navigateToRingtonePickerScreen = { navigateToRingtonePickerScreen(alarm.ringtoneUriString) },
+                navigateToRingtonePickerScreen = { navigateToRingtonePickerScreen(alarm.ringtoneUri) },
                 selectedRingtone = alarmRingtoneName,
                 isVibrationEnabled = alarm.isVibrationEnabled,
                 toggleVibration = toggleVibration,

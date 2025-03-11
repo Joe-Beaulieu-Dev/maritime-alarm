@@ -231,14 +231,14 @@ class AlarmEditViewModel(
         }
     }
 
-    fun updateRingtone(ringtoneUriString: String?) {
+    fun updateRingtone(ringtoneUri: String?) {
         if (
             _modifiedAlarm.value is AlarmState.Success &&
-            ringtoneUriString != null &&
-            ringtoneUriString != RingtoneData.NO_RINGTONE_URI
+            ringtoneUri != null &&
+            ringtoneUri != RingtoneData.NO_RINGTONE_URI
         ) {
             val alarm = (_modifiedAlarm.value as AlarmState.Success).alarm
-            _modifiedAlarm.value = AlarmState.Success(alarm.copy(ringtoneUriString = ringtoneUriString))
+            _modifiedAlarm.value = AlarmState.Success(alarm.copy(ringtoneUri = ringtoneUri))
         }
     }
 

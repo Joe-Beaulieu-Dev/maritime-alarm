@@ -8,7 +8,6 @@ import java.time.LocalDateTime
 
 @Entity(tableName = "alarm")
 data class Alarm(
-    // TODO: Do @ColumnInfo for custom column names
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val name: String = "",
@@ -17,8 +16,8 @@ data class Alarm(
     val dateTime: LocalDateTime = LocalDateTimeUtil.nowTruncated(),
     @ColumnInfo(name = "weekly_repeater")
     val weeklyRepeater: WeeklyRepeater = WeeklyRepeater(),
-    @ColumnInfo(name = "ringtone_uri_string")
-    val ringtoneUriString: String,
+    @ColumnInfo(name = "ringtone_uri")
+    val ringtoneUri: String,
     @ColumnInfo(name = "is_vibration_enabled")
     val isVibrationEnabled: Boolean = false,
     @ColumnInfo(name = "snooze_date_time")

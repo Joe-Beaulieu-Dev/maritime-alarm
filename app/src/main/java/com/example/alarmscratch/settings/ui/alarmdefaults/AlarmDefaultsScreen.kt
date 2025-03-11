@@ -86,7 +86,7 @@ fun AlarmDefaultsScreen(
         // If the User navigated to the RingtonePickerScreen and selected a new Ringtone,
         // then the new Ringtone's URI will be saved here.
         alarmDefaultsViewModel.updateRingtone(
-            navHostController.getStringFromBackStack(RingtoneData.KEY_FULL_RINGTONE_URI_STRING)
+            navHostController.getStringFromBackStack(RingtoneData.KEY_FULL_RINGTONE_URI)
         )
 
         val context = LocalContext.current
@@ -345,7 +345,7 @@ private fun AlarmDefaultsScreenPreview() {
             navHostController = rememberNavController(),
             navigateToRingtonePickerScreen = {},
             ringtoneName = sampleRingtoneData.name,
-            ringtoneUri = sampleRingtoneData.fullUriString,
+            ringtoneUri = sampleRingtoneData.fullUri,
             isVibrationEnabled = true,
             snoozeDuration = 10,
             saveAlarmDefaults = {},

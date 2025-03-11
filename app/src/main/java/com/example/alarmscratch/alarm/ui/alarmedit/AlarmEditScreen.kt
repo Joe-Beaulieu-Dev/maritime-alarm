@@ -64,7 +64,7 @@ fun AlarmEditScreen(
             // If the User navigated to the RingtonePickerScreen and selected a new Ringtone,
             // then the new Ringtone's URI will be saved here.
             alarmEditViewModel.updateRingtone(
-                navHostController.getStringFromBackStack(RingtoneData.KEY_FULL_RINGTONE_URI_STRING)
+                navHostController.getStringFromBackStack(RingtoneData.KEY_FULL_RINGTONE_URI)
             )
 
             val context = LocalContext.current
@@ -151,7 +151,7 @@ private fun AlarmEditScreenPreview() {
                 name = "Meeting",
                 dateTime = LocalDateTimeUtil.nowTruncated().plusHours(1),
                 weeklyRepeater = WeeklyRepeater(tueWedThu),
-                ringtoneUriString = sampleRingtoneData.fullUriString,
+                ringtoneUri = sampleRingtoneData.fullUri,
                 isVibrationEnabled = true,
                 snoozeDuration = 10
             ),
