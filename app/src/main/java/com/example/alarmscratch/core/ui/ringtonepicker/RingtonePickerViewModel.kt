@@ -28,7 +28,7 @@ class RingtonePickerViewModel(
 
     // Ringtone
     val ringtoneDataList = ringtoneRepository.getAllRingtoneData()
-    private val initialRingtoneUri: String = savedStateHandle.toRoute<Destination.RingtonePickerScreen>().ringtoneUriString
+    private val initialRingtoneUri: String = savedStateHandle.toRoute<Destination.RingtonePickerScreen>().ringtoneUri
     private val _selectedRingtoneUri: MutableStateFlow<String> = MutableStateFlow(initialRingtoneUri)
     val selectedRingtoneUri: StateFlow<String> = _selectedRingtoneUri.asStateFlow()
 
@@ -84,26 +84,26 @@ class RingtonePickerViewModel(
     fun saveRingtone(navHostController: NavHostController) {
         // Send Ringtone URI to previous screen
         navHostController.previousBackStackEntry?.savedStateHandle
-            ?.set(RingtoneData.KEY_FULL_RINGTONE_URI_STRING, _selectedRingtoneUri.value)
+            ?.set(RingtoneData.KEY_FULL_RINGTONE_URI, _selectedRingtoneUri.value)
 
         // Navigate back
         navHostController.popBackStack()
     }
 
-    fun selectRingtone(context: Context, ringtoneUriString: String) {
+    fun selectRingtone(context: Context, ringtoneUri: String) {
         // Play or Stop Ringtone
         if (_isRingtonePlaying.value) {
-            if (ringtoneUriString == _selectedRingtoneUri.value) {
+            if (ringtoneUri == _selectedRingtoneUri.value) {
                 stopRingtone()
             } else {
-                playRingtone(context, ringtoneUriString)
+                playRingtone(context, ringtoneUri)
             }
         } else {
-            playRingtone(context, ringtoneUriString)
+            playRingtone(context, ringtoneUri)
         }
 
         // Select Ringtone
-        _selectedRingtoneUri.value = ringtoneUriString
+        _selectedRingtoneUri.value = ringtoneUri
     }
 
     /*

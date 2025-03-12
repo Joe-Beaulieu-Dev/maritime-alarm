@@ -34,8 +34,8 @@ fun AlarmApp() {
         composable<Destination.AlarmCreationScreen> {
             AlarmCreationScreen(
                 navHostController = navHostController,
-                navigateToRingtonePickerScreen = { ringtoneUriString ->
-                    navHostController.navigateSingleTop(Destination.RingtonePickerScreen(ringtoneUriString = ringtoneUriString))
+                navigateToRingtonePickerScreen = { ringtoneUri ->
+                    navHostController.navigateSingleTop(Destination.RingtonePickerScreen(ringtoneUri = ringtoneUri))
                 },
                 modifier = Modifier.fillMaxSize()
             )
@@ -45,8 +45,8 @@ fun AlarmApp() {
         composable<Destination.AlarmEditScreen> {
             AlarmEditScreen(
                 navHostController = navHostController,
-                navigateToRingtonePickerScreen = { ringtoneUriString ->
-                    navHostController.navigateSingleTop(Destination.RingtonePickerScreen(ringtoneUriString = ringtoneUriString))
+                navigateToRingtonePickerScreen = { ringtoneUri ->
+                    navHostController.navigateSingleTop(Destination.RingtonePickerScreen(ringtoneUri = ringtoneUri))
                 },
                 modifier = Modifier.fillMaxSize()
             )
@@ -73,7 +73,7 @@ fun AlarmApp() {
             AlarmDefaultsScreen(
                 navHostController = navHostController,
                 navigateToRingtonePickerScreen = { ringtoneUri ->
-                    navHostController.navigateSingleTop(Destination.RingtonePickerScreen(ringtoneUriString = ringtoneUri))
+                    navHostController.navigateSingleTop(Destination.RingtonePickerScreen(ringtoneUri = ringtoneUri))
                 },
                 modifier = Modifier.fillMaxSize()
             )

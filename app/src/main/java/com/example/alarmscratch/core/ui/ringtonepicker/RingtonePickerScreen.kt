@@ -156,18 +156,18 @@ fun RingtonePickerScreenContent(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { selectRingtone(context, ringtoneData.fullUriString) }
-                            .background(color = rowColor(ringtoneData.fullUriString))
+                            .clickable { selectRingtone(context, ringtoneData.fullUri) }
+                            .background(color = rowColor(ringtoneData.fullUri))
                             .padding(start = 32.dp, top = 12.dp, end = 32.dp, bottom = 12.dp)
                     ) {
                         // Ringtone Name
                         Text(text = ringtoneData.name)
 
                         // Ringtone playback and selection indicator Icons
-                        if (isRowSelected(ringtoneData.fullUriString)) {
+                        if (isRowSelected(ringtoneData.fullUri)) {
                             Row {
                                 // Ringtone playback indicator Icon
-                                if (isRowPlaying(ringtoneData.fullUriString)) {
+                                if (isRowPlaying(ringtoneData.fullUri)) {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Default.VolumeUp,
                                         contentDescription = null,
@@ -209,7 +209,7 @@ private fun RingtonePickerScreenPlayingPreview() {
     AlarmScratchTheme {
         RingtonePickerScreenContent(
             ringtoneDataList = ringtoneDataSampleList,
-            selectedRingtoneUri = sampleRingtoneData.fullUriString,
+            selectedRingtoneUri = sampleRingtoneData.fullUri,
             isRingtonePlaying = true,
             saveRingtone = {},
             selectRingtone = { _, _ -> },
@@ -229,7 +229,7 @@ private fun RingtonePickerScreenNotPlayingPreview() {
     AlarmScratchTheme {
         RingtonePickerScreenContent(
             ringtoneDataList = ringtoneDataSampleList,
-            selectedRingtoneUri = sampleRingtoneData.fullUriString,
+            selectedRingtoneUri = sampleRingtoneData.fullUri,
             isRingtonePlaying = false,
             saveRingtone = {},
             selectRingtone = { _, _ -> },

@@ -13,7 +13,7 @@ class RingtonePlayer {
     private var audioFocusRequest: AudioFocusRequest? = null
     private var ringtone: Ringtone? = null
 
-    fun playRingtone(context: Context, ringtoneUriString: String) {
+    fun playRingtone(context: Context, ringtoneUri: String) {
         // Stop currently playing Ringtone if there is one
         stopRingtone()
 
@@ -30,7 +30,7 @@ class RingtonePlayer {
             .setAudioAttributes(audioAttributes)
             .build()
 
-        ringtone = getRingtone(context, ringtoneUriString)
+        ringtone = getRingtone(context, ringtoneUri)
 
         // Getting around smart cast mutability warnings
         audioManager?.let { manager ->
