@@ -11,8 +11,7 @@ import com.example.alarmscratch.alarm.data.model.LocalDateTimeConverter
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeaterConverter
 import kotlin.concurrent.Volatile
 
-// TODO: Export Schema
-@Database(entities = [Alarm::class], version = 1, exportSchema = false)
+@Database(entities = [Alarm::class], version = 1)
 @TypeConverters(value = [LocalDateTimeConverter::class, WeeklyRepeaterConverter::class])
 abstract class AlarmDatabase : RoomDatabase() {
 
@@ -30,7 +29,6 @@ abstract class AlarmDatabase : RoomDatabase() {
                     AlarmDatabase::class.java,
                     "alarm_database"
                 )
-                    // TODO: Remove destructive fallback. Just doing this for now.
                     .fallbackToDestructiveMigration()
                     .build()
                     .also { databaseInstance -> Instance = databaseInstance }
