@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.androidApplication)
+    alias(libs.plugins.androidxRoom)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.ksp)
@@ -40,6 +41,9 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.10"
+    }
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
     packaging {
         resources {
