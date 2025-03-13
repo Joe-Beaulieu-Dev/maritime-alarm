@@ -14,6 +14,7 @@ import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmActivity
 import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmButton
 import com.example.alarmscratch.alarm.ui.notification.AlarmNotification
 import com.example.alarmscratch.alarm.util.AlarmUtil
+import com.example.alarmscratch.core.constant.actionPackageName
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.getSerializableExtraSafe
 import com.example.alarmscratch.core.extension.isRepeating
@@ -42,17 +43,17 @@ class AlarmNotificationService : Service() {
 
     companion object {
         // Actions
-        const val DISPLAY_ALARM_NOTIFICATION = "display_alarm_notification"
-        const val DISMISS_ALARM_NOTIFICATION = "dismiss_alarm_notification"
+        const val ACTION_DISPLAY_ALARM_NOTIFICATION = "${actionPackageName}DISPLAY_ALARM_NOTIFICATION"
+        const val ACTION_DISMISS_ALARM_NOTIFICATION = "${actionPackageName}DISMISS_ALARM_NOTIFICATION"
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            DISPLAY_ALARM_NOTIFICATION ->
+            ACTION_DISPLAY_ALARM_NOTIFICATION ->
                 displayAlarmNotification(intent)
-            DISMISS_ALARM_NOTIFICATION ->
+            ACTION_DISMISS_ALARM_NOTIFICATION ->
                 dismissAlarmNotification(intent)
         }
 

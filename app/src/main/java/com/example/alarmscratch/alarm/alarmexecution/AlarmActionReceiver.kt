@@ -10,6 +10,8 @@ import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmButton
 import com.example.alarmscratch.alarm.util.AlarmUtil
+import com.example.alarmscratch.core.constant.actionPackageName
+import com.example.alarmscratch.core.constant.extraPackageName
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.alarmApplication
 import com.example.alarmscratch.core.extension.doAsync
@@ -23,21 +25,21 @@ class AlarmActionReceiver : BroadcastReceiver() {
 
     companion object {
         // Actions
-        const val ACTION_EXECUTE_ALARM = "action_execute_alarm"
-        const val ACTION_SNOOZE_AND_RESCHEDULE_ALARM = "action_snooze_and_reschedule_alarm"
-        const val ACTION_DISMISS_ALARM = "action_dismiss_alarm"
+        const val ACTION_EXECUTE_ALARM = "${actionPackageName}EXECUTE_ALARM"
+        const val ACTION_SNOOZE_AND_RESCHEDULE_ALARM = "${actionPackageName}SNOOZE_AND_RESCHEDULE_ALARM"
+        const val ACTION_DISMISS_ALARM = "${actionPackageName}DISMISS_ALARM"
 
         // Extras
-        const val EXTRA_ALARM_ID = "extra_alarm_id"
-        const val EXTRA_ALARM_NAME = "extra_alarm_name"
-        const val EXTRA_ALARM_EXECUTION_DATE_TIME = "extra_alarm_execution_date_time"
-        const val EXTRA_REPEATING_DAYS = "extra_repeating_days"
-        const val EXTRA_RINGTONE_URI = "extra_ringtone_uri"
-        const val EXTRA_IS_VIBRATION_ENABLED = "extra_is_vibration_enabled"
-        const val EXTRA_ALARM_SNOOZE_DURATION = "extra_alarm_snooze_duration"
-        const val EXTRA_IS_24_HOUR = "extra_is_24_hour"
-        const val EXTRA_ALARM_ACTION_ORIGIN = "extra_alarm_action_origin"
-        const val EXTRA_FULL_SCREEN_ALARM_BUTTON = "extra_full_screen_alarm_button"
+        const val EXTRA_ALARM_ID = "${extraPackageName}ALARM_ID"
+        const val EXTRA_ALARM_NAME = "${extraPackageName}ALARM_NAME"
+        const val EXTRA_ALARM_EXECUTION_DATE_TIME = "${extraPackageName}ALARM_EXECUTION_DATE_TIME"
+        const val EXTRA_REPEATING_DAYS = "${extraPackageName}REPEATING_DAYS"
+        const val EXTRA_RINGTONE_URI = "${extraPackageName}RINGTONE_URI"
+        const val EXTRA_IS_VIBRATION_ENABLED = "${extraPackageName}IS_VIBRATION_ENABLED"
+        const val EXTRA_ALARM_SNOOZE_DURATION = "${extraPackageName}ALARM_SNOOZE_DURATION"
+        const val EXTRA_IS_24_HOUR = "${extraPackageName}IS_24_HOUR"
+        const val EXTRA_ALARM_ACTION_ORIGIN = "${extraPackageName}ALARM_ACTION_ORIGIN"
+        const val EXTRA_FULL_SCREEN_ALARM_BUTTON = "${extraPackageName}FULL_SCREEN_ALARM_BUTTON"
 
         // Other
         const val ALARM_NO_ID = -1
@@ -82,7 +84,7 @@ class AlarmActionReceiver : BroadcastReceiver() {
             // Display Alarm Notification
             intent.extras?.let { extrasBundle ->
                 val displayNotificationIntent = Intent(context.applicationContext, AlarmNotificationService::class.java).apply {
-                    action = AlarmNotificationService.DISPLAY_ALARM_NOTIFICATION
+                    action = AlarmNotificationService.ACTION_DISPLAY_ALARM_NOTIFICATION
                     putExtras(extrasBundle)
                 }
                 context.applicationContext.startService(displayNotificationIntent)
@@ -176,7 +178,7 @@ class AlarmActionReceiver : BroadcastReceiver() {
         // Dismiss Alarm Notification
         val dismissNotificationIntent = Intent(context.applicationContext, AlarmNotificationService::class.java).apply {
             // Action
-            action = AlarmNotificationService.DISMISS_ALARM_NOTIFICATION
+            action = AlarmNotificationService.ACTION_DISMISS_ALARM_NOTIFICATION
             // Extras
             putExtra(EXTRA_ALARM_ACTION_ORIGIN, alarmActionOrigin)
             putExtra(EXTRA_FULL_SCREEN_ALARM_BUTTON, fullScreenAlarmButton)
