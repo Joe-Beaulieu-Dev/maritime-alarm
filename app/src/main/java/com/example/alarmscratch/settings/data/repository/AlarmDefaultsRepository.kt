@@ -40,7 +40,7 @@ class AlarmDefaultsRepository(
 
     companion object {
         // Preferences name
-        const val ALARM_DEFAULTS_PREFERENCES_NAME = "alarm_defaults_preferences_name"
+        const val ALARM_DEFAULTS_PREFERENCES_NAME = "alarm_defaults"
 
         // Keys
         private val KEY_RINGTONE_URI = stringPreferencesKey("ringtone_uri")
@@ -78,7 +78,6 @@ class AlarmDefaultsRepository(
     val alarmDefaultsFlow: Flow<AlarmDefaults> = dataStore.data
         .catch { emit(emptyPreferences()) }
         .map { preferences ->
-            // TODO: Exception handling
             // Get Preferences
             val ringtoneUri = preferences[KEY_RINGTONE_URI] ?: SYSTEM_DEFAULT_RINGTONE_URI
             val isVibrationEnabled = preferences[KEY_IS_VIBRATION_ENABLED] ?: DEFAULT_IS_VIBRATION_ENABLED
@@ -93,7 +92,6 @@ class AlarmDefaultsRepository(
      */
 
     suspend fun updateAlarmDefaults(alarmDefaults: AlarmDefaults) {
-        // TODO: Exception handling
         dataStore.edit { preferences ->
             preferences[KEY_RINGTONE_URI] = alarmDefaults.ringtoneUri
             preferences[KEY_IS_VIBRATION_ENABLED] = alarmDefaults.isVibrationEnabled
