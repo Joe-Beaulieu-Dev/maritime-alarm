@@ -40,7 +40,7 @@ class AlarmDefaultsRepository(
 
     companion object {
         // Preferences name
-        const val ALARM_DEFAULTS_PREFERENCES_NAME = "alarm_defaults_preferences_name"
+        const val ALARM_DEFAULTS_PREFERENCES_NAME = "alarm_defaults"
 
         // Keys
         private val KEY_RINGTONE_URI = stringPreferencesKey("ringtone_uri")
