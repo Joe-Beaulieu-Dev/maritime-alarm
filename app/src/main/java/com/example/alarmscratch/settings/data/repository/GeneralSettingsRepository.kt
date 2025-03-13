@@ -35,7 +35,6 @@ class GeneralSettingsRepository(private val dataStore: DataStore<Preferences>) {
     val generalSettingsFlow: Flow<GeneralSettings> = dataStore.data
         .catch { emit(emptyPreferences()) }
         .map { preferences ->
-            // TODO: Exception handling
             // Get Preferences
             val timeDisplay = TimeDisplay.fromString(preferences[KEY_TIME_DISPLAY]) ?: DEFAULT_TIME_DISPLAY
 
@@ -44,7 +43,6 @@ class GeneralSettingsRepository(private val dataStore: DataStore<Preferences>) {
         }
 
     suspend fun updateGeneralSettings(generalSettings: GeneralSettings) {
-        // TODO: Exception handling
         dataStore.edit { preferences ->
             preferences[KEY_TIME_DISPLAY] = generalSettings.timeDisplay.value
         }
