@@ -21,6 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.alarmexecution.AlarmActionReceiver
 import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
+import com.example.alarmscratch.core.constant.actionPackageName
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.getSerializableExtraSafe
 import com.example.alarmscratch.core.navigation.Destination
@@ -76,8 +77,8 @@ class FullScreenAlarmActivity : ComponentActivity() {
 
     companion object {
         // BroadcastReceiver constants
-        const val ACTION_SHOW_POST_ALARM_CONFIRMATION = "action_show_post_alarm_confirmation"
-        const val ACTION_FINISH_FULL_SCREEN_ALARM_FLOW = "action_finish_full_screen_alarm_flow"
+        const val ACTION_SHOW_POST_ALARM_CONFIRMATION = "${actionPackageName}SHOW_POST_ALARM_CONFIRMATION"
+        const val ACTION_FINISH_FULL_SCREEN_ALARM_FLOW = "${actionPackageName}FINISH_FULL_SCREEN_ALARM_FLOW"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
