@@ -12,7 +12,6 @@ sealed class AppNotificationChannel(
     @StringRes val description: Int,
     val soundAttributes: NotificationChannelSoundAttributes?
 ) {
-    // TODO: Revisit these strings
     data object Alarm : AppNotificationChannel(
         id = AlarmNotification.ALARM_NOTIFICATION_CHANNEL_ID,
         name = R.string.permission_channel_alarm_name,
