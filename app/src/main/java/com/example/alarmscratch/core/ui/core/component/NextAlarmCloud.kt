@@ -140,8 +140,8 @@ fun NextAlarmCloudContent(
         if (alarmCountdownState is AlarmCountdownState.Success) {
             AnimatedVisibility(
                 visibleState = visibleState,
-                enter = fadeIn(animationSpec = tween(durationMillis = 700)),
-                exit = fadeOut(animationSpec = tween(durationMillis = 700))
+                enter = fadeIn(animationSpec = tween(durationMillis = 400)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 400))
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,

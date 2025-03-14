@@ -1,5 +1,8 @@
 package com.example.alarmscratch.core.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -18,6 +21,12 @@ fun CoreNavHost(
     NavHost(
         navController = coreNavHostController,
         startDestination = Destination.AlarmListScreen,
+        enterTransition = {
+            fadeIn(animationSpec = tween(durationMillis = 400))
+        },
+        exitTransition = {
+            fadeOut(animationSpec = tween(durationMillis = 400))
+        },
         modifier = modifier
     ) {
         // Alarm List Screen

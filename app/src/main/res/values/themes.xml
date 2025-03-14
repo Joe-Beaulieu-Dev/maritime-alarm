@@ -2,7 +2,7 @@
 <resources>
 
     <!-- General App Theme -->
-    <style name="Theme.AlarmScratch" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.AlarmScratch" parent="android:Theme.Material.NoActionBar" />
 
     <!-- Splash Screen Theme -->
     <style name="Theme.AlarmScratch.SplashScreen" parent="Theme.SplashScreen">
