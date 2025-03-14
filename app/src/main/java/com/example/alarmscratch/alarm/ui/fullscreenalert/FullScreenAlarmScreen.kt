@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -143,7 +144,9 @@ fun AlarmData(
                 text = alarmName,
                 color = DarkGrey,
                 fontSize = 42.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1
             )
 
             // Day
@@ -409,6 +412,20 @@ private fun FullScreenAlarmScreen24HourPreview() {
             alarmName = consistentFutureAlarm.name,
             alarmExecutionDateTime = consistentFutureAlarm.dateTime,
             is24Hour = true,
+            snoozeAlarm = {},
+            dismissAlarm = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun FullScreenAlarmScreenLongNamePreview() {
+    AlarmScratchTheme {
+        FullScreenAlarmScreenContent(
+            alarmName = "1234567890123456789012345678901234567890",
+            alarmExecutionDateTime = consistentFutureAlarm.dateTime,
+            is24Hour = false,
             snoozeAlarm = {},
             dismissAlarm = {}
         )
