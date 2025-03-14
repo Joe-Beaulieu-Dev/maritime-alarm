@@ -1,5 +1,8 @@
 package com.example.alarmscratch.core.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,7 +22,13 @@ fun AlarmApp() {
     val navHostController = rememberNavController()
     NavHost(
         navController = navHostController,
-        startDestination = Destination.CoreScreen
+        startDestination = Destination.CoreScreen,
+        enterTransition = {
+            fadeIn(animationSpec = tween(durationMillis = 400))
+        },
+        exitTransition = {
+            fadeOut(animationSpec = tween(durationMillis = 400))
+        }
     ) {
         // Core Screen
         composable<Destination.CoreScreen> {
