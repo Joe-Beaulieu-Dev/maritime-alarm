@@ -14,7 +14,7 @@ sealed class AppNotificationChannel(
 ) {
     // TODO: Revisit these strings
     data object Alarm : AppNotificationChannel(
-        id = AlarmNotification.CHANNEL_ID_ALARM_NOTIFICATION,
+        id = AlarmNotification.ALARM_NOTIFICATION_CHANNEL_ID,
         name = R.string.permission_channel_alarm_name,
         importance = NotificationManager.IMPORTANCE_HIGH,
         description = R.string.permission_channel_alarm_desc,

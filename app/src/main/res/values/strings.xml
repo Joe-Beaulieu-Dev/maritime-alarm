@@ -151,7 +151,7 @@
         *****************
     -->
     <string name="permission_channel_alarm_name">Alarm</string>
-    <string name="permission_channel_alarm_desc">Used for Alarm notifications</string>
+    <string name="permission_channel_alarm_desc">Required for Alarms</string>
     <string name="permission_required">Permission Required</string>
     <string name="permission_request">Request</string>
     <string name="permission_open_system_settings">System Settings</string>
