@@ -16,7 +16,7 @@ import com.example.alarmscratch.settings.data.model.TimeDisplay
 
 object AlarmNotification {
 
-    const val CHANNEL_ID_ALARM_NOTIFICATION = "channel_id_alarm_notification"
+    const val ALARM_NOTIFICATION_CHANNEL_ID = "alarm_notification_channel"
 
     fun fullScreenNotification(
         context: Context,
@@ -31,7 +31,7 @@ object AlarmNotification {
                 alarmExecutionData.executionDateTime.to24HourNotificationDateTimeString()
         }
 
-        return Notification.Builder(context, CHANNEL_ID_ALARM_NOTIFICATION)
+        return Notification.Builder(context, ALARM_NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_alarm_24dp)
             .setContentTitle(alarmExecutionData.name)
             .setContentText(notificationDateTime)
