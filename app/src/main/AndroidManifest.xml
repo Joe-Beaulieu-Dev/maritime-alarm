@@ -58,6 +58,7 @@
             android:name=".alarm.ui.fullscreenalert.FullScreenAlarmActivity"
             android:directBootAware="true"
             android:excludeFromRecents="true"
+            android:exported="false"
             android:screenOrientation="portrait"
             android:showOnLockScreen="true"
             android:showWhenLocked="true"
@@ -69,7 +70,9 @@
             ************************
         -->
         <!-- Receive Alarm Actions -->
-        <receiver android:name=".alarm.alarmexecution.AlarmActionReceiver" />
+        <receiver
+            android:name=".alarm.alarmexecution.AlarmActionReceiver"
+            android:exported="false" />
         <!-- Reschedule Alarms on Device boot -->
         <receiver
             android:name=".alarm.alarmexecution.BootCompletedReceiver"
@@ -105,6 +108,7 @@
         -->
         <service
             android:name=".alarm.alarmexecution.AlarmNotificationService"
+            android:exported="false"
             android:foregroundServiceType="systemExempted" />
     </application>
 
