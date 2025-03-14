@@ -45,6 +45,7 @@
             android:name=".core.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AlarmScratch.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -57,6 +58,8 @@
             android:name=".alarm.ui.fullscreenalert.FullScreenAlarmActivity"
             android:directBootAware="true"
             android:excludeFromRecents="true"
+            android:exported="false"
+            android:screenOrientation="portrait"
             android:showOnLockScreen="true"
             android:showWhenLocked="true"
             android:taskAffinity="" />
@@ -67,7 +70,9 @@
             ************************
         -->
         <!-- Receive Alarm Actions -->
-        <receiver android:name=".alarm.alarmexecution.AlarmActionReceiver" />
+        <receiver
+            android:name=".alarm.alarmexecution.AlarmActionReceiver"
+            android:exported="false" />
         <!-- Reschedule Alarms on Device boot -->
         <receiver
             android:name=".alarm.alarmexecution.BootCompletedReceiver"
@@ -103,6 +108,7 @@
         -->
         <service
             android:name=".alarm.alarmexecution.AlarmNotificationService"
+            android:exported="false"
             android:foregroundServiceType="systemExempted" />
     </application>
 
