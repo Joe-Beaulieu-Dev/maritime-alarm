@@ -3,6 +3,7 @@ package com.example.alarmscratch.alarm.ui.alarmlist.component
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -99,46 +101,54 @@ fun AlarmCard(
                 .clickable { navigateToAlarmEditScreen(alarm.id) }
                 .padding(start = 12.dp)
         ) {
-            // Name, Time, Date, and Snooze Indicator
-            Column(
-                modifier = Modifier
-                    .padding(
-                        top = if (alarm.name == "") 0.dp else 12.dp,
-                        bottom = 12.dp
-                    )
+            // Name, Time, Date, Snooze Indicator, and Dropdown Menu
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                // Name
-                Text(
-                    text = alarm.name,
-                    fontWeight = if (alarm.enabled) {
-                        FontWeight.SemiBold
-                    } else {
-                        FontWeight.Medium
-                    }
-                )
-
-                // Time and Date
-                AlarmTimeAndDate(alarm = alarm, timeDisplay = timeDisplay)
-
-                // Snooze Indicator
-                if (alarm.isSnoozed()) {
+                // Name, Time, Date, and Snooze Indicator
+                Column(
+                    modifier = Modifier
+                        .padding(
+                            top = if (alarm.name == "") 0.dp else 12.dp,
+                            bottom = 12.dp
+                        )
+                        .weight(1f)
+                ) {
+                    // Name
                     Text(
-                        text = "${stringResource(id = R.string.snooze_indicator)} $snoozedTime",
-                        color = SkyBlue,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(start = 2.dp)
+                        text = alarm.name,
+                        fontWeight = if (alarm.enabled) {
+                            FontWeight.SemiBold
+                        } else {
+                            FontWeight.Medium
+                        },
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
                     )
-                }
-            }
 
-            // Dropdown Menu
-            AlarmCardDropdownMenu(
-                isExpanded = isDropdownExpanded,
-                onExpansionToggled = onDropdownExpansionToggled,
-                onAlarmDeleted = { onAlarmDeleted(context, alarm) },
-                modifier = Modifier.align(Alignment.TopEnd)
-            )
+                    // Time and Date
+                    AlarmTimeAndDate(alarm = alarm, timeDisplay = timeDisplay)
+
+                    // Snooze Indicator
+                    if (alarm.isSnoozed()) {
+                        Text(
+                            text = "${stringResource(id = R.string.snooze_indicator)} $snoozedTime",
+                            color = SkyBlue,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(start = 2.dp)
+                        )
+                    }
+                }
+
+                // Dropdown Menu
+                AlarmCardDropdownMenu(
+                    isExpanded = isDropdownExpanded,
+                    onExpansionToggled = onDropdownExpansionToggled,
+                    onAlarmDeleted = { onAlarmDeleted(context, alarm) }
+                )
+            }
 
             // Alarm Toggle
             Switch(
@@ -323,7 +333,7 @@ private fun AlarmCardRepeating24HourPreview() {
     backgroundColor = 0xFF0066CC
 )
 @Composable
-private fun SnoozedAlarmPreview() {
+private fun AlarmCardSnoozedPreview() {
     AlarmScratchTheme {
         AlarmCard(
             alarm = snoozedAlarm,
@@ -394,6 +404,24 @@ private fun AlarmCardCalendarPreview() {
     AlarmScratchTheme {
         AlarmCard(
             alarm = calendarAlarm,
+            timeDisplay = TimeDisplay.TwelveHour,
+            onAlarmToggled = { _, _ -> },
+            onAlarmDeleted = { _, _ -> },
+            navigateToAlarmEditScreen = {},
+            modifier = Modifier.padding(20.dp)
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF0066CC
+)
+@Composable
+private fun AlarmCardSnoozedLongNamePreview() {
+    AlarmScratchTheme {
+        AlarmCard(
+            alarm = snoozedAlarm.copy(name = "1234567890123456789012345678901234567890"),
             timeDisplay = TimeDisplay.TwelveHour,
             onAlarmToggled = { _, _ -> },
             onAlarmDeleted = { _, _ -> },
