@@ -8,7 +8,7 @@
     <style name="Theme.AlarmScratch.SplashScreen" parent="Theme.SplashScreen">
         <!-- UI -->
         <item name="windowSplashScreenBackground">@color/dark_volcanic_rock</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_screen</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
 
         <!-- Post Splash Screen theme switching -->
         <item name="postSplashScreenTheme">@style/Theme.AlarmScratch</item>
