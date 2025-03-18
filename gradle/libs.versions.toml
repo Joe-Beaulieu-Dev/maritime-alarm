@@ -4,8 +4,6 @@ kotlin = "1.9.22"
 coreKtx = "1.13.0"
 ksp = "1.9.22-1.0.17"
 room = "2.6.1"
-junit = "4.13.2"
-junitVersion = "1.1.5"
 preferencesDataStore = "1.1.1"
 espressoCore = "3.5.1"
 androidxLifecycle = "2.8.0"
@@ -15,11 +13,13 @@ materialIcons = "1.6.6"
 navigationCompose = "2.8.8"
 splashscreen = "1.0.1"
 serialization = "1.6.3"
+# Unit Tests
+junit = "4.13.2"
+junitVersion = "1.1.5"
+mockk = "1.13.17"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-preferences-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "preferencesDataStore" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
@@ -42,6 +42,10 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
+# Unit Tests
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+io-mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
