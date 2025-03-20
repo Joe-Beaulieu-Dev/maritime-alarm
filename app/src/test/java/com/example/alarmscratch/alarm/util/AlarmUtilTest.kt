@@ -6,7 +6,7 @@ import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.isDirty
 import com.example.alarmscratch.core.extension.isRepeating
-import com.example.alarmscratch.util.callPrivateFunction
+import com.example.alarmscratch.testutil.callPrivateFunction
 import io.mockk.Called
 import io.mockk.coEvery
 import io.mockk.coVerify

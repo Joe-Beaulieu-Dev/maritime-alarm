@@ -1,4 +1,4 @@
-package com.example.alarmscratch.util
+package com.example.alarmscratch.testutil
 
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.jvm.isAccessible
