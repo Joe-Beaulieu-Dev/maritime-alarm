@@ -1,10 +1,9 @@
-package com.example.alarmscratch.core
+package com.example.alarmscratch.core.util
 
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import com.example.alarmscratch.core.ui.permission.Permission
-import com.example.alarmscratch.core.util.PermissionUtil
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic

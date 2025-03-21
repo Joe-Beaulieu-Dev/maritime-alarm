@@ -1,10 +1,9 @@
-package com.example.alarmscratch.core
+package com.example.alarmscratch.core.util
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import com.example.alarmscratch.core.ui.notificationcheck.AppNotificationChannel
-import com.example.alarmscratch.core.util.NotificationChannelUtil
 import io.mockk.EqMatcher
 import io.mockk.every
 import io.mockk.mockk
