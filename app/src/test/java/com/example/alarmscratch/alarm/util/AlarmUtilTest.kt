@@ -30,8 +30,8 @@ class AlarmUtilTest {
     companion object {
         // File names
         private const val ALARM_EXTENSION_FUNCTION_FILE = "com.example.alarmscratch.core.extension._AlarmKt"
-        // Method names
-        private const val SORT_REPEATED_DAYS_BY_PREFERENCE_METHOD = "sortRepeatingDaysByPreference"
+        // Function names
+        private const val SORT_REPEATING_DAYS_BY_PREFERENCE_FUNCTION = "sortRepeatingDaysByPreference"
     }
 
     /*
@@ -173,7 +173,7 @@ class AlarmUtilTest {
         )
 
         val actualList = AlarmUtil.callPrivateFunction(
-            SORT_REPEATED_DAYS_BY_PREFERENCE_METHOD,
+            SORT_REPEATING_DAYS_BY_PREFERENCE_FUNCTION,
             DayOfWeek.WEDNESDAY,
             originalList
         )
