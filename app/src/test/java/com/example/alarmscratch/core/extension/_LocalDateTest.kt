@@ -13,11 +13,11 @@ class _LocalDateTest {
 
     @Test
     fun fromUtcMillis_ReturnsProperDate() {
-        val dateTime = LocalDateUtil.fromUtcMillis(1742947200000L)
+        val date = LocalDateUtil.fromUtcMillis(1742947200000L)
 
-        assertEquals(3, dateTime.monthValue)
-        assertEquals(26, dateTime.dayOfMonth)
-        assertEquals(2025, dateTime.year)
+        assertEquals(3, date.monthValue)
+        assertEquals(26, date.dayOfMonth)
+        assertEquals(2025, date.year)
     }
 
     /*
@@ -26,9 +26,9 @@ class _LocalDateTest {
 
     @Test
     fun toUtcMillis_ReturnsProperMilliseconds() {
-        val dateTime = LocalDate.of(2025, 3, 26)
+        val date = LocalDate.of(2025, 3, 26)
         val expectedMillis = 1742947200000L
 
-        assertEquals(expectedMillis, dateTime.toUtcMillis())
+        assertEquals(expectedMillis, date.toUtcMillis())
     }
 }
