@@ -19,6 +19,8 @@ serialization = "1.6.3"
 junit = "4.13.2"
 kotlinxCoroutinesTest = "1.9.0"
 mockk = "1.13.17"
+# Instrumented Tests
+mockkAndroid = "1.13.17"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -50,6 +52,8 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+# Instrumented Tests
+mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockkAndroid" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

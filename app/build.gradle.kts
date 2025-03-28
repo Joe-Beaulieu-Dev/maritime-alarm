@@ -48,6 +48,14 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            // Duplicate instances of META-INF/LICENSE.md and META-INF/LICENSE-notice.md must be merged.
+            // These duplicate instances occur when adding io.mockk:mockk-android to a project.
+            // This is due to mockk-android leaking its JUnit Jupiter dependencies to Users.
+            // An issue was created on the mockk GitHub page, a solution was proposed, and a contributor
+            // with merge permissions asked for a PR, but a fix is yet to be implemented.
+            // See: https://github.com/mockk/mockk/issues/1049#issuecomment-2491027160
+            merges += "META-INF/LICENSE.md"
+            merges += "META-INF/LICENSE-notice.md"
         }
     }
 }
@@ -92,10 +100,12 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
 
+    // Instrumented Tests
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.mockk.android)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
