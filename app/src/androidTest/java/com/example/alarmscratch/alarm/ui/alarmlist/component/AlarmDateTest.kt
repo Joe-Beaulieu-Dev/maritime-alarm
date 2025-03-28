@@ -1,8 +1,8 @@
 package com.example.alarmscratch.alarm.ui.alarmlist.component
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.alarmscratch.R
 import com.example.alarmscratch.alarm.data.model.Alarm
@@ -19,7 +19,7 @@ import java.time.LocalTime
 
 class AlarmDateTest {
 
-    @get: Rule
+    @get:Rule
     val composeTestRule = createComposeRule()
 
     // Alarm
@@ -50,7 +50,7 @@ class AlarmDateTest {
             }
         }
 
-        composeTestRule.onNode(hasText("S M T W T F S")).assertIsDisplayed()
+        composeTestRule.onNodeWithText("S M T W T F S").assertIsDisplayed()
     }
 
     @Test
@@ -63,7 +63,7 @@ class AlarmDateTest {
             }
         }
 
-        composeTestRule.onNode(hasText("S M T W T F S")).assertIsDisplayed()
+        composeTestRule.onNodeWithText("S M T W T F S").assertIsDisplayed()
     }
 
     @Test
@@ -81,7 +81,7 @@ class AlarmDateTest {
             }
         }
 
-        composeTestRule.onNode(hasText(context.getString(R.string.date_today))).assertIsDisplayed()
+        composeTestRule.onNodeWithText(context.getString(R.string.date_today)).assertIsDisplayed()
     }
 
     @Test
@@ -99,7 +99,7 @@ class AlarmDateTest {
             }
         }
 
-        composeTestRule.onNode(hasText(context.getString(R.string.date_tomorrow))).assertIsDisplayed()
+        composeTestRule.onNodeWithText(context.getString(R.string.date_tomorrow)).assertIsDisplayed()
     }
 
     @Test
@@ -120,7 +120,7 @@ class AlarmDateTest {
             }
         }
 
-        composeTestRule.onNode(hasText(expectedString)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(expectedString).assertIsDisplayed()
     }
 
     // The conditions for this test should not happen naturally, but it should
@@ -143,7 +143,7 @@ class AlarmDateTest {
             }
         }
 
-        composeTestRule.onNode(hasText(expectedString)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(expectedString).assertIsDisplayed()
     }
 
     @Test
@@ -158,6 +158,6 @@ class AlarmDateTest {
             }
         }
 
-        composeTestRule.onNode(hasText(expectedString)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(expectedString).assertIsDisplayed()
     }
 }
