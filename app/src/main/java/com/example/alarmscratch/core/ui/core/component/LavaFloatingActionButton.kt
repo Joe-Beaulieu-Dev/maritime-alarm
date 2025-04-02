@@ -30,9 +30,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.alarmscratch.R
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.ui.notificationcheck.AppNotificationChannel
 import com.example.alarmscratch.core.ui.notificationcheck.SimpleNotificationGate
@@ -184,7 +186,7 @@ fun LavaFloatingActionButtonContent(
             ) {
                 Icon(
                     imageVector = Icons.Default.AlarmAdd,
-                    contentDescription = null
+                    contentDescription = stringResource(id = R.string.lava_fab_create_alarm_cd)
                 )
             }
         }
