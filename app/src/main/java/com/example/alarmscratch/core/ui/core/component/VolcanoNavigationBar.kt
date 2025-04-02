@@ -63,7 +63,12 @@ fun VolcanoNavigationBar(
             NavigationBarItem(
                 selected = currentCoreDestination == navComponent.destination,
                 onClick = { onDestinationChange(navComponent.destination) },
-                icon = { Icon(imageVector = navComponent.navIcon, contentDescription = null) },
+                icon = {
+                    Icon(
+                        imageVector = navComponent.navIcon,
+                        contentDescription = stringResource(id = navComponent.contentDescriptionRes)
+                    )
+                },
                 label = { Text(text = stringResource(id = navComponent.navNameRes)) },
                 colors = navColors
             )
