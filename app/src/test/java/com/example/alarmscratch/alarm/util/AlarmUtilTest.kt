@@ -1,20 +1,10 @@
 package com.example.alarmscratch.alarm.util
 
-import com.example.alarmscratch.alarm.data.model.Alarm
 import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
-import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
-import com.example.alarmscratch.core.extension.isDirty
-import com.example.alarmscratch.core.extension.isRepeating
 import com.example.alarmscratch.testutil.callPrivateFunction
-import io.mockk.Called
-import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.every
-import io.mockk.mockk
 import io.mockk.mockkObject
-import io.mockk.mockkStatic
-import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.DayOfWeek
@@ -23,13 +13,7 @@ import java.time.temporal.TemporalAdjusters
 
 class AlarmUtilTest {
 
-    // Alarm
-    private val ringtoneUri = "ringtoneUri"
-    private val snoozeDuration = 10
-
     companion object {
-        // File names
-        private const val ALARM_EXTENSION_FUNCTION_FILE = "com.example.alarmscratch.core.extension._AlarmKt"
         // Function names
         private const val SORT_REPEATING_DAYS_BY_PREFERENCE_FUNCTION = "sortRepeatingDaysByPreference"
     }
@@ -179,93 +163,6 @@ class AlarmUtilTest {
         )
 
         assertEquals(expectedList, actualList)
-    }
-
-    /*
-     * cleanAlarm
-     */
-
-    @Test
-    fun cleanAlarm_Cleans_RepeatingAlarm() = runTest {
-        val dateTime = nextWeekOnDayAtNoon(DayOfWeek.WEDNESDAY)
-        val expectedDateTime = dateTime.plusDays(7)
-        val alarm = Alarm(
-            enabled = true,
-            dateTime = dateTime,
-            weeklyRepeater = WeeklyRepeater().withDay(WeeklyRepeater.Day.WEDNESDAY),
-            ringtoneUri = ringtoneUri,
-            snoozeDateTime = dateTime.plusMinutes(snoozeDuration.toLong()),
-            snoozeDuration = snoozeDuration
-        )
-        val expectedAlarm = alarm.copy(
-            dateTime = expectedDateTime,
-            snoozeDateTime = null
-        )
-
-        val alarmRepository = mockk<AlarmRepository> { coEvery { updateAlarm(any()) } returns Unit }
-        mockkStatic(ALARM_EXTENSION_FUNCTION_FILE) {
-            every { (Alarm::isDirty)(any()) } returns true
-            every { (Alarm::isRepeating)(any()) } returns true
-            mockkObject(AlarmUtil) {
-                every { AlarmUtil.nextRepeatingDateTime(any(), any()) } returns expectedDateTime
-                AlarmUtil.cleanAlarm(alarm, alarmRepository)
-            }
-        }
-
-        coVerify {
-            alarmRepository.updateAlarm(expectedAlarm)
-        }
-    }
-
-    @Test
-    fun cleanAlarm_Cleans_NonRepeatingAlarm() = runTest {
-        val dateTime = nextWeekOnDayAtNoon(DayOfWeek.WEDNESDAY)
-        val alarm = Alarm(
-            enabled = true,
-            dateTime = dateTime,
-            weeklyRepeater = WeeklyRepeater(),
-            ringtoneUri = ringtoneUri,
-            snoozeDateTime = dateTime.plusMinutes(snoozeDuration.toLong()),
-            snoozeDuration = snoozeDuration
-        )
-        val expectedAlarm = alarm.copy(
-            enabled = false,
-            snoozeDateTime = null
-        )
-
-        val alarmRepository = mockk<AlarmRepository> { coEvery { updateAlarm(any()) } returns Unit }
-        mockkStatic(ALARM_EXTENSION_FUNCTION_FILE) {
-            every { (Alarm::isDirty)(any()) } returns true
-            every { (Alarm::isRepeating)(any()) } returns false
-            AlarmUtil.cleanAlarm(alarm, alarmRepository)
-        }
-
-        coVerify {
-            alarmRepository.updateAlarm(expectedAlarm)
-        }
-    }
-
-    @Test
-    fun cleanAlarm_DoesNothing_IfAlarmIsAlreadyClean() = runTest {
-        val dateTime = nextWeekOnDayAtNoon(DayOfWeek.WEDNESDAY)
-        val alarm = Alarm(
-            enabled = true,
-            dateTime = dateTime,
-            weeklyRepeater = WeeklyRepeater(),
-            ringtoneUri = ringtoneUri,
-            snoozeDateTime = dateTime.plusMinutes(snoozeDuration.toLong()),
-            snoozeDuration = snoozeDuration
-        )
-
-        val alarmRepository = mockk<AlarmRepository>()
-        mockkStatic(ALARM_EXTENSION_FUNCTION_FILE) {
-            every { (Alarm::isDirty)(any()) } returns false
-            AlarmUtil.cleanAlarm(alarm, alarmRepository)
-        }
-
-        coVerify {
-            alarmRepository wasNot Called
-        }
     }
 
     /*

@@ -94,6 +94,14 @@
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />
             </intent-filter>
         </receiver>
+        <!-- SCHEDULE_EXACT_ALARM Permission Granted -->
+        <receiver
+            android:name=".alarm.alarmexecution.ScheduleExactAlarmPermissionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
 
         <!--
             **************

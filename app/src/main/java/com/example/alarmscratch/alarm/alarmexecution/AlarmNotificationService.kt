@@ -13,12 +13,9 @@ import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmActivity
 import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmButton
 import com.example.alarmscratch.alarm.ui.notification.AlarmNotification
-import com.example.alarmscratch.alarm.util.AlarmUtil
 import com.example.alarmscratch.core.constant.actionPackageName
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.getSerializableExtraSafe
-import com.example.alarmscratch.core.extension.isRepeating
-import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.core.ringtone.RingtonePlayerManager
 import com.example.alarmscratch.core.ui.notificationcheck.AppNotificationChannel
 import com.example.alarmscratch.core.ui.permission.Permission
@@ -128,7 +125,7 @@ class AlarmNotificationService : Service() {
         } else {
             val alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(this).alarmDao())
             val alarm = alarmRepository.getAlarm(alarmExecutionData.id)
-            disableOrRescheduleAlarm(alarmRepository, alarm)
+            AlarmScheduler.disableOrRescheduleAlarm(applicationContext, alarmRepository, alarm)
         }
     }
 
@@ -179,28 +176,7 @@ class AlarmNotificationService : Service() {
             // Dismiss Full Screen Notification
             finishFullScreenAlarmFlow()
             // Disable/reschedule Alarm
-            disableOrRescheduleAlarm(alarmRepo, notificationAlarm)
-        }
-    }
-
-    private suspend fun disableOrRescheduleAlarm(alarmRepository: AlarmRepository, alarm: Alarm) {
-        // Dismiss/reschedule Alarm
-        if (alarm.isRepeating()) {
-            // Calculate the next time the repeating Alarm should execute
-            val nextDateTime = AlarmUtil.nextRepeatingDateTime(
-                alarm.dateTime,
-                alarm.weeklyRepeater
-            )
-            // Dismiss Alarm and update with nextDateTime
-            alarmRepository.dismissAndRescheduleRepeating(alarm.id, nextDateTime)
-            // Reschedule Alarm with nextDateTime
-            AlarmScheduler.scheduleAlarm(
-                applicationContext,
-                alarm.toAlarmExecutionData().copy(executionDateTime = nextDateTime)
-            )
-        } else {
-            // Dismiss non-repeating Alarm
-            alarmRepository.dismissAlarm(alarm.id)
+            AlarmScheduler.disableOrRescheduleAlarm(applicationContext, alarmRepo, notificationAlarm)
         }
     }
 
