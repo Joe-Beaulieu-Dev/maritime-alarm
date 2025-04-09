@@ -9,11 +9,15 @@ import com.example.alarmscratch.core.ui.permission.Permission
 object PermissionUtil {
 
     fun isPermissionGranted(context: Context, permission: Permission): Boolean =
-        if (permission is Permission.ScheduleExactAlarm) {
-            // SCHEDULE_EXACT_ALARM is a Special Permission and therefore requires usage
-            // of its own unique permission check function. If you call ContextCompat.checkSelPermission()
-            // with SCHEDULE_EXACT_ALARM it will always return true.
-            context.getSystemService(AlarmManager::class.java).canScheduleExactAlarms()
+        if (permission.permissionType == Permission.PermissionType.SPECIAL) {
+            // Special Permissions require usage of their own unique permission check functions.
+            // Calling ContextCompat.checkSelPermission() on a Special Permission will always return true.
+            when (permission) {
+                is Permission.ScheduleExactAlarm ->
+                    context.getSystemService(AlarmManager::class.java).canScheduleExactAlarms()
+                else ->
+                    false
+            }
         } else {
             ContextCompat.checkSelfPermission(
                 context,

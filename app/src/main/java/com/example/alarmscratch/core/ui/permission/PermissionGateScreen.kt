@@ -53,13 +53,12 @@ fun PermissionGateScreen(
 
     // Permission logic
     val context = LocalContext.current
-    // This is always false for Special Permissions, such as Permission.ScheduleExactAlarm
+    // This always returns false for Special Permissions
     val shouldShowRequestPermissionRationale = (context as? Activity)
         ?.shouldShowRequestPermissionRationale(permission.permissionString)
         ?: false
-    // The Permission Request System Dialog will never display for Special Permissions,
-    // such as Permission.ScheduleExactAlarm. Always launch the System Settings for
-    // Special Permissions instead.
+    // The Permission Request System Dialog will never display for Special Permissions.
+    // Always launch the System Settings for Special Permissions instead.
     val permissionRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -74,7 +73,7 @@ fun PermissionGateScreen(
     // Initial query. Must auto-call because of the nature of permissions on Android.
     LaunchedEffect(key1 = attemptedToAskForPermission) {
         if (!attemptedToAskForPermission) {
-            if (permission is Permission.ScheduleExactAlarm) {
+            if (permission.permissionType == Permission.PermissionType.SPECIAL) {
                 // The Permission Request System Dialog will never display for Special Permissions,
                 // therefore just query the permission status and invoke the ViewModel's onPermissionResult()
                 // function to progress the permission check logic.
@@ -105,32 +104,8 @@ fun PermissionGateScreen(
             val systemDialogBodyText = AnnotatedString.fromHtml(stringResource(id = permission.systemDialogBodyRes))
             val systemSettingsBodyText = AnnotatedString.fromHtml(stringResource(id = permission.systemSettingsBodyRes))
 
-            // The User denied the permission only once, therefore we can still display
-            // the Permission Request System Dialog. Note: Activity.shouldShowRequestPermissionRationale()
-            // will always return false for Special Permissions, such as Permission.ScheduleExactAlarm.
-            if (shouldShowRequestPermissionRationale) {
-                PermissionGateScreenContent(
-                    bodyText = systemDialogBodyText,
-                    requestButtonTextRes = R.string.permission_request,
-                    onRequest = { permissionRequestLauncher.launch(permission.permissionString) },
-                    modifier = modifier
-                )
-            } else {
-                // Two scenarios:
-                // 1 - Normal Runtime Permission
-                // The User denied the permission twice. Therefore the System will never show
-                // the Permission Request System Dialog again. Therefore we must give the User an option
-                // to manually grant the permission, since at this point the System will never show the
-                // Permission Request System Dialog ever again. Explain why the permission is needed, inform
-                // the User that they can manually accept the permission in the System Settings, and display
-                // a Button that leads to the System Settings, which they can decide if they want to press.
-                //
-                // 2 - Special Permission
-                // Special Permissions will always follow this route since Activity.shouldShowRequestPermissionRationale()
-                // will always return false for Special Permissions. Furthermore, the Permission Request System Dialog
-                // will never display when requested for a Special Permission. Special Permissions each have their
-                // own unique permission status check functions, and furthermore, will always require interaction
-                // with the System Settings for the User to manually grant.
+            if (permission.permissionType == Permission.PermissionType.SPECIAL) {
+                // Special Permissions can only be manually granted via the System Settings
                 PermissionGateScreenContent(
                     bodyText = systemSettingsBodyText,
                     requestButtonTextRes = R.string.permission_open_system_settings,
@@ -144,6 +119,37 @@ fun PermissionGateScreen(
                     },
                     modifier = modifier
                 )
+            } else {
+                // The User denied the permission only once, therefore we can
+                // still display the Permission Request System Dialog.
+                if (shouldShowRequestPermissionRationale) {
+                    PermissionGateScreenContent(
+                        bodyText = systemDialogBodyText,
+                        requestButtonTextRes = R.string.permission_request,
+                        onRequest = { permissionRequestLauncher.launch(permission.permissionString) },
+                        modifier = modifier
+                    )
+                } else {
+                    // The User denied the permission twice. Therefore the System will never show
+                    // the Permission Request System Dialog again. Therefore we must give the User an option
+                    // to manually grant the permission, since at this point the System will never show the
+                    // Permission Request System Dialog ever again. Explain why the permission is needed, inform
+                    // the User that they can manually accept the permission in the System Settings, and display
+                    // a Button that leads to the System Settings, which they can decide if they want to press.
+                    PermissionGateScreenContent(
+                        bodyText = systemSettingsBodyText,
+                        requestButtonTextRes = R.string.permission_open_system_settings,
+                        onRequest = {
+                            systemSettingsLauncher.launch(
+                                Intent(
+                                    permission.systemSettingsAction,
+                                    Uri.fromParts(UriScheme.PACKAGE, context.packageName, null)
+                                )
+                            )
+                        },
+                        modifier = modifier
+                    )
+                }
             }
         } else {
             // Permission granted, show gated screen

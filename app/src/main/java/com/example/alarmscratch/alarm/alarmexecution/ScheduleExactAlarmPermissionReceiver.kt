@@ -26,7 +26,7 @@ class ScheduleExactAlarmPermissionReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context != null && intent != null) {
-            when(intent.action) {
+            when (intent.action) {
                 // In spite of what the name may suggest, this action is only sent
                 // by the system when the permission changes from denied to granted
                 AlarmManager.ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED ->
