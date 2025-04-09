@@ -59,7 +59,10 @@ fun AlarmListScreen(
         )
     }
 
-    // POST_NOTIFICATIONS permission requires API 33 (TIRAMISU)
+    // POST_NOTIFICATIONS permission was introduced in API 33 (TIRAMISU).
+    // SCHEDULE_EXACT_ALARM permission is only required for APIs < 33 because
+    // alarm apps can instead use USE_EXACT_ALARM on API 33+ which cannot be revoked.
+    // Therefore, we only need to ask for one or the other, never both.
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         PermissionGateScreen(
             permission = Permission.PostNotifications,
@@ -67,7 +70,11 @@ fun AlarmListScreen(
             modifier = Modifier.fillMaxWidth()
         )
     } else {
-        notificationGatedAlarmList()
+        PermissionGateScreen(
+            permission = Permission.ScheduleExactAlarm,
+            gatedScreen = notificationGatedAlarmList,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
