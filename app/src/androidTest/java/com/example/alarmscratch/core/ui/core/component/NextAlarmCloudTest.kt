@@ -1,5 +1,6 @@
 package com.example.alarmscratch.core.ui.core.component
 
+import android.Manifest
 import android.content.BroadcastReceiver
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.material.icons.Icons
@@ -13,6 +14,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.example.alarmscratch.R
 import com.example.alarmscratch.core.navigation.Destination
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
+import com.example.alarmscratch.testutil.PermissionUtil
 import io.mockk.mockk
 import org.junit.Rule
 import org.junit.Test
@@ -27,10 +29,11 @@ class NextAlarmCloudTest {
      */
 
     @Test
-    fun nextAlarmCloudContent_DisplaysAlarmCountdownText_WhenOnAlarmListScreen_AndHasActiveAlarm() {
+    fun nextAlarmCloudContent_DisplaysAlarmCountdownText_WhenOnAlarmListScreen_AndHasActiveAlarm_AndPermissionsAlreadyGranted() {
         val countdownText = "countdownText"
         val alarmCountdownState = AlarmCountdownState.Success(Icons.Default.Alarm, countdownText)
 
+        PermissionUtil.grantPermissionAuto(Manifest.permission.POST_NOTIFICATIONS)
         composeTestRule.setContent {
             AlarmScratchTheme {
                 NextAlarmCloudContent(
@@ -46,11 +49,12 @@ class NextAlarmCloudTest {
     }
 
     @Test
-    fun nextAlarmCloudContent_DisplaysNoActiveAlarmsText_WhenOnAlarmListScreen_AndHasNoActiveAlarms() {
+    fun nextAlarmCloudContent_DisplaysNoActiveAlarmsText_WhenOnAlarmListScreen_AndHasNoActiveAlarms_AndPermissionsAlreadyGranted() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val countdownText = context.getString(R.string.no_active_alarms)
         val alarmCountdownState = AlarmCountdownState.Success(Icons.Default.AlarmOff, countdownText)
 
+        PermissionUtil.grantPermissionAuto(Manifest.permission.POST_NOTIFICATIONS)
         composeTestRule.setContent {
             AlarmScratchTheme {
                 NextAlarmCloudContent(
@@ -66,10 +70,30 @@ class NextAlarmCloudTest {
     }
 
     @Test
-    fun nextAlarmCloudContent_DisplaysNothing_WhenNotOnAlarmListScreen() {
+    fun nextAlarmCloudContent_DisplaysNothing_WhenOnAlarmListScreen_AndHasActiveAlarm_WhenNotificationPermissionDenied() {
         val countdownText = "countdownText"
         val alarmCountdownState = AlarmCountdownState.Success(Icons.Default.Alarm, countdownText)
 
+        composeTestRule.setContent {
+            AlarmScratchTheme {
+                NextAlarmCloudContent(
+                    currentCoreDestination = Destination.AlarmListScreen,
+                    alarmCountdownState = alarmCountdownState,
+                    visibleState = MutableTransitionState(initialState = true),
+                    timeChangeReceiver = mockk<BroadcastReceiver>(relaxed = true)
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithText(countdownText).assertIsNotDisplayed()
+    }
+
+    @Test
+    fun nextAlarmCloudContent_DisplaysNothing_WhenNotOnAlarmListScreen_AndPermissionsAlreadyGranted() {
+        val countdownText = "countdownText"
+        val alarmCountdownState = AlarmCountdownState.Success(Icons.Default.Alarm, countdownText)
+
+        PermissionUtil.grantPermissionAuto(Manifest.permission.POST_NOTIFICATIONS)
         composeTestRule.setContent {
             AlarmScratchTheme {
                 NextAlarmCloudContent(
