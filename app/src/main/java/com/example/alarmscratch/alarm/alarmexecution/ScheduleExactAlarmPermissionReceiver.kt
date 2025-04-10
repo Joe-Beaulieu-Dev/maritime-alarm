@@ -30,17 +30,18 @@ class ScheduleExactAlarmPermissionReceiver : BroadcastReceiver() {
                 // In spite of what the name may suggest, this action is only sent
                 // by the system when the permission changes from denied to granted
                 AlarmManager.ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED ->
-                    cleanAndRescheduleAlarms(context)
+                    cleanAndRescheduleAlarmsIfPossible(context)
             }
         }
     }
 
     /**
-     * Clean and reschedule Alarms as long as the Device has the SCHEDULE_EXACT_ALARM permission granted
+     * Clean and reschedule Alarms as long as the Device has the SCHEDULE_EXACT_ALARM permission granted.
+     * If the Device does not have the SCHEDULE_EXACT_ALARM permission granted, then this method is a no-op.
      *
      * @param context Context used to perform various functions related to the System
      */
-    private fun cleanAndRescheduleAlarms(context: Context) {
+    private fun cleanAndRescheduleAlarmsIfPossible(context: Context) {
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         if (alarmManager.canScheduleExactAlarms()) {
             val alarmRepository = AlarmRepository(
