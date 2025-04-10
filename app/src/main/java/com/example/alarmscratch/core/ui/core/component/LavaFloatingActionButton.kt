@@ -77,7 +77,7 @@ fun LavaFloatingActionButton(
         MutableTransitionState(initialState = initialState).apply { targetState = onScreenWithFab }
     }
 
-    val floatingActionButtonContent: @Composable () -> Unit = {
+    val lavaFloatingActionButton: @Composable () -> Unit = {
         AnimatedVisibility(
             visibleState = visibleState,
             enter = slideInVertically(
@@ -100,18 +100,24 @@ fun LavaFloatingActionButton(
     val notificationGatedFab: @Composable () -> Unit = {
         SimpleNotificationGate(
             appNotificationChannel = AppNotificationChannel.Alarm,
-            gatedComposable = floatingActionButtonContent
+            gatedComposable = lavaFloatingActionButton
         )
     }
 
-    // POST_NOTIFICATIONS permission requires API 33 (TIRAMISU)
+    // POST_NOTIFICATIONS permission was introduced in API 33 (TIRAMISU).
+    // SCHEDULE_EXACT_ALARM permission is only required for APIs < 33 because
+    // alarm apps can instead use USE_EXACT_ALARM on API 33+ which cannot be revoked.
+    // Therefore, we only need to ask for one or the other, never both.
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         SimplePermissionGate(
             permission = Permission.PostNotifications,
             gatedComposable = notificationGatedFab
         )
     } else {
-        notificationGatedFab()
+        SimplePermissionGate(
+            permission = Permission.ScheduleExactAlarm,
+            gatedComposable = notificationGatedFab
+        )
     }
 }
 

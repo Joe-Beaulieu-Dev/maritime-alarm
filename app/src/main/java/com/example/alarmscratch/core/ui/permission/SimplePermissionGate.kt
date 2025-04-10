@@ -25,7 +25,7 @@ fun SimplePermissionGate(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val checkForPermission: () -> Unit = {
-        simplePermissionGateViewModel.checkForPermission(context, permission.permissionString)
+        simplePermissionGateViewModel.checkForPermission(context, permission)
     }
 
     // Manually refresh the state every time the LifecycleOwner enters the RESUMED state to ensure
