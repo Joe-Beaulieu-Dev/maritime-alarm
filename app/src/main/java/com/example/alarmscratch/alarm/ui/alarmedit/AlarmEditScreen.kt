@@ -116,7 +116,10 @@ fun AlarmEditScreen(
 
     // TODO: This permission gate is a stopgap. In the future I want to pop a Dialog when the save button
     //  is pressed if a permission is missing, rather than replacing the entire screen like below.
-    // POST_NOTIFICATIONS permission requires API 33 (TIRAMISU)
+    // POST_NOTIFICATIONS permission was introduced in API 33 (TIRAMISU).
+    // SCHEDULE_EXACT_ALARM permission is only required for APIs < 33 because
+    // alarm apps can instead use USE_EXACT_ALARM on API 33+ which cannot be revoked.
+    // Therefore, we only need to ask for one or the other, never both.
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         // Configure Status Bar
         StatusBarUtil.setDarkStatusBar()
@@ -131,7 +134,18 @@ fun AlarmEditScreen(
             )
         }
     } else {
-        notificationGatedAlarmEdit()
+        // Configure Status Bar
+        StatusBarUtil.setDarkStatusBar()
+
+        Surface(color = MaterialTheme.colorScheme.surfaceVariant) {
+            PermissionGateScreen(
+                permission = Permission.ScheduleExactAlarm,
+                gatedScreen = notificationGatedAlarmEdit,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .windowInsetsPadding(WindowInsets.systemBars)
+            )
+        }
     }
 }
 

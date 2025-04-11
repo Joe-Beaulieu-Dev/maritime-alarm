@@ -3,20 +3,15 @@ package com.example.alarmscratch.alarm.alarmexecution
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.example.alarmscratch.R
-import com.example.alarmscratch.alarm.data.model.AlarmExecutionData
-import com.example.alarmscratch.alarm.data.model.WeeklyRepeater
 import com.example.alarmscratch.alarm.data.repository.AlarmDatabase
 import com.example.alarmscratch.alarm.data.repository.AlarmRepository
 import com.example.alarmscratch.alarm.ui.fullscreenalert.FullScreenAlarmButton
-import com.example.alarmscratch.alarm.util.AlarmUtil
 import com.example.alarmscratch.core.constant.actionPackageName
 import com.example.alarmscratch.core.constant.extraPackageName
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.alarmApplication
 import com.example.alarmscratch.core.extension.doAsync
 import com.example.alarmscratch.core.extension.getSerializableExtraSafe
-import com.example.alarmscratch.core.extension.toAlarmExecutionData
 import com.example.alarmscratch.settings.data.repository.AlarmDefaultsRepository
 import kotlinx.coroutines.Dispatchers
 import java.time.LocalDateTime
@@ -105,24 +100,13 @@ class AlarmActionReceiver : BroadcastReceiver() {
 
         // Alarm data
         val id = intent.getIntExtra(EXTRA_ALARM_ID, ALARM_NO_ID)
-        val snoozeDateTime = LocalDateTimeUtil.nowTruncated().plusMinutes(snoozeDuration.toLong())
-        val alarmExecutionData = AlarmExecutionData(
-            id = id,
-            name = intent.getStringExtra(EXTRA_ALARM_NAME) ?: context.getString(R.string.default_alarm_name),
-            executionDateTime = snoozeDateTime,
-            encodedRepeatingDays = intent.getIntExtra(EXTRA_REPEATING_DAYS, ALARM_MISSING_REPEATING_DAYS),
-            ringtoneUri = intent.getStringExtra(EXTRA_RINGTONE_URI) ?: ALARM_NO_RINGTONE_URI,
-            isVibrationEnabled = intent.getBooleanExtra(EXTRA_IS_VIBRATION_ENABLED, ALARM_NO_IS_VIBRATION_ENABLED),
-            snoozeDuration = snoozeDuration
-        )
 
         // Update Alarm Database and reschedule Alarm
         doAsync(context.alarmApplication.applicationScope, Dispatchers.IO) {
             // Update Alarm
             val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
-            alarmRepo.updateSnooze(id, snoozeDateTime)
-            // Reschedule Alarm
-            AlarmScheduler.scheduleAlarm(context.applicationContext, alarmExecutionData)
+            val alarm = alarmRepo.getAlarm(id)
+            AlarmScheduler.snoozeAndRescheduleAlarm(context.applicationContext, alarmRepo, alarm)
         }
     }
 
@@ -137,34 +121,17 @@ class AlarmActionReceiver : BroadcastReceiver() {
 
         // Alarm data
         val id = intent.getIntExtra(EXTRA_ALARM_ID, ALARM_NO_ID)
-        val encodedRepeatingDays = intent.getIntExtra(EXTRA_REPEATING_DAYS, ALARM_MISSING_REPEATING_DAYS)
 
         // Dismiss Alarm. Also reschedule if it's a repeating Alarm.
         doAsync(context.alarmApplication.applicationScope, Dispatchers.IO) {
-            val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
-            if (id != ALARM_NO_ID && encodedRepeatingDays != ALARM_MISSING_REPEATING_DAYS) {
-                if (encodedRepeatingDays > 0) {
-                    // Must pull the original LocalDateTime from the database. This is because the one
-                    // passed in the Intent just represents when the Alarm was supposed to execute,
-                    // which may be a snoozed time that was modified from the original.
-                    // Here we need the original, unmodified LocalDateTime for rescheduling.
-                    val alarm = alarmRepo.getAlarm(id)
-                    val nextDateTime = AlarmUtil.nextRepeatingDateTime(alarm.dateTime, WeeklyRepeater(encodedRepeatingDays))
-                    alarmRepo.dismissAndRescheduleRepeating(id, nextDateTime)
-                    // Reschedule Alarm
-                    AlarmScheduler.scheduleAlarm(
-                        context.applicationContext,
-                        alarm.toAlarmExecutionData().copy(executionDateTime = nextDateTime)
-                    )
-                } else {
-                    alarmRepo.dismissAlarm(id)
-                }
-            } else if (id != ALARM_NO_ID) {
-                // Unlikely edge case. Something went wrong involving the Intent.
-                // The Alarm Notification will already be dismissed by this point,
-                // so the only recovery option is to just dismiss the Alarm in the
-                // database if possible.
-                alarmRepo.dismissAlarm(id)
+            if (id != ALARM_NO_ID) {
+                // Must pull the original LocalDateTime from the database. This is because the one
+                // passed in the Intent just represents when the Alarm was supposed to execute,
+                // which may be a snoozed time that was modified from the original.
+                // Here we need the original, unmodified LocalDateTime for rescheduling.
+                val alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
+                val alarm = alarmRepository.getAlarm(id)
+                AlarmScheduler.disableOrRescheduleAlarm(context.applicationContext, alarmRepository, alarm)
             }
         }
     }

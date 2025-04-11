@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
@@ -48,6 +49,8 @@ import com.example.alarmscratch.alarm.data.preview.snoozedAlarm
 import com.example.alarmscratch.core.extension.LocalDateTimeUtil
 import com.example.alarmscratch.core.extension.toCountdownString
 import com.example.alarmscratch.core.navigation.Destination
+import com.example.alarmscratch.core.ui.permission.Permission
+import com.example.alarmscratch.core.ui.permission.SimplePermissionGate
 import com.example.alarmscratch.core.ui.theme.AlarmScratchTheme
 import com.example.alarmscratch.core.ui.theme.DarkGrey
 
@@ -127,6 +130,13 @@ fun NextAlarmCloudContent(
         }
     }
 
+    val notificationGatedIconAndText: @Composable () -> Unit = {
+        AlarmIconAndText(
+            alarmCountdownState = alarmCountdownState,
+            visibleState = visibleState
+        )
+    }
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
@@ -135,35 +145,57 @@ fun NextAlarmCloudContent(
             .clip(shape = CircleShape)
             .background(color = Color.White)
     ) {
-        // Alarm Icon and Countdown Text
-        // This Animation is to match the NavHost's
-        if (alarmCountdownState is AlarmCountdownState.Success) {
-            AnimatedVisibility(
-                visibleState = visibleState,
-                enter = fadeIn(animationSpec = tween(durationMillis = 400)),
-                exit = fadeOut(animationSpec = tween(durationMillis = 400))
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    // Alarm Icon
-                    Icon(
-                        imageVector = alarmCountdownState.icon,
-                        contentDescription = null,
-                        tint = DarkGrey,
-                        modifier = Modifier.padding(end = 4.dp, bottom = 2.dp)
-                    )
+        // POST_NOTIFICATIONS permission was introduced in API 33 (TIRAMISU).
+        // SCHEDULE_EXACT_ALARM permission is only required for APIs < 33 because
+        // alarm apps can instead use USE_EXACT_ALARM on API 33+ which cannot be revoked.
+        // Therefore, we only need to ask for one or the other, never both.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            SimplePermissionGate(
+                permission = Permission.PostNotifications,
+                gatedComposable = notificationGatedIconAndText
+            )
+        } else {
+            SimplePermissionGate(
+                permission = Permission.ScheduleExactAlarm,
+                gatedComposable = notificationGatedIconAndText
+            )
+        }
+    }
+}
 
-                    // Countdown Text
-                    Text(
-                        text = alarmCountdownState.countdownText,
-                        color = DarkGrey,
-                        fontSize = getCountdownTextFontSize(alarmCountdownState.countdownText),
-                        fontWeight = FontWeight.SemiBold,
-                        lineHeight = getCountdownTextLineHeight(alarmCountdownState.countdownText)
-                    )
-                }
+@Composable
+private fun AlarmIconAndText(
+    alarmCountdownState: AlarmCountdownState,
+    visibleState: MutableTransitionState<Boolean>
+) {
+    // Alarm Icon and Countdown Text
+    // This Animation is to match the NavHost's
+    if (alarmCountdownState is AlarmCountdownState.Success) {
+        AnimatedVisibility(
+            visibleState = visibleState,
+            enter = fadeIn(animationSpec = tween(durationMillis = 400)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 400))
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                // Alarm Icon
+                Icon(
+                    imageVector = alarmCountdownState.icon,
+                    contentDescription = null,
+                    tint = DarkGrey,
+                    modifier = Modifier.padding(end = 4.dp, bottom = 2.dp)
+                )
+
+                // Countdown Text
+                Text(
+                    text = alarmCountdownState.countdownText,
+                    color = DarkGrey,
+                    fontSize = getCountdownTextFontSize(alarmCountdownState.countdownText),
+                    fontWeight = FontWeight.SemiBold,
+                    lineHeight = getCountdownTextLineHeight(alarmCountdownState.countdownText)
+                )
             }
         }
     }

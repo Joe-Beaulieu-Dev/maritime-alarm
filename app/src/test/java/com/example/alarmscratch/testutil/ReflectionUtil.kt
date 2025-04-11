@@ -1,5 +1,6 @@
 package com.example.alarmscratch.testutil
 
+import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.kotlinFunction
@@ -8,6 +9,15 @@ inline fun <reified T : Any> T.callPrivateFunction(name: String, vararg args: An
     val function = T::class.declaredMemberFunctions.firstOrNull { it.name == name }
     function?.isAccessible = true
     val ret = function?.call(this, *args)
+    function?.isAccessible = false
+
+    return ret
+}
+
+suspend inline fun <reified T : Any> T.callPrivateSuspendFunction(name: String, vararg args: Any): Any? {
+    val function = T::class.declaredMemberFunctions.firstOrNull { it.name == name }
+    function?.isAccessible = true
+    val ret = function?.callSuspend(this, *args)
     function?.isAccessible = false
 
     return ret

@@ -173,6 +173,13 @@
         To do so, press the \"System Settings\" button below, then navigate to \"Permissions\"
         &gt; \"Notifications\" and enable \"All AlarmApp Notifications\". Then on the same screen,
         ensure that the \"Alarm\" Notification is also enabled.</string>
+    <string name="permission_missing_alarm_system_settings">The Alarms &amp; Reminders Permission is
+        required to use Alarms. Without it you will not be able to create or edit Alarms,
+        &lt;i&gt;&lt;u&gt;and any Alarms that you previously created will not go off&lt;/u&gt;&lt;/i&gt;.
+        &lt;br&gt;&lt;br&gt;
+        To use Alarms, you must manually accept the Permission in the System Settings.
+        To do so, press the \"System Settings\" button below, then enable the Permission on the
+        following screen.</string>
 
     <!--
         ***************************
