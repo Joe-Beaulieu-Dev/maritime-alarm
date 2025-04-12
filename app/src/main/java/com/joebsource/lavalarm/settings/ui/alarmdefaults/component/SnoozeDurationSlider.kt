@@ -25,8 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.BoatHull
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.VolcanicRock
 import kotlin.math.floor
 import kotlin.math.round
@@ -106,7 +106,7 @@ fun SnoozeDurationSlider(
 @Preview
 @Composable
 private fun SnoozeDurationSliderPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             Column(
                 verticalArrangement = Arrangement.Center,

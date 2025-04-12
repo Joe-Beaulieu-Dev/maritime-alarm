@@ -31,9 +31,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.joebsource.lavalarm.core.navigation.Destination
 import com.joebsource.lavalarm.core.navigation.NavComponent
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.BrightLavaRed
 import com.joebsource.lavalarm.core.ui.theme.DarkVolcanicRock
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.MediumLavaRed
 import com.joebsource.lavalarm.core.ui.theme.NavIconActive
 import com.joebsource.lavalarm.core.ui.theme.NavIconInactive
@@ -294,7 +294,7 @@ fun Volcano(modifier: Modifier = Modifier) {
 )
 @Composable
 private fun VolcanoNavigationBarPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         VolcanoNavigationBar(
             currentCoreDestination = Destination.AlarmListScreen,
             onDestinationChange = {},
@@ -309,7 +309,7 @@ private fun VolcanoNavigationBarPreview() {
 )
 @Composable
 private fun VolcanoWithLavaPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         VolcanoWithLava(modifier = Modifier.padding(top = 20.dp))
     }
 }
@@ -320,7 +320,7 @@ private fun VolcanoWithLavaPreview() {
 )
 @Composable
 private fun LavaPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         Lava(modifier = Modifier.padding(20.dp))
     }
 }
@@ -331,7 +331,7 @@ private fun LavaPreview() {
 )
 @Composable
 private fun VolcanoPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         Volcano(modifier = Modifier.padding(top = 20.dp))
     }
 }

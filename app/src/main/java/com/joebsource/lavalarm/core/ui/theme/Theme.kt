@@ -64,7 +64,7 @@ private val NauticalColorScheme = darkColorScheme(
 )
 
 @Composable
-fun AlarmScratchTheme(content: @Composable () -> Unit) {
+fun LavalarmTheme(content: @Composable () -> Unit) {
     // Set theme
     MaterialTheme(
         colorScheme = NauticalColorScheme,

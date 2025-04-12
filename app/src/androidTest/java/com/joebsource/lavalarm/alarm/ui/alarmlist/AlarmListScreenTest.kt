@@ -11,7 +11,7 @@ import com.joebsource.lavalarm.alarm.data.model.WeeklyRepeater
 import com.joebsource.lavalarm.alarm.data.repository.AlarmRepository
 import com.joebsource.lavalarm.core.extension.LocalDateTimeUtil
 import com.joebsource.lavalarm.core.ui.notificationcheck.AppNotificationChannel
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.testutil.NotificationChannelUtil
 import com.joebsource.lavalarm.testutil.PermissionUtil
 import io.mockk.every
@@ -59,7 +59,7 @@ class AlarmListScreenTest {
         mockkConstructor(AlarmRepository::class) {
             every { anyConstructed<AlarmRepository>().getAllAlarmsFlow() } returns flowOf(emptyList())
             composeTestRule.setContent {
-                AlarmScratchTheme {
+                LavalarmTheme {
                     AlarmListScreen(navigateToAlarmEditScreen = {})
                 }
             }
@@ -74,7 +74,7 @@ class AlarmListScreenTest {
         mockkConstructor(AlarmRepository::class) {
             every { anyConstructed<AlarmRepository>().getAllAlarmsFlow() } returns flowOf(alarmList)
             composeTestRule.setContent {
-                AlarmScratchTheme {
+                LavalarmTheme {
                     AlarmListScreen(navigateToAlarmEditScreen = {})
                 }
             }
@@ -89,7 +89,7 @@ class AlarmListScreenTest {
         mockkConstructor(AlarmRepository::class) {
             every { anyConstructed<AlarmRepository>().getAllAlarmsFlow() } returns flowOf(alarmList)
             composeTestRule.setContent {
-                AlarmScratchTheme {
+                LavalarmTheme {
                     AlarmListScreen(navigateToAlarmEditScreen = {})
                 }
             }
@@ -110,7 +110,7 @@ class AlarmListScreenTest {
         val permissionGateString = context.getString(R.string.permission_required)
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmListScreen(navigateToAlarmEditScreen = {})
             }
         }
@@ -131,7 +131,7 @@ class AlarmListScreenTest {
         NotificationChannelUtil.disableNotificationChannel(context, AppNotificationChannel.Alarm)
         PermissionUtil.grantPermissionAuto(Manifest.permission.POST_NOTIFICATIONS)
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmListScreen(navigateToAlarmEditScreen = {})
             }
         }

@@ -55,10 +55,10 @@ import com.joebsource.lavalarm.core.extension.getStringFromBackStack
 import com.joebsource.lavalarm.core.ui.shared.CustomTopAppBar
 import com.joebsource.lavalarm.core.ui.shared.RowSelectionItem
 import com.joebsource.lavalarm.core.ui.shared.UnsavedChangesDialog
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.BoatSails
 import com.joebsource.lavalarm.core.ui.theme.DarkVolcanicRock
 import com.joebsource.lavalarm.core.ui.theme.DarkerBoatSails
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.MediumVolcanicRock
 import com.joebsource.lavalarm.core.ui.theme.VolcanicRock
 import com.joebsource.lavalarm.core.ui.theme.WayDarkerBoatSails
@@ -340,7 +340,7 @@ fun SnoozeDefaults(
 @Preview
 @Composable
 private fun AlarmDefaultsScreenPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmDefaultsScreenContent(
             navHostController = rememberNavController(),
             navigateToRingtonePickerScreen = {},

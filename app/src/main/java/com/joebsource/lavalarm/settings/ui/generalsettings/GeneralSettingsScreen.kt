@@ -41,8 +41,8 @@ import com.joebsource.lavalarm.R
 import com.joebsource.lavalarm.core.ui.shared.CustomTopAppBar
 import com.joebsource.lavalarm.core.ui.shared.RowSelectionItem
 import com.joebsource.lavalarm.core.ui.shared.UnsavedChangesDialog
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.DarkerBoatSails
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.MediumVolcanicRock
 import com.joebsource.lavalarm.core.util.StatusBarUtil
 import com.joebsource.lavalarm.settings.data.model.TimeDisplay
@@ -187,7 +187,7 @@ fun GeneralSettingsScreenContent(
 @Preview
 @Composable
 private fun GeneralSettingsScreenPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         GeneralSettingsScreenContent(
             navHostController = rememberNavController(),
             timeDisplay = TimeDisplay.TwelveHour,

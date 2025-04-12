@@ -65,9 +65,9 @@ import com.joebsource.lavalarm.core.ui.core.component.VolcanoNavigationBar
 import com.joebsource.lavalarm.core.ui.core.component.VolcanoWithLava
 import com.joebsource.lavalarm.core.ui.snackbar.SnackbarEvent
 import com.joebsource.lavalarm.core.ui.snackbar.global.GlobalSnackbarController
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.BoatSails
 import com.joebsource.lavalarm.core.ui.theme.BottomOceanBlue
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.SkyBlue
 import com.joebsource.lavalarm.core.ui.theme.TopOceanBlue
 import com.joebsource.lavalarm.core.ui.theme.VolcanicRock
@@ -264,7 +264,7 @@ private fun CoreScreenAlarmListPreview() {
     val currentCoreDestination = Destination.AlarmListScreen
     val alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds)
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         CoreScreenContent(
             currentCoreDestination = currentCoreDestination,
             previousCoreDestination = Destination.AlarmListScreen,
@@ -313,7 +313,7 @@ private fun CoreScreenAlarmListPreview() {
 private fun CoreScreenAlarmListNoAlarmsPreview() {
     val currentCoreDestination = Destination.AlarmListScreen
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         CoreScreenContent(
             currentCoreDestination = currentCoreDestination,
             previousCoreDestination = Destination.AlarmListScreen,
@@ -362,7 +362,7 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
 private fun CoreScreenSettingsPreview() {
     val currentCoreDestination = Destination.SettingsScreen
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         CoreScreenContent(
             currentCoreDestination = currentCoreDestination,
             previousCoreDestination = Destination.AlarmListScreen,

@@ -32,7 +32,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.joebsource.lavalarm.R
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -139,7 +139,7 @@ fun NotificationChannelGateScreenContent(
 @Preview
 @Composable
 private fun NotificationChannelGateScreenPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         NotificationChannelGateScreenContent(
             bodyText = buildAnnotatedString {
                 append(stringResource(id = R.string.notification_missing_alarm_system_settings))

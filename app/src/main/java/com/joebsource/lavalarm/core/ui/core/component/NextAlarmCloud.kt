@@ -51,8 +51,8 @@ import com.joebsource.lavalarm.core.extension.toCountdownString
 import com.joebsource.lavalarm.core.navigation.Destination
 import com.joebsource.lavalarm.core.ui.permission.Permission
 import com.joebsource.lavalarm.core.ui.permission.SimplePermissionGate
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.DarkGrey
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 
 @Composable
 fun NextAlarmCloud(
@@ -231,7 +231,7 @@ private fun getCountdownTextLineHeight(countdownText: String): TextUnit =
 )
 @Composable
 private fun NextAlarmCloudNoAlarmsSmallText1Preview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -263,7 +263,7 @@ private fun NextAlarmCloudSmallText2Preview() {
         dateTime = LocalDateTimeUtil.nowTruncated().plusDays(12).plusHours(10).plusMinutes(45)
     )
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -295,7 +295,7 @@ private fun NextAlarmCloudMediumText1Preview() {
         dateTime = LocalDateTimeUtil.nowTruncated().plusHours(20).plusMinutes(45)
     )
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -323,7 +323,7 @@ private fun NextAlarmCloudMediumText1Preview() {
 )
 @Composable
 private fun NextAlarmCloudMediumText2Preview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -355,7 +355,7 @@ private fun NextAlarmCloudLargeText1Preview() {
         dateTime = LocalDateTimeUtil.nowTruncated().plusMinutes(1)
     )
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -384,7 +384,7 @@ private fun NextAlarmCloudLargeText1Preview() {
 
 @Composable
 private fun NextAlarmCloudSnoozedAlarmLargeText2Preview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -412,7 +412,7 @@ private fun NextAlarmCloudSnoozedAlarmLargeText2Preview() {
 )
 @Composable
 private fun NextAlarmCloudSettingsScreenPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier

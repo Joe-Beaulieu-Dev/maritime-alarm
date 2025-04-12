@@ -25,11 +25,11 @@ import com.joebsource.lavalarm.alarm.data.preview.tomorrowAlarm
 import com.joebsource.lavalarm.core.extension.LocalDateTimeUtil
 import com.joebsource.lavalarm.core.extension.LocalDateUtil
 import com.joebsource.lavalarm.core.extension.toUtcMillis
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.AndroidDisabledAlpha
 import com.joebsource.lavalarm.core.ui.theme.BoatHull
 import com.joebsource.lavalarm.core.ui.theme.BoatSails
 import com.joebsource.lavalarm.core.ui.theme.DarkVolcanicRock
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.LightVolcanicRock
 import com.joebsource.lavalarm.core.ui.theme.VolcanicRock
 import java.time.LocalDate
@@ -163,7 +163,7 @@ private fun isCalendarDateSelectable(
 @Preview
 @Composable
 private fun DateSelectionDialogTomorrowLatePreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         DateSelectionDialog(
             alarmDateTime = tomorrowAlarm.dateTime.withHour(23).withMinute(59),
             onCancel = {},
@@ -178,7 +178,7 @@ private fun DateSelectionDialogTomorrowLatePreview() {
 private fun DateSelectorPickerTodayLatePreview() {
     val alarmDateTime = todayAlarm.dateTime
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         DateSelector(
             datePickerState = rememberDatePickerStateWrapper(
                 alarmDateTime = alarmDateTime,
@@ -195,7 +195,7 @@ private fun DateSelectorPickerTodayLatePreview() {
 private fun DateSelectorPickerTodayEarlyPreview() {
     val alarmDateTime = todayAlarm.dateTime.withHour(0).withMinute(5)
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         DateSelector(
             datePickerState = rememberDatePickerStateWrapper(
                 alarmDateTime = alarmDateTime,
@@ -212,7 +212,7 @@ private fun DateSelectorPickerTodayEarlyPreview() {
 private fun DateSelectorPickerTomorrowEarlyPreview() {
     val alarmDateTime = tomorrowAlarm.dateTime.withHour(0).withMinute(5)
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         DateSelector(
             datePickerState = rememberDatePickerStateWrapper(
                 alarmDateTime = alarmDateTime,
@@ -229,7 +229,7 @@ private fun DateSelectorPickerTomorrowEarlyPreview() {
 private fun DateSelectorPickerYesterdayLatePreview() {
     val alarmDateTime = todayAlarm.dateTime.minusDays(1)
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         DateSelector(
             datePickerState = rememberDatePickerStateWrapper(
                 alarmDateTime = alarmDateTime,
@@ -246,7 +246,7 @@ private fun DateSelectorPickerYesterdayLatePreview() {
 private fun DateSelectorInputModePreview() {
     val alarmDateTime = todayAlarm.dateTime
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         DateSelector(
             datePickerState = rememberDatePickerStateWrapper(
                 alarmDateTime = alarmDateTime,

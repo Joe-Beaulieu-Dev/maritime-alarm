@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.joebsource.lavalarm.R
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 
 // TODO: Use M3 TopAppBar once it's no longer experimental
 @Composable
@@ -56,7 +56,7 @@ fun CustomTopAppBar(
 @Preview
 @Composable
 private fun CustomTopAppBarPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         CustomTopAppBar(
             titleRes = R.string.alarm_creation_screen_title,
             navigationButton = {

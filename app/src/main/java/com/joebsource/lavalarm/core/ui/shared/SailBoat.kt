@@ -11,9 +11,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.BoatHull
 import com.joebsource.lavalarm.core.ui.theme.BoatSails
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 
 @Composable
 fun SailBoat(
@@ -81,7 +81,7 @@ fun SailBoat(
 )
 @Composable
 private fun SailBoatPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         SailBoat(
             boatSize = 200.dp,
             hullColor = BoatHull,

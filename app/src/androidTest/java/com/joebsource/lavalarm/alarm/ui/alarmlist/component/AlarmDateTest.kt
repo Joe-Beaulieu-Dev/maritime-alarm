@@ -8,7 +8,7 @@ import com.joebsource.lavalarm.R
 import com.joebsource.lavalarm.alarm.data.model.Alarm
 import com.joebsource.lavalarm.alarm.data.model.WeeklyRepeater
 import com.joebsource.lavalarm.core.extension.LocalDateTimeUtil
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import io.mockk.every
 import io.mockk.mockkObject
 import org.junit.Rule
@@ -45,7 +45,7 @@ class AlarmDateTest {
         val alarm = baseAlarmNonRepeating.copy(weeklyRepeater = WeeklyRepeater(tueWedThu))
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmDate(alarm = alarm)
             }
         }
@@ -58,7 +58,7 @@ class AlarmDateTest {
         val alarm = baseAlarmNonRepeating.copy(enabled = false, weeklyRepeater = WeeklyRepeater(tueWedThu))
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmDate(alarm = alarm)
             }
         }
@@ -75,7 +75,7 @@ class AlarmDateTest {
         mockkObject(LocalDateTimeUtil) {
             every { LocalDateTimeUtil.nowTruncated() } returns now
             composeTestRule.setContent {
-                AlarmScratchTheme {
+                LavalarmTheme {
                     AlarmDate(alarm = alarm)
                 }
             }
@@ -93,7 +93,7 @@ class AlarmDateTest {
         mockkObject(LocalDateTimeUtil) {
             every { LocalDateTimeUtil.nowTruncated() } returns now.minusDays(1)
             composeTestRule.setContent {
-                AlarmScratchTheme {
+                LavalarmTheme {
                     AlarmDate(alarm = alarm)
                 }
             }
@@ -114,7 +114,7 @@ class AlarmDateTest {
         mockkObject(LocalDateTimeUtil) {
             every { LocalDateTimeUtil.nowTruncated() } returns dateTime.minusDays(2)
             composeTestRule.setContent {
-                AlarmScratchTheme {
+                LavalarmTheme {
                     AlarmDate(alarm = alarm)
                 }
             }
@@ -137,7 +137,7 @@ class AlarmDateTest {
         mockkObject(LocalDateTimeUtil) {
             every { LocalDateTimeUtil.nowTruncated() } returns dateTime.plusDays(1)
             composeTestRule.setContent {
-                AlarmScratchTheme {
+                LavalarmTheme {
                     AlarmDate(alarm = alarm)
                 }
             }
@@ -153,7 +153,7 @@ class AlarmDateTest {
         val expectedString = context.getString(R.string.not_scheduled)
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmDate(alarm = alarm)
             }
         }

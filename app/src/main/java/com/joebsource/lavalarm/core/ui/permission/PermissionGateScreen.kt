@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.joebsource.lavalarm.R
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.util.PermissionUtil
 
 @Composable
@@ -216,7 +216,7 @@ fun PermissionGateScreenContent(
 @Preview
 @Composable
 private fun PermissionGateScreenNotificationSystemDialogPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         PermissionGateScreenContent(
             bodyText = buildAnnotatedString {
                 append(stringResource(id = R.string.permission_missing_notifications_system_dialog))
@@ -231,7 +231,7 @@ private fun PermissionGateScreenNotificationSystemDialogPreview() {
 @Preview
 @Composable
 private fun PermissionGateScreenNotificationSystemSettingsPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         PermissionGateScreenContent(
             bodyText = buildAnnotatedString {
                 append(stringResource(id = R.string.permission_missing_notifications_system_settings))
@@ -246,7 +246,7 @@ private fun PermissionGateScreenNotificationSystemSettingsPreview() {
 @Preview
 @Composable
 private fun PermissionGateScreenAlarmSystemSettingsPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         PermissionGateScreenContent(
             bodyText = buildAnnotatedString {
                 append(stringResource(id = R.string.permission_missing_alarm_system_settings))

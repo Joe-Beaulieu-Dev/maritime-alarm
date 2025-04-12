@@ -33,7 +33,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.joebsource.lavalarm.core.gesture.detectSingleTapGestures
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 
 @Composable
 fun LongPressButton(
@@ -112,7 +112,7 @@ fun LongPressButton(
 )
 @Composable
 private fun LongPressButtonPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier

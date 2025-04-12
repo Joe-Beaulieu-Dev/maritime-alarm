@@ -17,8 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.joebsource.lavalarm.R
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.DarkVolcanicRock
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.WayDarkerBoatSails
 
 @Composable
@@ -52,7 +52,7 @@ fun RowSelectionItem(
 @Preview
 @Composable
 private fun RowSelectionItemPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         RowSelectionItem(
             rowOnClick = {},
             rowLabelResId = R.string.alarm_create_edit_alarm_vibration_label,

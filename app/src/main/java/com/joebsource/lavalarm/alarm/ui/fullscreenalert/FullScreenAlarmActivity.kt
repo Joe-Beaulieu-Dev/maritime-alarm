@@ -25,8 +25,8 @@ import com.joebsource.lavalarm.core.constant.actionPackageName
 import com.joebsource.lavalarm.core.extension.LocalDateTimeUtil
 import com.joebsource.lavalarm.core.extension.getSerializableExtraSafe
 import com.joebsource.lavalarm.core.navigation.Destination
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.AndroidDefaultDarkScrim
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.settings.data.repository.AlarmDefaultsRepository
 import java.time.LocalDateTime
 
@@ -123,7 +123,7 @@ class FullScreenAlarmActivity : ComponentActivity() {
         }
 
         setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 navHostController = rememberNavController()
                 FullScreenAlarmNavHost(
                     navHostController = navHostController,

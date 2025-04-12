@@ -15,7 +15,7 @@ import com.joebsource.lavalarm.alarm.data.repository.AlarmRepository
 import com.joebsource.lavalarm.core.extension.LocalDateTimeUtil
 import com.joebsource.lavalarm.core.extension.toCountdownString
 import com.joebsource.lavalarm.core.navigation.AlarmApp
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import io.mockk.every
 import io.mockk.mockkConstructor
 import kotlinx.coroutines.flow.flowOf
@@ -77,7 +77,7 @@ class CoreScreenTest {
         val settingsNavContentDescription = context.getString(R.string.nav_settings_cd)
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmApp()
             }
         }
@@ -100,7 +100,7 @@ class CoreScreenTest {
         mockkConstructor(AlarmRepository::class) {
             every { anyConstructed<AlarmRepository>().getAllAlarmsFlow() } returns flowOf(alarmList)
             composeTestRule.setContent {
-                AlarmScratchTheme {
+                LavalarmTheme {
                     AlarmApp()
                 }
             }
@@ -129,7 +129,7 @@ class CoreScreenTest {
         val settingsNavContentDescription = context.getString(R.string.nav_settings_cd)
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmApp()
             }
         }
@@ -164,7 +164,7 @@ class CoreScreenTest {
         val settingsNavContentDescription = context.getString(R.string.nav_settings_cd)
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmApp()
             }
         }
@@ -209,7 +209,7 @@ class CoreScreenTest {
         val alarmCreationScreenTitle = context.getString(R.string.alarm_creation_screen_title)
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmApp()
             }
         }
@@ -241,7 +241,7 @@ class CoreScreenTest {
             every { anyConstructed<AlarmRepository>().getAllAlarmsFlow() } returns flowOf(alarmList)
             every { anyConstructed<AlarmRepository>().getAlarmFlow(baseAlarmNonRepeating.id) } returns flowOf(baseAlarmNonRepeating)
             composeTestRule.setContent {
-                AlarmScratchTheme {
+                LavalarmTheme {
                     AlarmApp()
                 }
             }

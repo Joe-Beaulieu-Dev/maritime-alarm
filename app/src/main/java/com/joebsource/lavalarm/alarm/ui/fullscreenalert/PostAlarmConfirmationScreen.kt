@@ -31,8 +31,8 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.joebsource.lavalarm.R
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.DarkVolcanicRock
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.util.StatusBarUtil
 import kotlinx.coroutines.delay
 
@@ -125,7 +125,7 @@ fun BasicCountdown(
 @Preview
 @Composable
 private fun PostAlarmConfirmationScreenSnoozePreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         PostAlarmConfirmationScreen(
             fullScreenAlarmButton = FullScreenAlarmButton.SNOOZE,
             snoozeDuration = 10
@@ -136,7 +136,7 @@ private fun PostAlarmConfirmationScreenSnoozePreview() {
 @Preview
 @Composable
 private fun PostAlarmConfirmationScreenDismissPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         PostAlarmConfirmationScreen(
             fullScreenAlarmButton = FullScreenAlarmButton.DISMISS,
             snoozeDuration = 10

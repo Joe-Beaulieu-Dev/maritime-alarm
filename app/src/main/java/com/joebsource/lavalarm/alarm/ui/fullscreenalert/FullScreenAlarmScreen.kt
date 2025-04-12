@@ -57,10 +57,10 @@ import com.joebsource.lavalarm.core.extension.get24HourTime
 import com.joebsource.lavalarm.core.extension.getAmPm
 import com.joebsource.lavalarm.core.extension.getDayFull
 import com.joebsource.lavalarm.core.ui.shared.LongPressButton
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.BoatHull
 import com.joebsource.lavalarm.core.ui.theme.DarkGrey
 import com.joebsource.lavalarm.core.ui.theme.Grey
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.MediumGrey
 import com.joebsource.lavalarm.core.ui.theme.SkyBlue
 import com.joebsource.lavalarm.core.ui.theme.TransparentBlack
@@ -393,7 +393,7 @@ fun SnoozeAndDismissButtons(
 @Preview
 @Composable
 private fun FullScreenAlarmScreen12HourPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         FullScreenAlarmScreenContent(
             alarmName = consistentFutureAlarm.name,
             alarmExecutionDateTime = consistentFutureAlarm.dateTime,
@@ -407,7 +407,7 @@ private fun FullScreenAlarmScreen12HourPreview() {
 @Preview
 @Composable
 private fun FullScreenAlarmScreen24HourPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         FullScreenAlarmScreenContent(
             alarmName = consistentFutureAlarm.name,
             alarmExecutionDateTime = consistentFutureAlarm.dateTime,
@@ -421,7 +421,7 @@ private fun FullScreenAlarmScreen24HourPreview() {
 @Preview
 @Composable
 private fun FullScreenAlarmScreenLongNamePreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         FullScreenAlarmScreenContent(
             alarmName = "1234567890123456789012345678901234567890",
             alarmExecutionDateTime = consistentFutureAlarm.dateTime,

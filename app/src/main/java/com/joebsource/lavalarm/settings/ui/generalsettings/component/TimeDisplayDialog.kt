@@ -23,8 +23,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.joebsource.lavalarm.R
 import com.joebsource.lavalarm.core.ui.shared.BasicDialog
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.DarkerBoatSails
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.LightVolcanicRock
 import com.joebsource.lavalarm.settings.data.model.TimeDisplay
 
@@ -88,7 +88,7 @@ fun TimeDisplayDialog(
 @Preview
 @Composable
 private fun TimeDisplayDialogPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         TimeDisplayDialog(
             initialTimeDisplay = TimeDisplay.TwelveHour,
             onCancel = {},
