@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.alarmscratch"
+    namespace = "com.joebsource.lavalarm"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.alarmscratch"
+        applicationId = "com.joebsource.lavalarm"
         minSdk = 31
         targetSdk = 34
         versionCode = 1
