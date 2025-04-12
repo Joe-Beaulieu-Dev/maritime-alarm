@@ -19,7 +19,7 @@ import com.joebsource.lavalarm.alarm.data.preview.todayAlarm
 import com.joebsource.lavalarm.alarm.data.preview.tomorrowAlarm
 import com.joebsource.lavalarm.core.extension.isRepeating
 import com.joebsource.lavalarm.core.extension.toAlarmDateString
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import java.time.LocalDateTime
 
 @Composable
@@ -86,7 +86,7 @@ private fun NonRepeatingAlarmDate(
 )
 @Composable
 private fun AlarmDateRepeatingEnabledPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmDate(
             alarm = repeatingAlarm,
             modifier = Modifier.padding(20.dp)
@@ -100,7 +100,7 @@ private fun AlarmDateRepeatingEnabledPreview() {
 )
 @Composable
 private fun AlarmDateRepeatingDisabledPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmDate(
             alarm = repeatingAlarm.copy(enabled = false),
             modifier = Modifier.padding(20.dp)
@@ -114,7 +114,7 @@ private fun AlarmDateRepeatingDisabledPreview() {
 )
 @Composable
 private fun AlarmDateTodayPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmDate(
             alarm = todayAlarm,
             modifier = Modifier.padding(20.dp)
@@ -128,7 +128,7 @@ private fun AlarmDateTodayPreview() {
 )
 @Composable
 private fun AlarmDateTomorrowPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmDate(
             alarm = tomorrowAlarm.copy(enabled = true),
             modifier = Modifier.padding(20.dp)
@@ -142,7 +142,7 @@ private fun AlarmDateTomorrowPreview() {
 )
 @Composable
 private fun AlarmDateBeyondTomorrowPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmDate(
             alarm = calendarAlarm,
             modifier = Modifier.padding(20.dp)
@@ -156,7 +156,7 @@ private fun AlarmDateBeyondTomorrowPreview() {
 )
 @Composable
 private fun AlarmDateNotScheduledPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmDate(
             alarm = tomorrowAlarm,
             modifier = Modifier.padding(20.dp)

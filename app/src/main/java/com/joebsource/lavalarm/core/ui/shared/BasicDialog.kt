@@ -27,10 +27,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.joebsource.lavalarm.R
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.BoatSails
 import com.joebsource.lavalarm.core.ui.theme.DarkVolcanicRock
 import com.joebsource.lavalarm.core.ui.theme.DarkerBoatSails
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 
 // ExperimentalMaterial3Api OptIn for LocalRippleConfiguration and RippleConfiguration
 @OptIn(ExperimentalMaterial3Api::class)
@@ -109,7 +109,7 @@ fun BasicDialog(
 @Preview
 @Composable
 private fun BasicDialogWithIconPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         BasicDialog(
             icon = Icons.Default.SportsMartialArts,
             titleRes = R.string.general_settings_time_display,
@@ -127,7 +127,7 @@ private fun BasicDialogWithIconPreview() {
 @Preview
 @Composable
 private fun BasicDialogWithoutIconPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         BasicDialog(
             titleRes = R.string.general_settings_time_display,
             onCancel = {},

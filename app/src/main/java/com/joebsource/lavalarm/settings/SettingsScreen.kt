@@ -26,7 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.joebsource.lavalarm.R
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.MediumVolcanicRock
 
 @Composable
@@ -114,7 +114,7 @@ fun SettingsComponent(
 )
 @Composable
 private fun SettingsScreenPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         SettingsScreen(
             navigateToGeneralSettingsScreen = {},
             navigateToAlarmDefaultsScreen = {},
@@ -129,7 +129,7 @@ private fun SettingsScreenPreview() {
 )
 @Composable
 private fun SettingsComponentPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         SettingsComponent(icon = Icons.Default.Alarm, nameRes = R.string.settings_alarm_defaults, onClick = {})
     }
 }

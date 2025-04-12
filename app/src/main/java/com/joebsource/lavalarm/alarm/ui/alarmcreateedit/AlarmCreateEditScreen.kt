@@ -88,11 +88,11 @@ import com.joebsource.lavalarm.core.extension.getAmPm
 import com.joebsource.lavalarm.core.ui.shared.CustomTopAppBar
 import com.joebsource.lavalarm.core.ui.shared.RowSelectionItem
 import com.joebsource.lavalarm.core.ui.shared.UnsavedChangesDialog
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.BoatHull
 import com.joebsource.lavalarm.core.ui.theme.BoatSails
 import com.joebsource.lavalarm.core.ui.theme.DarkVolcanicRock
 import com.joebsource.lavalarm.core.ui.theme.DarkerBoatSails
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.LightVolcanicRock
 import com.joebsource.lavalarm.core.ui.theme.MediumVolcanicRock
 import com.joebsource.lavalarm.core.ui.theme.VolcanicRock
@@ -662,7 +662,7 @@ private fun AlarmCreateEditScreen12HourPreview() {
     val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
     val snackbarFlow = snackbarChannel.receiveAsFlow()
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
             navigateToRingtonePickerScreen = {},
@@ -697,7 +697,7 @@ private fun AlarmCreateEditScreen24HourPreview() {
     val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
     val snackbarFlow = snackbarChannel.receiveAsFlow()
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
             navigateToRingtonePickerScreen = {},
@@ -732,7 +732,7 @@ private fun AlarmCreateEditScreenErrorIllegalCharacterPreview() {
     val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
     val snackbarFlow = snackbarChannel.receiveAsFlow()
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
             navigateToRingtonePickerScreen = {},
@@ -767,7 +767,7 @@ private fun AlarmCreateEditScreenErrorOnlyWhitespacePreview() {
     val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
     val snackbarFlow = snackbarChannel.receiveAsFlow()
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
             navigateToRingtonePickerScreen = {},
@@ -802,7 +802,7 @@ private fun AlarmCreateEditScreenErrorLengthPreview() {
     val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
     val snackbarFlow = snackbarChannel.receiveAsFlow()
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
             navigateToRingtonePickerScreen = {},
@@ -837,7 +837,7 @@ private fun AlarmCreateEditScreenErrorLengthAndIllegalCharacterPreview() {
     val snackbarChannel = Channel<ValidationResult.Error<ValidationError>>()
     val snackbarFlow = snackbarChannel.receiveAsFlow()
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
             navigateToRingtonePickerScreen = {},
@@ -869,7 +869,7 @@ private fun AlarmCreateEditScreenErrorLengthAndIllegalCharacterPreview() {
 @Preview
 @Composable
 private fun DateTimeSettingsPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         DateTimeSettings(
             alarm = consistentFutureAlarm,
             timeDisplay = TimeDisplay.TwelveHour,
@@ -884,7 +884,7 @@ private fun DateTimeSettingsPreview() {
 @Preview
 @Composable
 private fun AlarmTimePreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmTime(
             dateTime = consistentFutureAlarm.dateTime,
             timeDisplay = TimeDisplay.TwelveHour,

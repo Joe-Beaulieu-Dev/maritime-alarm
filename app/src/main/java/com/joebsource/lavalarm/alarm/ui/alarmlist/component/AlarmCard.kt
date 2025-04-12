@@ -50,11 +50,11 @@ import com.joebsource.lavalarm.core.extension.getAmPm
 import com.joebsource.lavalarm.core.extension.isSnoozed
 import com.joebsource.lavalarm.core.extension.to12HourNotificationDateTimeString
 import com.joebsource.lavalarm.core.extension.to24HourNotificationDateTimeString
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.BoatHull
 import com.joebsource.lavalarm.core.ui.theme.BoatSails
 import com.joebsource.lavalarm.core.ui.theme.DarkVolcanicRock
 import com.joebsource.lavalarm.core.ui.theme.DarkerBoatSails
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.MediumVolcanicRock
 import com.joebsource.lavalarm.core.ui.theme.SkyBlue
 import com.joebsource.lavalarm.settings.data.model.TimeDisplay
@@ -298,7 +298,7 @@ fun NoAlarmsCard(modifier: Modifier = Modifier) {
 )
 @Composable
 private fun AlarmCardRepeating12HourPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmCard(
             alarm = repeatingAlarm,
             timeDisplay = TimeDisplay.TwelveHour,
@@ -316,7 +316,7 @@ private fun AlarmCardRepeating12HourPreview() {
 )
 @Composable
 private fun AlarmCardRepeating24HourPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmCard(
             alarm = todayAlarm,
             timeDisplay = TimeDisplay.TwentyFourHour,
@@ -334,7 +334,7 @@ private fun AlarmCardRepeating24HourPreview() {
 )
 @Composable
 private fun AlarmCardSnoozedPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmCard(
             alarm = snoozedAlarm,
             timeDisplay = TimeDisplay.TwelveHour,
@@ -352,7 +352,7 @@ private fun AlarmCardSnoozedPreview() {
 )
 @Composable
 private fun NoAlarmsCardPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         NoAlarmsCard(
             modifier = Modifier.padding(20.dp)
         )
@@ -365,7 +365,7 @@ private fun NoAlarmsCardPreview() {
 )
 @Composable
 private fun AlarmCardTodayPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmCard(
             alarm = todayAlarm,
             timeDisplay = TimeDisplay.TwelveHour,
@@ -383,7 +383,7 @@ private fun AlarmCardTodayPreview() {
 )
 @Composable
 private fun AlarmCardTomorrowPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmCard(
             alarm = tomorrowAlarm,
             timeDisplay = TimeDisplay.TwelveHour,
@@ -401,7 +401,7 @@ private fun AlarmCardTomorrowPreview() {
 )
 @Composable
 private fun AlarmCardCalendarPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmCard(
             alarm = calendarAlarm,
             timeDisplay = TimeDisplay.TwelveHour,
@@ -419,7 +419,7 @@ private fun AlarmCardCalendarPreview() {
 )
 @Composable
 private fun AlarmCardSnoozedLongNamePreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmCard(
             alarm = snoozedAlarm.copy(name = "1234567890123456789012345678901234567890"),
             timeDisplay = TimeDisplay.TwelveHour,

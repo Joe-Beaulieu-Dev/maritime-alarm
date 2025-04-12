@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.StarfishBasePink
 import com.joebsource.lavalarm.core.ui.theme.StarfishDotWhite
 
@@ -54,7 +54,7 @@ fun Starfish(
 )
 @Composable
 private fun StarfishPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         Starfish(
             starfishSize = 300.dp,
             starfishBaseColor = StarfishBasePink,
@@ -69,7 +69,7 @@ private fun StarfishPreview() {
 )
 @Composable
 private fun StarfishOnWetSandPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         Starfish(
             starfishSize = 300.dp,
             starfishBaseColor = StarfishBasePink,

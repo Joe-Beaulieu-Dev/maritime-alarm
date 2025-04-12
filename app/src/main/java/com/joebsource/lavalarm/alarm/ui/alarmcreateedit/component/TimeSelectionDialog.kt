@@ -41,9 +41,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.joebsource.lavalarm.R
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.BoatSails
 import com.joebsource.lavalarm.core.ui.theme.DarkerBoatSails
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.LightVolcanicRock
 import com.joebsource.lavalarm.core.ui.theme.VolcanicRock
 import com.joebsource.lavalarm.settings.data.model.TimeDisplay
@@ -182,7 +182,7 @@ private fun TimeSelectionInput(timePickerState: TimePickerState) {
 @Preview
 @Composable
 private fun TimeSelectionDialogPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         TimeSelectionDialog(
             initialHour = 15,
             initialMinute = 45,
@@ -197,7 +197,7 @@ private fun TimeSelectionDialogPreview() {
 @Preview
 @Composable
 private fun TimeSelectionPicker12HourPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         TimeSelectionPicker(timePickerState = rememberTimePickerState(is24Hour = false))
     }
 }
@@ -206,7 +206,7 @@ private fun TimeSelectionPicker12HourPreview() {
 @Preview
 @Composable
 private fun TimeSelectionPicker24HourPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         TimeSelectionPicker(timePickerState = rememberTimePickerState(is24Hour = true))
     }
 }
@@ -215,7 +215,7 @@ private fun TimeSelectionPicker24HourPreview() {
 @Preview
 @Composable
 private fun TimeSelectionInput12HourPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         TimeSelectionInput(timePickerState = rememberTimePickerState(is24Hour = false))
     }
 }
@@ -224,7 +224,7 @@ private fun TimeSelectionInput12HourPreview() {
 @Preview
 @Composable
 private fun TimeSelectionInput24HourPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         TimeSelectionInput(timePickerState = rememberTimePickerState(is24Hour = true))
     }
 }

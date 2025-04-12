@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 //
 // These comments are just to tell you what would change if each
 // Composable was using its default color settings.
-private val NauticalColorScheme = darkColorScheme(
+private val LavalarmColorScheme = darkColorScheme(
     /*
      * Switch -> checkedTrackColor
      */
@@ -64,10 +64,10 @@ private val NauticalColorScheme = darkColorScheme(
 )
 
 @Composable
-fun AlarmScratchTheme(content: @Composable () -> Unit) {
+fun LavalarmTheme(content: @Composable () -> Unit) {
     // Set theme
     MaterialTheme(
-        colorScheme = NauticalColorScheme,
+        colorScheme = LavalarmColorScheme,
         typography = Typography,
         content = content
     )

@@ -32,9 +32,9 @@ import com.joebsource.lavalarm.core.extension.LocalDateTimeUtil
 import com.joebsource.lavalarm.core.extension.toCountdownString
 import com.joebsource.lavalarm.core.navigation.Destination
 import com.joebsource.lavalarm.core.ui.shared.SailBoat
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.BoatHull
 import com.joebsource.lavalarm.core.ui.theme.BoatSails
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.SkyBlue
 
 @Composable
@@ -152,7 +152,7 @@ fun SkylineHeaderContent(
 @Preview
 @Composable
 private fun SkylineHeaderOneLineAlarmPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         SkylineHeaderContent(
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
@@ -178,7 +178,7 @@ private fun SkylineHeaderTwoLineAlarmPreview() {
         dateTime = LocalDateTimeUtil.nowTruncated().plusDays(12).plusHours(10).plusMinutes(45)
     )
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         SkylineHeaderContent(
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
@@ -200,7 +200,7 @@ private fun SkylineHeaderTwoLineAlarmPreview() {
 @Preview
 @Composable
 private fun SkylineHeaderSnoozedAlarmPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         SkylineHeaderContent(
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
@@ -222,7 +222,7 @@ private fun SkylineHeaderSnoozedAlarmPreview() {
 @Preview
 @Composable
 private fun SkylineHeaderNoAlarmsPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         SkylineHeaderContent(
             nextAlarmIndicator = {
                 NextAlarmCloudContent(
@@ -244,7 +244,7 @@ private fun SkylineHeaderNoAlarmsPreview() {
 @Preview
 @Composable
 private fun SkylineHeaderSettingsScreenPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         SkylineHeaderContent(
             nextAlarmIndicator = {
                 NextAlarmCloudContent(

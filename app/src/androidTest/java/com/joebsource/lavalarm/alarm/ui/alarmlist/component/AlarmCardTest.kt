@@ -18,7 +18,7 @@ import com.joebsource.lavalarm.alarm.data.model.WeeklyRepeater
 import com.joebsource.lavalarm.core.extension.LocalDateTimeUtil
 import com.joebsource.lavalarm.core.extension.to12HourNotificationDateTimeString
 import com.joebsource.lavalarm.core.extension.to24HourNotificationDateTimeString
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.settings.data.model.TimeDisplay
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -67,7 +67,7 @@ class AlarmCardTest {
         val expectedDate = context.getString(R.string.date_today)
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmCard(
                     alarm = alarm,
                     timeDisplay = TimeDisplay.TwelveHour,
@@ -100,7 +100,7 @@ class AlarmCardTest {
                 alarm.snoozeDateTime!!.to12HourNotificationDateTimeString(context)
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmCard(
                     alarm = alarm,
                     timeDisplay = TimeDisplay.TwelveHour,
@@ -134,7 +134,7 @@ class AlarmCardTest {
                 alarm.snoozeDateTime!!.to24HourNotificationDateTimeString()
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmCard(
                     alarm = alarm,
                     timeDisplay = TimeDisplay.TwentyFourHour,
@@ -163,7 +163,7 @@ class AlarmCardTest {
         val expectedDate = context.getString(R.string.not_scheduled)
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmCard(
                     alarm = alarm,
                     timeDisplay = TimeDisplay.TwelveHour,
@@ -199,7 +199,7 @@ class AlarmCardTest {
                 alarm.snoozeDateTime!!.to12HourNotificationDateTimeString(context)
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmCard(
                     alarm = alarm,
                     timeDisplay = TimeDisplay.TwelveHour,
@@ -229,7 +229,7 @@ class AlarmCardTest {
         val expectedDate = context.getString(R.string.date_today)
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmCard(
                     alarm = alarm,
                     timeDisplay = TimeDisplay.TwelveHour,
@@ -261,7 +261,7 @@ class AlarmCardTest {
         val expectedDate = "S M T W T F S"
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmCard(
                     alarm = alarm,
                     timeDisplay = TimeDisplay.TwelveHour,
@@ -289,7 +289,7 @@ class AlarmCardTest {
         val expectedDate = "S M T W T F S"
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmCard(
                     alarm = alarm,
                     timeDisplay = TimeDisplay.TwelveHour,
@@ -317,7 +317,7 @@ class AlarmCardTest {
         var switchPressed = false
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmCard(
                     alarm = alarm,
                     timeDisplay = TimeDisplay.TwelveHour,
@@ -344,7 +344,7 @@ class AlarmCardTest {
         var deletePressed = false
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmCard(
                     alarm = alarm,
                     timeDisplay = TimeDisplay.TwelveHour,
@@ -373,7 +373,7 @@ class AlarmCardTest {
         var alarmCardClicked = false
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 AlarmCard(
                     alarm = alarm,
                     timeDisplay = TimeDisplay.TwelveHour,
@@ -400,7 +400,7 @@ class AlarmCardTest {
         val expectedString = context.getString(R.string.no_alarms)
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 NoAlarmsCard()
             }
         }

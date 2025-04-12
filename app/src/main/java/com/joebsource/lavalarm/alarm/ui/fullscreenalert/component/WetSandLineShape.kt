@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.VolcanicRock
 import com.joebsource.lavalarm.core.ui.theme.WetSand
 
@@ -94,7 +94,7 @@ class WetSandLineShape : Shape {
 @Preview
 @Composable
 private fun WetSandLineShapePreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         val config = LocalConfiguration.current
         val screenHeight = config.screenHeightDp.dp
         val wetSandHeight = screenHeight / 2

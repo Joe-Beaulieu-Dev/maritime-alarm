@@ -23,7 +23,7 @@ import com.joebsource.lavalarm.core.ui.notificationcheck.NotificationChannelGate
 import com.joebsource.lavalarm.core.ui.notificationcheck.NotificationPermission
 import com.joebsource.lavalarm.core.ui.permission.Permission
 import com.joebsource.lavalarm.core.ui.permission.PermissionGateScreen
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.settings.data.model.TimeDisplay
 import com.joebsource.lavalarm.settings.data.repository.GeneralSettingsState
 
@@ -120,7 +120,7 @@ fun AlarmListScreenContent(
 )
 @Composable
 private fun AlarmListScreenPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmListScreenContent(
             alarmList = alarmSampleDataHardCodedIds,
             timeDisplay = TimeDisplay.TwelveHour,
@@ -138,7 +138,7 @@ private fun AlarmListScreenPreview() {
 )
 @Composable
 private fun AlarmListScreenNoAlarmsPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmListScreenContent(
             alarmList = emptyList(),
             timeDisplay = TimeDisplay.TwelveHour,

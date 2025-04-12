@@ -13,7 +13,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.StarfishBasePink
 import com.joebsource.lavalarm.core.ui.theme.StarfishDotWhite
 import com.joebsource.lavalarm.core.util.GraphUtil
@@ -122,7 +122,7 @@ private fun StarfishDotStarPreview() {
     val outerCircleRadiusPx = with(LocalDensity.current) { (starfishSizeDp / 2).toPx() }
     val centeredOriginPx = PointF(outerCircleRadiusPx, outerCircleRadiusPx)
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         StarfishDotStar(
             starfishSizeDp = starfishSizeDp,
             centeredOriginPx = centeredOriginPx,
@@ -142,7 +142,7 @@ private fun StarfishDotStarOnStarfishPreview() {
     val outerCircleRadiusPx = with(LocalDensity.current) { (starfishSizeDp / 2).toPx() }
     val centeredOriginPx = PointF(outerCircleRadiusPx, outerCircleRadiusPx)
 
-    AlarmScratchTheme {
+    LavalarmTheme {
         // Starfish Base with Dots
         Box {
             // Starfish Base

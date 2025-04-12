@@ -34,7 +34,7 @@ import com.joebsource.lavalarm.core.ui.notificationcheck.NotificationChannelGate
 import com.joebsource.lavalarm.core.ui.notificationcheck.NotificationPermission
 import com.joebsource.lavalarm.core.ui.permission.Permission
 import com.joebsource.lavalarm.core.ui.permission.PermissionGateScreen
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.util.StatusBarUtil
 import com.joebsource.lavalarm.settings.data.model.TimeDisplay
 import com.joebsource.lavalarm.settings.data.repository.GeneralSettingsState
@@ -156,7 +156,7 @@ fun AlarmEditScreen(
 @Preview
 @Composable
 private fun AlarmEditScreenPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmCreateEditScreen(
             navHostController = rememberNavController(),
             navigateToRingtonePickerScreen = {},

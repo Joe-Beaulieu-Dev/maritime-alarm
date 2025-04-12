@@ -40,8 +40,8 @@ import com.joebsource.lavalarm.core.ui.notificationcheck.AppNotificationChannel
 import com.joebsource.lavalarm.core.ui.notificationcheck.SimpleNotificationGate
 import com.joebsource.lavalarm.core.ui.permission.Permission
 import com.joebsource.lavalarm.core.ui.permission.SimplePermissionGate
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.AncientLavaOrange
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.MaxBrightLavaOrange
 
 @Composable
@@ -209,7 +209,7 @@ fun LavaFloatingActionButtonContent(
 )
 @Composable
 private fun LavaFloatingActionButtonPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         LavaFloatingActionButtonContent(
             enabled = true,
             onFabClicked = {},

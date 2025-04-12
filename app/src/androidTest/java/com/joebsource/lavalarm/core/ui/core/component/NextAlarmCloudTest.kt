@@ -13,7 +13,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.test.platform.app.InstrumentationRegistry
 import com.joebsource.lavalarm.R
 import com.joebsource.lavalarm.core.navigation.Destination
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.testutil.PermissionUtil
 import io.mockk.mockk
 import org.junit.Rule
@@ -35,7 +35,7 @@ class NextAlarmCloudTest {
 
         PermissionUtil.grantPermissionAuto(Manifest.permission.POST_NOTIFICATIONS)
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 NextAlarmCloudContent(
                     currentCoreDestination = Destination.AlarmListScreen,
                     alarmCountdownState = alarmCountdownState,
@@ -56,7 +56,7 @@ class NextAlarmCloudTest {
 
         PermissionUtil.grantPermissionAuto(Manifest.permission.POST_NOTIFICATIONS)
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 NextAlarmCloudContent(
                     currentCoreDestination = Destination.AlarmListScreen,
                     alarmCountdownState = alarmCountdownState,
@@ -75,7 +75,7 @@ class NextAlarmCloudTest {
         val alarmCountdownState = AlarmCountdownState.Success(Icons.Default.Alarm, countdownText)
 
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 NextAlarmCloudContent(
                     currentCoreDestination = Destination.AlarmListScreen,
                     alarmCountdownState = alarmCountdownState,
@@ -95,7 +95,7 @@ class NextAlarmCloudTest {
 
         PermissionUtil.grantPermissionAuto(Manifest.permission.POST_NOTIFICATIONS)
         composeTestRule.setContent {
-            AlarmScratchTheme {
+            LavalarmTheme {
                 NextAlarmCloudContent(
                     currentCoreDestination = Destination.SettingsScreen,
                     alarmCountdownState = alarmCountdownState,

@@ -17,9 +17,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.joebsource.lavalarm.core.ui.shared.SailBoat
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.BoatHull
 import com.joebsource.lavalarm.core.ui.theme.BoatSails
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.SkyBlue
 
 @Composable
@@ -200,7 +200,7 @@ fun BeachSkyline(
 @Preview
 @Composable
 private fun BeachSkylinePreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         val config = LocalConfiguration.current
         val screenHeight = config.screenHeightDp.dp
         val skylineHeight = screenHeight / 4

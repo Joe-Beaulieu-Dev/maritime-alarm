@@ -19,7 +19,7 @@ import com.joebsource.lavalarm.alarm.data.preview.tomorrowAlarm
 import com.joebsource.lavalarm.core.extension.LocalDateTimeUtil
 import com.joebsource.lavalarm.core.extension.isRepeating
 import com.joebsource.lavalarm.core.extension.toAlarmDateString
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import java.time.LocalDateTime
 
 @Composable
@@ -69,7 +69,7 @@ private fun NonRepeatingAlarmDays(
 )
 @Composable
 private fun AlarmDaysRepeatingPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmDays(
             alarm = repeatingAlarm,
             modifier = Modifier.padding(20.dp)
@@ -83,7 +83,7 @@ private fun AlarmDaysRepeatingPreview() {
 )
 @Composable
 private fun AlarmDaysRepeatingEveryDayPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmDays(
             alarm = repeatingAlarm.copy(weeklyRepeater = WeeklyRepeater(everyDay)),
             modifier = Modifier.padding(20.dp)
@@ -97,7 +97,7 @@ private fun AlarmDaysRepeatingEveryDayPreview() {
 )
 @Composable
 private fun AlarmDaysTodayPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmDays(
             alarm = todayAlarm,
             modifier = Modifier.padding(20.dp)
@@ -111,7 +111,7 @@ private fun AlarmDaysTodayPreview() {
 )
 @Composable
 private fun AlarmDaysTomorrowPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmDays(
             alarm = tomorrowAlarm,
             modifier = Modifier.padding(20.dp)
@@ -125,7 +125,7 @@ private fun AlarmDaysTomorrowPreview() {
 )
 @Composable
 private fun AlarmDaysBeyondTomorrowPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmDays(
             alarm = calendarAlarm,
             modifier = Modifier.padding(20.dp)
@@ -139,7 +139,7 @@ private fun AlarmDaysBeyondTomorrowPreview() {
 )
 @Composable
 private fun AlarmDaysBeforeTodayPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         AlarmDays(
             alarm = todayAlarm.copy(dateTime = LocalDateTimeUtil.nowTruncated().minusDays(1)),
             modifier = Modifier.padding(20.dp)

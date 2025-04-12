@@ -11,7 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.joebsource.lavalarm.R
 import com.joebsource.lavalarm.core.ui.shared.BasicDialog
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 
 @Composable
 fun SnoozeDurationDialog(
@@ -44,7 +44,7 @@ fun SnoozeDurationDialog(
 @Preview
 @Composable
 private fun SnoozeDurationDialogPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         SnoozeDurationDialog(
             initialSnoozeDuration = 15,
             onCancel = {},

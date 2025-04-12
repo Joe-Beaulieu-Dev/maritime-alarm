@@ -46,9 +46,9 @@ import com.joebsource.lavalarm.alarm.data.preview.sampleRingtoneData
 import com.joebsource.lavalarm.core.data.model.RingtoneData
 import com.joebsource.lavalarm.core.ui.shared.CustomTopAppBar
 import com.joebsource.lavalarm.core.ui.shared.UnsavedChangesDialog
-import com.joebsource.lavalarm.core.ui.theme.AlarmScratchTheme
 import com.joebsource.lavalarm.core.ui.theme.DarkVolcanicRock
 import com.joebsource.lavalarm.core.ui.theme.DarkerBoatSails
+import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.MediumVolcanicRock
 import com.joebsource.lavalarm.core.ui.theme.SelectedGreen
 import com.joebsource.lavalarm.core.ui.theme.VolcanicRock
@@ -206,7 +206,7 @@ fun RingtonePickerScreenContent(
 @Preview
 @Composable
 private fun RingtonePickerScreenPlayingPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         RingtonePickerScreenContent(
             ringtoneDataList = ringtoneDataSampleList,
             selectedRingtoneUri = sampleRingtoneData.fullUri,
@@ -226,7 +226,7 @@ private fun RingtonePickerScreenPlayingPreview() {
 @Preview
 @Composable
 private fun RingtonePickerScreenNotPlayingPreview() {
-    AlarmScratchTheme {
+    LavalarmTheme {
         RingtonePickerScreenContent(
             ringtoneDataList = ringtoneDataSampleList,
             selectedRingtoneUri = sampleRingtoneData.fullUri,
