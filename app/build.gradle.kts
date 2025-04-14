@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "com.joebsource.lavalarm"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.joebsource.lavalarm"
         minSdk = 31
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
