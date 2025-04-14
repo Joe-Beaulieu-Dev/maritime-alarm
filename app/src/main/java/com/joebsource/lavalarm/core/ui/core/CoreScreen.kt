@@ -206,6 +206,7 @@ fun CoreScreenContent(
     }
 
     Scaffold(
+        topBar = header,
         bottomBar = navigationBar,
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState) { snackbarData ->
@@ -231,9 +232,6 @@ fun CoreScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(innerPadding)
         ) {
-            // Header
-            header()
-
             // Internal Screen
             Box(modifier = Modifier.weight(1f)) {
                 internalScreen()
