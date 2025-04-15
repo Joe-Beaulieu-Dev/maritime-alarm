@@ -67,6 +67,7 @@ import com.joebsource.lavalarm.core.ui.snackbar.SnackbarEvent
 import com.joebsource.lavalarm.core.ui.snackbar.global.GlobalSnackbarController
 import com.joebsource.lavalarm.core.ui.theme.BoatSails
 import com.joebsource.lavalarm.core.ui.theme.BottomOceanBlue
+import com.joebsource.lavalarm.core.ui.theme.DarkVolcanicRock
 import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.SkyBlue
 import com.joebsource.lavalarm.core.ui.theme.TopOceanBlue
@@ -223,14 +224,17 @@ fun CoreScreenContent(
                 brush = Brush.verticalGradient(
                     0.07f to SkyBlue,
                     0.08f to TopOceanBlue,
-                    1.0f to BottomOceanBlue
+                    0.93f to BottomOceanBlue,
+                    0.94f to DarkVolcanicRock
                 )
             )
             .windowInsetsPadding(WindowInsets.systemBars)
     ) { innerPadding ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(innerPadding)
         ) {
             // Internal Screen
             Box(modifier = Modifier.weight(1f)) {
