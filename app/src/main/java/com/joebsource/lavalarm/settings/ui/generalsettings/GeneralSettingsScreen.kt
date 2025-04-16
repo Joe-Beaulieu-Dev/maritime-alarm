@@ -29,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,6 +42,7 @@ import com.joebsource.lavalarm.R
 import com.joebsource.lavalarm.core.ui.shared.CustomTopAppBar
 import com.joebsource.lavalarm.core.ui.shared.RowSelectionItem
 import com.joebsource.lavalarm.core.ui.shared.UnsavedChangesDialog
+import com.joebsource.lavalarm.core.ui.theme.DarkVolcanicRock
 import com.joebsource.lavalarm.core.ui.theme.DarkerBoatSails
 import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.MediumVolcanicRock
@@ -126,7 +128,12 @@ fun GeneralSettingsScreenContent(
         },
         containerColor = MaterialTheme.colorScheme.surface,
         modifier = modifier
-            .background(color = MediumVolcanicRock)
+            .background(
+                brush = Brush.verticalGradient(
+                    0.07f to MediumVolcanicRock,
+                    0.08f to DarkVolcanicRock
+                )
+            )
             .windowInsetsPadding(WindowInsets.systemBars)
     ) { innerPadding ->
         Column(modifier = Modifier

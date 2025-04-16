@@ -57,6 +57,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -207,7 +208,12 @@ fun AlarmCreateEditScreen(
         },
         containerColor = MaterialTheme.colorScheme.surface,
         modifier = modifier
-            .background(color = MediumVolcanicRock)
+            .background(
+                brush = Brush.verticalGradient(
+                    0.07f to MediumVolcanicRock,
+                    0.08f to DarkVolcanicRock
+                )
+            )
             .windowInsetsPadding(WindowInsets.systemBars)
             .clickable(interactionSource = null, indication = null) { scaffoldFocusRequester.requestFocus() }
             .focusRequester(scaffoldFocusRequester)
