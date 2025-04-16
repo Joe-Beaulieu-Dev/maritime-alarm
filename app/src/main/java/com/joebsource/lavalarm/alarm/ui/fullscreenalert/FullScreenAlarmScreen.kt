@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -59,6 +60,7 @@ import com.joebsource.lavalarm.core.extension.getDayFull
 import com.joebsource.lavalarm.core.ui.shared.LongPressButton
 import com.joebsource.lavalarm.core.ui.theme.BoatHull
 import com.joebsource.lavalarm.core.ui.theme.DarkGrey
+import com.joebsource.lavalarm.core.ui.theme.DrySand
 import com.joebsource.lavalarm.core.ui.theme.Grey
 import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import com.joebsource.lavalarm.core.ui.theme.MediumGrey
@@ -93,7 +95,12 @@ fun FullScreenAlarmScreenContent(
     Surface(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = SkyBlue)
+            .background(
+                brush = Brush.verticalGradient(
+                    0.07f to SkyBlue,
+                    0.08f to DrySand
+                )
+            )
             .windowInsetsPadding(WindowInsets.systemBars)
     ) {
         // Screen background
