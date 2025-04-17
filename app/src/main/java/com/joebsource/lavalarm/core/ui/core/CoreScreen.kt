@@ -27,11 +27,10 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -100,9 +99,25 @@ fun CoreScreen(
     // a previous Destination in practice. Because of this, the previous Destination must be tracked manually.
     val coreNavHostController = rememberNavController()
     val currentCoreBackStackEntry by coreNavHostController.currentBackStackEntryAsState()
-    val currentCoreDestination = NavComponent.fromNavBackStackEntry(currentCoreBackStackEntry)
-    var previousCoreDestination by remember { mutableStateOf(currentCoreDestination) }
-    val setPreviousCoreDestination: (Destination) -> Unit = { previousCoreDestination = it }
+    val currentCoreDestination by coreScreenViewModel.currentCoreDestination.collectAsState()
+    val setCurrentCoreDestination: (Destination) -> Unit = coreScreenViewModel::setCurrentCoreDestination
+    val previousCoreDestination by coreScreenViewModel.previousCoreDestination.collectAsState()
+    val setPreviousCoreDestination: (Destination) -> Unit = coreScreenViewModel::setPreviousCoreDestination
+
+    // NavController.currentBackStackEntryAsState() emits null after performing navigation away from and back to CoreScreen.
+    //   Ex: SettingsScreen -> AlarmDefaultsScreen -> (Back Nav) SettingsScreen
+    //
+    // Normally, emitting a null value implies that there is no backstack. However, there IS a backstack in this scenario.
+    // Shortly after initially emitting null, it subsequently emits the proper NavBackStackEntry. It's as if it's emitting values
+    // while in some sort of "in-between" state of re-initialization. This causes errors, and I believe this to be a bug.
+    // In order to account for this, do not call CoreScreenViewModel.setCurrentCoreDestination() if the backstack is null.
+    //
+    // Note: There are legitimate reasons why the backstack would be null, for example, if you haven't navigated anywhere yet.
+    // However, the above described bug example is not a legitimate reason. Because of the above mentioned bug, we unfortunately
+    // need to filter out ALL instances of a null backstack, even though we only want to filter out the bugged one.
+    if (currentCoreBackStackEntry != null) {
+        setCurrentCoreDestination(NavComponent.fromNavBackStackEntry(currentCoreBackStackEntry))
+    }
 
     // Back press
     val activity: Activity? = (LocalContext.current as? Activity)
