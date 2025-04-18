@@ -13,7 +13,7 @@ import com.joebsource.lavalarm.core.extension.navigateSingleTop
 import com.joebsource.lavalarm.settings.SettingsScreen
 
 @Composable
-fun CoreNavHost(
+fun CoreScreenNavHost(
     coreNavHostController: NavHostController,
     secondaryNavHostController: NavHostController,
     modifier: Modifier = Modifier

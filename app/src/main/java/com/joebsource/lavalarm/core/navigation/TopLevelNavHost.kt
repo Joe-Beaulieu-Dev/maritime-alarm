@@ -18,7 +18,7 @@ import com.joebsource.lavalarm.settings.ui.alarmdefaults.AlarmDefaultsScreen
 import com.joebsource.lavalarm.settings.ui.generalsettings.GeneralSettingsScreen
 
 @Composable
-fun AlarmApp() {
+fun TopLevelNavHost() {
     val navHostController = rememberNavController()
     NavHost(
         navController = navHostController,

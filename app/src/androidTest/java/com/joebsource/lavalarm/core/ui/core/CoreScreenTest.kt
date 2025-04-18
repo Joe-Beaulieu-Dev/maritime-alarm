@@ -14,7 +14,7 @@ import com.joebsource.lavalarm.alarm.data.model.WeeklyRepeater
 import com.joebsource.lavalarm.alarm.data.repository.AlarmRepository
 import com.joebsource.lavalarm.core.extension.LocalDateTimeUtil
 import com.joebsource.lavalarm.core.extension.toCountdownString
-import com.joebsource.lavalarm.core.navigation.AlarmApp
+import com.joebsource.lavalarm.core.navigation.TopLevelNavHost
 import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 import io.mockk.every
 import io.mockk.mockkConstructor
@@ -78,7 +78,7 @@ class CoreScreenTest {
 
         composeTestRule.setContent {
             LavalarmTheme {
-                AlarmApp()
+                TopLevelNavHost()
             }
         }
 
@@ -101,7 +101,7 @@ class CoreScreenTest {
             every { anyConstructed<AlarmRepository>().getAllAlarmsFlow() } returns flowOf(alarmList)
             composeTestRule.setContent {
                 LavalarmTheme {
-                    AlarmApp()
+                    TopLevelNavHost()
                 }
             }
         }
@@ -130,7 +130,7 @@ class CoreScreenTest {
 
         composeTestRule.setContent {
             LavalarmTheme {
-                AlarmApp()
+                TopLevelNavHost()
             }
         }
 
@@ -165,7 +165,7 @@ class CoreScreenTest {
 
         composeTestRule.setContent {
             LavalarmTheme {
-                AlarmApp()
+                TopLevelNavHost()
             }
         }
 
@@ -210,7 +210,7 @@ class CoreScreenTest {
 
         composeTestRule.setContent {
             LavalarmTheme {
-                AlarmApp()
+                TopLevelNavHost()
             }
         }
 
@@ -242,7 +242,7 @@ class CoreScreenTest {
             every { anyConstructed<AlarmRepository>().getAlarmFlow(baseAlarmNonRepeating.id) } returns flowOf(baseAlarmNonRepeating)
             composeTestRule.setContent {
                 LavalarmTheme {
-                    AlarmApp()
+                    TopLevelNavHost()
                 }
             }
 
