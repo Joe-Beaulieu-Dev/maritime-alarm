@@ -29,8 +29,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.joebsource.lavalarm.core.navigation.CoreScreenNavComponent
 import com.joebsource.lavalarm.core.navigation.Destination
-import com.joebsource.lavalarm.core.navigation.NavComponent
 import com.joebsource.lavalarm.core.ui.theme.BrightLavaRed
 import com.joebsource.lavalarm.core.ui.theme.DarkVolcanicRock
 import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
@@ -59,7 +59,7 @@ fun VolcanoNavigationBar(
         containerColor = DarkVolcanicRock,
         modifier = modifier
     ) {
-        NavComponent.entries.forEach { navComponent ->
+        CoreScreenNavComponent.entries.forEach { navComponent ->
             NavigationBarItem(
                 selected = currentCoreDestination == navComponent.destination,
                 onClick = { onDestinationChange(navComponent.destination) },

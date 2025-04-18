@@ -8,7 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.joebsource.lavalarm.core.navigation.AlarmApp
+import com.joebsource.lavalarm.core.navigation.TopLevelNavHost
 import com.joebsource.lavalarm.core.ui.theme.AndroidDefaultDarkScrim
 import com.joebsource.lavalarm.core.ui.theme.LavalarmTheme
 
@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             LavalarmTheme {
-                AlarmApp()
+                TopLevelNavHost()
             }
         }
     }

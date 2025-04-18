@@ -51,9 +51,9 @@ import com.joebsource.lavalarm.alarm.ui.alarmlist.AlarmListScreenContent
 import com.joebsource.lavalarm.core.extension.getAndRemoveStringFromBackStack
 import com.joebsource.lavalarm.core.extension.navigateSingleTop
 import com.joebsource.lavalarm.core.extension.toCountdownString
-import com.joebsource.lavalarm.core.navigation.CoreNavHost
+import com.joebsource.lavalarm.core.navigation.CoreScreenNavComponent
+import com.joebsource.lavalarm.core.navigation.CoreScreenNavHost
 import com.joebsource.lavalarm.core.navigation.Destination
-import com.joebsource.lavalarm.core.navigation.NavComponent
 import com.joebsource.lavalarm.core.runtime.ObserveAsEvent
 import com.joebsource.lavalarm.core.ui.core.component.AlarmCountdownState
 import com.joebsource.lavalarm.core.ui.core.component.LavaFloatingActionButton
@@ -90,34 +90,18 @@ fun CoreScreen(
     StatusBarUtil.setLightStatusBar()
 
     // Navigation
-    // Current and previous destinations must be tracked in order to prevent LavaFloatingActionButton
-    // and NextAlarmCloud from unnecessarily reanimating on orientation change, etc. Part of achieving
-    // this requires tracking the previous Destination during CoreScreen (coreNavHostController)
+    // Current and previous Destinations must be tracked in order to prevent LavaFloatingActionButton,
+    // NextAlarmCloud, and VolcanoNavigationBar from unnecessarily reanimating on orientation change, etc.
+    // Part of achieving this requires tracking the previous Destination during CoreScreen (coreNavHostController)
     // navigation. Simply observing coreNavHostController.previousBackStackEntry is not sufficient
     // because once the User pops the entire back stack (is back at the original Destination),
     // there will be no "previous Destination" in the back stack, even though there actually was
     // a previous Destination in practice. Because of this, the previous Destination must be tracked manually.
     val coreNavHostController = rememberNavController()
-    val currentCoreBackStackEntry by coreNavHostController.currentBackStackEntryAsState()
     val currentCoreDestination by coreScreenViewModel.currentCoreDestination.collectAsState()
-    val setCurrentCoreDestination: (Destination) -> Unit = coreScreenViewModel::setCurrentCoreDestination
     val previousCoreDestination by coreScreenViewModel.previousCoreDestination.collectAsState()
+    val setCurrentCoreDestination: (Destination) -> Unit = coreScreenViewModel::setCurrentCoreDestination
     val setPreviousCoreDestination: (Destination) -> Unit = coreScreenViewModel::setPreviousCoreDestination
-
-    // NavController.currentBackStackEntryAsState() emits null after performing navigation away from and back to CoreScreen.
-    //   Ex: SettingsScreen -> AlarmDefaultsScreen -> (Back Nav) SettingsScreen
-    //
-    // Normally, emitting a null value implies that there is no backstack. However, there IS a backstack in this scenario.
-    // Shortly after initially emitting null, it subsequently emits the proper NavBackStackEntry. It's as if it's emitting values
-    // while in some sort of "in-between" state of re-initialization. This causes errors, and I believe this to be a bug.
-    // In order to account for this, do not call CoreScreenViewModel.setCurrentCoreDestination() if the backstack is null.
-    //
-    // Note: There are legitimate reasons why the backstack would be null, for example, if you haven't navigated anywhere yet.
-    // However, the above described bug example is not a legitimate reason. Because of the above mentioned bug, we unfortunately
-    // need to filter out ALL instances of a null backstack, even though we only want to filter out the bugged one.
-    if (currentCoreBackStackEntry != null) {
-        setCurrentCoreDestination(NavComponent.fromNavBackStackEntry(currentCoreBackStackEntry))
-    }
 
     // Back press
     val activity: Activity? = (LocalContext.current as? Activity)
@@ -136,11 +120,23 @@ fun CoreScreen(
         }
     }
 
-    // Track that the User is leaving the Core Screen by
-    // setting previousCoreDestination to currentCoreDestination
-    val currentSecondaryBackStackEntry by secondaryNavHostController.currentBackStackEntryAsState()
-    LaunchedEffect(key1 = currentSecondaryBackStackEntry) {
-        if (currentSecondaryBackStackEntry != null) {
+    // Track changes in coreNavHostController's back stack
+    // Don't use delegation, and also grab the value from the back stack state. This is in order
+    // to avoid smart casting issues with delegated properties and open/custom getters.
+    val currentCoreBackStackEntry = coreNavHostController.currentBackStackEntryAsState().value
+    if (currentCoreBackStackEntry != null) {
+        LaunchedEffect(key1 = currentCoreBackStackEntry.destination) {
+            setCurrentCoreDestination(CoreScreenNavComponent.fromNavBackStackEntry(currentCoreBackStackEntry))
+        }
+    }
+
+    // Track that the User is leaving the CoreScreen by setting previousCoreDestination to
+    // currentCoreDestination when the secondaryNavHostController's NavBackStackEntry changes.
+    // Don't use delegation, and also grab the value from the back stack state. This is in order
+    // to avoid smart casting issues with delegated properties and open/custom getters.
+    val currentSecondaryBackStackEntry = secondaryNavHostController.currentBackStackEntryAsState().value
+    if (currentSecondaryBackStackEntry != null) {
+        LaunchedEffect(key1 = currentSecondaryBackStackEntry.destination) {
             setPreviousCoreDestination(currentCoreDestination)
         }
     }
@@ -176,7 +172,7 @@ fun CoreScreen(
         }
     ) {
         // Nested Internal Screen
-        CoreNavHost(
+        CoreScreenNavHost(
             coreNavHostController = coreNavHostController,
             secondaryNavHostController = secondaryNavHostController,
             modifier = Modifier.padding(20.dp)

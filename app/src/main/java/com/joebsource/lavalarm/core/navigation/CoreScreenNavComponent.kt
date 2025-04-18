@@ -9,7 +9,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hasRoute
 import com.joebsource.lavalarm.R
 
-enum class NavComponent(
+enum class CoreScreenNavComponent(
     @StringRes val navNameRes: Int,
     val navIcon: ImageVector,
     val destination: Destination,
