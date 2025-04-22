@@ -49,6 +49,8 @@ import com.joebsource.lavalarm.alarm.data.preview.snoozedAlarm
 import com.joebsource.lavalarm.core.extension.LocalDateTimeUtil
 import com.joebsource.lavalarm.core.extension.toCountdownString
 import com.joebsource.lavalarm.core.navigation.Destination
+import com.joebsource.lavalarm.core.ui.notificationcheck.AppNotificationChannel
+import com.joebsource.lavalarm.core.ui.notificationcheck.SimpleNotificationGate
 import com.joebsource.lavalarm.core.ui.permission.Permission
 import com.joebsource.lavalarm.core.ui.permission.SimplePermissionGate
 import com.joebsource.lavalarm.core.ui.theme.DarkGrey
@@ -131,9 +133,14 @@ fun NextAlarmCloudContent(
     }
 
     val notificationGatedIconAndText: @Composable () -> Unit = {
-        AlarmIconAndText(
-            alarmCountdownState = alarmCountdownState,
-            visibleState = visibleState
+        SimpleNotificationGate(
+            appNotificationChannel = AppNotificationChannel.Alarm,
+            gatedComposable = {
+                AlarmIconAndText(
+                    alarmCountdownState = alarmCountdownState,
+                    visibleState = visibleState
+                )
+            }
         )
     }
 
