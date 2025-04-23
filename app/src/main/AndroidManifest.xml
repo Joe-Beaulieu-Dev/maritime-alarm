@@ -73,6 +73,7 @@
         <!-- Receive Alarm Actions -->
         <receiver
             android:name=".alarm.alarmexecution.AlarmActionReceiver"
+            android:directBootAware="true"
             android:exported="false" />
         <!-- Reschedule Alarms on Device boot -->
         <receiver
@@ -86,6 +87,7 @@
         <!-- Handle Device Time Changes -->
         <receiver
             android:name=".core.receiver.TimeChangeReceiver"
+            android:directBootAware="true"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.TIME_SET" />
@@ -96,6 +98,7 @@
         <!-- SCHEDULE_EXACT_ALARM Permission Granted -->
         <receiver
             android:name=".alarm.alarmexecution.ScheduleExactAlarmPermissionReceiver"
+            android:directBootAware="true"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
@@ -117,6 +120,7 @@
         -->
         <service
             android:name=".alarm.alarmexecution.AlarmNotificationService"
+            android:directBootAware="true"
             android:exported="false"
             android:foregroundServiceType="systemExempted" />
     </application>

@@ -25,7 +25,11 @@ class TimeChangeReceiver : BroadcastReceiver() {
 
     private fun onTimeChanged(context: Context) {
         doAsync(context.alarmApplication.applicationScope, Dispatchers.Main) {
-            val alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(context.applicationContext).alarmDao())
+            val alarmRepository = AlarmRepository(
+                AlarmDatabase
+                    .getDatabase(context.createDeviceProtectedStorageContext())
+                    .alarmDao()
+            )
             AlarmScheduler.refreshAlarms(context, alarmRepository)
         }
     }

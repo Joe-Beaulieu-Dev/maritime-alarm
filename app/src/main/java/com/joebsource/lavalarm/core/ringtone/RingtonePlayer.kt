@@ -36,6 +36,22 @@ class RingtonePlayer {
         audioManager?.let { manager ->
             audioFocusRequest?.let { request ->
                 ringtone?.let { ring ->
+                    // Setting looping is only necessary when the RingtoneManager returns a default fallback Ringtone,
+                    // which happens when it can't find a Ringtone for the given URI. This happens when the Alarm goes off
+                    // after a device restart, when the User has a protected lock screen set up, BEFORE they unlock it for the first time.
+                    // I'm guessing this is due to the RingtoneManager not having access to the necessary files while in this state.
+                    // Note: In the above scenario, if the User unlocks their phone at least once, then re-locks it, the RingtoneManager
+                    // will be able to find the Ringtone, and will not need to return the fallback.
+                    //
+                    // The non-fallback Ringtones used by this app, which are of type RingtoneManager.TYPE_ALARM,
+                    // are already set to loop by default and therefore don't need to be set below.
+                    try {
+                        ring.isLooping = true
+                    } catch (_: Exception) {
+                        // Just don't crash, nothing else to do here
+                        // When I've seen Ringtone.setLooping() used, it was called in a try/catch like this.
+                        // Alarm execution is a critical part of the code so I'm not taking any chances.
+                    }
                     manager.requestAudioFocus(request)
 
                     // Ringtone.setStreamType() is deprecated. However, it is the only way to get
