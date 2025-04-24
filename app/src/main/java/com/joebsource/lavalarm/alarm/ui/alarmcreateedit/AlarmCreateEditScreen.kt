@@ -59,6 +59,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -143,8 +144,8 @@ fun AlarmCreateEditScreen(
     // State
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val focusManager = LocalFocusManager.current
     val snackbarHostState = remember { SnackbarHostState() }
-    val scaffoldFocusRequester = remember { FocusRequester() }
     val upNavigationFocusRequester = remember { FocusRequester() }
     val saveFocusRequester = remember { FocusRequester() }
 
@@ -215,9 +216,7 @@ fun AlarmCreateEditScreen(
                 )
             )
             .windowInsetsPadding(WindowInsets.systemBars)
-            .clickable(interactionSource = null, indication = null) { scaffoldFocusRequester.requestFocus() }
-            .focusRequester(scaffoldFocusRequester)
-            .focusable()
+            .clickable(interactionSource = null, indication = null) { focusManager.clearFocus() }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -539,9 +538,9 @@ fun AlertSettings(
     toggleVibration: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val focusManager = LocalFocusManager.current
     val ringtoneFocusRequester = remember { FocusRequester() }
     val vibrationRowFocusRequester = remember { FocusRequester() }
-    val vibrationSwitchFocusRequester = remember { FocusRequester() }
 
     Column(modifier = modifier) {
         // Alert Icon and Text
@@ -584,16 +583,13 @@ fun AlertSettings(
                 Switch(
                     checked = isVibrationEnabled,
                     onCheckedChange = {
-                        vibrationSwitchFocusRequester.requestFocus()
+                        focusManager.clearFocus()
                         toggleVibration()
                     },
                     colors = SwitchDefaults.colors(
                         checkedTrackColor = WayDarkerBoatSails,
                         uncheckedTrackColor = DarkVolcanicRock
-                    ),
-                    modifier = Modifier
-                        .focusRequester(vibrationSwitchFocusRequester)
-                        .focusable()
+                    )
                 )
             },
             modifier = Modifier
