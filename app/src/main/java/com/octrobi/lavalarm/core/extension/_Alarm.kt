@@ -58,6 +58,57 @@ fun Alarm.isSnoozed(): Boolean =
 
 /**
  * Returns whether or not the Alarm is dirty. Dirty Alarms are those that have invalid configurations.
+ * This can happen if the phone is off during a time in which an Alarm is scheduled to execute, or
+ * after the device's time changes.
+ *
+ * For repeating Alarms - Returns true if, and only if, both of the following conditions are met:
+ * 1) Alarm is enabled
+ * 2) Alarm is not configured to go off in the future, OR Alarm is configured to go off after the
+ * next possible repeating LocalDateTime
+ *    - Both of the above conditions take snooze into account
+ *
+ * For non-repeating Alarms - Returns true if, and only if, both of the following conditions are met:
+ * 1) Alarm is enabled
+ * 2) Alarm is not configured to go off in the future, taking snooze into account
+ *
+ * @return true if the Alarm is dirty, false otherwise
+ */
+fun Alarm.isDirty(): Boolean =
+    if (isRepeating()) {
+        isRepeatingDirty()
+    } else {
+        isNonRepeatingDirty()
+    }
+
+/**
+ * Returns whether or not a repeating Alarm is dirty. Dirty repeating Alarms are those that have invalid configurations.
+ * This can happen if the phone is off during a time in which an Alarm is scheduled to execute, or
+ * after the device's time changes.
+ *
+ * Returns true if, and only if, both of the following conditions are met:
+ * 1) Alarm is enabled
+ * 2) Alarm is not configured to go off in the future, OR Alarm is configured to go off after the
+ * next possible repeating LocalDateTime
+ *    - Both of the above conditions take snooze into account
+ *
+ * @return true if the Alarm is dirty, false otherwise
+ */
+private fun Alarm.isRepeatingDirty(): Boolean {
+    val now = LocalDateTimeUtil.nowTruncated()
+    val nextRepeatingDateTime = AlarmUtil.nextRepeatingDateTime(dateTime, weeklyRepeater)
+    return enabled &&
+            // Is the Alarm NOT set in the future?
+            // If it IS set in the future, is it set so far into
+            // the future that it's beyond the next possible Alarm?
+            if (isSnoozed()) {
+                snoozeDateTime?.isAfter(now) == false || snoozeDateTime?.isAfter(nextRepeatingDateTime) == true
+            } else {
+                !dateTime.isAfter(now) || dateTime.isAfter(nextRepeatingDateTime)
+            }
+}
+
+/**
+ * Returns whether or not a non-repeating Alarm is dirty. Dirty non-repeating Alarms are those that have invalid configurations.
  * This can happen if the phone is off during a time in which an Alarm is scheduled to execute.
  *
  * Returns true if, and only if, both of the following conditions are met:
@@ -66,7 +117,7 @@ fun Alarm.isSnoozed(): Boolean =
  *
  * @return true if the Alarm is dirty, false otherwise
  */
-fun Alarm.isDirty(): Boolean {
+private fun Alarm.isNonRepeatingDirty(): Boolean {
     val now = LocalDateTimeUtil.nowTruncated()
     return enabled &&
             if (isSnoozed()) {
