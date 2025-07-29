@@ -63,7 +63,7 @@ fun Alarm.isSnoozed(): Boolean =
  *
  * For repeating Alarms - Returns true if, and only if, both of the following conditions are met:
  * 1) Alarm is enabled
- * 2) Alarm is not configured to go off in the future, OR Alarm is configured to go off after the
+ * 2) Alarm is not configured to go off in the future, OR Alarm is not configured to go off at the
  * next possible repeating LocalDateTime
  *    - Both of the above conditions take snooze into account
  *
@@ -87,7 +87,7 @@ fun Alarm.isDirty(): Boolean =
  *
  * Returns true if, and only if, both of the following conditions are met:
  * 1) Alarm is enabled
- * 2) Alarm is not configured to go off in the future, OR Alarm is configured to go off after the
+ * 2) Alarm is not configured to go off in the future, OR Alarm is not configured to go off at the
  * next possible repeating LocalDateTime
  *    - Both of the above conditions take snooze into account
  *
@@ -101,9 +101,9 @@ private fun Alarm.isRepeatingDirty(): Boolean {
             // If it IS set in the future, is it set so far into
             // the future that it's beyond the next possible Alarm?
             if (isSnoozed()) {
-                snoozeDateTime?.isAfter(now) == false || snoozeDateTime?.isAfter(nextRepeatingDateTime) == true
+                snoozeDateTime?.isAfter(now) == false || dateTime != nextRepeatingDateTime
             } else {
-                !dateTime.isAfter(now) || dateTime.isAfter(nextRepeatingDateTime)
+                !dateTime.isAfter(now) || dateTime != nextRepeatingDateTime
             }
 }
 

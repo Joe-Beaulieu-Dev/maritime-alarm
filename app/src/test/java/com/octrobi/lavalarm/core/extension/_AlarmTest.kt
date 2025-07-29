@@ -36,6 +36,9 @@ class _AlarmTest {
     private val snoozedBaseAlarmNonRepeating = baseAlarmNonRepeating.copy(
         snoozeDateTime = baseAlarmNonRepeating.dateTime.plusMinutes(baseAlarmNonRepeating.snoozeDuration.toLong())
     )
+    private val arbitraryWeeklyRepeater = WeeklyRepeater()
+        .withDay(WeeklyRepeater.Day.WEDNESDAY)
+        .withDay(WeeklyRepeater.Day.THURSDAY)
 
     /*
      * toAlarmExecutionData
@@ -196,9 +199,10 @@ class _AlarmTest {
     }
 
     /*
-     * isDirty
+     * isDirty - Non-repeating Alarm
      */
 
+    // Snoozed
     @Test
     fun isDirty_ReturnsTrue_WhenAlarmIsEnabled_AndSnoozed_AndInPast() {
         val alarm = snoozedBaseAlarmNonRepeating
@@ -229,6 +233,7 @@ class _AlarmTest {
         }
     }
 
+    // Not Snoozed
     @Test
     fun isDirty_ReturnsTrue_WhenAlarmIsEnabled_AndNotSnoozed_AndInPast() {
         val alarm = baseAlarmNonRepeating
@@ -272,6 +277,230 @@ class _AlarmTest {
             // Not snoozed
             every { LocalDateTimeUtil.nowTruncated() } returns alarm.dateTime.minusHours(1)
             assertFalse(alarm.isDirty())
+        }
+    }
+
+    /*
+     * isDirty - Repeating Alarm
+     */
+
+    // Snoozed
+    @Test
+    fun isDirty_ReturnsTrue_RepeatingAlarm_IsEnabled_AndSnoozed_AndInPast() {
+        val now = LocalDateTimeUtil.nowTruncated()
+        val alarmTime = now.minusHours(1)
+        val alarm = baseAlarmNonRepeating.copy(
+            dateTime = alarmTime,
+            snoozeDateTime = alarmTime.plusMinutes(baseAlarmNonRepeating.snoozeDuration.toLong()),
+            weeklyRepeater = arbitraryWeeklyRepeater
+        )
+
+        mockkObject(LocalDateTimeUtil) {
+            every { LocalDateTimeUtil.nowTruncated() } returns now
+            mockkObject(AlarmUtil) {
+                every { AlarmUtil.nextRepeatingDateTime(any(), any()) } returns alarm.dateTime
+                assertTrue(alarm.isDirty())
+            }
+        }
+    }
+
+    @Test
+    fun isDirty_ReturnsTrue_RepeatingAlarm_IsEnabled_AndSnoozed_AndIsNow() {
+        val now = LocalDateTimeUtil.nowTruncated()
+        val alarmTime = now.minusMinutes(baseAlarmNonRepeating.snoozeDuration.toLong())
+        val alarm = baseAlarmNonRepeating.copy(
+            dateTime = alarmTime,
+            snoozeDateTime = alarmTime.plusMinutes(baseAlarmNonRepeating.snoozeDuration.toLong()),
+            weeklyRepeater = arbitraryWeeklyRepeater
+        )
+
+        mockkObject(LocalDateTimeUtil) {
+            every { LocalDateTimeUtil.nowTruncated() } returns now
+            mockkObject(AlarmUtil) {
+                every { AlarmUtil.nextRepeatingDateTime(any(), any()) } returns alarm.dateTime
+                assertTrue(alarm.isDirty())
+            }
+        }
+    }
+
+    @Test
+    fun isDirty_ReturnsTrue_RepeatingAlarm_IsEnabled_AndSnoozed_AndInFuture_AndIsBeforeNextRepeating() {
+        val now = LocalDateTimeUtil.nowTruncated()
+        val alarmTime = now.plusHours(1)
+        val alarm = baseAlarmNonRepeating.copy(
+            dateTime = alarmTime,
+            snoozeDateTime = alarmTime.plusMinutes(baseAlarmNonRepeating.snoozeDuration.toLong()),
+            weeklyRepeater = arbitraryWeeklyRepeater
+        )
+
+        mockkObject(LocalDateTimeUtil) {
+            every { LocalDateTimeUtil.nowTruncated() } returns now
+            mockkObject(AlarmUtil) {
+                every { AlarmUtil.nextRepeatingDateTime(any(), any()) } returns alarm.dateTime.plusDays(1)
+                assertTrue(alarm.isDirty())
+            }
+        }
+    }
+
+    @Test
+    fun isDirty_ReturnsTrue_RepeatingAlarm_IsEnabled_AndSnoozed_AndInFuture_AndAfterNextRepeating() {
+        val now = LocalDateTimeUtil.nowTruncated()
+        val alarmTime = now.plusDays(1).plusHours(1)
+        val alarm = baseAlarmNonRepeating.copy(
+            dateTime = alarmTime,
+            snoozeDateTime = alarmTime.plusMinutes(baseAlarmNonRepeating.snoozeDuration.toLong()),
+            weeklyRepeater = arbitraryWeeklyRepeater
+        )
+
+        mockkObject(LocalDateTimeUtil) {
+            every { LocalDateTimeUtil.nowTruncated() } returns now
+            mockkObject(AlarmUtil) {
+                every { AlarmUtil.nextRepeatingDateTime(any(), any()) } returns alarm.dateTime.minusDays(1)
+                assertTrue(alarm.isDirty())
+            }
+        }
+    }
+
+    @Test
+    fun isDirty_ReturnsFalse_RepeatingAlarm_IsDisabled_AndSnoozed() {
+        val now = LocalDateTimeUtil.nowTruncated()
+        val alarmTime = now.plusHours(1)
+        val alarm = baseAlarmNonRepeating.copy(
+            enabled = false,
+            dateTime = alarmTime,
+            snoozeDateTime = alarmTime.plusMinutes(baseAlarmNonRepeating.snoozeDuration.toLong()),
+            weeklyRepeater = arbitraryWeeklyRepeater
+        )
+
+        mockkObject(LocalDateTimeUtil) {
+            every { LocalDateTimeUtil.nowTruncated() } returns now
+            mockkObject(AlarmUtil) {
+                every { AlarmUtil.nextRepeatingDateTime(any(), any()) } returns alarm.dateTime
+                assertFalse(alarm.isDirty())
+            }
+        }
+    }
+
+    @Test
+    fun isDirty_ReturnsFalse_RepeatingAlarm_IsEnabled_AndSnoozed_AndInFuture_AndEqualsNextRepeating() {
+        val now = LocalDateTimeUtil.nowTruncated()
+        val alarmTime = now.plusHours(1)
+        val alarm = baseAlarmNonRepeating.copy(
+            dateTime = alarmTime,
+            snoozeDateTime = alarmTime.plusMinutes(baseAlarmNonRepeating.snoozeDuration.toLong()),
+            weeklyRepeater = arbitraryWeeklyRepeater
+        )
+
+        mockkObject(LocalDateTimeUtil) {
+            every { LocalDateTimeUtil.nowTruncated() } returns now
+            mockkObject(AlarmUtil) {
+                every { AlarmUtil.nextRepeatingDateTime(any(), any()) } returns alarm.dateTime
+                assertFalse(alarm.isDirty())
+            }
+        }
+    }
+
+    // Not Snoozed
+    @Test
+    fun isDirty_ReturnsTrue_RepeatingAlarm_IsEnabled_AndNotSnoozed_AndInPast() {
+        val now = LocalDateTimeUtil.nowTruncated()
+        val alarm = baseAlarmNonRepeating.copy(
+            dateTime = now.minusHours(1),
+            weeklyRepeater = arbitraryWeeklyRepeater
+        )
+
+        mockkObject(LocalDateTimeUtil) {
+            every { LocalDateTimeUtil.nowTruncated() } returns now
+            mockkObject(AlarmUtil) {
+                every { AlarmUtil.nextRepeatingDateTime(any(), any()) } returns alarm.dateTime
+                assertTrue(alarm.isDirty())
+            }
+        }
+    }
+
+    @Test
+    fun isDirty_ReturnsTrue_RepeatingAlarm_IsEnabled_AndNotSnoozed_AndIsNow() {
+        val now = LocalDateTimeUtil.nowTruncated()
+        val alarm = baseAlarmNonRepeating.copy(
+            dateTime = now,
+            weeklyRepeater = arbitraryWeeklyRepeater
+        )
+
+        mockkObject(LocalDateTimeUtil) {
+            every { LocalDateTimeUtil.nowTruncated() } returns now
+            mockkObject(AlarmUtil) {
+                every { AlarmUtil.nextRepeatingDateTime(any(), any()) } returns alarm.dateTime
+                assertTrue(alarm.isDirty())
+            }
+        }
+    }
+
+    @Test
+    fun isDirty_ReturnsTrue_RepeatingAlarm_IsEnabled_AndNotSnoozed_AndInFuture_AndIsBeforeNextRepeating() {
+        val now = LocalDateTimeUtil.nowTruncated()
+        val alarm = baseAlarmNonRepeating.copy(
+            dateTime = now.plusHours(1),
+            weeklyRepeater = arbitraryWeeklyRepeater
+        )
+
+        mockkObject(LocalDateTimeUtil) {
+            every { LocalDateTimeUtil.nowTruncated() } returns now
+            mockkObject(AlarmUtil) {
+                every { AlarmUtil.nextRepeatingDateTime(any(), any()) } returns alarm.dateTime.plusDays(1)
+                assertTrue(alarm.isDirty())
+            }
+        }
+    }
+
+    @Test
+    fun isDirty_ReturnsTrue_RepeatingAlarm_IsEnabled_AndNotSnoozed_AndInFuture_AndAfterNextRepeating() {
+        val now = LocalDateTimeUtil.nowTruncated()
+        val alarm = baseAlarmNonRepeating.copy(
+            dateTime = now.plusDays(1).plusHours(1),
+            weeklyRepeater = arbitraryWeeklyRepeater
+        )
+
+        mockkObject(LocalDateTimeUtil) {
+            every { LocalDateTimeUtil.nowTruncated() } returns now
+            mockkObject(AlarmUtil) {
+                every { AlarmUtil.nextRepeatingDateTime(any(), any()) } returns alarm.dateTime.minusDays(1)
+                assertTrue(alarm.isDirty())
+            }
+        }
+    }
+
+    @Test
+    fun isDirty_ReturnsFalse_RepeatingAlarm_IsDisabled_AndNotSnoozed() {
+        val now = LocalDateTimeUtil.nowTruncated()
+        val alarm = baseAlarmNonRepeating.copy(
+            enabled = false,
+            dateTime = now.plusHours(1),
+            weeklyRepeater = arbitraryWeeklyRepeater
+        )
+
+        mockkObject(LocalDateTimeUtil) {
+            every { LocalDateTimeUtil.nowTruncated() } returns now
+            mockkObject(AlarmUtil) {
+                every { AlarmUtil.nextRepeatingDateTime(any(), any()) } returns alarm.dateTime
+                assertFalse(alarm.isDirty())
+            }
+        }
+    }
+
+    @Test
+    fun isDirty_ReturnsFalse_RepeatingAlarm_IsEnabled_AndNotSnoozed_AndInFuture_AndEqualsNextRepeating() {
+        val now = LocalDateTimeUtil.nowTruncated()
+        val alarm = baseAlarmNonRepeating.copy(
+            dateTime = now.plusHours(1),
+            weeklyRepeater = arbitraryWeeklyRepeater
+        )
+
+        mockkObject(LocalDateTimeUtil) {
+            every { LocalDateTimeUtil.nowTruncated() } returns now
+            mockkObject(AlarmUtil) {
+                every { AlarmUtil.nextRepeatingDateTime(any(), any()) } returns alarm.dateTime
+                assertFalse(alarm.isDirty())
+            }
         }
     }
 
