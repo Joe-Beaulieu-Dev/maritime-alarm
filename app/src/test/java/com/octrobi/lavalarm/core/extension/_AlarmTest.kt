@@ -21,20 +21,20 @@ import java.time.LocalDateTime
 @Suppress("ClassName")
 class _AlarmTest {
 
+    // General
+    private val now = LocalDateTimeUtil.nowTruncated()
+
     // Alarm
     private val baseAlarmNonRepeating = Alarm(
         id = 1,
         name = "name",
         enabled = true,
-        dateTime = LocalDateTime.now(),
+        dateTime = now,
         weeklyRepeater = WeeklyRepeater(),
         ringtoneUri = "ringtoneUri",
         isVibrationEnabled = false,
         snoozeDateTime = null,
         snoozeDuration = 10
-    )
-    private val snoozedBaseAlarmNonRepeating = baseAlarmNonRepeating.copy(
-        snoozeDateTime = baseAlarmNonRepeating.dateTime.plusMinutes(baseAlarmNonRepeating.snoozeDuration.toLong())
     )
     private val arbitraryWeeklyRepeater = WeeklyRepeater()
         .withDay(WeeklyRepeater.Day.WEDNESDAY)
@@ -64,7 +64,9 @@ class _AlarmTest {
 
     @Test
     fun toAlarmExecutionData_ProperlyCreates_AlarmExecutionData_WhenAlarmIsSnoozed() {
-        val alarm = snoozedBaseAlarmNonRepeating
+        val alarm = baseAlarmNonRepeating.copy(
+            snoozeDateTime = baseAlarmNonRepeating.dateTime.plusMinutes(baseAlarmNonRepeating.snoozeDuration.toLong())
+        )
         val expectedAlarmExecutionData = AlarmExecutionData(
             id = alarm.id,
             name = alarm.name,
@@ -190,7 +192,10 @@ class _AlarmTest {
 
     @Test
     fun isSnoozed_ReturnsTrue_WhenAlarmIsSnoozed() {
-        assertTrue(snoozedBaseAlarmNonRepeating.isSnoozed())
+        val alarm = baseAlarmNonRepeating.copy(
+            snoozeDateTime = baseAlarmNonRepeating.dateTime.plusMinutes(baseAlarmNonRepeating.snoozeDuration.toLong())
+        )
+        assertTrue(alarm.isSnoozed())
     }
 
     @Test
@@ -205,7 +210,6 @@ class _AlarmTest {
     // Snoozed
     @Test
     fun isDirty_ReturnsTrue_RepeatingAlarm_IsEnabled_AndSnoozed_AndInPast() {
-        val now = LocalDateTimeUtil.nowTruncated()
         val alarmTime = now.minusHours(1)
         val alarm = baseAlarmNonRepeating.copy(
             dateTime = alarmTime,
@@ -224,7 +228,6 @@ class _AlarmTest {
 
     @Test
     fun isDirty_ReturnsTrue_RepeatingAlarm_IsEnabled_AndSnoozed_AndIsNow() {
-        val now = LocalDateTimeUtil.nowTruncated()
         val alarmTime = now.minusMinutes(baseAlarmNonRepeating.snoozeDuration.toLong())
         val alarm = baseAlarmNonRepeating.copy(
             dateTime = alarmTime,
@@ -243,7 +246,6 @@ class _AlarmTest {
 
     @Test
     fun isDirty_ReturnsTrue_RepeatingAlarm_IsEnabled_AndSnoozed_AndInFuture_AndIsBeforeNextRepeating() {
-        val now = LocalDateTimeUtil.nowTruncated()
         val alarmTime = now.plusHours(1)
         val alarm = baseAlarmNonRepeating.copy(
             dateTime = alarmTime,
@@ -262,7 +264,6 @@ class _AlarmTest {
 
     @Test
     fun isDirty_ReturnsTrue_RepeatingAlarm_IsEnabled_AndSnoozed_AndInFuture_AndAfterNextRepeating() {
-        val now = LocalDateTimeUtil.nowTruncated()
         val alarmTime = now.plusDays(1).plusHours(1)
         val alarm = baseAlarmNonRepeating.copy(
             dateTime = alarmTime,
@@ -281,7 +282,6 @@ class _AlarmTest {
 
     @Test
     fun isDirty_ReturnsFalse_RepeatingAlarm_IsDisabled_AndSnoozed() {
-        val now = LocalDateTimeUtil.nowTruncated()
         val alarmTime = now.plusHours(1)
         val alarm = baseAlarmNonRepeating.copy(
             enabled = false,
@@ -301,7 +301,6 @@ class _AlarmTest {
 
     @Test
     fun isDirty_ReturnsFalse_RepeatingAlarm_IsEnabled_AndSnoozed_AndInFuture_AndEqualsNextRepeating() {
-        val now = LocalDateTimeUtil.nowTruncated()
         val alarmTime = now.plusHours(1)
         val alarm = baseAlarmNonRepeating.copy(
             dateTime = alarmTime,
@@ -321,7 +320,6 @@ class _AlarmTest {
     // Not Snoozed
     @Test
     fun isDirty_ReturnsTrue_RepeatingAlarm_IsEnabled_AndNotSnoozed_AndInPast() {
-        val now = LocalDateTimeUtil.nowTruncated()
         val alarm = baseAlarmNonRepeating.copy(
             dateTime = now.minusHours(1),
             weeklyRepeater = arbitraryWeeklyRepeater
@@ -338,7 +336,6 @@ class _AlarmTest {
 
     @Test
     fun isDirty_ReturnsTrue_RepeatingAlarm_IsEnabled_AndNotSnoozed_AndIsNow() {
-        val now = LocalDateTimeUtil.nowTruncated()
         val alarm = baseAlarmNonRepeating.copy(
             dateTime = now,
             weeklyRepeater = arbitraryWeeklyRepeater
@@ -355,7 +352,6 @@ class _AlarmTest {
 
     @Test
     fun isDirty_ReturnsTrue_RepeatingAlarm_IsEnabled_AndNotSnoozed_AndInFuture_AndIsBeforeNextRepeating() {
-        val now = LocalDateTimeUtil.nowTruncated()
         val alarm = baseAlarmNonRepeating.copy(
             dateTime = now.plusHours(1),
             weeklyRepeater = arbitraryWeeklyRepeater
@@ -372,7 +368,6 @@ class _AlarmTest {
 
     @Test
     fun isDirty_ReturnsTrue_RepeatingAlarm_IsEnabled_AndNotSnoozed_AndInFuture_AndAfterNextRepeating() {
-        val now = LocalDateTimeUtil.nowTruncated()
         val alarm = baseAlarmNonRepeating.copy(
             dateTime = now.plusDays(1).plusHours(1),
             weeklyRepeater = arbitraryWeeklyRepeater
@@ -389,7 +384,6 @@ class _AlarmTest {
 
     @Test
     fun isDirty_ReturnsFalse_RepeatingAlarm_IsDisabled_AndNotSnoozed() {
-        val now = LocalDateTimeUtil.nowTruncated()
         val alarm = baseAlarmNonRepeating.copy(
             enabled = false,
             dateTime = now.plusHours(1),
@@ -407,7 +401,6 @@ class _AlarmTest {
 
     @Test
     fun isDirty_ReturnsFalse_RepeatingAlarm_IsEnabled_AndNotSnoozed_AndInFuture_AndEqualsNextRepeating() {
-        val now = LocalDateTimeUtil.nowTruncated()
         val alarm = baseAlarmNonRepeating.copy(
             dateTime = now.plusHours(1),
             weeklyRepeater = arbitraryWeeklyRepeater
@@ -428,78 +421,102 @@ class _AlarmTest {
 
     // Snoozed
     @Test
-    fun isDirty_ReturnsTrue_WhenAlarmIsEnabled_AndSnoozed_AndInPast() {
-        val alarm = snoozedBaseAlarmNonRepeating
+    fun isDirty_ReturnsTrue_NonRepeatingAlarm_IsEnabled_AndSnoozed_AndInPast() {
+        val alarmTime = now.minusHours(1)
+        val alarm = baseAlarmNonRepeating.copy(
+            dateTime = alarmTime,
+            snoozeDateTime = alarmTime.plusMinutes(baseAlarmNonRepeating.snoozeDuration.toLong())
+        )
 
         mockkObject(LocalDateTimeUtil) {
-            every { LocalDateTimeUtil.nowTruncated() } returns alarm.snoozeDateTime!!.plusHours(1)
+            every { LocalDateTimeUtil.nowTruncated() } returns now
             assertTrue(alarm.isDirty())
         }
     }
 
     @Test
-    fun isDirty_ReturnsTrue_WhenAlarmIsEnabled_AndSnoozed_AndIsNow() {
-        val alarm = snoozedBaseAlarmNonRepeating
+    fun isDirty_ReturnsTrue_NonRepeatingAlarm_IsEnabled_AndSnoozed_AndIsNow() {
+        val alarmTime = now.minusMinutes(baseAlarmNonRepeating.snoozeDuration.toLong())
+        val alarm = baseAlarmNonRepeating.copy(
+            dateTime = alarmTime,
+            snoozeDateTime = alarmTime.plusMinutes(baseAlarmNonRepeating.snoozeDuration.toLong())
+        )
 
         mockkObject(LocalDateTimeUtil) {
-            every { LocalDateTimeUtil.nowTruncated() } returns alarm.snoozeDateTime!!
+            every { LocalDateTimeUtil.nowTruncated() } returns now
             assertTrue(alarm.isDirty())
         }
     }
 
     @Test
-    fun isDirty_ReturnsFalse_WhenAlarmIsEnabled_AndSnoozed_AndInFuture() {
-        val alarm = snoozedBaseAlarmNonRepeating
+    fun isDirty_ReturnsFalse_NonRepeatingAlarm_IsDisabled_AndSnoozed() {
+        val alarmTime = now.plusHours(1)
+        val alarm = baseAlarmNonRepeating.copy(
+            enabled = false,
+            dateTime = alarmTime,
+            snoozeDateTime = alarmTime.plusMinutes(baseAlarmNonRepeating.snoozeDuration.toLong())
+        )
 
         mockkObject(LocalDateTimeUtil) {
-            every { LocalDateTimeUtil.nowTruncated() } returns alarm.snoozeDateTime!!.minusHours(1)
+            every { LocalDateTimeUtil.nowTruncated() } returns now
+            assertFalse(alarm.isDirty())
+        }
+    }
+
+    @Test
+    fun isDirty_ReturnsFalse_NonRepeatingAlarm_IsEnabled_AndSnoozed_AndInFuture() {
+        val alarmTime = now.plusHours(1)
+        val alarm = baseAlarmNonRepeating.copy(
+            dateTime = alarmTime,
+            snoozeDateTime = alarmTime.plusMinutes(baseAlarmNonRepeating.snoozeDuration.toLong())
+        )
+
+        mockkObject(LocalDateTimeUtil) {
+            every { LocalDateTimeUtil.nowTruncated() } returns now
             assertFalse(alarm.isDirty())
         }
     }
 
     // Not Snoozed
     @Test
-    fun isDirty_ReturnsTrue_WhenAlarmIsEnabled_AndNotSnoozed_AndInPast() {
-        val alarm = baseAlarmNonRepeating
+    fun isDirty_ReturnsTrue_NonRepeatingAlarm_IsEnabled_AndNotSnoozed_AndInPast() {
+        val alarm = baseAlarmNonRepeating.copy(dateTime = now.minusHours(1))
 
         mockkObject(LocalDateTimeUtil) {
-            every { LocalDateTimeUtil.nowTruncated() } returns alarm.dateTime.plusHours(1)
+            every { LocalDateTimeUtil.nowTruncated() } returns now
             assertTrue(alarm.isDirty())
         }
     }
 
     @Test
-    fun isDirty_ReturnsTrue_WhenAlarmIsEnabled_AndNotSnoozed_AndIsNow() {
-        val alarm = baseAlarmNonRepeating
+    fun isDirty_ReturnsTrue_NonRepeatingAlarm_IsEnabled_AndNotSnoozed_AndIsNow() {
+        val alarm = baseAlarmNonRepeating.copy(dateTime = now)
 
         mockkObject(LocalDateTimeUtil) {
-            every { LocalDateTimeUtil.nowTruncated() } returns alarm.dateTime
+            every { LocalDateTimeUtil.nowTruncated() } returns now
             assertTrue(alarm.isDirty())
         }
     }
 
     @Test
-    fun isDirty_ReturnsFalse_WhenAlarmIsEnabled_AndNotSnoozed_AndInFuture() {
-        val alarm = baseAlarmNonRepeating
+    fun isDirty_ReturnsFalse_NonRepeatingAlarm_IsDisabled_AndNotSnoozed() {
+        val alarm = baseAlarmNonRepeating.copy(
+            enabled = false,
+            dateTime = now.plusHours(1)
+        )
 
         mockkObject(LocalDateTimeUtil) {
-            every { LocalDateTimeUtil.nowTruncated() } returns alarm.dateTime.minusHours(1)
+            every { LocalDateTimeUtil.nowTruncated() } returns now
             assertFalse(alarm.isDirty())
         }
     }
 
     @Test
-    fun isDirty_ReturnsFalse_WhenAlarmIsDisabled_AndSnoozedOrNotSnoozed_AndInFuture() {
-        val snoozedAlarm = snoozedBaseAlarmNonRepeating.copy(enabled = false)
-        val alarm = baseAlarmNonRepeating.copy(enabled = false)
+    fun isDirty_ReturnsFalse_NonRepeatingAlarm_IsEnabled_AndNotSnoozed_AndInFuture() {
+        val alarm = baseAlarmNonRepeating.copy(dateTime = now.plusHours(1))
 
         mockkObject(LocalDateTimeUtil) {
-            // Snoozed
-            every { LocalDateTimeUtil.nowTruncated() } returns snoozedAlarm.snoozeDateTime!!.minusHours(1)
-            assertFalse(snoozedAlarm.isDirty())
-
-            // Not snoozed
-            every { LocalDateTimeUtil.nowTruncated() } returns alarm.dateTime.minusHours(1)
+            every { LocalDateTimeUtil.nowTruncated() } returns now
             assertFalse(alarm.isDirty())
         }
     }
