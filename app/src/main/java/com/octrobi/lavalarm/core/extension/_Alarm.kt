@@ -58,14 +58,12 @@ fun Alarm.isSnoozed(): Boolean =
 
 /**
  * Returns whether or not the Alarm is dirty. Dirty Alarms are those that have invalid configurations.
- * This can happen if the phone is off during a time in which an Alarm is scheduled to execute, or
- * after the device's time changes.
+ * This can happen, for example, if the phone is off during a time in which an Alarm is scheduled to execute.
  *
  * For repeating Alarms - Returns true if, and only if, both of the following conditions are met:
  * 1) Alarm is enabled
- * 2) Alarm is not configured to go off in the future, OR Alarm is not configured to go off at the
- * next possible repeating LocalDateTime
- *    - Both of the above conditions take snooze into account
+ * 2) Alarm is not configured to go off in the future, taking snooze into account, OR Alarm is not
+ * configured to go off at the next possible repeating LocalDateTime
  *
  * For non-repeating Alarms - Returns true if, and only if, both of the following conditions are met:
  * 1) Alarm is enabled
@@ -82,14 +80,12 @@ fun Alarm.isDirty(): Boolean =
 
 /**
  * Returns whether or not a repeating Alarm is dirty. Dirty repeating Alarms are those that have invalid configurations.
- * This can happen if the phone is off during a time in which an Alarm is scheduled to execute, or
- * after the device's time changes.
+ * This can happen, for example, if the phone is off during a time in which an Alarm is scheduled to execute.
  *
  * Returns true if, and only if, both of the following conditions are met:
  * 1) Alarm is enabled
- * 2) Alarm is not configured to go off in the future, OR Alarm is not configured to go off at the
- * next possible repeating LocalDateTime
- *    - Both of the above conditions take snooze into account
+ * 2) Alarm is not configured to go off in the future, taking snooze into account, OR Alarm is not
+ * configured to go off at the next possible repeating LocalDateTime
  *
  * @return true if the Alarm is dirty, false otherwise
  */
@@ -109,7 +105,7 @@ private fun Alarm.isRepeatingDirty(): Boolean {
 
 /**
  * Returns whether or not a non-repeating Alarm is dirty. Dirty non-repeating Alarms are those that have invalid configurations.
- * This can happen if the phone is off during a time in which an Alarm is scheduled to execute.
+ * This can happen, for example, if the phone is off during a time in which an Alarm is scheduled to execute.
  *
  * Returns true if, and only if, both of the following conditions are met:
  * 1) Alarm is enabled
