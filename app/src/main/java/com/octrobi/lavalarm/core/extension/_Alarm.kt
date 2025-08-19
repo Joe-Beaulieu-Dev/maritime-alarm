@@ -27,10 +27,10 @@ fun Alarm.toAlarmExecutionData(): AlarmExecutionData =
 fun Alarm.withFuturizedDateTime(): Alarm {
     val currentDateTime = LocalDateTimeUtil.nowTruncated()
 
-    val futurizedDateTime = if (!dateTime.isAfter(currentDateTime)) {
-        if (isRepeating()) {
-            AlarmUtil.nextRepeatingDateTime(dateTime, weeklyRepeater)
-        } else {
+    val futurizedDateTime = if (isRepeating()) {
+        AlarmUtil.nextRepeatingDateTime(dateTime, weeklyRepeater)
+    } else {
+        if (!dateTime.isAfter(currentDateTime)) {
             val potentialAlarm = LocalDateTime.of(currentDateTime.toLocalDate(), dateTime.toLocalTime())
             // Add the minimum amount of days required to futurize the Alarm
             if (!potentialAlarm.isAfter(currentDateTime)) {
@@ -38,9 +38,9 @@ fun Alarm.withFuturizedDateTime(): Alarm {
             } else {
                 potentialAlarm
             }
+        } else {
+            dateTime
         }
-    } else {
-        dateTime
     }
 
     return this.copy(dateTime = futurizedDateTime)
