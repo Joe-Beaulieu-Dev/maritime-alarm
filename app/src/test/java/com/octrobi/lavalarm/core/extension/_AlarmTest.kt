@@ -12,6 +12,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkObject
+import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -87,84 +88,82 @@ class _AlarmTest {
      */
 
     @Test
-    fun withFuturizedDateTime_ReturnsNextRepeatingDateTime_WhenAlarmIsRepeating_AndAlarmIsInPast() {
-        val alarm = baseAlarmNonRepeating.copy(weeklyRepeater = WeeklyRepeater().withDay(WeeklyRepeater.Day.WEDNESDAY))
+    fun withFuturizedDateTime_ReturnsNextRepeatingDateTime_RepeatingAlarm() {
+        val alarm = baseAlarmNonRepeating.copy(
+            dateTime = now.minusHours(1),
+            weeklyRepeater = arbitraryWeeklyRepeater
+        )
         val expectedDateTime = alarm.dateTime.plusDays(1)
         val expectedAlarm = alarm.copy(dateTime = expectedDateTime)
 
         mockkObject(LocalDateTimeUtil) {
-            every { LocalDateTimeUtil.nowTruncated() } returns alarm.dateTime.plusHours(1)
+            every { LocalDateTimeUtil.nowTruncated() } returns now
             mockkObject(AlarmUtil) {
                 every { AlarmUtil.nextRepeatingDateTime(any(), any()) } returns expectedDateTime
+
                 assertEquals(expectedAlarm, alarm.withFuturizedDateTime())
+                verify { AlarmUtil.nextRepeatingDateTime(alarm.dateTime, alarm.weeklyRepeater) }
             }
         }
     }
 
     @Test
-    fun withFuturizedDateTime_ReturnsNextRepeatingDateTime_WhenAlarmIsRepeating_AndAlarmIsNow() {
-        val alarm = baseAlarmNonRepeating.copy(weeklyRepeater = WeeklyRepeater().withDay(WeeklyRepeater.Day.WEDNESDAY))
-        val expectedDateTime = alarm.dateTime.plusDays(1)
-        val expectedAlarm = alarm.copy(dateTime = expectedDateTime)
+    fun withFuturizedDateTime_ReturnsAlarmTimeForTomorrow_NonRepeatingAlarm_IsInPast_AndSettingToToday_WouldBeInPast() {
+        val alarm = baseAlarmNonRepeating.copy(dateTime = now.minusDays(1).minusHours(1))
+        val expectedAlarm = alarm.copy(
+            dateTime = LocalDateTime.of(now.toLocalDate().plusDays(1), alarm.dateTime.toLocalTime())
+        )
 
         mockkObject(LocalDateTimeUtil) {
-            every { LocalDateTimeUtil.nowTruncated() } returns alarm.dateTime
-            mockkObject(AlarmUtil) {
-                every { AlarmUtil.nextRepeatingDateTime(any(), any()) } returns expectedDateTime
-                assertEquals(expectedAlarm, alarm.withFuturizedDateTime())
-            }
-        }
-    }
-
-    @Test
-    fun withFuturizedDateTime_ReturnsSameDateTime_WhenAlarmIsRepeating_AndAlarmIsInFuture() {
-        val alarm = baseAlarmNonRepeating.copy(weeklyRepeater = WeeklyRepeater().withDay(WeeklyRepeater.Day.WEDNESDAY))
-        val expectedAlarm = alarm.copy()
-
-        mockkObject(LocalDateTimeUtil) {
-            every { LocalDateTimeUtil.nowTruncated() } returns alarm.dateTime.minusHours(1)
+            every { LocalDateTimeUtil.nowTruncated() } returns now
             assertEquals(expectedAlarm, alarm.withFuturizedDateTime())
         }
     }
 
     @Test
-    fun withFuturizedDateTime_ReturnsAlarmDateTimePlusOneDay_WhenAlarmIsNotRepeating_AndAlarmIsInPast() {
-        val alarm = baseAlarmNonRepeating
-        val expectedDateTime = alarm.dateTime.plusDays(1)
-        val expectedAlarm = alarm.copy(dateTime = expectedDateTime)
+    fun withFuturizedDateTime_ReturnsAlarmTimeForTomorrow_NonRepeatingAlarm_IsInPast_AndSettingToToday_WouldBeNow() {
+        val alarm = baseAlarmNonRepeating.copy(dateTime = now.minusDays(1))
+        val expectedAlarm = alarm.copy(
+            dateTime = LocalDateTime.of(now.toLocalDate().plusDays(1), alarm.dateTime.toLocalTime())
+        )
 
         mockkObject(LocalDateTimeUtil) {
-            every { LocalDateTimeUtil.nowTruncated() } returns alarm.dateTime.plusHours(1)
-            mockkObject(AlarmUtil) {
-                every { AlarmUtil.nextRepeatingDateTime(any(), any()) } returns expectedDateTime
-                assertEquals(expectedAlarm, alarm.withFuturizedDateTime())
-            }
-        }
-    }
-
-    @Test
-    fun withFuturizedDateTime_ReturnsAlarmDateTimePlusOneDay_WhenAlarmIsNotRepeating_AndAlarmIsNow() {
-        val alarm = baseAlarmNonRepeating
-        val expectedDateTime = alarm.dateTime.plusDays(1)
-        val expectedAlarm = alarm.copy(dateTime = expectedDateTime)
-
-        mockkObject(LocalDateTimeUtil) {
-            every { LocalDateTimeUtil.nowTruncated() } returns alarm.dateTime
-            mockkObject(AlarmUtil) {
-                every { AlarmUtil.nextRepeatingDateTime(any(), any()) } returns expectedDateTime
-                assertEquals(expectedAlarm, alarm.withFuturizedDateTime())
-            }
-        }
-    }
-
-    @Test
-    fun withFuturizedDateTime_ReturnsSameDateTime_WhenAlarmIsNotRepeating_AndAlarmIsInFuture() {
-        val alarm = baseAlarmNonRepeating
-        val expectedAlarm = alarm.copy()
-
-        mockkObject(LocalDateTimeUtil) {
-            every { LocalDateTimeUtil.nowTruncated() } returns alarm.dateTime.minusHours(1)
+            every { LocalDateTimeUtil.nowTruncated() } returns now
             assertEquals(expectedAlarm, alarm.withFuturizedDateTime())
+        }
+    }
+
+    @Test
+    fun withFuturizedDateTime_ReturnsAlarmTimeForToday_NonRepeatingAlarm_IsInPast_AndSettingToToday_WouldBeInFuture() {
+        val alarm = baseAlarmNonRepeating.copy(dateTime = now.minusDays(1).plusHours(1))
+        val expectedAlarm = alarm.copy(
+            dateTime = LocalDateTime.of(now.toLocalDate(), alarm.dateTime.toLocalTime())
+        )
+
+        mockkObject(LocalDateTimeUtil) {
+            every { LocalDateTimeUtil.nowTruncated() } returns now
+            assertEquals(expectedAlarm, alarm.withFuturizedDateTime())
+        }
+    }
+
+    @Test
+    fun withFuturizedDateTime_ReturnsAlarmTimeForTomorrow_NonRepeatingAlarm_IsNow() {
+        val alarm = baseAlarmNonRepeating
+        val expectedAlarm = alarm.copy(dateTime = alarm.dateTime.plusDays(1))
+
+        mockkObject(LocalDateTimeUtil) {
+            every { LocalDateTimeUtil.nowTruncated() } returns now
+            assertEquals(expectedAlarm, alarm.withFuturizedDateTime())
+        }
+    }
+
+    @Test
+    fun withFuturizedDateTime_ReturnsSameDateTime_NonRepeatingAlarm_IsInFuture() {
+        val alarm = baseAlarmNonRepeating.copy(dateTime = now.plusHours(1))
+
+        mockkObject(LocalDateTimeUtil) {
+            every { LocalDateTimeUtil.nowTruncated() } returns now
+            assertEquals(alarm, alarm.withFuturizedDateTime())
         }
     }
 
