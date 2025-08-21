@@ -173,11 +173,8 @@ class _AlarmTest {
 
     @Test
     fun isRepeating_ReturnsTrue_WhenAlarmIsRepeating() {
-        assertTrue(
-            baseAlarmNonRepeating.copy(
-                weeklyRepeater = WeeklyRepeater().withDay(WeeklyRepeater.Day.WEDNESDAY)
-            ).isRepeating()
-        )
+        val alarm = baseAlarmNonRepeating.copy(weeklyRepeater = arbitraryWeeklyRepeater)
+        assertTrue(alarm.isRepeating())
     }
 
     @Test
