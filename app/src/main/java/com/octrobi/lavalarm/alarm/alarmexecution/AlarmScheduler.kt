@@ -113,8 +113,6 @@ object AlarmScheduler {
      *
      * @param context Context to be used for scheduling Alarms
      * @param alarmRepository repository for getting all Alarms
-     *
-     * @see cleanAlarm
      */
     suspend fun cleanAndRescheduleAlarms(context: Context, alarmRepository: AlarmRepository) {
         // Clean Alarms
@@ -123,43 +121,6 @@ object AlarmScheduler {
         // Reschedule Alarms
         // Re-query the database to get up to date Alarm data after cleaning the Alarms
         rescheduleEligibleAlarms(context, alarmRepository.getAllAlarms())
-    }
-
-    suspend fun refreshAlarms(context: Context, alarmRepository: AlarmRepository) {
-        // Get all enabled Alarms
-        val enabledAlarms = alarmRepository.getAllEnabledAlarms()
-
-        // Clean Alarms
-        enabledAlarms.forEach { cleanAlarm(it, alarmRepository) }
-
-        // Get all enabled Alarms post cleaning, as AlarmExecutionData
-        val cleanAlarmExecutionData = alarmRepository.getAllEnabledAlarms().map { it.toAlarmExecutionData() }
-
-        // Reschedule Alarms
-        val alarmManager = getAlarmManager(context)
-        cleanAlarmExecutionData.forEach { alarm ->
-            // Create PendingIntent to execute Alarm
-            val alarmPendingIntent = PendingIntent.getBroadcast(
-                context,
-                alarm.id,
-                AlarmIntentBuilder.executeAlarmIntent(context, alarm),
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-
-            // Schedule Alarm
-            alarmManager.setAlarmClock(
-                AlarmClockInfo(
-                    alarm.executionDateTime.zonedEpochMillis(),
-                    PendingIntent.getActivity(
-                        context,
-                        0,
-                        Intent(context, MainActivity::class.java),
-                        PendingIntent.FLAG_IMMUTABLE
-                    )
-                ),
-                alarmPendingIntent
-            )
-        }
     }
 
     /*
