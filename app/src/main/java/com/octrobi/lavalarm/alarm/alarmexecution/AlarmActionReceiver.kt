@@ -70,9 +70,15 @@ class AlarmActionReceiver : BroadcastReceiver() {
         // You can create a BroadcastReceiver to listen for these date/time changes and attempt to cancel the Alarm
         // if needed, but you would be racing the AlarmManager because it will not know that you have this BroadcastReceiver
         // set up to do this. This will lead to very inconsistent behavior where the Alarm may or may not get cancelled
-        // in time before the AlarmManager auto-executes it. Therefore, we check here instead to determine whether the
-        // Alarm should go off. That said, we still have a TimeChangeReceiver that performs cleanup of Alarms in the database
-        // after a date/time change when needed (see TimeChangeReceiver).
+        // in time before the AlarmManager auto-executes it. Therefore rather than trying to intercept it, we just let the
+        // AlarmManager do its thing, and check here to determine if the Alarm should go off. Unfortunately, this scenario
+        // with the AlarmManager is unavoidable so the best we can do is mitigate.
+        //
+        // Note: We still have AlarmRefreshReceiver which handles the cleanup and rescheduling of Alarms in the
+        // database/AlarmManager in various scenarios, including a date/time change. In the above scenario, if AlarmManager
+        // "finishes first" then the Alarm will execute but get filtered out below, so nothing will happen. Then AlarmRefreshReceiver
+        // will clean the Alarm and reschedule it if necessary. If AlarmRefreshReceiver "finishes first" then the original Alarm will be
+        // cleaned and then rescheduled if necessary, and the original outdated scheduling of the Alarm will be of no concern.
         if (executionDateTime?.isBefore(LocalDateTimeUtil.nowTruncated()) == false) {
             WakeLockManager.acquireWakeLock(context)
 
