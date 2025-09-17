@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Build
 import com.octrobi.lavalarm.alarm.data.repository.AlarmDatabase
 import com.octrobi.lavalarm.alarm.data.repository.AlarmRepository
+import com.octrobi.lavalarm.core.constant.actionPackageName
 import com.octrobi.lavalarm.core.extension.alarmApplication
 import com.octrobi.lavalarm.core.extension.doAsync
 import kotlinx.coroutines.Dispatchers
@@ -18,9 +19,17 @@ import kotlinx.coroutines.Dispatchers
  */
 class AlarmRefreshReceiver : BroadcastReceiver() {
 
+    companion object {
+        // Actions
+        // This should only be used on APIs < 35
+        const val ACTION_FORCE_STOP_RECOVERY_PRE_API_35 = "${actionPackageName}FORCE_STOP_RECOVERY_PRE_API_35"
+    }
+
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context != null && intent != null) {
             when (intent.action) {
+                ACTION_FORCE_STOP_RECOVERY_PRE_API_35,
+                // Handles both device boot (all APIs), and Force Stop Recovery (APIs >= 35)
                 Intent.ACTION_LOCKED_BOOT_COMPLETED,
                 Intent.ACTION_TIME_CHANGED,
                 Intent.ACTION_DATE_CHANGED,
