@@ -8,6 +8,8 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.octrobi.lavalarm.alarm.data.repository.AlarmDatabase
+import com.octrobi.lavalarm.alarm.data.repository.AlarmRepository
 import com.octrobi.lavalarm.core.recovery.ForceStopRecoveryHandler
 import com.octrobi.lavalarm.core.recovery.ForceStopRecoveryState
 import kotlinx.coroutines.flow.StateFlow
@@ -37,14 +39,21 @@ class MainActivityViewModel(private val savedStateHandle: SavedStateHandle) : Vi
     fun checkForceStopPreApi35(context: Context) {
         if (shouldPerformForceStopRecovery.value is ForceStopRecoveryState.Unchecked) {
             viewModelScope.launch {
+                val alarmRepository = AlarmRepository(
+                    AlarmDatabase
+                        .getDatabase(context.createDeviceProtectedStorageContext())
+                        .alarmDao()
+                )
+
                 val shouldPerformRecovery =
-                    if (ForceStopRecoveryHandler.shouldPerformForceStopRecoveryPreApi35(context)) {
+                    ForceStopRecoveryHandler.shouldPerformForceStopRecoveryPreApi35(context, alarmRepository)
+
+                savedStateHandle[KEY_SHOULD_PERFORM_FORCE_STOP_RECOVERY] =
+                    if (shouldPerformRecovery) {
                         ForceStopRecoveryState.ShouldPerformRecovery
                     } else {
                         ForceStopRecoveryState.ShouldNotPerformRecovery
                     }
-
-                savedStateHandle[KEY_SHOULD_PERFORM_FORCE_STOP_RECOVERY] = shouldPerformRecovery
             }
         }
     }

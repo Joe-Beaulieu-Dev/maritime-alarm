@@ -5,9 +5,24 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import com.octrobi.lavalarm.alarm.alarmexecution.AlarmRefreshReceiver
-import com.octrobi.lavalarm.alarm.data.repository.AlarmDatabase
 import com.octrobi.lavalarm.alarm.data.repository.AlarmRepository
+import com.octrobi.lavalarm.core.util.BuildVersionUtil
 
+/**
+ * Detect and handle Force Stops on APIs < 35.
+ *
+ * Since Force Stops cannot be detected in real time, they are dealt with the first
+ * time the User launches the app following a Force Stop (Force Stop Recovery).
+ * Due to the limitations of Android, Force Stops cannot be directly detected on
+ * APIs < 35, so custom indirect methods must be created.
+ *
+ * On APIs >= 35, Force Stop Recovery is handled directly in AlarmRefreshReceiver
+ * by reacting to Intent.ACTION_LOCKED_BOOT_COMPLETED, which is broadcast on
+ * APIs >= 35 when the User launches an app for the first time after it was Force Stopped.
+ *
+ * For details on the new Force Stop Recovery options and behavior introduced in API 35, see:
+ *   - https://developer.android.com/about/versions/15/behavior-changes-all#enhanced-stop-states
+ */
 object ForceStopRecoveryHandler {
 
     /**
@@ -65,8 +80,11 @@ object ForceStopRecoveryHandler {
      * @return true if the app may have been previously Force Stopped and needs recovery, false if otherwise.
      *         Defaults to true if called on APIs >= 35 to err on the side of caution. Do not call on APIs >= 35.
      */
-    suspend fun shouldPerformForceStopRecoveryPreApi35(context: Context): Boolean =
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+    suspend fun shouldPerformForceStopRecoveryPreApi35(
+        context: Context,
+        alarmRepository: AlarmRepository
+    ): Boolean =
+        if (BuildVersionUtil.getCurrentSkdInt() < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             val alarmManager = context.getSystemService(AlarmManager::class.java)
             val nextAlarmCreator = alarmManager.nextAlarmClock?.showIntent?.creatorPackage
             val myPackageName = context.packageName
@@ -80,11 +98,6 @@ object ForceStopRecoveryHandler {
                 // then there's nothing to refresh so just return false. Returning false in this scenario is desired
                 // as this function is utilized to determine whether or not action needs to be taken in the form of an
                 // Alarm refresh.
-                val alarmRepository = AlarmRepository(
-                    AlarmDatabase
-                        .getDatabase(context.createDeviceProtectedStorageContext())
-                        .alarmDao()
-                )
                 alarmRepository.getAllEnabledAlarms().isNotEmpty()
             } else {
                 // The next upcoming Alarm scheduled with AlarmManager is from this app,
