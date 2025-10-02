@@ -2,6 +2,7 @@
 plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.androidxRoom) apply false
+    alias(libs.plugins.hilt) apply false
     alias(libs.plugins.jetbrainsKotlinAndroid) apply false
     alias(libs.plugins.kotlinParcelize) apply false
     alias(libs.plugins.kotlinxSerialization) apply false

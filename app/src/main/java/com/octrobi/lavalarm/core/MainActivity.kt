@@ -17,8 +17,10 @@ import com.octrobi.lavalarm.core.navigation.TopLevelNavHost
 import com.octrobi.lavalarm.core.recovery.ForceStopRecoveryState
 import com.octrobi.lavalarm.core.ui.theme.AndroidDefaultDarkScrim
 import com.octrobi.lavalarm.core.ui.theme.LavalarmTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val viewModel by viewModels<MainActivityViewModel> {

@@ -13,7 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.octrobi.lavalarm.alarm.data.model.Alarm
 import com.octrobi.lavalarm.alarm.data.preview.alarmSampleDataHardCodedIds
 import com.octrobi.lavalarm.alarm.data.repository.AlarmListState
@@ -31,7 +31,7 @@ import com.octrobi.lavalarm.settings.data.repository.GeneralSettingsState
 fun AlarmListScreen(
     navigateToAlarmEditScreen: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    alarmListViewModel: AlarmListViewModel = viewModel(factory = AlarmListViewModel.Factory)
+    alarmListViewModel: AlarmListViewModel = hiltViewModel()
 ) {
     // State
     val alarmListState by alarmListViewModel.alarmList.collectAsState()

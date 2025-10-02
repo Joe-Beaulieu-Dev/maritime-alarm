@@ -4,8 +4,13 @@ import com.octrobi.lavalarm.alarm.data.model.Alarm
 import com.octrobi.lavalarm.alarm.data.model.AlarmDao
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDateTime
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AlarmRepository(private val alarmDao: AlarmDao) {
+@Singleton
+class AlarmRepository @Inject constructor(
+    private val alarmDao: AlarmDao
+) {
 
     /*
      *******************************
