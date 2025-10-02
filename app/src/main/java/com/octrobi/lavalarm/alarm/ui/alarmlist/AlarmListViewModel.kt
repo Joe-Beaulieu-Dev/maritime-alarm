@@ -1,15 +1,10 @@
 package com.octrobi.lavalarm.alarm.ui.alarmlist
 
-import android.app.Application
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.octrobi.lavalarm.alarm.alarmexecution.AlarmScheduler
 import com.octrobi.lavalarm.alarm.data.model.Alarm
-import com.octrobi.lavalarm.alarm.data.repository.AlarmDatabase
 import com.octrobi.lavalarm.alarm.data.repository.AlarmListState
 import com.octrobi.lavalarm.alarm.data.repository.AlarmRepository
 import com.octrobi.lavalarm.core.extension.toAlarmExecutionData
@@ -20,17 +15,19 @@ import com.octrobi.lavalarm.core.ui.snackbar.global.GlobalSnackbarController
 import com.octrobi.lavalarm.settings.data.model.GeneralSettings
 import com.octrobi.lavalarm.settings.data.repository.GeneralSettingsRepository
 import com.octrobi.lavalarm.settings.data.repository.GeneralSettingsState
-import com.octrobi.lavalarm.settings.data.repository.generalSettingsDataStore
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AlarmListViewModel(
+@HiltViewModel
+class AlarmListViewModel @Inject constructor(
     private val alarmRepository: AlarmRepository,
-    private val generalSettingsRepository: GeneralSettingsRepository
+    generalSettingsRepository: GeneralSettingsRepository
 ) : ViewModel() {
 
     // Alarm List
@@ -54,20 +51,6 @@ class AlarmListViewModel(
                 SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
                 GeneralSettingsState.Loading
             )
-
-    companion object {
-
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as Application)
-
-                AlarmListViewModel(
-                    alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(application).alarmDao()),
-                    generalSettingsRepository = GeneralSettingsRepository(application.generalSettingsDataStore)
-                )
-            }
-        }
-    }
 
     /*
      * Modify

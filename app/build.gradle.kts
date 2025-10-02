@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.androidxRoom)
+    alias(libs.plugins.hilt)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.kotlinxSerialization)
@@ -87,6 +88,11 @@ dependencies {
     // Navigation
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+
+    // Hilt
+    implementation(libs.hilt)
+    implementation(libs.androidx.hilt.navigation.compose)
+    ksp(libs.hilt.compiler)
 
     // Room
     implementation(libs.androidx.room.runtime)
