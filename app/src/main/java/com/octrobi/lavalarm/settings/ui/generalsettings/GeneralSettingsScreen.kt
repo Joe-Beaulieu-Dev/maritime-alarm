@@ -35,7 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.octrobi.lavalarm.R
@@ -55,7 +55,7 @@ import com.octrobi.lavalarm.settings.ui.generalsettings.component.TimeDisplayDia
 fun GeneralSettingsScreen(
     navHostController: NavHostController,
     modifier: Modifier = Modifier,
-    generalSettingsViewModel: GeneralSettingsViewModel = viewModel(factory = GeneralSettingsViewModel.Factory)
+    generalSettingsViewModel: GeneralSettingsViewModel = hiltViewModel()
 ) {
     // Configure Status Bar
     StatusBarUtil.setDarkStatusBar()

@@ -1,25 +1,25 @@
 package com.octrobi.lavalarm.settings.ui.generalsettings
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import com.octrobi.lavalarm.settings.data.model.GeneralSettings
 import com.octrobi.lavalarm.settings.data.model.TimeDisplay
 import com.octrobi.lavalarm.settings.data.repository.GeneralSettingsRepository
 import com.octrobi.lavalarm.settings.data.repository.GeneralSettingsState
-import com.octrobi.lavalarm.settings.data.repository.generalSettingsDataStore
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class GeneralSettingsViewModel(private val generalSettingsRepository: GeneralSettingsRepository) : ViewModel() {
+@HiltViewModel
+class GeneralSettingsViewModel @Inject constructor(
+    private val generalSettingsRepository: GeneralSettingsRepository
+) : ViewModel() {
 
     // General Settings
     private val referenceGeneralSettings: MutableStateFlow<GeneralSettingsState> = MutableStateFlow(GeneralSettingsState.Loading)
@@ -39,19 +39,6 @@ class GeneralSettingsViewModel(private val generalSettingsRepository: GeneralSet
                     referenceGeneralSettings.value = generalSettingsState
                     _modifiedGeneralSettings.value = generalSettingsState
                 }
-        }
-    }
-
-    companion object {
-
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as Application)
-
-                GeneralSettingsViewModel(
-                    generalSettingsRepository = GeneralSettingsRepository(application.generalSettingsDataStore)
-                )
-            }
         }
     }
 
