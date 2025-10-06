@@ -1,6 +1,5 @@
 package com.octrobi.lavalarm.settings.data.repository
 
-import android.app.Application
 import android.content.Context
 import android.media.RingtoneManager
 import androidx.datastore.core.DataStore
@@ -16,25 +15,30 @@ import com.octrobi.lavalarm.core.data.model.RingtoneData
 import com.octrobi.lavalarm.core.data.repository.RingtoneRepository
 import com.octrobi.lavalarm.core.extension.alarmApplication
 import com.octrobi.lavalarm.settings.data.model.AlarmDefaults
+import com.octrobi.lavalarm.settings.di.AlarmDefaultsDataStore
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
 val Context.alarmDefaultsDataStore by preferencesDataStore(
     name = AlarmDefaultsRepository.ALARM_DEFAULTS_PREFERENCES_NAME,
     corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() }
 )
 
-class AlarmDefaultsRepository(
-    application: Application,
-    private val dataStore: DataStore<Preferences>
+@Singleton
+class AlarmDefaultsRepository @Inject constructor(
+    @ApplicationContext applicationContext: Context,
+    @AlarmDefaultsDataStore private val dataStore: DataStore<Preferences>
 ) {
 
     init {
-        application.alarmApplication.applicationScope.launch {
-            initRingtoneUri(application)
+        applicationContext.alarmApplication.applicationScope.launch {
+            initRingtoneUri(applicationContext)
         }
     }
 

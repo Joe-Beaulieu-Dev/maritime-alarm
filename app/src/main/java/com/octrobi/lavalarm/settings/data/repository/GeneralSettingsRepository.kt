@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.octrobi.lavalarm.settings.data.model.GeneralSettings
 import com.octrobi.lavalarm.settings.data.model.TimeDisplay
+import com.octrobi.lavalarm.settings.di.GeneralSettingsDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -23,7 +24,7 @@ val Context.generalSettingsDataStore by preferencesDataStore(
 
 @Singleton
 class GeneralSettingsRepository @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    @GeneralSettingsDataStore private val dataStore: DataStore<Preferences>
 ) {
 
     companion object {

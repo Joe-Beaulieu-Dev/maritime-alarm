@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
-import com.octrobi.lavalarm.settings.data.repository.GeneralSettingsRepository
+import com.octrobi.lavalarm.settings.data.repository.AlarmDefaultsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,20 +17,20 @@ import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Qualifier
-annotation class GeneralSettingsDataStore
+annotation class AlarmDefaultsDataStore
 
 @Module
 @InstallIn(SingletonComponent::class)
-object GeneralSettingsDataStoreModule {
+object AlarmDefaultsDataStoreModule {
 
     @Provides
     @Singleton
-    @GeneralSettingsDataStore
-    fun provideGeneralSettingsDataStore(@ApplicationContext applicationContext: Context): DataStore<Preferences> =
+    @AlarmDefaultsDataStore
+    fun provideAlarmDefaultsDataStore(@ApplicationContext applicationContext: Context): DataStore<Preferences> =
         PreferenceDataStoreFactory.create(
             corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
             produceFile = {
-                applicationContext.preferencesDataStoreFile(GeneralSettingsRepository.GENERAL_SETTINGS_PREFERENCES_NAME)
+                applicationContext.preferencesDataStoreFile(AlarmDefaultsRepository.ALARM_DEFAULTS_PREFERENCES_NAME)
             }
         )
 }
