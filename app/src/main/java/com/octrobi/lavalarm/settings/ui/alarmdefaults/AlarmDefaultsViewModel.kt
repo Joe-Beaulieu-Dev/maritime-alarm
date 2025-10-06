@@ -1,25 +1,25 @@
 package com.octrobi.lavalarm.settings.ui.alarmdefaults
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import com.octrobi.lavalarm.core.data.model.RingtoneData
 import com.octrobi.lavalarm.settings.data.model.AlarmDefaults
 import com.octrobi.lavalarm.settings.data.repository.AlarmDefaultsRepository
 import com.octrobi.lavalarm.settings.data.repository.AlarmDefaultsState
-import com.octrobi.lavalarm.settings.data.repository.alarmDefaultsDataStore
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AlarmDefaultsViewModel(private val alarmDefaultsRepository: AlarmDefaultsRepository) : ViewModel() {
+@HiltViewModel
+class AlarmDefaultsViewModel @Inject constructor(
+    private val alarmDefaultsRepository: AlarmDefaultsRepository
+) : ViewModel() {
 
     // Alarm Defaults
     private val referenceAlarmDefaults: MutableStateFlow<AlarmDefaultsState> = MutableStateFlow(AlarmDefaultsState.Loading)
@@ -39,19 +39,6 @@ class AlarmDefaultsViewModel(private val alarmDefaultsRepository: AlarmDefaultsR
                     referenceAlarmDefaults.value = alarmDefaultsState
                     _modifiedAlarmDefaults.value = alarmDefaultsState
                 }
-        }
-    }
-
-    companion object {
-
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as Application)
-
-                AlarmDefaultsViewModel(
-                    alarmDefaultsRepository = AlarmDefaultsRepository(application, application.alarmDefaultsDataStore)
-                )
-            }
         }
     }
 

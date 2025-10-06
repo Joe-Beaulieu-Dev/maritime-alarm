@@ -46,7 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.octrobi.lavalarm.R
@@ -73,7 +73,7 @@ fun AlarmDefaultsScreen(
     navHostController: NavHostController,
     navigateToRingtonePickerScreen: (String) -> Unit,
     modifier: Modifier = Modifier,
-    alarmDefaultsViewModel: AlarmDefaultsViewModel = viewModel(factory = AlarmDefaultsViewModel.Factory)
+    alarmDefaultsViewModel: AlarmDefaultsViewModel = hiltViewModel()
 ) {
     // Configure Status Bar
     StatusBarUtil.setDarkStatusBar()
