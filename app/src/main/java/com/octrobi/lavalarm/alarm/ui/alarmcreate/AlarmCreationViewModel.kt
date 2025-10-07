@@ -33,6 +33,7 @@ import com.octrobi.lavalarm.settings.data.repository.GeneralSettingsRepository
 import com.octrobi.lavalarm.settings.data.repository.GeneralSettingsState
 import com.octrobi.lavalarm.settings.data.repository.alarmDefaultsDataStore
 import com.octrobi.lavalarm.settings.data.repository.generalSettingsDataStore
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,8 +47,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
+import javax.inject.Inject
 
-class AlarmCreationViewModel(
+@HiltViewModel
+class AlarmCreationViewModel @Inject constructor(
     private val alarmRepository: AlarmRepository,
     private val alarmDefaultsRepository: AlarmDefaultsRepository,
     private val generalSettingsRepository: GeneralSettingsRepository,

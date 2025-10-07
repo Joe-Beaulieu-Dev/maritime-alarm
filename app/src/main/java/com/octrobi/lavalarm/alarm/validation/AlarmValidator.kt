@@ -4,8 +4,9 @@ import android.content.Context
 import com.octrobi.lavalarm.R
 import com.octrobi.lavalarm.core.extension.LocalDateTimeUtil
 import java.time.LocalDateTime
+import javax.inject.Inject
 
-class AlarmValidator {
+class AlarmValidator @Inject constructor() {
 
     companion object {
         // Name validation
