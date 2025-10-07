@@ -39,7 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.octrobi.lavalarm.R
 import com.octrobi.lavalarm.alarm.data.preview.ringtoneDataSampleList
@@ -59,7 +59,7 @@ import com.octrobi.lavalarm.core.util.StatusBarUtil
 fun RingtonePickerScreen(
     navHostController: NavHostController,
     modifier: Modifier,
-    ringtonePickerViewModel: RingtonePickerViewModel = viewModel(factory = RingtonePickerViewModel.Factory)
+    ringtonePickerViewModel: RingtonePickerViewModel = hiltViewModel()
 ) {
     // Configure Status Bar
     StatusBarUtil.setDarkStatusBar()

@@ -7,8 +7,12 @@ import android.net.Uri
 import androidx.core.database.getIntOrNull
 import androidx.core.database.getStringOrNull
 import com.octrobi.lavalarm.core.data.model.RingtoneData
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class RingtoneRepository(private val context: Context) {
+class RingtoneRepository @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
 
     companion object {
         private const val SYSTEM_DEFAULT_RINGTONE_TITLE_PREFIX = "Default ("
