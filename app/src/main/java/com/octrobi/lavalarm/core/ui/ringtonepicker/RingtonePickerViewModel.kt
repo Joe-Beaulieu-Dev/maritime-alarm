@@ -17,11 +17,14 @@ import com.octrobi.lavalarm.core.data.model.RingtoneData
 import com.octrobi.lavalarm.core.data.repository.RingtoneRepository
 import com.octrobi.lavalarm.core.navigation.Destination
 import com.octrobi.lavalarm.core.ringtone.RingtonePlayerManager
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
-class RingtonePickerViewModel(
+@HiltViewModel
+class RingtonePickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     ringtoneRepository: RingtoneRepository
 ) : ViewModel(), DefaultLifecycleObserver {
