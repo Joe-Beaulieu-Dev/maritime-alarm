@@ -1,16 +1,11 @@
 package com.octrobi.lavalarm.core.ui.ringtonepicker
 
-import android.app.Application
 import android.content.Context
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.createSavedStateHandle
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import androidx.navigation.toRoute
 import com.octrobi.lavalarm.core.data.model.RingtoneData
@@ -57,20 +52,6 @@ class RingtonePickerViewModel @Inject constructor(
         // This is because onStop() won't be called when the ViewModel is destroyed via back-navigation; however, ViewModel.onCleared()
         // will be called in this situation. Therefore, both onStop() and onCleared() are required for proper Ringtone playback management.
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
-    }
-
-    companion object {
-
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as Application)
-
-                RingtonePickerViewModel(
-                    savedStateHandle = createSavedStateHandle(),
-                    ringtoneRepository = RingtoneRepository(application)
-                )
-            }
-        }
     }
 
     /*

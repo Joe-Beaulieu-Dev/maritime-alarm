@@ -13,7 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.octrobi.lavalarm.R
@@ -46,7 +46,7 @@ fun AlarmEditScreen(
     navHostController: NavHostController,
     navigateToRingtonePickerScreen: (String) -> Unit,
     modifier: Modifier = Modifier,
-    alarmEditViewModel: AlarmEditViewModel = viewModel(factory = AlarmEditViewModel.Factory)
+    alarmEditViewModel: AlarmEditViewModel = hiltViewModel()
 ) {
     // State
     val alarmState by alarmEditViewModel.modifiedAlarm.collectAsState()

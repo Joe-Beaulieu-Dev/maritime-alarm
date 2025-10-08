@@ -1,17 +1,12 @@
 package com.octrobi.lavalarm.alarm.ui.alarmcreate
 
-import android.app.Application
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import com.octrobi.lavalarm.alarm.alarmexecution.AlarmScheduler
 import com.octrobi.lavalarm.alarm.data.model.Alarm
 import com.octrobi.lavalarm.alarm.data.model.WeeklyRepeater
-import com.octrobi.lavalarm.alarm.data.repository.AlarmDatabase
 import com.octrobi.lavalarm.alarm.data.repository.AlarmRepository
 import com.octrobi.lavalarm.alarm.data.repository.AlarmState
 import com.octrobi.lavalarm.alarm.util.AlarmUtil
@@ -31,8 +26,6 @@ import com.octrobi.lavalarm.settings.data.repository.AlarmDefaultsRepository
 import com.octrobi.lavalarm.settings.data.repository.AlarmDefaultsState
 import com.octrobi.lavalarm.settings.data.repository.GeneralSettingsRepository
 import com.octrobi.lavalarm.settings.data.repository.GeneralSettingsState
-import com.octrobi.lavalarm.settings.data.repository.alarmDefaultsDataStore
-import com.octrobi.lavalarm.settings.data.repository.generalSettingsDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
@@ -52,8 +45,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AlarmCreationViewModel @Inject constructor(
     private val alarmRepository: AlarmRepository,
-    private val alarmDefaultsRepository: AlarmDefaultsRepository,
-    private val generalSettingsRepository: GeneralSettingsRepository,
+    alarmDefaultsRepository: AlarmDefaultsRepository,
+    generalSettingsRepository: GeneralSettingsRepository,
     private val alarmValidator: AlarmValidator
 ) : ViewModel() {
 
@@ -116,22 +109,6 @@ class AlarmCreationViewModel @Inject constructor(
                         _newAlarm.value = alarmState
                     }
                 }
-        }
-    }
-
-    companion object {
-
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as Application)
-
-                AlarmCreationViewModel(
-                    alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(application).alarmDao()),
-                    alarmDefaultsRepository = AlarmDefaultsRepository(application, application.alarmDefaultsDataStore),
-                    generalSettingsRepository = GeneralSettingsRepository(application.generalSettingsDataStore),
-                    alarmValidator = AlarmValidator()
-                )
-            }
         }
     }
 
