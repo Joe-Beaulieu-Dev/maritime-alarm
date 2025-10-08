@@ -1,20 +1,14 @@
 package com.octrobi.lavalarm.alarm.ui.alarmedit
 
-import android.app.Application
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import androidx.navigation.toRoute
 import com.octrobi.lavalarm.alarm.alarmexecution.AlarmScheduler
 import com.octrobi.lavalarm.alarm.data.model.Alarm
 import com.octrobi.lavalarm.alarm.data.model.WeeklyRepeater
-import com.octrobi.lavalarm.alarm.data.repository.AlarmDatabase
 import com.octrobi.lavalarm.alarm.data.repository.AlarmRepository
 import com.octrobi.lavalarm.alarm.data.repository.AlarmState
 import com.octrobi.lavalarm.alarm.util.AlarmUtil
@@ -31,7 +25,7 @@ import com.octrobi.lavalarm.core.ui.snackbar.SnackbarEvent
 import com.octrobi.lavalarm.settings.data.model.GeneralSettings
 import com.octrobi.lavalarm.settings.data.repository.GeneralSettingsRepository
 import com.octrobi.lavalarm.settings.data.repository.GeneralSettingsState
-import com.octrobi.lavalarm.settings.data.repository.generalSettingsDataStore
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,11 +38,13 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import javax.inject.Inject
 
-class AlarmEditViewModel(
+@HiltViewModel
+class AlarmEditViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val alarmRepository: AlarmRepository,
-    private val generalSettingsRepository: GeneralSettingsRepository,
+    generalSettingsRepository: GeneralSettingsRepository,
     private val alarmValidator: AlarmValidator
 ) : ViewModel() {
 
@@ -97,22 +93,6 @@ class AlarmEditViewModel(
                     referenceAlarm.value = alarmState
                     _modifiedAlarm.value = alarmState
                 }
-        }
-    }
-
-    companion object {
-
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as Application)
-
-                AlarmEditViewModel(
-                    savedStateHandle = createSavedStateHandle(),
-                    alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(application).alarmDao()),
-                    generalSettingsRepository = GeneralSettingsRepository(application.generalSettingsDataStore),
-                    alarmValidator = AlarmValidator()
-                )
-            }
         }
     }
 

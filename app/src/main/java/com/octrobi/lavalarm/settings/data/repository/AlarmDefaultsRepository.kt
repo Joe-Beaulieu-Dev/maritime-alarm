@@ -3,14 +3,12 @@ package com.octrobi.lavalarm.settings.data.repository
 import android.content.Context
 import android.media.RingtoneManager
 import androidx.datastore.core.DataStore
-import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import com.octrobi.lavalarm.core.data.model.RingtoneData
 import com.octrobi.lavalarm.core.data.repository.RingtoneRepository
 import com.octrobi.lavalarm.core.extension.alarmApplication
@@ -24,11 +22,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
-
-val Context.alarmDefaultsDataStore by preferencesDataStore(
-    name = AlarmDefaultsRepository.ALARM_DEFAULTS_PREFERENCES_NAME,
-    corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() }
-)
 
 @Singleton
 class AlarmDefaultsRepository @Inject constructor(
