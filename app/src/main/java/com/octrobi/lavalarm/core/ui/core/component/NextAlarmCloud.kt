@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.octrobi.lavalarm.R
 import com.octrobi.lavalarm.alarm.data.preview.consistentFutureAlarm
 import com.octrobi.lavalarm.alarm.data.preview.snoozedAlarm
@@ -61,7 +61,7 @@ fun NextAlarmCloud(
     currentCoreDestination: Destination,
     previousCoreDestination: Destination,
     modifier: Modifier = Modifier,
-    nextAlarmCloudViewModel: NextAlarmCloudViewModel = viewModel(factory = NextAlarmCloudViewModel.Factory)
+    nextAlarmCloudViewModel: NextAlarmCloudViewModel = hiltViewModel()
 ) {
     // State
     val alarmCountdownState by nextAlarmCloudViewModel.alarmCountdownState.collectAsState()

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.addCallback
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.background
@@ -39,8 +40,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -84,7 +85,7 @@ fun CoreScreen(
     secondaryNavHostController: NavHostController,
     navigateToAlarmCreationScreen: () -> Unit,
     modifier: Modifier = Modifier,
-    coreScreenViewModel: CoreScreenViewModel = viewModel(factory = CoreScreenViewModel.Factory)
+    coreScreenViewModel: CoreScreenViewModel = hiltViewModel()
 ) {
     // Configure Status Bar
     StatusBarUtil.setLightStatusBar()
@@ -104,7 +105,7 @@ fun CoreScreen(
     val setPreviousCoreDestination: (Destination) -> Unit = coreScreenViewModel::setPreviousCoreDestination
 
     // Back press
-    val activity: Activity? = (LocalContext.current as? Activity)
+    val activity: Activity? = LocalActivity.current
     val onBackPressedDispatcher: OnBackPressedDispatcher? = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     if (activity != null && onBackPressedDispatcher != null) {
         onBackPressedDispatcher.addCallback(owner = LocalLifecycleOwner.current) {

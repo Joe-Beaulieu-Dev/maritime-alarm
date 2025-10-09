@@ -1,12 +1,10 @@
 package com.octrobi.lavalarm.core.ui.core
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.octrobi.lavalarm.core.navigation.Destination
 import com.octrobi.lavalarm.core.ui.snackbar.SnackbarEvent
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,8 +12,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CoreScreenViewModel : ViewModel() {
+@HiltViewModel
+class CoreScreenViewModel @Inject constructor() : ViewModel() {
 
     // Navigation Tracking
     private val _currentCoreDestination: MutableStateFlow<Destination> = MutableStateFlow(Destination.AlarmListScreen)
@@ -26,15 +26,6 @@ class CoreScreenViewModel : ViewModel() {
     // Snackbar
     private val localSnackbarChannel = Channel<SnackbarEvent>()
     val localSnackbarFlow = localSnackbarChannel.receiveAsFlow()
-
-    companion object {
-
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                CoreScreenViewModel()
-            }
-        }
-    }
 
     /*
      * Navigation Tracking

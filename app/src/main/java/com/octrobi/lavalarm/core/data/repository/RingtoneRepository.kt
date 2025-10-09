@@ -11,7 +11,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class RingtoneRepository @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val applicationContext: Context
 ) {
 
     companion object {
@@ -21,12 +21,12 @@ class RingtoneRepository @Inject constructor(
 
     fun getRingtone(ringtoneUri: String): Ringtone {
         val uri = Uri.parse(ringtoneUri)
-        var ringtone = RingtoneManager.getRingtone(context.applicationContext, uri)
+        var ringtone = RingtoneManager.getRingtone(applicationContext, uri)
 
         if (ringtone == null) {
             // TODO: This can return null, just check it out
             val defaultRingtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-            ringtone = RingtoneManager.getRingtone(context.applicationContext, defaultRingtoneUri)
+            ringtone = RingtoneManager.getRingtone(applicationContext, defaultRingtoneUri)
         }
 
         // TODO: This can technically still be null since getRingtone() can return null.
@@ -36,7 +36,7 @@ class RingtoneRepository @Inject constructor(
     }
 
     fun getAllRingtoneData(): List<RingtoneData> {
-        val ringtoneManager = RingtoneManager(context.applicationContext).apply { setType(RingtoneManager.TYPE_ALARM) }
+        val ringtoneManager = RingtoneManager(applicationContext).apply { setType(RingtoneManager.TYPE_ALARM) }
         val ringtoneCursor = ringtoneManager.cursor
         val ringtoneList: MutableList<RingtoneData> = mutableListOf()
 
@@ -69,14 +69,14 @@ class RingtoneRepository @Inject constructor(
 
     fun tryGetNonGenericSystemDefaultUri(): String {
         val genericSystemDefaultUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-        val genericSystemDefaultRingtone: Ringtone? = RingtoneManager.getRingtone(context, genericSystemDefaultUri)
+        val genericSystemDefaultRingtone: Ringtone? = RingtoneManager.getRingtone(applicationContext, genericSystemDefaultUri)
 
         return if (genericSystemDefaultRingtone != null) {
             // Remove the System Default Ringtone prefix and suffix and try to find a match on the cleaned name.
             // This could be improved with a Regex check, but for now this just needs to get done.
             val ringtoneList = getAllRingtoneData()
             val cleanRingtoneName = genericSystemDefaultRingtone
-                .getTitle(context)
+                .getTitle(applicationContext)
                 .removePrefix(SYSTEM_DEFAULT_RINGTONE_TITLE_PREFIX)
                 .removeSuffix(SYSTEM_DEFAULT_RINGTONE_TITLE_SUFFIX)
             val match: RingtoneData? = ringtoneList.firstOrNull { it.name == cleanRingtoneName }
