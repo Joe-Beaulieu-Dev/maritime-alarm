@@ -1,6 +1,5 @@
 package com.octrobi.lavalarm.core.ui.core.component
 
-import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -10,28 +9,28 @@ import androidx.compose.material.icons.filled.AlarmOff
 import androidx.compose.material.icons.filled.Snooze
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.octrobi.lavalarm.R
 import com.octrobi.lavalarm.alarm.data.model.Alarm
-import com.octrobi.lavalarm.alarm.data.repository.AlarmDatabase
 import com.octrobi.lavalarm.alarm.data.repository.AlarmRepository
 import com.octrobi.lavalarm.alarm.data.repository.AlarmState
 import com.octrobi.lavalarm.core.extension.LocalDateTimeUtil
 import com.octrobi.lavalarm.core.extension.isSnoozed
 import com.octrobi.lavalarm.core.extension.toCountdownString
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class NextAlarmCloudViewModel(
-    private val application: Application,
-    private val alarmRepository: AlarmRepository
+@HiltViewModel
+class NextAlarmCloudViewModel @Inject constructor(
+    @ApplicationContext private val applicationContext: Context,
+    alarmRepository: AlarmRepository
 ) : ViewModel() {
 
     // Time Change BroadcastReceiver
@@ -76,20 +75,6 @@ class NextAlarmCloudViewModel(
         }
     }
 
-    companion object {
-
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as Application)
-
-                NextAlarmCloudViewModel(
-                    application = application,
-                    alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(application).alarmDao())
-                )
-            }
-        }
-    }
-
     private fun getNextAlarm(alarmList: List<Alarm>): Alarm? =
         alarmList
             .filter { alarm ->
@@ -112,9 +97,9 @@ class NextAlarmCloudViewModel(
 
     private fun getCountdownText(alarmState: AlarmState): String =
         if (alarmState is AlarmState.Success) {
-            alarmState.alarm.toCountdownString(application)
+            alarmState.alarm.toCountdownString(applicationContext)
         } else {
-            application.getString(R.string.no_active_alarms)
+            applicationContext.getString(R.string.no_active_alarms)
         }
 
     private fun getIcon(alarmState: AlarmState): ImageVector =
