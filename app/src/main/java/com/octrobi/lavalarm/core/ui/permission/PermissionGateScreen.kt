@@ -35,7 +35,7 @@ import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.octrobi.lavalarm.R
 import com.octrobi.lavalarm.core.ui.theme.LavalarmTheme
 import com.octrobi.lavalarm.core.util.PermissionUtil
@@ -45,7 +45,7 @@ fun PermissionGateScreen(
     permission: Permission,
     gatedScreen: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    permissionGateViewModel: PermissionGateViewModel = viewModel(factory = PermissionGateViewModel.Factory)
+    permissionGateViewModel: PermissionGateViewModel = hiltViewModel()
 ) {
     // State
     val attemptedToAskForPermission by permissionGateViewModel.attemptedToAskForPermission.collectAsState()

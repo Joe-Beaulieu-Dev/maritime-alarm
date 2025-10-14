@@ -27,10 +27,10 @@ import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.octrobi.lavalarm.R
 import com.octrobi.lavalarm.core.ui.theme.LavalarmTheme
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +41,7 @@ fun NotificationChannelGateScreen(
     notificationPermission: NotificationPermission,
     gatedScreen: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    notificationChannelGateViewModel: NotificationChannelGateViewModel = viewModel(factory = NotificationChannelGateViewModel.Factory)
+    notificationChannelGateViewModel: NotificationChannelGateViewModel = hiltViewModel()
 ) {
     // State
     val disabledChannelList = notificationChannelGateViewModel.disabledChannelList

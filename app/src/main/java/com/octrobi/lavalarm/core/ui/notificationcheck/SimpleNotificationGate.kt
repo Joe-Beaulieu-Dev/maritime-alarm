@@ -5,10 +5,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 fun SimpleNotificationGate(
     appNotificationChannel: AppNotificationChannel,
     gatedComposable: @Composable () -> Unit,
-    simpleNotificationGateViewModel: SimpleNotificationGateViewModel = viewModel(factory = SimpleNotificationGateViewModel.Factory)
+    simpleNotificationGateViewModel: SimpleNotificationGateViewModel = hiltViewModel()
 ) {
     // State
     val isNotificationChannelEnabled by simpleNotificationGateViewModel.isNotificationChannelEnabled.collectAsState()

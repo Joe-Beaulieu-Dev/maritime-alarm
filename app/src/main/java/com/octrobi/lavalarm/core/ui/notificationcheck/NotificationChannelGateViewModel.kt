@@ -1,39 +1,27 @@
 package com.octrobi.lavalarm.core.ui.notificationcheck
 
 import android.app.Activity
-import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
+import com.octrobi.lavalarm.core.util.NotificationChannelUtil
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class NotificationChannelGateViewModel : ViewModel() {
+@HiltViewModel
+class NotificationChannelGateViewModel @Inject constructor() : ViewModel() {
 
     // Notification
     val disabledChannelList = mutableStateListOf<AppNotificationChannel>()
-
-    companion object {
-
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                NotificationChannelGateViewModel()
-            }
-        }
-    }
 
     /*
      * Check
      */
 
     fun checkNotificationChannelStatus(context: Context, appNotificationChannel: AppNotificationChannel) {
-        val notificationManager = context.getSystemService(NotificationManager::class.java)
-        val channel = notificationManager.getNotificationChannel(appNotificationChannel.id)
-        val isChannelEnabled =
-            notificationManager.areNotificationsEnabled() && channel.importance != NotificationManager.IMPORTANCE_NONE
+        val isChannelEnabled = NotificationChannelUtil.isNotificationChannelEnabled(context, appNotificationChannel)
 
         if (!isChannelEnabled) {
             disabledChannelList.add(appNotificationChannel)
