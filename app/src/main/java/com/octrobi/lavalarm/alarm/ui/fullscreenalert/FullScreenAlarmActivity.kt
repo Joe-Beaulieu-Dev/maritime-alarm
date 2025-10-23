@@ -11,7 +11,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -28,8 +27,10 @@ import com.octrobi.lavalarm.core.navigation.Destination
 import com.octrobi.lavalarm.core.ui.theme.AndroidDefaultDarkScrim
 import com.octrobi.lavalarm.core.ui.theme.LavalarmTheme
 import com.octrobi.lavalarm.settings.data.repository.AlarmDefaultsRepository
+import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 
+@AndroidEntryPoint
 class FullScreenAlarmActivity : ComponentActivity() {
 
     // Navigation State
@@ -117,17 +118,13 @@ class FullScreenAlarmActivity : ComponentActivity() {
             )
         )
 
-        // Create/Get ViewModel
-        val fullScreenAlarmViewModel by viewModels<FullScreenAlarmViewModel> {
-            FullScreenAlarmViewModel.provideFactory(alarmExecutionData, is24Hour)
-        }
-
         setContent {
             LavalarmTheme {
                 navHostController = rememberNavController()
                 FullScreenAlarmNavHost(
                     navHostController = navHostController,
-                    fullScreenAlarmViewModel = fullScreenAlarmViewModel
+                    alarmExecutionData = alarmExecutionData,
+                    is24Hour = is24Hour
                 )
             }
         }

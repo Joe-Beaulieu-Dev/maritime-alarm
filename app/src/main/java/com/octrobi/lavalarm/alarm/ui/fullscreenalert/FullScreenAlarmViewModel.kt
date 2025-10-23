@@ -1,30 +1,30 @@
 package com.octrobi.lavalarm.alarm.ui.fullscreenalert
 
 import android.content.Context
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.toRoute
 import com.octrobi.lavalarm.alarm.alarmexecution.AlarmIntentBuilder
-import com.octrobi.lavalarm.alarm.data.model.AlarmExecutionData
+import com.octrobi.lavalarm.core.navigation.AlarmExecutionDataNavType
+import com.octrobi.lavalarm.core.navigation.Destination
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class FullScreenAlarmViewModel(
-    val alarmExecutionData: AlarmExecutionData,
-    val is24Hour: Boolean
+@HiltViewModel
+class FullScreenAlarmViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    companion object {
+    // Alarm and Display data
+    private val navigationRoute = savedStateHandle.toRoute<Destination.FullScreenAlarmScreen>(
+        typeMap = AlarmExecutionDataNavType.typeMap
+    )
+    val alarmExecutionData = navigationRoute.alarmExecutionData
+    val is24Hour = navigationRoute.is24Hour
 
-        fun provideFactory(
-            alarmExecutionData: AlarmExecutionData,
-            is24Hour: Boolean
-        ): ViewModelProvider.Factory =
-            viewModelFactory {
-                initializer {
-                    FullScreenAlarmViewModel(alarmExecutionData, is24Hour)
-                }
-            }
-    }
+    /*
+     * Action
+     */
 
     fun snoozeAlarm(context: Context) {
         context.sendBroadcast(
