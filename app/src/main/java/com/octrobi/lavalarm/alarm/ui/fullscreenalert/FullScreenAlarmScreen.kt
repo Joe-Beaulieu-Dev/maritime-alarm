@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.octrobi.lavalarm.R
 import com.octrobi.lavalarm.alarm.data.preview.consistentFutureAlarm
 import com.octrobi.lavalarm.alarm.ui.fullscreenalert.component.BeachBackdrop
@@ -71,7 +72,9 @@ import com.octrobi.lavalarm.core.util.StatusBarUtil
 import java.time.LocalDateTime
 
 @Composable
-fun FullScreenAlarmScreen(fullScreenAlarmViewModel: FullScreenAlarmViewModel) {
+fun FullScreenAlarmScreen(
+    fullScreenAlarmViewModel: FullScreenAlarmViewModel = hiltViewModel()
+) {
     // Configure Status Bar
     StatusBarUtil.setLightStatusBar()
 

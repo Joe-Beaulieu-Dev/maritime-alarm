@@ -1,5 +1,6 @@
 package com.octrobi.lavalarm.core.navigation
 
+import com.octrobi.lavalarm.alarm.data.model.AlarmExecutionData
 import com.octrobi.lavalarm.alarm.ui.fullscreenalert.FullScreenAlarmButton
 import kotlinx.serialization.Serializable
 
@@ -42,7 +43,10 @@ sealed interface Destination {
      */
 
     @Serializable
-    data object FullScreenAlarmScreen : Destination
+    data class FullScreenAlarmScreen(
+        val alarmExecutionData: AlarmExecutionData,
+        val is24Hour: Boolean
+    ) : Destination
 
     @Serializable
     data class PostAlarmConfirmationScreen(

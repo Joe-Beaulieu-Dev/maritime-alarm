@@ -2,21 +2,26 @@ package com.octrobi.lavalarm.alarm.ui.fullscreenalert
 
 import android.content.Context
 import android.content.Intent
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.toRoute
+import com.octrobi.lavalarm.core.navigation.Destination
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class PostAlarmConfirmationViewModel : ViewModel() {
+@HiltViewModel
+class PostAlarmConfirmationViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle
+) : ViewModel() {
 
-    companion object {
+    // Alarm and Display data
+    private val navigationRoute = savedStateHandle.toRoute<Destination.PostAlarmConfirmationScreen>()
+    val fullScreenAlarmButton = navigationRoute.fullScreenAlarmButton
+    val snoozeDuration = navigationRoute.snoozeDuration
 
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                PostAlarmConfirmationViewModel()
-            }
-        }
-    }
+    /*
+     * Action
+     */
 
     fun finishFullScreenAlarmFlow(context: Context) {
         context.sendBroadcast(
