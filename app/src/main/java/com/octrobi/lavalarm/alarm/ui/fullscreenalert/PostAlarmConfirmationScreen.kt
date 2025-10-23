@@ -1,5 +1,6 @@
 package com.octrobi.lavalarm.alarm.ui.fullscreenalert
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,10 +27,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.octrobi.lavalarm.R
 import com.octrobi.lavalarm.core.ui.theme.DarkVolcanicRock
 import com.octrobi.lavalarm.core.ui.theme.LavalarmTheme
@@ -38,18 +39,31 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun PostAlarmConfirmationScreen(
-    fullScreenAlarmButton: FullScreenAlarmButton,
-    snoozeDuration: Int,
     modifier: Modifier = Modifier,
-    postAlarmConfirmationViewModel: PostAlarmConfirmationViewModel = viewModel(factory = PostAlarmConfirmationViewModel.Factory)
+    postAlarmConfirmationViewModel: PostAlarmConfirmationViewModel = hiltViewModel()
 ) {
     // Configure Status Bar
     StatusBarUtil.setDarkStatusBar()
 
+    PostAlarmConfirmationScreenContent(
+        fullScreenAlarmButton = postAlarmConfirmationViewModel.fullScreenAlarmButton,
+        snoozeDuration = postAlarmConfirmationViewModel.snoozeDuration,
+        finishFullScreenAlarmFlow = postAlarmConfirmationViewModel::finishFullScreenAlarmFlow,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun PostAlarmConfirmationScreenContent(
+    fullScreenAlarmButton: FullScreenAlarmButton,
+    snoozeDuration: Int,
+    finishFullScreenAlarmFlow: (Context) -> Unit,
+    modifier: Modifier = Modifier
+) {
     // Countdown timer to finish the Alarm execution flow
     val context = LocalContext.current
     BasicCountdown(timeSeconds = 2) {
-        postAlarmConfirmationViewModel.finishFullScreenAlarmFlow(context)
+        finishFullScreenAlarmFlow(context)
     }
 
     Surface(
@@ -126,9 +140,10 @@ fun BasicCountdown(
 @Composable
 private fun PostAlarmConfirmationScreenSnoozePreview() {
     LavalarmTheme {
-        PostAlarmConfirmationScreen(
+        PostAlarmConfirmationScreenContent(
             fullScreenAlarmButton = FullScreenAlarmButton.SNOOZE,
-            snoozeDuration = 10
+            snoozeDuration = 10,
+            finishFullScreenAlarmFlow = {}
         )
     }
 }
@@ -137,9 +152,10 @@ private fun PostAlarmConfirmationScreenSnoozePreview() {
 @Composable
 private fun PostAlarmConfirmationScreenDismissPreview() {
     LavalarmTheme {
-        PostAlarmConfirmationScreen(
+        PostAlarmConfirmationScreenContent(
             fullScreenAlarmButton = FullScreenAlarmButton.DISMISS,
-            snoozeDuration = 10
+            snoozeDuration = 10,
+            finishFullScreenAlarmFlow = {}
         )
     }
 }
