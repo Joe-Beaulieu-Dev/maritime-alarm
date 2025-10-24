@@ -3,19 +3,20 @@ package com.octrobi.lavalarm.core
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.octrobi.lavalarm.alarm.data.repository.AlarmDatabase
 import com.octrobi.lavalarm.alarm.data.repository.AlarmRepository
 import com.octrobi.lavalarm.core.recovery.ForceStopRecoveryHandler
 import com.octrobi.lavalarm.core.recovery.ForceStopRecoveryState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainActivityViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
+@HiltViewModel
+class MainActivityViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle
+) : ViewModel() {
 
     val shouldPerformForceStopRecovery: StateFlow<ForceStopRecoveryState> =
         savedStateHandle.getStateFlow(
@@ -24,16 +25,8 @@ class MainActivityViewModel(private val savedStateHandle: SavedStateHandle) : Vi
         )
 
     companion object {
-
         // SavedStateHandle Keys
         private const val KEY_SHOULD_PERFORM_FORCE_STOP_RECOVERY = "should_perform_force_stop_recovery"
-
-        fun provideFactory(): ViewModelProvider.Factory =
-            viewModelFactory {
-                initializer {
-                    MainActivityViewModel(savedStateHandle = createSavedStateHandle())
-                }
-            }
     }
 
     fun checkForceStopPreApi35(context: Context) {

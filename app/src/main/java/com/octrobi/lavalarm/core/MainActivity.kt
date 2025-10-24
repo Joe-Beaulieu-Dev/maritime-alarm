@@ -23,9 +23,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val viewModel by viewModels<MainActivityViewModel> {
-        MainActivityViewModel.provideFactory()
-    }
+    private val viewModel by viewModels<MainActivityViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Create and display Splash Screen and auto switch from
