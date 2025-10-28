@@ -3,7 +3,6 @@ package com.octrobi.lavalarm.alarm.alarmexecution
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.octrobi.lavalarm.alarm.data.repository.AlarmDatabase
 import com.octrobi.lavalarm.alarm.data.repository.AlarmRepository
 import com.octrobi.lavalarm.alarm.ui.fullscreenalert.FullScreenAlarmButton
 import com.octrobi.lavalarm.core.constant.actionPackageName
@@ -13,10 +12,16 @@ import com.octrobi.lavalarm.core.extension.alarmApplication
 import com.octrobi.lavalarm.core.extension.doAsync
 import com.octrobi.lavalarm.core.extension.getSerializableExtraSafe
 import com.octrobi.lavalarm.settings.data.repository.AlarmDefaultsRepository
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import java.time.LocalDateTime
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AlarmActionReceiver : BroadcastReceiver() {
+
+    @Inject
+    lateinit var alarmRepository: AlarmRepository
 
     companion object {
         // Actions
@@ -110,9 +115,11 @@ class AlarmActionReceiver : BroadcastReceiver() {
         // Update Alarm Database and reschedule Alarm
         doAsync(context.alarmApplication.applicationScope, Dispatchers.IO) {
             // Update Alarm
-            val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
-            val alarm = alarmRepo.getAlarm(id)
-            AlarmScheduler.snoozeAndRescheduleAlarm(context.applicationContext, alarmRepo, alarm)
+            AlarmScheduler.snoozeAndRescheduleAlarm(
+                context.applicationContext,
+                alarmRepository,
+                alarmRepository.getAlarm(id)
+            )
         }
     }
 
@@ -135,9 +142,11 @@ class AlarmActionReceiver : BroadcastReceiver() {
                 // passed in the Intent just represents when the Alarm was supposed to execute,
                 // which may be a snoozed time that was modified from the original.
                 // Here we need the original, unmodified LocalDateTime for rescheduling.
-                val alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(context).alarmDao())
-                val alarm = alarmRepository.getAlarm(id)
-                AlarmScheduler.disableOrRescheduleAlarm(context.applicationContext, alarmRepository, alarm)
+                AlarmScheduler.disableOrRescheduleAlarm(
+                    context.applicationContext,
+                    alarmRepository,
+                    alarmRepository.getAlarm(id)
+                )
             }
         }
     }

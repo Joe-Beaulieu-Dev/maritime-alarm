@@ -8,7 +8,6 @@ import android.os.IBinder
 import com.octrobi.lavalarm.R
 import com.octrobi.lavalarm.alarm.data.model.Alarm
 import com.octrobi.lavalarm.alarm.data.model.AlarmExecutionData
-import com.octrobi.lavalarm.alarm.data.repository.AlarmDatabase
 import com.octrobi.lavalarm.alarm.data.repository.AlarmRepository
 import com.octrobi.lavalarm.alarm.ui.fullscreenalert.FullScreenAlarmActivity
 import com.octrobi.lavalarm.alarm.ui.fullscreenalert.FullScreenAlarmButton
@@ -25,18 +24,25 @@ import com.octrobi.lavalarm.settings.data.model.GeneralSettings
 import com.octrobi.lavalarm.settings.data.repository.AlarmDefaultsRepository
 import com.octrobi.lavalarm.settings.data.repository.GeneralSettingsRepository
 import com.octrobi.lavalarm.settings.data.repository.generalSettingsDataStore
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AlarmNotificationService : Service() {
 
     // Coroutine
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job)
+
+    // Repository
+    @Inject
+    lateinit var alarmRepository: AlarmRepository
 
     companion object {
         // Actions
@@ -123,9 +129,11 @@ class AlarmNotificationService : Service() {
         if (gateLogic()) {
             launchNotification(alarmExecutionData)
         } else {
-            val alarmRepository = AlarmRepository(AlarmDatabase.getDatabase(this).alarmDao())
-            val alarm = alarmRepository.getAlarm(alarmExecutionData.id)
-            AlarmScheduler.disableOrRescheduleAlarm(applicationContext, alarmRepository, alarm)
+            AlarmScheduler.disableOrRescheduleAlarm(
+                applicationContext,
+                alarmRepository,
+                alarmRepository.getAlarm(alarmExecutionData.id)
+            )
         }
     }
 
@@ -163,8 +171,7 @@ class AlarmNotificationService : Service() {
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         val allNotifications = notificationManager.activeNotifications
         // Get all Alarms
-        val alarmRepo = AlarmRepository(AlarmDatabase.getDatabase(this).alarmDao())
-        val allAlarms = alarmRepo.getAllAlarms()
+        val allAlarms = alarmRepository.getAllAlarms()
 
         // Get Alarm that currently has a Notification
         val notificationAlarm: Alarm? = allAlarms.firstOrNull { alarm ->
@@ -176,7 +183,7 @@ class AlarmNotificationService : Service() {
             // Dismiss Full Screen Notification
             finishFullScreenAlarmFlow()
             // Disable/reschedule Alarm
-            AlarmScheduler.disableOrRescheduleAlarm(applicationContext, alarmRepo, notificationAlarm)
+            AlarmScheduler.disableOrRescheduleAlarm(applicationContext, alarmRepository, notificationAlarm)
         }
     }
 
