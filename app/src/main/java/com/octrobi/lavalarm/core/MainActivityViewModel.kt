@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.octrobi.lavalarm.alarm.data.repository.AlarmDatabase
 import com.octrobi.lavalarm.alarm.data.repository.AlarmRepository
 import com.octrobi.lavalarm.core.recovery.ForceStopRecoveryHandler
 import com.octrobi.lavalarm.core.recovery.ForceStopRecoveryState
@@ -15,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val alarmRepository: AlarmRepository
 ) : ViewModel() {
 
     val shouldPerformForceStopRecovery: StateFlow<ForceStopRecoveryState> =
@@ -32,12 +32,6 @@ class MainActivityViewModel @Inject constructor(
     fun checkForceStopPreApi35(context: Context) {
         if (shouldPerformForceStopRecovery.value is ForceStopRecoveryState.Unchecked) {
             viewModelScope.launch {
-                val alarmRepository = AlarmRepository(
-                    AlarmDatabase
-                        .getDatabase(context.createDeviceProtectedStorageContext())
-                        .alarmDao()
-                )
-
                 val shouldPerformRecovery =
                     ForceStopRecoveryHandler.shouldPerformForceStopRecoveryPreApi35(context, alarmRepository)
 

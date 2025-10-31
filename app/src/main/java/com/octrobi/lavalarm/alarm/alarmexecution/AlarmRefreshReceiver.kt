@@ -5,19 +5,24 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import com.octrobi.lavalarm.alarm.data.repository.AlarmDatabase
 import com.octrobi.lavalarm.alarm.data.repository.AlarmRepository
 import com.octrobi.lavalarm.core.constant.actionPackageName
 import com.octrobi.lavalarm.core.extension.alarmApplication
 import com.octrobi.lavalarm.core.extension.doAsync
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import javax.inject.Inject
 
 /**
  * Clean and reschedule Alarms in various scenarios in reaction to system Intent actions.
  *
  * Scenarios include, but are not limited to: device boot, device date/time change, etc.
  */
+@AndroidEntryPoint
 class AlarmRefreshReceiver : BroadcastReceiver() {
+
+    @Inject
+    lateinit var alarmRepository: AlarmRepository
 
     companion object {
         // Actions
@@ -64,12 +69,6 @@ class AlarmRefreshReceiver : BroadcastReceiver() {
             }
 
         if (canRescheduleAlarms) {
-            val alarmRepository = AlarmRepository(
-                AlarmDatabase
-                    .getDatabase(context.createDeviceProtectedStorageContext())
-                    .alarmDao()
-            )
-
             doAsync(context.alarmApplication.applicationScope, Dispatchers.IO) {
                 AlarmScheduler.cleanAndRescheduleAlarms(context, alarmRepository)
             }
