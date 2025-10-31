@@ -23,7 +23,6 @@ import com.octrobi.lavalarm.core.util.PermissionUtil
 import com.octrobi.lavalarm.settings.data.model.GeneralSettings
 import com.octrobi.lavalarm.settings.data.repository.AlarmDefaultsRepository
 import com.octrobi.lavalarm.settings.data.repository.GeneralSettingsRepository
-import com.octrobi.lavalarm.settings.data.repository.generalSettingsDataStore
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,6 +42,8 @@ class AlarmNotificationService : Service() {
     // Repository
     @Inject
     lateinit var alarmRepository: AlarmRepository
+    @Inject
+    lateinit var generalSettingsRepository: GeneralSettingsRepository
 
     companion object {
         // Actions
@@ -139,7 +140,6 @@ class AlarmNotificationService : Service() {
 
     private suspend fun launchNotification(alarmExecutionData: AlarmExecutionData) {
         // Get General Settings
-        val generalSettingsRepository = GeneralSettingsRepository(applicationContext.generalSettingsDataStore)
         val generalSettings = try {
             generalSettingsRepository.generalSettingsFlow.first()
         } catch (e: NoSuchElementException) {

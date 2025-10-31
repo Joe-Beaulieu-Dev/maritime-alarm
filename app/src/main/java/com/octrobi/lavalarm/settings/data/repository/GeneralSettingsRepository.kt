@@ -1,13 +1,10 @@
 package com.octrobi.lavalarm.settings.data.repository
 
-import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import com.octrobi.lavalarm.settings.data.model.GeneralSettings
 import com.octrobi.lavalarm.settings.data.model.TimeDisplay
 import com.octrobi.lavalarm.settings.di.GeneralSettingsDataStore
@@ -16,11 +13,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
-
-val Context.generalSettingsDataStore by preferencesDataStore(
-    name = GeneralSettingsRepository.GENERAL_SETTINGS_PREFERENCES_NAME,
-    corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() }
-)
 
 @Singleton
 class GeneralSettingsRepository @Inject constructor(
