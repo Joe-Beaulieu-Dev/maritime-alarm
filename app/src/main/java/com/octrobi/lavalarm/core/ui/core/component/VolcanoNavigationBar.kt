@@ -150,7 +150,7 @@ fun Lava(modifier: Modifier = Modifier) {
                 .height(12.dp)
                 .offset(x = 0.dp, y = 2.dp)
                 .clip(CircleShape)
-                .background(lavaColor)
+                .drawBehind { drawRect(lavaColor) }
         )
 
         // Top Lava Bubble Left
@@ -160,7 +160,7 @@ fun Lava(modifier: Modifier = Modifier) {
                 .height(20.dp)
                 .offset(x = (-18).dp, y = 0.dp)
                 .clip(CircleShape)
-                .background(lavaColor)
+                .drawBehind { drawRect(lavaColor) }
         )
 
         // Top Lava Bubble Center
@@ -170,7 +170,7 @@ fun Lava(modifier: Modifier = Modifier) {
                 .height(20.dp)
                 .offset(x = 4.dp, y = 0.dp)
                 .clip(CircleShape)
-                .background(lavaColor)
+                .drawBehind { drawRect(lavaColor) }
         )
 
         // Left Side Lava
@@ -181,7 +181,7 @@ fun Lava(modifier: Modifier = Modifier) {
                 .offset(x = (-32).dp, y = 1.dp)
                 .rotate(degrees = 32f)
                 .clip(CircleShape)
-                .background(lavaColor)
+                .drawBehind { drawRect(lavaColor) }
         )
 
         // Left Lava Drip
@@ -191,7 +191,7 @@ fun Lava(modifier: Modifier = Modifier) {
                 .width(12.dp)
                 .offset(x = (-24).dp, y = 4.dp)
                 .clip(CircleShape)
-                .background(lavaColor)
+                .drawBehind { drawRect(lavaColor) }
         )
 
         // Left Lava Blob
@@ -201,7 +201,7 @@ fun Lava(modifier: Modifier = Modifier) {
                 .width(20.dp)
                 .offset(x = (-12).dp, y = 4.dp)
                 .clip(CircleShape)
-                .background(lavaColor)
+                .drawBehind { drawRect(lavaColor) }
         )
 
         // Middle Lava
@@ -211,7 +211,7 @@ fun Lava(modifier: Modifier = Modifier) {
                 .width(12.dp)
                 .offset(x = 0.dp, y = tallestLavaOffsetY)
                 .clip(CircleShape)
-                .background(lavaColor)
+                .drawBehind { drawRect(lavaColor) }
         )
 
         // Right Lava Blob
@@ -221,7 +221,7 @@ fun Lava(modifier: Modifier = Modifier) {
                 .width(20.dp)
                 .offset(x = 12.dp, y = 4.dp)
                 .clip(CircleShape)
-                .background(lavaColor)
+                .drawBehind { drawRect(lavaColor) }
         )
 
         // Right Lava Drip
@@ -231,7 +231,7 @@ fun Lava(modifier: Modifier = Modifier) {
                 .width(12.dp)
                 .offset(x = 24.dp, y = 4.dp)
                 .clip(CircleShape)
-                .background(lavaColor)
+                .drawBehind { drawRect(lavaColor) }
         )
 
         // Right Side Lava
@@ -242,7 +242,7 @@ fun Lava(modifier: Modifier = Modifier) {
                 .offset(x = 32.dp, y = 1.dp)
                 .rotate(degrees = -32f)
                 .clip(CircleShape)
-                .background(lavaColor)
+                .drawBehind { drawRect(lavaColor) }
         )
     }
 }
