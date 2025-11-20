@@ -27,8 +27,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.octrobi.lavalarm.R
 import com.octrobi.lavalarm.alarm.data.preview.consistentFutureAlarm
 import com.octrobi.lavalarm.alarm.data.preview.snoozedAlarm
@@ -58,13 +57,14 @@ import com.octrobi.lavalarm.core.ui.theme.LavalarmTheme
 
 @Composable
 fun NextAlarmCloud(
+    alarmCountdownState: State<AlarmCountdownState>,
     currentCoreDestination: Destination,
     previousCoreDestination: Destination,
-    modifier: Modifier = Modifier,
-    nextAlarmCloudViewModel: NextAlarmCloudViewModel = hiltViewModel()
+    timeChangeReceiver: BroadcastReceiver,
+    modifier: Modifier = Modifier
 ) {
     // State
-    val alarmCountdownState by nextAlarmCloudViewModel.alarmCountdownState.collectAsState()
+    val context = LocalContext.current
     val onScreenWithAlarmCloudText = currentCoreDestination is Destination.AlarmListScreen
     val comingFromScreenWithAlarmCloudText = previousCoreDestination is Destination.AlarmListScreen
     val visibleState = remember(key1 = currentCoreDestination, key2 = previousCoreDestination) {
@@ -84,25 +84,6 @@ fun NextAlarmCloud(
 
         MutableTransitionState(initialState = initialState).apply { targetState = onScreenWithAlarmCloudText }
     }
-
-    NextAlarmCloudContent(
-        currentCoreDestination = currentCoreDestination,
-        alarmCountdownState = alarmCountdownState,
-        visibleState = visibleState,
-        timeChangeReceiver = nextAlarmCloudViewModel.timeChangeReceiver,
-        modifier = modifier
-    )
-}
-
-@Composable
-fun NextAlarmCloudContent(
-    currentCoreDestination: Destination,
-    alarmCountdownState: AlarmCountdownState,
-    visibleState: MutableTransitionState<Boolean>,
-    timeChangeReceiver: BroadcastReceiver,
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
 
     // Manage the BroadcastReceiver for keeping the Alarm Countdown Text up to date
     DisposableEffect(key1 = context, key2 = currentCoreDestination) {
@@ -126,7 +107,7 @@ fun NextAlarmCloudContent(
         onDispose {
             try {
                 context.unregisterReceiver(timeChangeReceiver)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // Receiver was never registered in the first place. Nothing to do here. Just don't crash.
             }
         }
@@ -144,6 +125,7 @@ fun NextAlarmCloudContent(
         )
     }
 
+    // Cloud with gated Icon and Text
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
@@ -172,12 +154,12 @@ fun NextAlarmCloudContent(
 
 @Composable
 private fun AlarmIconAndText(
-    alarmCountdownState: AlarmCountdownState,
+    alarmCountdownState: State<AlarmCountdownState>,
     visibleState: MutableTransitionState<Boolean>
 ) {
     // Alarm Icon and Countdown Text
     // This Animation is to match the NavHost's
-    if (alarmCountdownState is AlarmCountdownState.Success) {
+    (alarmCountdownState.value as? AlarmCountdownState.Success)?.let { state ->
         AnimatedVisibility(
             visibleState = visibleState,
             enter = fadeIn(animationSpec = tween(durationMillis = 400)),
@@ -189,7 +171,7 @@ private fun AlarmIconAndText(
             ) {
                 // Alarm Icon
                 Icon(
-                    imageVector = alarmCountdownState.icon,
+                    imageVector = state.icon,
                     contentDescription = null,
                     tint = DarkGrey,
                     modifier = Modifier.padding(end = 4.dp, bottom = 2.dp)
@@ -197,11 +179,11 @@ private fun AlarmIconAndText(
 
                 // Countdown Text
                 Text(
-                    text = alarmCountdownState.countdownText,
+                    text = state.countdownText,
                     color = DarkGrey,
-                    fontSize = getCountdownTextFontSize(alarmCountdownState.countdownText),
+                    fontSize = getCountdownTextFontSize(state.countdownText),
                     fontWeight = FontWeight.SemiBold,
-                    lineHeight = getCountdownTextLineHeight(alarmCountdownState.countdownText)
+                    lineHeight = getCountdownTextLineHeight(state.countdownText)
                 )
             }
         }
@@ -238,6 +220,16 @@ private fun getCountdownTextLineHeight(countdownText: String): TextUnit =
 )
 @Composable
 private fun NextAlarmCloudNoAlarmsSmallText1Preview() {
+    val countdownText = stringResource(id = R.string.no_active_alarms)
+    val alarmCountdownState: State<AlarmCountdownState> = remember {
+        mutableStateOf(
+            AlarmCountdownState.Success(
+                icon = Icons.Default.AlarmOff,
+                countdownText = countdownText
+            )
+        )
+    }
+
     LavalarmTheme {
         Box(
             contentAlignment = Alignment.Center,
@@ -245,13 +237,10 @@ private fun NextAlarmCloudNoAlarmsSmallText1Preview() {
                 .fillMaxWidth()
                 .height(80.dp)
         ) {
-            NextAlarmCloudContent(
+            NextAlarmCloud(
+                alarmCountdownState = alarmCountdownState,
                 currentCoreDestination = Destination.AlarmListScreen,
-                alarmCountdownState = AlarmCountdownState.Success(
-                    icon = Icons.Default.AlarmOff,
-                    countdownText = stringResource(id = R.string.no_active_alarms)
-                ),
-                visibleState = MutableTransitionState(true),
+                previousCoreDestination = Destination.AlarmListScreen,
                 timeChangeReceiver = object : BroadcastReceiver() {
                     override fun onReceive(context: Context?, intent: Intent?) {}
                 }
@@ -269,6 +258,15 @@ private fun NextAlarmCloudSmallText2Preview() {
     val alarm = consistentFutureAlarm.copy(
         dateTime = LocalDateTimeUtil.nowTruncated().plusDays(12).plusHours(10).plusMinutes(45)
     )
+    val countdownText = alarm.toCountdownString(LocalContext.current)
+    val alarmCountdownState: State<AlarmCountdownState> = remember {
+        mutableStateOf(
+            AlarmCountdownState.Success(
+                icon = Icons.Default.Alarm,
+                countdownText = countdownText
+            )
+        )
+    }
 
     LavalarmTheme {
         Box(
@@ -277,13 +275,10 @@ private fun NextAlarmCloudSmallText2Preview() {
                 .fillMaxWidth()
                 .height(80.dp)
         ) {
-            NextAlarmCloudContent(
+            NextAlarmCloud(
+                alarmCountdownState = alarmCountdownState,
                 currentCoreDestination = Destination.AlarmListScreen,
-                alarmCountdownState = AlarmCountdownState.Success(
-                    icon = Icons.Default.Alarm,
-                    countdownText = alarm.toCountdownString(LocalContext.current)
-                ),
-                visibleState = MutableTransitionState(true),
+                previousCoreDestination = Destination.AlarmListScreen,
                 timeChangeReceiver = object : BroadcastReceiver() {
                     override fun onReceive(context: Context?, intent: Intent?) {}
                 }
@@ -301,6 +296,15 @@ private fun NextAlarmCloudMediumText1Preview() {
     val alarm = consistentFutureAlarm.copy(
         dateTime = LocalDateTimeUtil.nowTruncated().plusHours(20).plusMinutes(45)
     )
+    val countdownText = alarm.toCountdownString(LocalContext.current)
+    val alarmCountdownState: State<AlarmCountdownState> = remember {
+        mutableStateOf(
+            AlarmCountdownState.Success(
+                icon = Icons.Default.Alarm,
+                countdownText = countdownText
+            )
+        )
+    }
 
     LavalarmTheme {
         Box(
@@ -309,13 +313,10 @@ private fun NextAlarmCloudMediumText1Preview() {
                 .fillMaxWidth()
                 .height(80.dp)
         ) {
-            NextAlarmCloudContent(
+            NextAlarmCloud(
+                alarmCountdownState = alarmCountdownState,
                 currentCoreDestination = Destination.AlarmListScreen,
-                alarmCountdownState = AlarmCountdownState.Success(
-                    icon = Icons.Default.Alarm,
-                    countdownText = alarm.toCountdownString(LocalContext.current)
-                ),
-                visibleState = MutableTransitionState(true),
+                previousCoreDestination = Destination.AlarmListScreen,
                 timeChangeReceiver = object : BroadcastReceiver() {
                     override fun onReceive(context: Context?, intent: Intent?) {}
                 }
@@ -330,6 +331,16 @@ private fun NextAlarmCloudMediumText1Preview() {
 )
 @Composable
 private fun NextAlarmCloudMediumText2Preview() {
+    val countdownText = consistentFutureAlarm.toCountdownString(LocalContext.current)
+    val alarmCountdownState: State<AlarmCountdownState> = remember {
+        mutableStateOf(
+            AlarmCountdownState.Success(
+                icon = Icons.Default.Alarm,
+                countdownText = countdownText
+            )
+        )
+    }
+
     LavalarmTheme {
         Box(
             contentAlignment = Alignment.Center,
@@ -337,13 +348,10 @@ private fun NextAlarmCloudMediumText2Preview() {
                 .fillMaxWidth()
                 .height(80.dp)
         ) {
-            NextAlarmCloudContent(
+            NextAlarmCloud(
+                alarmCountdownState = alarmCountdownState,
                 currentCoreDestination = Destination.AlarmListScreen,
-                alarmCountdownState = AlarmCountdownState.Success(
-                    icon = Icons.Default.Alarm,
-                    countdownText = consistentFutureAlarm.toCountdownString(LocalContext.current)
-                ),
-                visibleState = MutableTransitionState(true),
+                previousCoreDestination = Destination.AlarmListScreen,
                 timeChangeReceiver = object : BroadcastReceiver() {
                     override fun onReceive(context: Context?, intent: Intent?) {}
                 }
@@ -361,6 +369,15 @@ private fun NextAlarmCloudLargeText1Preview() {
     val alarm = consistentFutureAlarm.copy(
         dateTime = LocalDateTimeUtil.nowTruncated().plusMinutes(1)
     )
+    val countdownText = alarm.toCountdownString(LocalContext.current)
+    val alarmCountdownState: State<AlarmCountdownState> = remember {
+        mutableStateOf(
+            AlarmCountdownState.Success(
+                icon = Icons.Default.Alarm,
+                countdownText = countdownText
+            )
+        )
+    }
 
     LavalarmTheme {
         Box(
@@ -369,13 +386,10 @@ private fun NextAlarmCloudLargeText1Preview() {
                 .fillMaxWidth()
                 .height(80.dp)
         ) {
-            NextAlarmCloudContent(
+            NextAlarmCloud(
+                alarmCountdownState = alarmCountdownState,
                 currentCoreDestination = Destination.AlarmListScreen,
-                alarmCountdownState = AlarmCountdownState.Success(
-                    icon = Icons.Default.Alarm,
-                    countdownText = alarm.toCountdownString(LocalContext.current)
-                ),
-                visibleState = MutableTransitionState(true),
+                previousCoreDestination = Destination.AlarmListScreen,
                 timeChangeReceiver = object : BroadcastReceiver() {
                     override fun onReceive(context: Context?, intent: Intent?) {}
                 }
@@ -391,6 +405,16 @@ private fun NextAlarmCloudLargeText1Preview() {
 
 @Composable
 private fun NextAlarmCloudSnoozedAlarmLargeText2Preview() {
+    val countdownText = snoozedAlarm.toCountdownString(LocalContext.current)
+    val alarmCountdownState: State<AlarmCountdownState> = remember {
+        mutableStateOf(
+            AlarmCountdownState.Success(
+                icon = Icons.Default.Snooze,
+                countdownText = countdownText
+            )
+        )
+    }
+
     LavalarmTheme {
         Box(
             contentAlignment = Alignment.Center,
@@ -398,13 +422,10 @@ private fun NextAlarmCloudSnoozedAlarmLargeText2Preview() {
                 .fillMaxWidth()
                 .height(80.dp)
         ) {
-            NextAlarmCloudContent(
+            NextAlarmCloud(
+                alarmCountdownState = alarmCountdownState,
                 currentCoreDestination = Destination.AlarmListScreen,
-                alarmCountdownState = AlarmCountdownState.Success(
-                    icon = Icons.Default.Snooze,
-                    countdownText = snoozedAlarm.toCountdownString(LocalContext.current)
-                ),
-                visibleState = MutableTransitionState(true),
+                previousCoreDestination = Destination.AlarmListScreen,
                 timeChangeReceiver = object : BroadcastReceiver() {
                     override fun onReceive(context: Context?, intent: Intent?) {}
                 }
@@ -419,6 +440,16 @@ private fun NextAlarmCloudSnoozedAlarmLargeText2Preview() {
 )
 @Composable
 private fun NextAlarmCloudSettingsScreenPreview() {
+    val countdownText = consistentFutureAlarm.toCountdownString(LocalContext.current)
+    val alarmCountdownState: State<AlarmCountdownState> = remember {
+        mutableStateOf(
+            AlarmCountdownState.Success(
+                icon = Icons.Default.Alarm,
+                countdownText = countdownText
+            )
+        )
+    }
+
     LavalarmTheme {
         Box(
             contentAlignment = Alignment.Center,
@@ -426,13 +457,10 @@ private fun NextAlarmCloudSettingsScreenPreview() {
                 .fillMaxWidth()
                 .height(80.dp)
         ) {
-            NextAlarmCloudContent(
+            NextAlarmCloud(
+                alarmCountdownState = alarmCountdownState,
                 currentCoreDestination = Destination.SettingsScreen,
-                alarmCountdownState = AlarmCountdownState.Success(
-                    icon = Icons.Default.Alarm,
-                    countdownText = consistentFutureAlarm.toCountdownString(LocalContext.current)
-                ),
-                visibleState = MutableTransitionState(false),
+                previousCoreDestination = Destination.AlarmListScreen,
                 timeChangeReceiver = object : BroadcastReceiver() {
                     override fun onReceive(context: Context?, intent: Intent?) {}
                 }

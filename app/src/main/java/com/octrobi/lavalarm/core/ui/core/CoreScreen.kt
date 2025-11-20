@@ -8,7 +8,6 @@ import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.addCallback
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
-import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -58,7 +58,7 @@ import com.octrobi.lavalarm.core.navigation.Destination
 import com.octrobi.lavalarm.core.runtime.ObserveAsEvent
 import com.octrobi.lavalarm.core.ui.core.component.AlarmCountdownState
 import com.octrobi.lavalarm.core.ui.core.component.LavaFloatingActionButton
-import com.octrobi.lavalarm.core.ui.core.component.NextAlarmCloudContent
+import com.octrobi.lavalarm.core.ui.core.component.NextAlarmCloud
 import com.octrobi.lavalarm.core.ui.core.component.SkylineHeader
 import com.octrobi.lavalarm.core.ui.core.component.SkylineHeaderContent
 import com.octrobi.lavalarm.core.ui.core.component.VolcanoNavigationBar
@@ -89,6 +89,9 @@ fun CoreScreen(
 ) {
     // Configure Status Bar
     StatusBarUtil.setLightStatusBar()
+
+    // Alarm countdown
+    val alarmCountdownState = coreScreenViewModel.alarmCountdownState.collectAsState()
 
     // Navigation
     // Current and previous Destinations must be tracked in order to prevent LavaFloatingActionButton,
@@ -149,8 +152,10 @@ fun CoreScreen(
         previousCoreDestination = previousCoreDestination,
         header = {
             SkylineHeader(
+                alarmCountdownState = alarmCountdownState,
                 currentCoreDestination = currentCoreDestination,
-                previousCoreDestination = previousCoreDestination
+                previousCoreDestination = previousCoreDestination,
+                timeChangeReceiver = coreScreenViewModel.timeChangeReceiver
             )
         },
         onFabClicked = navigateToAlarmCreationScreen,
@@ -276,22 +281,29 @@ fun CoreScreenContent(
 @Composable
 private fun CoreScreenAlarmListPreview() {
     val currentCoreDestination = Destination.AlarmListScreen
+    val previousCoreDestination = Destination.AlarmListScreen
     val alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds)
+    val countdownText = alarmListState.alarmList.first().toCountdownString(LocalContext.current)
+    val alarmCountdownState = remember {
+        mutableStateOf(
+            AlarmCountdownState.Success(
+                icon = Icons.Default.Alarm,
+                countdownText = countdownText
+            )
+        )
+    }
 
     LavalarmTheme {
         CoreScreenContent(
             currentCoreDestination = currentCoreDestination,
-            previousCoreDestination = Destination.AlarmListScreen,
+            previousCoreDestination = previousCoreDestination,
             header = {
                 SkylineHeaderContent(
                     nextAlarmIndicator = {
-                        NextAlarmCloudContent(
+                        NextAlarmCloud(
+                            alarmCountdownState = alarmCountdownState,
                             currentCoreDestination = currentCoreDestination,
-                            alarmCountdownState = AlarmCountdownState.Success(
-                                icon = Icons.Default.Alarm,
-                                countdownText = alarmListState.alarmList.first().toCountdownString(LocalContext.current)
-                            ),
-                            visibleState = MutableTransitionState(true),
+                            previousCoreDestination = previousCoreDestination,
                             timeChangeReceiver = object : BroadcastReceiver() {
                                 override fun onReceive(context: Context?, intent: Intent?) {}
                             }
@@ -326,21 +338,28 @@ private fun CoreScreenAlarmListPreview() {
 @Composable
 private fun CoreScreenAlarmListNoAlarmsPreview() {
     val currentCoreDestination = Destination.AlarmListScreen
+    val previousCoreDestination = Destination.AlarmListScreen
+    val countdownText = stringResource(id = R.string.no_active_alarms)
+    val alarmCountdownState = remember {
+        mutableStateOf(
+            AlarmCountdownState.Success(
+                icon = Icons.Default.AlarmOff,
+                countdownText = countdownText
+            )
+        )
+    }
 
     LavalarmTheme {
         CoreScreenContent(
             currentCoreDestination = currentCoreDestination,
-            previousCoreDestination = Destination.AlarmListScreen,
+            previousCoreDestination = previousCoreDestination,
             header = {
                 SkylineHeaderContent(
                     nextAlarmIndicator = {
-                        NextAlarmCloudContent(
+                        NextAlarmCloud(
+                            alarmCountdownState = alarmCountdownState,
                             currentCoreDestination = currentCoreDestination,
-                            alarmCountdownState = AlarmCountdownState.Success(
-                                icon = Icons.Default.AlarmOff,
-                                countdownText = stringResource(id = R.string.no_active_alarms)
-                            ),
-                            visibleState = MutableTransitionState(true),
+                            previousCoreDestination = previousCoreDestination,
                             timeChangeReceiver = object : BroadcastReceiver() {
                                 override fun onReceive(context: Context?, intent: Intent?) {}
                             }
@@ -375,21 +394,29 @@ private fun CoreScreenAlarmListNoAlarmsPreview() {
 @Composable
 private fun CoreScreenSettingsPreview() {
     val currentCoreDestination = Destination.SettingsScreen
+    val previousCoreDestination = Destination.AlarmListScreen
+    val alarmListState = AlarmListState.Success(alarmList = alarmSampleDataHardCodedIds)
+    val countdownText = alarmListState.alarmList.first().toCountdownString(LocalContext.current)
+    val alarmCountdownState = remember {
+        mutableStateOf(
+            AlarmCountdownState.Success(
+                icon = Icons.Default.Alarm,
+                countdownText = countdownText
+            )
+        )
+    }
 
     LavalarmTheme {
         CoreScreenContent(
             currentCoreDestination = currentCoreDestination,
-            previousCoreDestination = Destination.AlarmListScreen,
+            previousCoreDestination = previousCoreDestination,
             header = {
                 SkylineHeaderContent(
                     nextAlarmIndicator = {
-                        NextAlarmCloudContent(
+                        NextAlarmCloud(
+                            alarmCountdownState = alarmCountdownState,
                             currentCoreDestination = currentCoreDestination,
-                            alarmCountdownState = AlarmCountdownState.Success(
-                                icon = Icons.Default.Alarm,
-                                countdownText = alarmSampleDataHardCodedIds.first().toCountdownString(LocalContext.current)
-                            ),
-                            visibleState = MutableTransitionState(false),
+                            previousCoreDestination = previousCoreDestination,
                             timeChangeReceiver = object : BroadcastReceiver() {
                                 override fun onReceive(context: Context?, intent: Intent?) {}
                             }
